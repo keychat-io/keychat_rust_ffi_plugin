@@ -5,7 +5,6 @@ use cashu_wallet::UniError;
 use cashu_wallet::UniErrorFrom;
 use cashu_wallet::UnitedWallet;
 
-
 #[frb(ignore)]
 /// (spents, pendings, all)
 pub async fn check_proofs_in_database<S>(

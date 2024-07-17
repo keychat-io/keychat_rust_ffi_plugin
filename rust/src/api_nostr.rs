@@ -1,5 +1,4 @@
 use bip39::rand_core::OsRng;
-use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
 use nostr::bitcoin::secp256k1::Secp256k1;
 use nostr::nips::nip04;
 use nostr::nips::nip06::FromMnemonic;
@@ -10,6 +9,7 @@ use nostr::secp256k1::Message;
 use nostr::secp256k1::PublicKey as PB256;
 use nostr::{EventBuilder, EventId, JsonUtil, Keys, Kind, PublicKey, SecretKey, Tag};
 use serde::Serialize;
+use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Secp256k1Account {
@@ -106,7 +106,7 @@ pub fn import_key(sender_keys: String) -> anyhow::Result<Secp256k1Account> {
 
 // import from nmernonic
 pub fn import_from_phrase(phrase: String) -> anyhow::Result<Secp256k1Account> {
-    let keys: Keys = Keys::from_mnemonic(phrase.clone(), None)?;
+    let keys: Keys = Keys::from_mnemonic(&phrase, None)?;
     let public_key = keys.public_key();
     let secret_key = keys.secret_key()?;
     let (signing_key, verifying_key) = generate_curve25519_keypair(phrase.clone())?;
@@ -141,7 +141,7 @@ pub fn get_bech32_pubkey_by_hex(hex: String) -> String {
         return hex;
     }
     let pubkey = get_xonly_pubkey(hex).expect("get_xonly_pubkey from hex error");
-   pubkey.to_bech32().expect("public key to bech32 error")
+    pubkey.to_bech32().expect("public key to bech32 error")
 }
 
 #[frb(sync)]
@@ -364,7 +364,7 @@ pub fn generate_curve25519_keypair(
 pub fn curve25519_sign(secret_key: Vec<u8>, message: Vec<u8>) -> Result<String, anyhow::Error> {
     let signing_key = PrivateKey::deserialize(&secret_key)?;
     let sig = signing_key.calculate_signature(&message, &mut OsRng)?;
-    let to_hex = hex::encode(sig.to_vec());
+    let to_hex = hex::encode(sig.as_ref());
     Ok(to_hex)
 }
 

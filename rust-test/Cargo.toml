@@ -1,0 +1,29 @@
+[package]
+default-run = "signal"
+edition = "2021"
+name = "rust-test"
+version = "0.1.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "signal"
+path = "src/signal.rs"
+
+[[bin]]
+name = "ecash"
+path = "src/ecash.rs"
+
+[dependencies]
+rust = {package = "keychat_rust_ffi_plugin", path = "../rust"}
+tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
+# 
+anyhow = "1"
+chrono = "0.4.31"
+hex = "0.4.3"
+rand = "0.8"
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+# 
+bip39 = {version = "2.0", features = ["rand"]}
+nostr = "0.29"
