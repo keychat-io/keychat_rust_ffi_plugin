@@ -7,7 +7,7 @@ import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `get_xonly_pubkey`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `describe_vector`, `describe`, `fmt`, `fmt`, `fmt`, `from_abi`, `from`, `into_abi`, `is_none`, `long_ref_from_abi`, `none`, `ref_from_abi`, `ref_mut_from_abi`, `try_from_js_value`, `vector_from_abi`, `vector_into_abi`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`
 
 Future<Secp256k1Account> generateSecp256K1() => RustLib.instance.api.crateApiNostrGenerateSecp256K1();
 
