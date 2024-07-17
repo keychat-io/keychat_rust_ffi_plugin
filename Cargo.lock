@@ -2610,7 +2610,7 @@ dependencies = [
 [[package]]
 name = "signal-store"
 version = "0.1.0"
-source = "git+https://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@github.com/keychat-io/signal-storage.git?rev=9a56ee#9a56ee168d73fce46a3abe96000ff6060956a38a"
+source = "git+https://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@github.com/keychat-io/signal-storage.git?rev=18597f6#18597f6744dda21c8daa63ea854b7cfdc588b929"
 dependencies = [
  "anyhow",
  "async-trait",
