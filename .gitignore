@@ -31,3 +31,4 @@ rust/target/
 **.db-wal
 **.db-shm
 **.db
+target/
