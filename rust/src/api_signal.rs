@@ -129,8 +129,7 @@ pub fn init_keypair(key_pair: KeychatIdentityKeyPair, reg_id: u32) -> Result<()>
         let map = store
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[init_keypair]> Can not get store err."))?;
-        let keychat_store = KeyChatSignalProtocolStore::new(map.pool.clone(), key_pair_2, reg_id)
-            .expect("<signal api fn[init_keypair]> new keychat_store err.");
+        let keychat_store = KeyChatSignalProtocolStore::new(map.pool.clone(), key_pair_2, reg_id)?;
 
         map.store_map.entry(key_pair).or_insert_with(|| {
             info!("fn[init_keypair] key_pair do not init.");
@@ -240,10 +239,7 @@ pub fn process_prekey_bundle_api(
             bob_signed_public,
             bob_siged_sig,
             identity_key,
-        )
-        .expect(
-            "<signal api fn[process_prekey_bundle_api]> can not make pre key bundle from store.",
-        );
+        )?;
         process_prekey_bundle(
             &remote_address,
             &mut store.session_store,
