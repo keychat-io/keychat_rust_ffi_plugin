@@ -19,9 +19,9 @@ serde_json = "1.0.96"
 thiserror = "1.0.40"
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
 
-signal-store = {git = "https://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@github.com/keychat-io/signal-storage.git", rev = "ed11fb4"}
-cashu-wallet = {git = "https://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@github.com/keychat-io/cashu-wallet-rs.git", tag = "240710"}
-cashu-wallet-sqlite = {git = "https://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@github.com/keychat-io/cashu-wallet-rs.git", tag = "240710"}
+signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "ed11fb4"}
+cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240710"}
+cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240710"}
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
 # cashu-wallet-sqlite = {path = "../../cashu-wallet-rs/store-sqlite"}
 #
