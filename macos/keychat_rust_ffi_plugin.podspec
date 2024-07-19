@@ -17,7 +17,7 @@ A new Flutter FFI plugin project.
 
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
-
+  s.framework = 'SystemConfiguration'
   s.script_phase = {
     :name => 'Build Rust library',
     # First argument is relative path to the `rust` folder, second is name of rust library
