@@ -3,11 +3,22 @@ extern crate core;
 use anyhow::Result;
 use rust::api_signal::signal_store::libsignal_protocol::*;
 use rust::api_signal::*;
+use nostr::base64::*;
+use nostr::base64::engine::general_purpose;
 
 fn main() {
-    let _ = test_x3dh_db();
+    // let _ = test_x3dh_db();
     // let _= test_state();
     // let _ = test_db();
+    let _ = test_parse_prekey();
+}
+
+fn test_parse_prekey() -> Result<()> {
+    let content = "NAjZtOSOChIhBcM1rtFjYuE6mdak4ql1iSVVbnaRGLH0Na09ZwN6qmRIGiEFXffW+BrVSqmLimFmOQauD3ehoRY/19Ee6ejQBNqxczoiswE0CiEFfrVjB2BM4qaumzeg2TtTcxLHQuqmoP1S9+DXuw1fPHcQABgAIoABbDOaq43qsrmQuvWEsAIrE1DErRiC5tDtmpfWOk4rT33bi7AkD5EFtVoMG5k4PhvvcVuTyg8BqXr6i1NpN7AMunpuplGn79He8TXMluJ6jZcI7HEKkvO0irXWZsEADnHYcLY/n0qhPk4cHwxQGGJmkp37VYFGyYdd8q71roHVi9RyDE3+VfM5iCgAMNyA+ocM";
+    let cipher_text = general_purpose::STANDARD.decode(content).unwrap();
+    let re = parse_identity_from_prekey_signal_message(cipher_text).unwrap();
+    println!("the result is {:?}", re);
+    Ok(())
 }
 
 fn test_db() -> Result<()> {
