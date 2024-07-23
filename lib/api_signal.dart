@@ -58,6 +58,9 @@ Future<(Uint8List, String?, String, List<String>?)> encryptSignal(
         required KeychatProtocolAddress remoteAddress}) =>
     RustLib.instance.api.crateApiSignalEncryptSignal(keyPair: keyPair, ptext: ptext, remoteAddress: remoteAddress);
 
+Future<String> parseIdentityFromPrekeySignalMessage({required List<int> ciphertext}) =>
+    RustLib.instance.api.crateApiSignalParseIdentityFromPrekeySignalMessage(ciphertext: ciphertext);
+
 Future<(Uint8List, String, List<String>?)> decryptSignal(
         {required KeychatIdentityKeyPair keyPair,
         required List<int> ciphertext,
