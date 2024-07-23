@@ -386,7 +386,7 @@ checksum = "a12916984aab3fa6e39d655a33e09c0071eb36d6ab3aea5c2d78551f1df6d952"
 [[package]]
 name = "cashu-wallet"
 version = "0.2.0"
-source = "git+https://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@github.com/keychat-io/cashu-wallet-rs.git?tag=240710#90dd87dfba47a0c0697619097b2f06bc5e901595"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240710#90dd87dfba47a0c0697619097b2f06bc5e901595"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -413,7 +413,7 @@ dependencies = [
 [[package]]
 name = "cashu-wallet-sqlite"
 version = "0.1.0"
-source = "git+https://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@github.com/keychat-io/cashu-wallet-rs.git?tag=240710#90dd87dfba47a0c0697619097b2f06bc5e901595"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240710#90dd87dfba47a0c0697619097b2f06bc5e901595"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2610,7 +2610,7 @@ dependencies = [
 [[package]]
 name = "signal-store"
 version = "0.1.0"
-source = "git+https://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@github.com/keychat-io/signal-storage.git?rev=ed11fb4#ed11fb4433a95defd2bf4898ff7bfbfa0a2e6b32"
+source = "git+https://github.com/keychat-io/signal-storage.git?rev=ed11fb4#ed11fb4433a95defd2bf4898ff7bfbfa0a2e6b32"
 dependencies = [
  "anyhow",
  "async-trait",
