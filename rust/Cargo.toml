@@ -31,4 +31,4 @@ cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git"
 bip39 = {version = "2.0", features = ["rand"]}
 bitcoin = "0.30"
 ed25519-dalek = {version = "2.1.1", features = ["digest"]}
-nostr = "0.29"
+nostr = {version = "0.33", default-features = false, features = ["std", "nip04", "nip06", "nip44", "nip59"] }

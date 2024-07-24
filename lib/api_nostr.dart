@@ -6,7 +6,7 @@
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `get_xonly_pubkey`
+// These functions are ignored because they are not marked as `pub`: `create_gift`, `create_unsigned_event`, `get_xonly_pubkey`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`
 
 Future<Secp256k1Account> generateSecp256K1() => RustLib.instance.api.crateApiNostrGenerateSecp256K1();
@@ -29,8 +29,26 @@ String getBech32PubkeyByHex({required String hex}) => RustLib.instance.api.crate
 String getHexPrikeyByBech32({required String bech32}) =>
     RustLib.instance.api.crateApiNostrGetHexPrikeyByBech32(bech32: bech32);
 
-Future<String> getHexPubkeyByPrikey({required String prikey}) =>
+String getHexPubkeyByPrikey({required String prikey}) =>
     RustLib.instance.api.crateApiNostrGetHexPubkeyByPrikey(prikey: prikey);
+
+Future<String> createGiftJson(
+        {required int kind,
+        required String senderKeys,
+        required String receiverPubkey,
+        required String content,
+        String? reply,
+        BigInt? expirationTimestamp}) =>
+    RustLib.instance.api.crateApiNostrCreateGiftJson(
+        kind: kind,
+        senderKeys: senderKeys,
+        receiverPubkey: receiverPubkey,
+        content: content,
+        reply: reply,
+        expirationTimestamp: expirationTimestamp);
+
+Future<NostrEvent> decryptGift({required String senderKeys, required String receiver, required String content}) =>
+    RustLib.instance.api.crateApiNostrDecryptGift(senderKeys: senderKeys, receiver: receiver, content: content);
 
 Future<String> getEncryptEvent(
         {required String senderKeys, required String receiverPubkey, required String content, String? reply}) =>
