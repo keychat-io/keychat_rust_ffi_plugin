@@ -295,8 +295,7 @@ pub fn encrypt_signal(
     result
 }
 
-pub fn parse_identity_from_prekey_signal_message(
-    ciphertext: Vec<u8>) -> Result<String> {
+pub fn parse_identity_from_prekey_signal_message(ciphertext: Vec<u8>) -> Result<String> {
     let ciphertext = PreKeySignalMessage::try_from(ciphertext.as_ref())?;
     let identity = ciphertext.identity_key();
     Ok(hex::encode(identity.public_key().serialize()))
