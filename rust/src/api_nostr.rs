@@ -1,4 +1,6 @@
-use bip39::rand_core::OsRng;
+pub use bip39;
+pub use nostr;
+
 use nostr::bitcoin::secp256k1::Secp256k1;
 use nostr::nips::nip04;
 use nostr::nips::nip06::FromMnemonic;
@@ -7,7 +9,9 @@ use nostr::secp256k1::hashes::{sha256, Hash};
 use nostr::secp256k1::schnorr::Signature as SchnorrSignature;
 use nostr::secp256k1::Message;
 use nostr::secp256k1::PublicKey as PB256;
-use nostr::{EventBuilder, EventId, JsonUtil, Keys, Kind, PublicKey, SecretKey, Tag};
+use nostr::{
+    Event, EventBuilder, EventId, JsonUtil, Keys, Kind, PublicKey, SecretKey, Tag, UnsignedEvent,
+};
 use serde::Serialize;
 use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
 
@@ -154,10 +158,112 @@ pub fn get_hex_prikey_by_bech32(bech32: String) -> String {
     result
 }
 
+#[frb(sync)]
 pub fn get_hex_pubkey_by_prikey(prikey: String) -> anyhow::Result<String> {
     let keys: Keys = nostr::Keys::parse(prikey)?;
     let public_key = keys.public_key();
     Ok(public_key.to_string())
+}
+
+pub fn create_gift_json(
+    kind: u16,
+    sender_keys: String,
+    receiver_pubkey: String,
+    content: String,
+    reply: Option<String>,
+    expiration_timestamp: Option<u64>,
+) -> anyhow::Result<String> {
+    let sender_keys: Keys = nostr::Keys::parse(&sender_keys)?;
+    let receiver = get_xonly_pubkey(receiver_pubkey)?;
+
+    // get unsigned
+    let rumor = create_unsigned_event(kind, &sender_keys, &receiver, content, reply)?;
+
+    // rumor -> 13 -> 1059
+    let gift = create_gift(&sender_keys, &receiver, rumor, expiration_timestamp)?;
+
+    let json = gift.as_json();
+    Ok(json)
+}
+
+#[frb(ignore)]
+fn create_unsigned_event(
+    kind: u16,
+    sender_keys: &Keys,
+    receiver: &PublicKey,
+    content: String,
+    reply: Option<String>,
+) -> anyhow::Result<UnsignedEvent> {
+    let mut tags = vec![Tag::public_key(*receiver)];
+    if let Some(reply) = reply {
+        let e = EventId::from_hex(reply)?;
+        tags.push(e.into())
+    }
+
+    let event = EventBuilder::new(kind.into(), content, tags);
+
+    let mut this = event.to_unsigned_event(sender_keys.public_key());
+    // UnsignedEvent's compute_id not public
+    this.id = Some(EventId::new(
+        &this.pubkey,
+        &this.created_at,
+        &this.kind,
+        &this.tags,
+        &this.content,
+    ));
+    Ok(this)
+}
+
+#[frb(ignore)]
+fn create_gift(
+    sender_keys: &Keys,
+    receiver: &PublicKey,
+    rumor: UnsignedEvent,
+    expiration_timestamp: Option<u64>,
+) -> anyhow::Result<Event> {
+    let event = EventBuilder::gift_wrap(
+        sender_keys,
+        receiver,
+        rumor,
+        expiration_timestamp.map(Into::into),
+    )?;
+    Ok(event)
+}
+
+pub fn decrypt_gift(
+    sender_keys: String,
+    receiver: String,
+    content: String,
+) -> anyhow::Result<NostrEvent> {
+    let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
+    let receiver = get_xonly_pubkey(receiver)?;
+
+    let seal_json = nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
+    let seal = nostr::Event::from_json(&seal_json)?;
+    seal.verify()?;
+    let receiver = seal.pubkey;
+
+    let rumor_json =
+        nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &seal.content)?;
+    let rumor = UnsignedEvent::from_json(&rumor_json)?;
+
+    // Clients MUST verify if pubkey of the kind:13 is the same pubkey on the kind:14
+    ensure!(
+        seal.pubkey == rumor.pubkey,
+        "the public key of seal isn't equal the rumor's"
+    );
+
+    let tags = rumor.tags.iter().map(|t| t.as_vec().to_owned()).collect();
+    let ne: NostrEvent = NostrEvent {
+        tags,
+        id: rumor.id.as_ref().map(|s| s.to_string()).unwrap_or_default(),
+        content: rumor.content,
+        created_at: rumor.created_at.as_u64(),
+        kind: rumor.kind.as_u64(),
+        sig: String::new(),
+        pubkey: rumor.pubkey.to_string(),
+    };
+    Ok(ne)
 }
 
 // encrypt message and return event string
@@ -190,18 +296,9 @@ pub fn get_unencrypt_event(
 ) -> anyhow::Result<String> {
     let pubkey = get_xonly_pubkey(receiver_pubkey)?;
 
-    let mut tags: Vec<Tag> = vec![Tag::PublicKey {
-        public_key: pubkey,
-        relay_url: None,
-        alias: None,
-        uppercase: false,
-    }];
+    let mut tags: Vec<Tag> = vec![Tag::public_key(pubkey)];
     if let Some(reply) = reply {
-        tags.push(Tag::Event {
-            event_id: EventId::from_hex(reply)?,
-            relay_url: None,
-            marker: None,
-        });
+        tags.push(Tag::event(EventId::from_hex(reply)?));
     }
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
 
@@ -258,15 +355,14 @@ pub fn decrypt_event(sender_keys: String, json: String) -> anyhow::Result<String
 }
 
 pub fn verify_event(json: String) -> anyhow::Result<NostrEvent> {
-    let event: nostr::Event = nostr::Event::from_json(json)?;
+    let event = nostr::Event::from_json(json)?;
+    event.verify()?;
+
+    let tags = event.tags.iter().map(|t| t.as_vec().to_owned()).collect();
     let ne: NostrEvent = NostrEvent {
+        tags,
         id: event.id.to_string(),
         content: event.content.clone(),
-        tags: vec![event
-            .tags
-            .first()
-            .expect("get event tags first error")
-            .as_vec()],
         created_at: event.created_at.as_u64(),
         kind: event.kind.as_u64(),
         sig: serde_json::to_string(&event.sig)?,
@@ -362,6 +458,8 @@ pub fn generate_curve25519_keypair(
 }
 
 pub fn curve25519_sign(secret_key: Vec<u8>, message: Vec<u8>) -> Result<String, anyhow::Error> {
+    use bip39::rand_core::OsRng;
+
     let signing_key = PrivateKey::deserialize(&secret_key)?;
     let sig = signing_key.calculate_signature(&message, &mut OsRng)?;
     let to_hex = hex::encode(sig.as_ref());
