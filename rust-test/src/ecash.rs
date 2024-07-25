@@ -87,6 +87,20 @@ fn main() {
     // let s = api::request_mint(amount, MINT_URL.to_string());
     // info!("request_mint {}:{:?}\n", amount, s);
 
+    // api::set_mnemonic(None).unwrap();
+    // let amount = 10;
+    // let tx = api::request_mint(amount, MINT_URL.to_string()).unwrap();
+    // info!("request_mint {}:{:?}\n", amount, tx);
+
+    // loop {
+    //     std::thread::sleep_ms(10000);
+    //     let tx = api::check_transaction(tx.id().to_owned()).unwrap();
+    //     info!("mint {}:{:?}\n", amount, tx.status());
+    //     if tx.status().is_success() {
+    //         break;
+    //     }
+    // }
+
     // let hash = "wvyuGV8pgfREUegTjB12OoEFaA7ocOKILqg-oBvJ";
     // let s = api::mint_token(amount, hash.to_owned(), MINT_URL.to_string());
     // info!("mint {}:{:?}\n", amount, s);

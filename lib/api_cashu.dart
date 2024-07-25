@@ -69,6 +69,9 @@ Future<BigInt> getPendingTransactionsCount() => RustLib.instance.api.crateApiCas
 
 Future<(BigInt, BigInt)> checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
+Future<Transaction> checkTransaction({required String id}) =>
+    RustLib.instance.api.crateApiCashuCheckTransaction(id: id);
+
 /// (spents, pendings, all)
 Future<(BigInt, BigInt, BigInt)> checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 
