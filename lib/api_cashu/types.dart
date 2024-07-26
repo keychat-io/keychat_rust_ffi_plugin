@@ -9,8 +9,8 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'types.freezed.dart';
 
 // These types are ignored because they are not used by any `pub` functions: `TransactionKind`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
-// These functions are ignored (category: IgnoreBecauseNotAllowedOwner): `default`, `default`, `default`, `default`, `default`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+// These functions are ignored (category: IgnoreBecauseNotAllowedOwner): `default`, `default`, `default`, `default`, `default`, `default`
 
 class CashuTransaction {
   final String id;
@@ -61,6 +61,24 @@ class CashuTransaction {
           mint == other.mint &&
           token == other.token &&
           unit == other.unit;
+}
+
+class Contact {
+  final String method;
+  final String info;
+
+  const Contact({
+    required this.method,
+    required this.info,
+  });
+
+  @override
+  int get hashCode => method.hashCode ^ info.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Contact && runtimeType == other.runtimeType && method == other.method && info == other.info;
 }
 
 class LNTransaction {
@@ -153,7 +171,7 @@ class MintInfo {
   final String? description;
   final String? descriptionLong;
   final String? motd;
-  final List<List<String>> contact;
+  final List<Contact> contact;
   final Nuts nuts;
 
   const MintInfo({

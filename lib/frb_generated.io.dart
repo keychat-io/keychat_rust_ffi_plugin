@@ -59,6 +59,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CashuTransaction dco_decode_cashu_transaction(dynamic raw);
 
   @protected
+  Contact dco_decode_contact(dynamic raw);
+
+  @protected
   int dco_decode_i_32(dynamic raw);
 
   @protected
@@ -87,6 +90,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<CashuTransaction> dco_decode_list_cashu_transaction(dynamic raw);
+
+  @protected
+  List<Contact> dco_decode_list_contact(dynamic raw);
 
   @protected
   List<List<String>> dco_decode_list_list_String(dynamic raw);
@@ -258,6 +264,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CashuTransaction sse_decode_cashu_transaction(SseDeserializer deserializer);
 
   @protected
+  Contact sse_decode_contact(SseDeserializer deserializer);
+
+  @protected
   int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
@@ -286,6 +295,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<CashuTransaction> sse_decode_list_cashu_transaction(SseDeserializer deserializer);
+
+  @protected
+  List<Contact> sse_decode_list_contact(SseDeserializer deserializer);
 
   @protected
   List<List<String>> sse_decode_list_list_String(SseDeserializer deserializer);
@@ -459,6 +471,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_cashu_transaction(CashuTransaction self, SseSerializer serializer);
 
   @protected
+  void sse_encode_contact(Contact self, SseSerializer serializer);
+
+  @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
 
   @protected
@@ -487,6 +502,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_cashu_transaction(List<CashuTransaction> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_contact(List<Contact> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_list_String(List<List<String>> self, SseSerializer serializer);

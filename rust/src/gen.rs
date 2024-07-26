@@ -2722,6 +2722,11 @@ const _: fn() = || {
         let _: Option<String> = CashuTransaction.unit;
     }
     {
+        let Contact = None::<crate::api_cashu::types::Contact>.unwrap();
+        let _: String = Contact.method;
+        let _: String = Contact.info;
+    }
+    {
         let LNTransaction = None::<crate::api_cashu::types::LNTransaction>.unwrap();
         let _: crate::api_cashu::types::TransactionStatus = LNTransaction.status;
         let _: crate::api_cashu::types::TransactionDirection = LNTransaction.io;
@@ -2749,7 +2754,7 @@ const _: fn() = || {
         let _: Option<String> = MintInfo.description;
         let _: Option<String> = MintInfo.description_long;
         let _: Option<String> = MintInfo.motd;
-        let _: Vec<Vec<String>> = MintInfo.contact;
+        let _: Vec<crate::api_cashu::types::Contact> = MintInfo.contact;
         let _: crate::api_cashu::types::Nuts = MintInfo.nuts;
     }
     {
@@ -2836,6 +2841,18 @@ impl SseDecode for crate::api_cashu::types::CashuTransaction {
             mint: var_mint,
             token: var_token,
             unit: var_unit,
+        };
+    }
+}
+
+impl SseDecode for crate::api_cashu::types::Contact {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_method = <String>::sse_decode(deserializer);
+        let mut var_info = <String>::sse_decode(deserializer);
+        return crate::api_cashu::types::Contact {
+            method: var_method,
+            info: var_info,
         };
     }
 }
@@ -2964,6 +2981,18 @@ impl SseDecode for Vec<crate::api_cashu::types::CashuTransaction> {
             ans_.push(<crate::api_cashu::types::CashuTransaction>::sse_decode(
                 deserializer,
             ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api_cashu::types::Contact> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api_cashu::types::Contact>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -3100,7 +3129,7 @@ impl SseDecode for crate::api_cashu::types::MintInfo {
         let mut var_description = <Option<String>>::sse_decode(deserializer);
         let mut var_descriptionLong = <Option<String>>::sse_decode(deserializer);
         let mut var_motd = <Option<String>>::sse_decode(deserializer);
-        let mut var_contact = <Vec<Vec<String>>>::sse_decode(deserializer);
+        let mut var_contact = <Vec<crate::api_cashu::types::Contact>>::sse_decode(deserializer);
         let mut var_nuts = <crate::api_cashu::types::Nuts>::sse_decode(deserializer);
         return crate::api_cashu::types::MintInfo {
             name: var_name,
@@ -3708,6 +3737,27 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::Cashu
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Contact> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.method.into_into_dart().into_dart(),
+            self.0.info.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<crate::api_cashu::types::Contact>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::Contact>>
+    for crate::api_cashu::types::Contact
+{
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::Contact> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceInfo {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -4203,6 +4253,14 @@ impl SseEncode for crate::api_cashu::types::CashuTransaction {
     }
 }
 
+impl SseEncode for crate::api_cashu::types::Contact {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.method, serializer);
+        <String>::sse_encode(self.info, serializer);
+    }
+}
+
 impl SseEncode for i32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -4302,6 +4360,16 @@ impl SseEncode for Vec<crate::api_cashu::types::CashuTransaction> {
     }
 }
 
+impl SseEncode for Vec<crate::api_cashu::types::Contact> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api_cashu::types::Contact>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<Vec<String>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -4397,7 +4465,7 @@ impl SseEncode for crate::api_cashu::types::MintInfo {
         <Option<String>>::sse_encode(self.description, serializer);
         <Option<String>>::sse_encode(self.description_long, serializer);
         <Option<String>>::sse_encode(self.motd, serializer);
-        <Vec<Vec<String>>>::sse_encode(self.contact, serializer);
+        <Vec<crate::api_cashu::types::Contact>>::sse_encode(self.contact, serializer);
         <crate::api_cashu::types::Nuts>::sse_encode(self.nuts, serializer);
     }
 }
