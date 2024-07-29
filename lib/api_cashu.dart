@@ -61,6 +61,11 @@ Future<List<LNTransaction>> getLnTransactionsWithOffset({required BigInt offset,
 
 Future<List<Transaction>> getPendingTransactions() => RustLib.instance.api.crateApiCashuGetPendingTransactions();
 
+Future<List<LNTransaction>> getLnPendingTransactions() => RustLib.instance.api.crateApiCashuGetLnPendingTransactions();
+
+Future<List<CashuTransaction>> getCashuPendingTransactions() =>
+    RustLib.instance.api.crateApiCashuGetCashuPendingTransactions();
+
 /// remove transaction.time() <= unix_timestamp_ms_le and kind is the status
 Future<BigInt> removeTransactions({required BigInt unixTimestampMsLe, required TransactionStatus kind}) =>
     RustLib.instance.api.crateApiCashuRemoveTransactions(unixTimestampMsLe: unixTimestampMsLe, kind: kind);
