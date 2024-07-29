@@ -547,6 +547,36 @@ pub fn get_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     Ok(tx)
 }
 
+pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<LNTransaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let tx = state.rt.block_on(w.store().get_pending_transactions())?;
+    let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_ln()).count());
+    for t in tx {
+        match t {
+            Transaction::LN(t) => txs.push(t),
+            _ => unreachable!("unreachable not LNTransaction"),
+        }
+    }
+    Ok(txs)
+}
+
+pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let tx = state.rt.block_on(w.store().get_pending_transactions())?;
+    let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_cashu()).count());
+    for t in tx {
+        match t {
+            Transaction::Cashu(t) => txs.push(t),
+            _ => unreachable!("unreachable not LNTransaction"),
+        }
+    }
+    Ok(txs)
+}
+
 /// remove transaction.time() <= unix_timestamp_ms_le and kind is the status
 pub fn remove_transactions(
     unix_timestamp_ms_le: u64,
