@@ -12,7 +12,7 @@ fn bad_add(a: i32, b: i32) -> i32 {
 }
 
 pub fn setup() {
-    const DB_PATH: &str = "cashu.sqlite";
+    const DB_PATH: &str = "cashu.db";
     let r1 = api::init_db(DB_PATH.to_string(), None);
     println!("db open :{:?}", r1);
     let r2 = api::init_cashu(0);
