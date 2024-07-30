@@ -299,13 +299,19 @@ pub fn parse_identity_from_prekey_signal_message(ciphertext: Vec<u8>) -> Result<
     let ciphertext = PreKeySignalMessage::try_from(ciphertext.as_ref())?;
     let identity = ciphertext.identity_key();
     let signed_pre_key_id = ciphertext.signed_pre_key_id();
-    Ok((hex::encode(identity.public_key().serialize()), signed_pre_key_id.into()))
+    Ok((
+        hex::encode(identity.public_key().serialize()),
+        signed_pre_key_id.into(),
+    ))
 }
 
 pub fn generate_signal_ids() -> Result<(Vec<u8>, Vec<u8>)> {
     let mut csprng = OsRng;
     let pair = KeyPair::generate(&mut csprng);
-    Ok((pair.private_key.serialize(), pair.public_key.serialize().into()))
+    Ok((
+        pair.private_key.serialize(),
+        pair.public_key.serialize().into(),
+    ))
 }
 
 pub fn decrypt_signal(

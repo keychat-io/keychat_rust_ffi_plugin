@@ -1,6 +1,6 @@
 use anyhow::Result;
-use nostr::base64::engine::general_purpose;
-use nostr::base64::*;
+use rust::api_nostr::nostr::base64::engine::general_purpose;
+use rust::api_nostr::nostr::base64::*;
 use rust::api_signal::signal_store::libsignal_protocol::*;
 use rust::api_signal::*;
 
