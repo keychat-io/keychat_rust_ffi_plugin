@@ -4,6 +4,7 @@ use cashu_wallet::wallet::HttpOptions;
 use cashu_wallet::wallet::MnemonicInfo;
 use cashu_wallet::wallet::ProofsHelper;
 use cashu_wallet::wallet::CURRENCY_UNIT_SAT;
+use cashu_wallet_sqlite::StoreError;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::MutexGuard as StdMutexGuard;
@@ -546,6 +547,36 @@ pub fn get_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     Ok(tx)
 }
 
+pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<LNTransaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let tx = state.rt.block_on(w.store().get_pending_transactions())?;
+    let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_ln()).count());
+    for t in tx {
+        match t {
+            Transaction::LN(t) => txs.push(t),
+            _ => unreachable!("unreachable not LNTransaction"),
+        }
+    }
+    Ok(txs)
+}
+
+pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let tx = state.rt.block_on(w.store().get_pending_transactions())?;
+    let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_cashu()).count());
+    for t in tx {
+        match t {
+            Transaction::Cashu(t) => txs.push(t),
+            _ => unreachable!("unreachable not LNTransaction"),
+        }
+    }
+    Ok(txs)
+}
+
 /// remove transaction.time() <= unix_timestamp_ms_le and kind is the status
 pub fn remove_transactions(
     unix_timestamp_ms_le: u64,
@@ -576,6 +607,34 @@ pub fn check_pending() -> anyhow::Result<(usize, usize)> {
 
     let upc_all = state.rt.block_on(w.check_pendings())?;
     Ok(upc_all)
+}
+
+pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let fut = async move {
+        let mut tx = w
+            .store()
+            .get_transaction(&id)
+            .await?
+            .ok_or_else(|| StoreError::Custom(format_err!("tx id not found")))?;
+
+        if tx.is_pending() {
+            let txs = vec![tx];
+            let _res = w.check_pendings_with(txs).await?;
+
+            tx = w
+                .store()
+                .get_transaction(&id)
+                .await?
+                .ok_or_else(|| StoreError::Custom(format_err!("tx id not found")))?;
+        }
+        Ok(tx)
+    };
+
+    let tx = state.rt.block_on(fut);
+    tx
 }
 
 /// (spents, pendings, all)

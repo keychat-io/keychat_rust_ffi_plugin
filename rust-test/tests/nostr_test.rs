@@ -5,7 +5,7 @@ use serde_json::json;
 mod tests {
 
     use super::*;
-    use bip39::Mnemonic;
+    use nostr::bip39::Mnemonic;
 
     #[test]
     fn test_generate() {
@@ -37,14 +37,16 @@ mod tests {
         println!("{:?}", my_keys.curve25519_sk_hex);
         assert_eq!(
             my_keys.curve25519_pk_hex,
-            Some("1701E4A3AC802B6E2CE246A2F2F0C54A63BC294218C0E262903B68CAD9051F98".to_lowercase())
+            Some(
+                "05ab03d3e1e2c9ce3b7f7cea79131367ed7160ef769051ba788d6cfec9e251b27a".to_lowercase()
+            )
         );
 
         assert_eq!(
             my_keys.curve25519_sk,
             Some(
                 [
-                    73, 252, 59, 93, 9, 125, 223, 236, 246, 176, 61, 42, 201, 104, 241, 54, 122, 0,
+                    72, 252, 59, 93, 9, 125, 223, 236, 246, 176, 61, 42, 201, 104, 241, 54, 122, 0,
                     75, 194, 150, 205, 59, 201, 225, 66, 139, 81, 228, 74, 215, 64
                 ]
                 .to_vec()
@@ -377,5 +379,27 @@ mod tests {
         let s2 = String::from_utf8(bytes.to_vec()).unwrap();
         assert_eq!(s, s2);
         assert_eq!(bytes, bytes2);
+    }
+
+    #[test]
+    fn nip17() {
+        let s = "secret seed 17";
+        let sender_kp = nostr::generate_simple().unwrap();
+        let receiver_kp = nostr::generate_simple().unwrap();
+
+        let gift_json = nostr::create_gift_json(
+            14,
+            sender_kp.prikey,
+            receiver_kp.pubkey,
+            s.to_owned(),
+            None,
+            None,
+        )
+        .unwrap();
+
+        // use nostr::nostr::util::JsonUtil;
+        let gift = nostr::verify_event(gift_json).unwrap();
+        let rumor = nostr::decrypt_gift(receiver_kp.prikey, gift.pubkey, gift.content).unwrap();
+        assert_eq!(rumor.content, s);
     }
 }

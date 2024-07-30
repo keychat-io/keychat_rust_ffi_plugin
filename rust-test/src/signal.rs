@@ -1,5 +1,3 @@
-extern crate core;
-
 use anyhow::Result;
 use nostr::base64::engine::general_purpose;
 use nostr::base64::*;
