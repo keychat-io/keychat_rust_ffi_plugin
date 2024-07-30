@@ -69,6 +69,10 @@ fn main() {
     let s = api::prepare_one_proofs(amount, MINT_URL.to_string());
     info!("prepare_one_proofs {}:{:?}\n", amount, s);
 
+    let s = api::get_cashu_pending_transactions();
+    info!("get_cashu_pending_transactions {}:{:?}\n", amount, s);
+    let s = api::get_ln_pending_transactions();
+    info!("get_ln_pending_transactions {}:{:?}\n", amount, s);
     // let amount = 1;
     // let s = api::send(amount, MINT_URL.to_string(), None).err();
     // info!("send {}:{:?}\n", amount, s);
