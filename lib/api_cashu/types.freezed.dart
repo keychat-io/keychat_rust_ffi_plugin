@@ -73,6 +73,9 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -92,6 +95,8 @@ class __$$Transaction_CashuImplCopyWithImpl<$Res>
       $Res Function(_$Transaction_CashuImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -130,7 +135,9 @@ class _$Transaction_CashuImpl extends Transaction_Cashu {
   @override
   int get hashCode => Object.hash(runtimeType, field0);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$Transaction_CashuImplCopyWith<_$Transaction_CashuImpl> get copyWith =>
@@ -207,7 +214,10 @@ abstract class Transaction_Cashu extends Transaction {
 
   @override
   CashuTransaction get field0;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$Transaction_CashuImplCopyWith<_$Transaction_CashuImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -229,6 +239,8 @@ class __$$Transaction_LNImplCopyWithImpl<$Res>
       _$Transaction_LNImpl _value, $Res Function(_$Transaction_LNImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -267,7 +279,9 @@ class _$Transaction_LNImpl extends Transaction_LN {
   @override
   int get hashCode => Object.hash(runtimeType, field0);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$Transaction_LNImplCopyWith<_$Transaction_LNImpl> get copyWith =>
@@ -344,7 +358,10 @@ abstract class Transaction_LN extends Transaction {
 
   @override
   LNTransaction get field0;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$Transaction_LNImplCopyWith<_$Transaction_LNImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

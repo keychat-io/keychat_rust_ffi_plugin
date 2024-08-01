@@ -394,6 +394,7 @@ mod tests {
             s.to_owned(),
             None,
             None,
+            None,
         )
         .unwrap();
 
@@ -401,5 +402,32 @@ mod tests {
         let gift = nostr::verify_event(gift_json).unwrap();
         let rumor = nostr::decrypt_gift(receiver_kp.prikey, gift.pubkey, gift.content).unwrap();
         assert_eq!(rumor.content, s);
+
+        assert_ne!(rumor.created_at, gift.created_at);
+    }
+
+    #[test]
+    fn nip17_without_timestamp_tweaked() {
+        let s = "secret seed 17";
+        let sender_kp = nostr::generate_simple().unwrap();
+        let receiver_kp = nostr::generate_simple().unwrap();
+
+        let gift_json = nostr::create_gift_json(
+            14,
+            sender_kp.prikey,
+            receiver_kp.pubkey,
+            s.to_owned(),
+            None,
+            None,
+            Some(false),
+        )
+        .unwrap();
+
+        // use nostr::nostr::util::JsonUtil;
+        let gift = nostr::verify_event(gift_json).unwrap();
+        let rumor = nostr::decrypt_gift(receiver_kp.prikey, gift.pubkey, gift.content).unwrap();
+        assert_eq!(rumor.content, s);
+
+        assert_eq!(rumor.created_at, gift.created_at);
     }
 }
