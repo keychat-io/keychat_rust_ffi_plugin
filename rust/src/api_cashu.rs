@@ -554,9 +554,8 @@ pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<LNTransaction>> {
     let tx = state.rt.block_on(w.store().get_pending_transactions())?;
     let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_ln()).count());
     for t in tx {
-        match t {
-            Transaction::LN(t) => txs.push(t),
-            _ => unreachable!("unreachable not LNTransaction"),
+        if let Transaction::LN(t) = t {
+            txs.push(t);
         }
     }
     Ok(txs)
@@ -569,9 +568,8 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>>
     let tx = state.rt.block_on(w.store().get_pending_transactions())?;
     let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_cashu()).count());
     for t in tx {
-        match t {
-            Transaction::Cashu(t) => txs.push(t),
-            _ => unreachable!("unreachable not LNTransaction"),
+        if let Transaction::Cashu(t) = t {
+            txs.push(t);
         }
     }
     Ok(txs)
