@@ -44,14 +44,16 @@ Future<String> createGiftJson(
         required String receiverPubkey,
         required String content,
         String? reply,
-        BigInt? expirationTimestamp}) =>
+        BigInt? expirationTimestamp,
+        bool? timestampTweaked}) =>
     RustLib.instance.api.crateApiNostrCreateGiftJson(
         kind: kind,
         senderKeys: senderKeys,
         receiverPubkey: receiverPubkey,
         content: content,
         reply: reply,
-        expirationTimestamp: expirationTimestamp);
+        expirationTimestamp: expirationTimestamp,
+        timestampTweaked: timestampTweaked);
 
 Future<NostrEvent> decryptGift({required String senderKeys, required String receiver, required String content}) =>
     RustLib.instance.api.crateApiNostrDecryptGift(senderKeys: senderKeys, receiver: receiver, content: content);

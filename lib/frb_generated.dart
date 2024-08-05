@@ -133,7 +133,8 @@ abstract class RustLibApi extends BaseApi {
       required String receiverPubkey,
       required String content,
       String? reply,
-      BigInt? expirationTimestamp});
+      BigInt? expirationTimestamp,
+      bool? timestampTweaked});
 
   Future<String> crateApiNostrCurve25519GetPubkey({required String prikey});
 
@@ -953,7 +954,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       required String receiverPubkey,
       required String content,
       String? reply,
-      BigInt? expirationTimestamp}) {
+      BigInt? expirationTimestamp,
+      bool? timestampTweaked}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -963,6 +965,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(content, serializer);
         sse_encode_opt_String(reply, serializer);
         sse_encode_opt_box_autoadd_u_64(expirationTimestamp, serializer);
+        sse_encode_opt_box_autoadd_bool(timestampTweaked, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30, port: port_);
       },
       codec: SseCodec(
@@ -970,14 +973,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiNostrCreateGiftJsonConstMeta,
-      argValues: [kind, senderKeys, receiverPubkey, content, reply, expirationTimestamp],
+      argValues: [kind, senderKeys, receiverPubkey, content, reply, expirationTimestamp, timestampTweaked],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiNostrCreateGiftJsonConstMeta => const TaskConstMeta(
         debugName: "create_gift_json",
-        argNames: ["kind", "senderKeys", "receiverPubkey", "content", "reply", "expirationTimestamp"],
+        argNames: [
+          "kind",
+          "senderKeys",
+          "receiverPubkey",
+          "content",
+          "reply",
+          "expirationTimestamp",
+          "timestampTweaked"
+        ],
       );
 
   @override
@@ -2147,6 +2158,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  bool dco_decode_box_autoadd_bool(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as bool;
+  }
+
+  @protected
   CashuTransaction dco_decode_box_autoadd_cashu_transaction(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_cashu_transaction(raw);
@@ -2475,6 +2492,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  bool? dco_decode_opt_box_autoadd_bool(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_bool(raw);
+  }
+
+  @protected
   KeychatIdentityKey? dco_decode_opt_box_autoadd_keychat_identity_key(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_keychat_identity_key(raw);
@@ -2800,6 +2823,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool sse_decode_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8() != 0;
+  }
+
+  @protected
+  bool sse_decode_box_autoadd_bool(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_bool(deserializer));
   }
 
   @protected
@@ -3204,6 +3233,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_bool(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   KeychatIdentityKey? sse_decode_opt_box_autoadd_keychat_identity_key(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -3519,6 +3559,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_bool(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_cashu_transaction(CashuTransaction self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_cashu_transaction(self, serializer);
@@ -3824,6 +3870,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_String(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_bool(self, serializer);
     }
   }
 

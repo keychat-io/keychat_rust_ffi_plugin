@@ -9,6 +9,7 @@ use nostr::secp256k1::hashes::{sha256, Hash};
 use nostr::secp256k1::schnorr::Signature as SchnorrSignature;
 use nostr::secp256k1::Message;
 use nostr::secp256k1::PublicKey as PB256;
+use nostr::types::Timestamp;
 use nostr::{
     Event, EventBuilder, EventId, JsonUtil, Keys, Kind, PublicKey, SecretKey, Tag, UnsignedEvent,
 };
@@ -193,15 +194,41 @@ pub fn create_gift_json(
     content: String,
     reply: Option<String>,
     expiration_timestamp: Option<u64>,
+    timestamp_tweaked: Option<bool>,
 ) -> anyhow::Result<String> {
     let sender_keys: Keys = nostr::Keys::parse(&sender_keys)?;
     let receiver = get_xonly_pubkey(receiver_pubkey)?;
 
     // get unsigned
     let rumor = create_unsigned_event(kind, &sender_keys, &receiver, content, reply)?;
+    let mut ts = rumor.created_at;
 
-    // rumor -> 13 -> 1059
-    let gift = create_gift(&sender_keys, &receiver, rumor, expiration_timestamp)?;
+    // rumor -> 13
+    let seal: Event = EventBuilder::seal(&sender_keys, &receiver, rumor)?.to_event(&sender_keys)?;
+
+    //  13-> 1059
+    // EventBuilder::gift_wrap_from_seal(&receiver, &seal, expiration_timestamp.map(Into::into))?;
+    let keys: Keys = Keys::generate();
+    let content: String = nostr::nips::nip44::encrypt(
+        keys.secret_key()?,
+        &receiver,
+        seal.as_json(),
+        Default::default(),
+    )?;
+
+    let mut tags: Vec<Tag> = Vec::with_capacity(1 + usize::from(expiration_timestamp.is_some()));
+    tags.push(Tag::public_key(receiver.clone()));
+    if let Some(timestamp) = expiration_timestamp {
+        tags.push(Tag::expiration(timestamp.into()));
+    }
+
+    if timestamp_tweaked.unwrap_or(true) {
+        ts = Timestamp::tweaked(nostr::nips::nip59::RANGE_RANDOM_TIMESTAMP_TWEAK);
+    }
+
+    let gift = EventBuilder::new(Kind::GiftWrap, content, tags)
+        .custom_created_at(ts)
+        .to_event(&keys)?;
 
     let json = gift.as_json();
     Ok(json)
