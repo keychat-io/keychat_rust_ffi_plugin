@@ -15,7 +15,7 @@ use nostr::{
 use serde::Serialize;
 use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Secp256k1Account {
     pub mnemonic: Option<String>,
     pub pubkey: String,
@@ -71,11 +71,11 @@ pub fn generate_secp256k1() -> anyhow::Result<Secp256k1Account> {
     Ok(result)
 }
 
-pub fn generate_from_mnemonic() -> anyhow::Result<Secp256k1Account> {
+pub fn generate_from_mnemonic(password: Option<String>) -> anyhow::Result<Secp256k1Account> {
     let mnemonic = bip39::Mnemonic::generate(12)?;
 
     let mnemonic_words = mnemonic.to_string();
-    let res = import_from_phrase(mnemonic_words);
+    let res = import_from_phrase(mnemonic_words, password, None);
     res
 }
 
@@ -109,11 +109,16 @@ pub fn import_key(sender_keys: String) -> anyhow::Result<Secp256k1Account> {
 }
 
 // import from nmernonic
-pub fn import_from_phrase(phrase: String) -> anyhow::Result<Secp256k1Account> {
-    let keys: Keys = Keys::from_mnemonic(&phrase, None)?;
+pub fn import_from_phrase(
+    phrase: String,
+    password: Option<String>,
+    account: Option<u32>,
+) -> anyhow::Result<Secp256k1Account> {
+    let keys: Keys = Keys::from_mnemonic_with_account(&phrase, password.as_ref(), account)?;
     let public_key = keys.public_key();
     let secret_key = keys.secret_key()?;
-    let (signing_key, verifying_key) = generate_curve25519_keypair(phrase.clone())?;
+    let (signing_key, verifying_key) =
+        generate_curve25519_keypair(phrase.clone(), password.clone(), account)?;
 
     let result = Secp256k1Account {
         mnemonic: Some(phrase.to_string()),
@@ -127,6 +132,22 @@ pub fn import_from_phrase(phrase: String) -> anyhow::Result<Secp256k1Account> {
         curve25519_pk: Some(verifying_key.to_vec()),
     };
     Ok(result)
+}
+
+pub fn import_from_phrase_with(
+    phrase: String,
+    password: Option<String>,
+    offset: u32,
+    count: u32,
+) -> anyhow::Result<Vec<Secp256k1Account>> {
+    let mut accounts = Vec::with_capacity(count as _);
+    for i in 0..count {
+        let pos = offset + i;
+        let account = import_from_phrase(phrase.clone(), password.clone(), Some(pos))?;
+        accounts.push(account);
+    }
+
+    Ok(accounts)
 }
 
 #[frb(sync)]
@@ -441,13 +462,17 @@ pub fn verify_schnorr(
 
 pub fn generate_curve25519_keypair(
     mnemonic_words: String,
+    password: Option<String>,
+    pos: Option<u32>,
 ) -> Result<(Vec<u8>, Vec<u8>), anyhow::Error> {
     let mnemonic = bip39::Mnemonic::parse_in_normalized(bip39::Language::English, &mnemonic_words)?;
-    let seed = mnemonic.to_seed("");
+    let seed = mnemonic.to_seed(password.unwrap_or_default());
     use bitcoin::bip32::{DerivationPath, ExtendedPrivKey as Xpriv};
     let root_key = Xpriv::new_master(bitcoin::Network::Bitcoin, &seed)?;
     // let path = DerivationPath::from_str("m/44'/1237'/0'/0/0")?;
-    let path: DerivationPath = "m/44'/1238'/0'/0/0".parse()?;
+    // let path: DerivationPath = "m/44'/1238'/0'/0/0".parse()?;
+    let account: u32 = pos.unwrap_or_default();
+    let path: DerivationPath = format!("m/44'/1238'/{}'/0/0", account).parse()?;
     let ctx = bitcoin::key::Secp256k1::new();
     let child_xprv = root_key.derive_priv(&ctx, &path)?;
 

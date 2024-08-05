@@ -13,7 +13,7 @@ mod tests {
 
         println!("my_keys :{:?}", my_keys);
 
-        let my_keys2 = nostr::generate_from_mnemonic().unwrap();
+        let my_keys2 = nostr::generate_from_mnemonic(None).unwrap();
         println!("my_keys2 :{:?}", my_keys2.curve25519_pk);
         println!("my_keys2 :{:?}", my_keys2);
 
@@ -21,10 +21,24 @@ mod tests {
     }
 
     #[test]
+    fn test_imports() {
+        let phrase =
+            "blouse only remind galaxy genuine south various mother general duty pave boost";
+        let accounts = nostr::import_from_phrase_with(phrase.to_owned(), None, 0, 10).unwrap();
+        assert_ne!(accounts[0].prikey, accounts[1].prikey);
+        assert_ne!(accounts[0].pubkey, accounts[1].pubkey);
+        assert_ne!(accounts[0].pubkey_bech32, accounts[1].pubkey_bech32);
+        assert_ne!(accounts[0].curve25519_sk, accounts[1].curve25519_sk);
+        assert_ne!(accounts[0].curve25519_pk, accounts[1].curve25519_pk);
+        let accounts2 = nostr::import_from_phrase_with(phrase.to_owned(), None, 0, 10).unwrap();
+        assert_eq!(accounts, accounts2);
+    }
+
+    #[test]
     fn test_import() {
         let phrase =
             "blouse only remind galaxy genuine south various mother general duty pave boost";
-        let my_keys = nostr::import_from_phrase(phrase.to_string()).unwrap();
+        let my_keys = nostr::import_from_phrase(phrase.to_string(), None, None).unwrap();
 
         assert_eq!(
             my_keys.pubkey,
@@ -58,7 +72,7 @@ mod tests {
     fn test_import2() {
         let phrase =
             "legend claw leader monster swallow uncle resemble reward short name explain tray";
-        let my_keys = nostr::import_from_phrase(phrase.to_string()).unwrap();
+        let my_keys = nostr::import_from_phrase(phrase.to_string(), None, None).unwrap();
         println!("{:?}", my_keys.curve25519_pk);
         println!("{:?}", my_keys.curve25519_pk_hex);
         println!("{:?}", my_keys.curve25519_sk_hex);
@@ -329,7 +343,7 @@ mod tests {
     fn curve25519_verify() {
         let phrase = "crop cash unable insane eight faith inflict route frame loud box vibrant";
 
-        let keypair = nostr::generate_curve25519_keypair(phrase.to_string()).unwrap();
+        let keypair = nostr::generate_curve25519_keypair(phrase.to_string(), None, None).unwrap();
         let private_key = keypair.0;
         let public_key = keypair.1;
 

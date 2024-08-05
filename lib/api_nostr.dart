@@ -7,19 +7,25 @@ import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `create_gift`, `create_unsigned_event`, `get_xonly_pubkey`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`
 
 Future<Secp256k1Account> generateSecp256K1() => RustLib.instance.api.crateApiNostrGenerateSecp256K1();
 
-Future<Secp256k1Account> generateFromMnemonic() => RustLib.instance.api.crateApiNostrGenerateFromMnemonic();
+Future<Secp256k1Account> generateFromMnemonic({String? password}) =>
+    RustLib.instance.api.crateApiNostrGenerateFromMnemonic(password: password);
 
 Future<Secp256k1SimpleAccount> generateSimple() => RustLib.instance.api.crateApiNostrGenerateSimple();
 
 Future<Secp256k1Account> importKey({required String senderKeys}) =>
     RustLib.instance.api.crateApiNostrImportKey(senderKeys: senderKeys);
 
-Future<Secp256k1Account> importFromPhrase({required String phrase}) =>
-    RustLib.instance.api.crateApiNostrImportFromPhrase(phrase: phrase);
+Future<Secp256k1Account> importFromPhrase({required String phrase, String? password, int? account}) =>
+    RustLib.instance.api.crateApiNostrImportFromPhrase(phrase: phrase, password: password, account: account);
+
+Future<List<Secp256k1Account>> importFromPhraseWith(
+        {required String phrase, String? password, required int offset, required int count}) =>
+    RustLib.instance.api
+        .crateApiNostrImportFromPhraseWith(phrase: phrase, password: password, offset: offset, count: count);
 
 String getHexPubkeyByBech32({required String bech32}) =>
     RustLib.instance.api.crateApiNostrGetHexPubkeyByBech32(bech32: bech32);
@@ -81,8 +87,9 @@ Future<bool> verifySchnorr(
         {required String pubkey, required String sig, required String content, required bool hash}) =>
     RustLib.instance.api.crateApiNostrVerifySchnorr(pubkey: pubkey, sig: sig, content: content, hash: hash);
 
-Future<(Uint8List, Uint8List)> generateCurve25519Keypair({required String mnemonicWords}) =>
-    RustLib.instance.api.crateApiNostrGenerateCurve25519Keypair(mnemonicWords: mnemonicWords);
+Future<(Uint8List, Uint8List)> generateCurve25519Keypair({required String mnemonicWords, String? password, int? pos}) =>
+    RustLib.instance.api
+        .crateApiNostrGenerateCurve25519Keypair(mnemonicWords: mnemonicWords, password: password, pos: pos);
 
 Future<String> curve25519Sign({required List<int> secretKey, required List<int> message}) =>
     RustLib.instance.api.crateApiNostrCurve25519Sign(secretKey: secretKey, message: message);
