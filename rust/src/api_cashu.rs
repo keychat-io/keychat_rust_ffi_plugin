@@ -19,7 +19,8 @@ pub use cashu_wallet_sqlite::LitePool;
 pub type Wallet = cashu_wallet::UnitedWallet<LitePool>;
 pub use cashu_wallet;
 
-struct State {
+#[frb(ignore)]
+pub struct State {
     rt: Arc<Runtime>,
     wallet: Option<Wallet>,
     sats: u16,
@@ -44,7 +45,13 @@ impl State {
         Ok(this)
     }
 
-    fn get_wallet(&self) -> anyhow::Result<&Wallet> {
+    #[frb(ignore)]
+    pub fn all_mints_loaded(&self) -> bool {
+        self.futs.as_ref().map(|s| s.is_empty()).unwrap_or(false)
+    }
+
+    #[frb(ignore)]
+    pub fn get_wallet(&self) -> anyhow::Result<&Wallet> {
         if self.wallet.is_none() {
             let err: anyhow::Error = format_err!("Wallet not init");
             return Err(err.into());
@@ -53,9 +60,9 @@ impl State {
         Ok(self.wallet.as_ref().unwrap())
     }
 
-    // ignore not work
-    // #[frb(ignore)]
-    fn lock() -> anyhow::Result<StdMutexGuard<'static, Self>> {
+    // ignore for test
+    #[frb(ignore)]
+    pub fn lock() -> anyhow::Result<StdMutexGuard<'static, Self>> {
         STATE
             .lock()
             .map_err(|e| format_err!("Failed to lock the state: {}", e))
@@ -116,10 +123,24 @@ pub fn close_db() -> anyhow::Result<bool> {
 pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
     let mut state = State::lock()?;
     state.sats = prepare_sats_once_time;
+
+    try_load_mints(&mut state)?;
+
+    let w = state.get_wallet()?;
+    let mints = state.rt.block_on(w.mints())?;
+    Ok(mints)
+}
+
+// -> (okcount, trycount)
+fn try_load_mints(state: &mut StdMutexGuard<'static, State>) -> anyhow::Result<(usize, usize)> {
+    if state.all_mints_loaded() {
+        return Ok((0, 0));
+    }
+
     let mut futs = state.futs.take();
 
     let w = state.get_wallet()?;
-    let mints = state.rt.block_on(async move {
+    let mints = state.rt.clone().block_on(async move {
         if futs.is_none() {
             let mints = load_mints_from_database_background_step0(w).await?;
             futs = Some(mints);
@@ -127,6 +148,8 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
 
         let mut err = None;
         let mut futs = futs.unwrap();
+        let all = futs.len();
+        let mut okcount = 0usize;
         while let Some(res) = futs.join_next().await {
             match res.map_err(|e| e.into()).and_then(|res| res) {
                 Ok(m) => {
@@ -139,8 +162,13 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
                             &[CURRENCY_UNIT_SAT],
                             Some(m),
                         )
-                        .await?;
+                        .await;
                     info!("init_cashu.got wallet 1: {:?}", r);
+                    if let Err(e) = r {
+                        err = Some(e.into());
+                    } else {
+                        okcount += 1;
+                    }
                 }
                 Err(e) => {
                     warn!("init_cashu.got wallet e: {}", e);
@@ -153,10 +181,7 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
             bail!(e);
         }
 
-        let mut mints = w.mints().await?;
-        mints.retain(|m| m.active);
-
-        Ok(mints)
+        Ok((okcount, all))
     });
 
     // fil for next call
@@ -165,6 +190,9 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
             .rt
             .block_on(load_mints_from_database_background_step0(w))?;
         state.futs = Some(fut);
+    } else {
+        // empty for prevent recall
+        state.futs = Some(Default::default());
     }
 
     mints
@@ -304,7 +332,9 @@ pub fn get_balances() -> anyhow::Result<String> {
 }
 
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> {
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+    try_load_mints(&mut state).ok();
+
     let w = state.get_wallet()?;
 
     let fut = async move {
@@ -319,6 +349,7 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> 
     Ok(txs)
 }
 
+#[frb(ignore)]
 pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     let u: cashu_wallet::Url = mint.parse()?;
 
@@ -338,14 +369,23 @@ pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::R
     }
 
     let mint_url: cashu_wallet::Url = active_mint.parse()?;
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+
+    let wallet = state.get_wallet().and_then(|w| {
+        w.get_wallet_optional(&mint_url)
+            .map_err(anyhow::Error::from)
+    });
+    if wallet.is_err() {
+        try_load_mints(&mut state).ok();
+    }
+
     let sats = state.sats;
     let w = state.get_wallet()?;
 
     let fut = async move {
         use cashu_wallet::wallet::SplitProofsGeneric;
 
-        let mut wallet = w.get_wallet_optional(&mint_url)?;
+        let mut wallet = wallet?;
 
         let mut ps = w
             .store()
@@ -421,7 +461,9 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transact
     }
     let u: cashu_wallet::Url = active_mint.parse()?;
 
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+    try_load_mints(&mut state).ok();
+
     let w = state.get_wallet()?;
 
     let tx = state
@@ -438,7 +480,8 @@ pub fn mint_token(amount: u64, hash: String, active_mint: String) -> anyhow::Res
 
     let u: cashu_wallet::Url = active_mint.parse()?;
 
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+    try_load_mints(&mut state).ok();
     let w = state.get_wallet()?;
 
     let tx = state
@@ -459,7 +502,9 @@ pub fn melt(
 
     let u: cashu_wallet::Url = active_mint.parse()?;
 
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+    try_load_mints(&mut state).ok();
+
     let w = state.get_wallet()?;
 
     let tx = state
@@ -669,6 +714,9 @@ pub fn restore(
     sleepms_after_check_a_batch: u64,
 ) -> anyhow::Result<(u64, usize)> {
     let mint_url: cashu_wallet::Url = mint.parse()?;
+
+    let mut state = State::lock()?;
+    try_load_mints(&mut state).ok();
 
     let mut mnemonic = None;
     if let Some(s) = words {
