@@ -46,11 +46,6 @@ impl State {
     }
 
     #[frb(ignore)]
-    pub fn all_mints_loaded(&self) -> bool {
-        self.futs.as_ref().map(|s| s.is_empty()).unwrap_or(false)
-    }
-
-    #[frb(ignore)]
     pub fn get_wallet(&self) -> anyhow::Result<&Wallet> {
         if self.wallet.is_none() {
             let err: anyhow::Error = format_err!("Wallet not init");
@@ -95,7 +90,11 @@ pub fn init_db(dbpath: String, words: Option<String>) -> anyhow::Result<()> {
     let fut = async move {
         let store = LitePool::open(&dbpath, Default::default()).await?;
         let w = Wallet::with_mnemonic(store, c, mnemonic);
-        let futs = load_mints_from_database_background_step0(&w).await?;
+
+        // not return error
+        let mut futs = WalletFuts::new();
+        let res = load_mints_from_database_background(&w, &mut futs).await;
+        info!("load_mints_from_database_background init_db: {:?}", res);
 
         Ok((w, futs))
     };
@@ -124,76 +123,100 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
     let mut state = State::lock()?;
     state.sats = prepare_sats_once_time;
 
-    try_load_mints(&mut state)?;
+    try_load_mints(&mut state, true)?;
 
     let w = state.get_wallet()?;
     let mints = state.rt.block_on(w.mints())?;
     Ok(mints)
 }
 
-// -> (okcount, trycount)
-fn try_load_mints(state: &mut StdMutexGuard<'static, State>) -> anyhow::Result<(usize, usize)> {
-    if state.all_mints_loaded() {
+/// -> (okcount, trycount)
+fn try_load_mints(
+    state: &mut StdMutexGuard<'static, State>,
+    wait: bool,
+) -> anyhow::Result<(usize, usize)> {
+    if state.futs.as_ref().map(|x| x.is_empty()) == Some(true) {
         return Ok((0, 0));
     }
 
     let mut futs = state.futs.take();
+    if futs.is_none() {
+        futs = Some(Default::default());
+    }
 
-    let w = state.get_wallet()?;
-    let mints = state.rt.clone().block_on(async move {
-        if futs.is_none() {
-            let mints = load_mints_from_database_background_step0(w).await?;
-            futs = Some(mints);
-        }
+    let mints = {
+        let w = state.get_wallet()?;
 
-        let mut err = None;
-        let mut futs = futs.unwrap();
-        let all = futs.len();
-        let mut okcount = 0usize;
-        while let Some(res) = futs.join_next().await {
-            match res.map_err(|e| e.into()).and_then(|res| res) {
-                Ok(m) => {
-                    info!("init_cashu.got wallet 0: {}", m.client().url().as_str());
-                    let m = Arc::new(m);
-                    let r = w
-                        .add_mint_with_units(
-                            m.client().url().clone(),
-                            false,
-                            &[CURRENCY_UNIT_SAT],
-                            Some(m),
-                        )
-                        .await;
-                    info!("init_cashu.got wallet 1: {:?}", r);
-                    if let Err(e) = r {
-                        err = Some(e.into());
-                    } else {
-                        okcount += 1;
+        let futs = &mut futs;
+        state.rt.clone().block_on(async move {
+            let mut err = None;
+            let futs = futs.as_mut().unwrap();
+            if futs.is_empty() {
+                let res = load_mints_from_database_background(w, futs).await;
+                error!(
+                    "load_mints_from_database_background futs.is_empty: {:?}",
+                    res
+                );
+            }
+
+            let all = futs.len();
+            let mut okcount = 0usize;
+            while let Some(res) = if wait {
+                futs.join_next().await
+            } else {
+                futs.try_join_next()
+            } {
+                match res.map_err(|e| e.into()).and_then(|res| res) {
+                    Ok(m) => {
+                        info!("load_mints.got wallet 0: {}", m.client().url().as_str());
+                        // not overwrite
+                        if w.contains(m.client().url())? {
+                            continue;
+                        }
+
+                        let m = Arc::new(m);
+                        let r = w
+                            .add_mint_with_units(
+                                m.client().url().clone(),
+                                false,
+                                &[CURRENCY_UNIT_SAT],
+                                Some(m),
+                            )
+                            .await;
+                        info!("load_mints.got wallet 1: {:?}", r);
+                        if let Err(e) = r {
+                            err = Some(e.into());
+                        } else {
+                            okcount += 1;
+                        }
+                    }
+                    Err(e) => {
+                        warn!("load_mints.got wallet e: {}", e);
+                        err = Some(e);
                     }
                 }
-                Err(e) => {
-                    warn!("init_cashu.got wallet e: {}", e);
-                    err = Some(e);
-                }
             }
-        }
 
-        if let Some(e) = err {
-            bail!(e);
-        }
+            if let Some(e) = err {
+                bail!(e);
+            }
 
-        Ok((okcount, all))
-    });
+            Ok((okcount, all))
+        })
+    };
 
-    // fil for next call
+    // fill for next call
     if mints.is_err() {
-        let fut = state
-            .rt
-            .block_on(load_mints_from_database_background_step0(w))?;
-        state.futs = Some(fut);
-    } else {
-        // empty for prevent recall
-        state.futs = Some(Default::default());
+        let w = state.get_wallet()?;
+        let res = state.rt.block_on(load_mints_from_database_background(
+            w,
+            futs.as_mut().unwrap(),
+        ));
+        warn!("load_mints_from_database_background fill: {:?}", res);
+        res?;
     }
+    // empty for prevent recall
+    state.futs = futs;
 
     mints
 }
@@ -203,11 +226,14 @@ use tokio::task::JoinSet;
 type WalletFuts = JoinSet<anyhow::Result<WalletForMint>>;
 /// load active mints from database::get_mints
 #[doc(hidden)]
-async fn load_mints_from_database_background_step0(w: &Wallet) -> anyhow::Result<WalletFuts> {
-    let mints = {
+async fn load_mints_from_database_background(
+    w: &Wallet,
+    futs: &mut WalletFuts,
+) -> anyhow::Result<(usize, usize)> {
+    let count = {
         let mints = w.mints().await?;
 
-        let mut futs = JoinSet::new();
+        let mut count = 0usize;
         for m in &mints {
             let mint_url: cashu_wallet::Url = m.url.parse()?;
 
@@ -235,13 +261,14 @@ async fn load_mints_from_database_background_step0(w: &Wallet) -> anyhow::Result
                     .await
                     .map_err(|e| e.into())
             };
+            count += 1;
             futs.spawn(w);
         }
 
-        futs
+        (count, mints.len())
     };
 
-    Ok(mints)
+    Ok(count)
 }
 
 // ignore for test
@@ -332,14 +359,22 @@ pub fn get_balances() -> anyhow::Result<String> {
 }
 
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> {
+    let token: cashu_wallet::wallet::Token = encoded_token.parse()?;
+
     let mut state = State::lock()?;
-    try_load_mints(&mut state).ok();
+    try_load_mints(&mut state, false).ok();
 
     let w = state.get_wallet()?;
-
     let fut = async move {
+        for t in &token.token {
+            if !w.contains(&t.mint)? {
+                w.add_mint_with_units(t.mint.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                    .await?;
+            }
+        }
+
         let mut txs = vec![];
-        w.receive_tokens_full_limit_unit(&encoded_token, &mut txs, &[CURRENCY_UNIT_SAT])
+        w.receive_tokens_full_limit_unit(&token, &mut txs, &[CURRENCY_UNIT_SAT])
             .await
             .map(|_| txs)
     };
@@ -371,13 +406,7 @@ pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::R
     let mint_url: cashu_wallet::Url = active_mint.parse()?;
     let mut state = State::lock()?;
 
-    let wallet = state.get_wallet().and_then(|w| {
-        w.get_wallet_optional(&mint_url)
-            .map_err(anyhow::Error::from)
-    });
-    if wallet.is_err() {
-        try_load_mints(&mut state).ok();
-    }
+    try_load_mints(&mut state, false).ok();
 
     let sats = state.sats;
     let w = state.get_wallet()?;
@@ -385,7 +414,7 @@ pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::R
     let fut = async move {
         use cashu_wallet::wallet::SplitProofsGeneric;
 
-        let mut wallet = wallet?;
+        let mut wallet = w.get_wallet_optional(&mint_url)?;
 
         let mut ps = w
             .store()
@@ -416,6 +445,8 @@ pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::R
             SplitProofsGeneric::new(pss.to_owned(), 0)
         } else {
             if wallet.is_none() {
+                w.add_mint_with_units(mint_url.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                    .await?;
                 wallet = Some(w.get_wallet(&mint_url)?);
             }
             wallet
@@ -462,13 +493,18 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transact
     let u: cashu_wallet::Url = active_mint.parse()?;
 
     let mut state = State::lock()?;
-    try_load_mints(&mut state).ok();
+    try_load_mints(&mut state, false).ok();
 
     let w = state.get_wallet()?;
 
-    let tx = state
-        .rt
-        .block_on(w.request_mint(&u, amount, Some(CURRENCY_UNIT_SAT)))?;
+    let tx = state.rt.block_on(async {
+        if !w.contains(&u)? {
+            w.add_mint_with_units(u.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                .await?;
+        }
+
+        w.request_mint(&u, amount, Some(CURRENCY_UNIT_SAT)).await
+    })?;
 
     Ok(tx)
 }
@@ -481,12 +517,18 @@ pub fn mint_token(amount: u64, hash: String, active_mint: String) -> anyhow::Res
     let u: cashu_wallet::Url = active_mint.parse()?;
 
     let mut state = State::lock()?;
-    try_load_mints(&mut state).ok();
+    try_load_mints(&mut state, false).ok();
+
     let w = state.get_wallet()?;
 
-    let tx = state
-        .rt
-        .block_on(w.mint_tokens(&u, amount, hash, Some(CURRENCY_UNIT_SAT)))?;
+    let tx = state.rt.block_on(async {
+        if !w.contains(&u)? {
+            w.add_mint_with_units(u.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                .await?;
+        }
+        w.mint_tokens(&u, amount, hash, Some(CURRENCY_UNIT_SAT))
+            .await
+    })?;
 
     Ok(tx)
 }
@@ -503,13 +545,18 @@ pub fn melt(
     let u: cashu_wallet::Url = active_mint.parse()?;
 
     let mut state = State::lock()?;
-    try_load_mints(&mut state).ok();
+    try_load_mints(&mut state, false).ok();
 
     let w = state.get_wallet()?;
 
-    let tx = state
-        .rt
-        .block_on(w.melt(&u, invoice, amount, Some(CURRENCY_UNIT_SAT), None))?;
+    let tx = state.rt.block_on(async {
+        if !w.contains(&u)? {
+            w.add_mint_with_units(u.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                .await?;
+        }
+        w.melt(&u, invoice, amount, Some(CURRENCY_UNIT_SAT), None)
+            .await
+    })?;
     Ok(tx)
 }
 
@@ -645,7 +692,8 @@ pub fn get_pending_transactions_count() -> anyhow::Result<u64> {
 }
 
 pub fn check_pending() -> anyhow::Result<(usize, usize)> {
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+    try_load_mints(&mut state, false).ok();
     let w = state.get_wallet()?;
 
     let upc_all = state.rt.block_on(w.check_pendings())?;
@@ -653,7 +701,8 @@ pub fn check_pending() -> anyhow::Result<(usize, usize)> {
 }
 
 pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+    try_load_mints(&mut state, false).ok();
     let w = state.get_wallet()?;
 
     let fut = async move {
@@ -664,6 +713,12 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
             .ok_or_else(|| StoreError::Custom(format_err!("tx id not found")))?;
 
         if tx.is_pending() {
+            let u = tx.mint_url().parse()?;
+            if !w.contains(&u)? {
+                w.add_mint_with_units(u.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                    .await?;
+            }
+
             let txs = vec![tx];
             let _res = w.check_pendings_with(txs).await?;
 
@@ -682,7 +737,9 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
 
 /// (spents, pendings, all)
 pub fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
-    let state = State::lock()?;
+    let mut state = State::lock()?;
+    try_load_mints(&mut state, false).ok();
+
     let w = state.get_wallet()?;
 
     let spa = state.rt.block_on(check::check_proofs_in_database(w));
@@ -716,7 +773,7 @@ pub fn restore(
     let mint_url: cashu_wallet::Url = mint.parse()?;
 
     let mut state = State::lock()?;
-    try_load_mints(&mut state).ok();
+    try_load_mints(&mut state, false).ok();
 
     let mut mnemonic = None;
     if let Some(s) = words {
@@ -727,7 +784,12 @@ pub fn restore(
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let coins = state.rt.block_on(async move {
+    let coins = state.rt.block_on(async {
+        if !w.contains(&mint_url)? {
+            w.add_mint_with_units(mint_url.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                .await?;
+        }
+
         w.restore(
             &mint_url,
             100,
