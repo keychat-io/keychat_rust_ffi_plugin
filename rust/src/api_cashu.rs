@@ -738,7 +738,7 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
 /// (spents, pendings, all)
 pub fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
     let mut state = State::lock()?;
-    try_load_mints(&mut state, false).ok();
+    try_load_mints(&mut state, true).ok();
 
     let w = state.get_wallet()?;
 
