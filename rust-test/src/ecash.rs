@@ -10,11 +10,12 @@ const DB_PATH: &str = "rustest.db";
 const MINT_URL: &str = "https://8333.space:3338/";
 
 fn main() {
+    let logger = tracing_subscriber::fmt::fmt().with_line_number(true);
     if std::env::var("RUST_LOG").is_ok() {
-        tracing_subscriber::fmt::init();
+        logger.init();
     } else {
         let max = tracing::Level::INFO;
-        tracing_subscriber::fmt().with_max_level(max).init()
+        logger.with_max_level(max).init();
     }
 
     let migen = MnemonicInfo::generate(12).unwrap();
@@ -43,7 +44,24 @@ fn main() {
         assert!(try_get_wallet.is_ok(), "{:?}", try_get_wallet);
     }
 
-    info!("add_mint: {:?}", api::add_mint(MINT_URL.to_string()));
+    // info!("add_mint: {:?}", api::add_mint(MINT_URL.to_string()));
+
+    // test update restore
+    // #[rustfmt::skip]
+    // info!("{} restore: {:?}", mi.pubkey(), api::restore(MINT_URL.to_string(), Some(mi.mnemonic().to_string()),1));
+    // #[rustfmt::skip]
+    // info!("{} restore: {:?}", migen.pubkey(), api::restore(MINT_URL.to_string(), Some(migen.mnemonic().to_string()),1));
+
+    // test update mnemonic
+    #[rustfmt::skip]
+    let pubkey = api::get_mnemonic_info().unwrap().unwrap();
+    #[rustfmt::skip]
+    let _r2 = api::set_mnemonic(Some(migen.mnemonic().to_string().to_owned())).unwrap();
+    #[rustfmt::skip]
+    let pubkey2 =api::get_mnemonic_info().unwrap().unwrap();
+    assert_eq!(pubkey, mi.pubkey());
+    assert_eq!(pubkey2, migen.pubkey());
+    api::set_mnemonic(None).unwrap();
 
     let r4 = api::get_mints();
     info!("get_mints: {:?}", r4);
@@ -52,11 +70,16 @@ fn main() {
     info!("get_balances: {:?}", r5);
 
     // receive
-    let encoded_token: &str = "
+    let encoded_token_8338: &str = "
     cashuAeyJ0b2tlbiI6W3sibWludCI6Imh0dHBzOi8vODMzMy5zcGFjZTozMzM4IiwicHJvb2ZzIjpbeyJhbW91bnQiOjEsInNlY3JldCI6ImxtUEhlem5aaVVPOU81VGVaNHpsbGdJK0hwSnRtNWdxRGhBZnNGekdrYlU9IiwiQyI6IjAyMTcwNjA3MDNlMzZkNGM4NTFkODI5ZTJlN2M0ZTRiNDFmMWExNTZmNzk5MjEyNzZjMWQ1MTRiNzE3M2E0N2Y3YSIsImlkIjoiSTJ5TitpUllma3pUIn1dfV0sIm1lbW8iOm51bGx9
     ".trim();
-    let r6 = api::receive_token(encoded_token.to_string());
-    info!("receive_token: {:?}", r6);
+    let r6 = api::receive_token(encoded_token_8338.to_string());
+    info!("receive_token_8338: {:?}", r6);
+    let encoded_token_minibits: &str = "
+    cashuAeyJ0b2tlbiI6W3sibWludCI6Imh0dHBzOi8vbWludC5taW5pYml0cy5jYXNoL0JpdGNvaW4iLCJwcm9vZnMiOlt7ImFtb3VudCI6MSwiaWQiOiIwMDUwMDU1MGYwNDk0MTQ2Iiwic2VjcmV0IjoiM2E4ZDYwZGVhNTQzZTAzYzU4MTIxODdkYjY3MzU2MTEzOWRkMmM0NzVmN2MwOGY1YjIxMzcxZWJjMGM5ZTBhYiIsIkMiOiIwMjEwNDY4N2ZkYTFjZjBmNTA5ZGFiZDc5MGE5MTFhNDJkOGQ2OGM2Nzc0Y2M0NjFlMWM5ZThlODFiZmNhOTQyMmUiLCJ0cyI6MTcyMzA0MDI1NjQ4MiwidW5pdCI6InNhdCJ9XX1dLCJ1bml0Ijoic2F0In0=
+    ".trim();
+    let r6 = api::receive_token(encoded_token_minibits.to_string());
+    info!("receive_token-minibits: {:?}", r6);
 
     info!("check_pending: {:?}", api::check_pending());
 
@@ -87,7 +110,7 @@ fn main() {
     //     }
     // }
 
-    // let amount = 9000;
+    // let amount = 10;
     // let s = api::request_mint(amount, MINT_URL.to_string());
     // info!("request_mint {}:{:?}\n", amount, s);
 
@@ -138,22 +161,6 @@ fn main() {
     get_txs(15);
 
     // info!("get_transactions_with_offset: {:?}", api::get_transactions_with_offset(0, 0));
-
-    // test update restore
-    // #[rustfmt::skip]
-    // info!("{} restore: {:?}", mi.pubkey(), api::restore(MINT_URL.to_string(), Some(mi.mnemonic().to_string()),1));
-    // #[rustfmt::skip]
-    // info!("{} restore: {:?}", migen.pubkey(), api::restore(MINT_URL.to_string(), Some(migen.mnemonic().to_string()),1));
-
-    // test update mnemonic
-    #[rustfmt::skip]
-    let pubkey = api::get_mnemonic_info().unwrap().unwrap();
-    #[rustfmt::skip]
-    let _r2 = api::set_mnemonic(Some(migen.mnemonic().to_string().to_owned())).unwrap();
-    #[rustfmt::skip]
-    let pubkey2 =api::get_mnemonic_info().unwrap().unwrap();
-    assert_eq!(pubkey, mi.pubkey());
-    assert_eq!(pubkey2, migen.pubkey());
 }
 
 fn get_txs(page_limit: usize) {
