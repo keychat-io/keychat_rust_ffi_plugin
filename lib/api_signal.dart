@@ -21,13 +21,27 @@ Future<void> initSignalDb({required String dbPath}) => RustLib.instance.api.crat
 Future<void> initKeypair({required KeychatIdentityKeyPair keyPair, required int regId}) =>
     RustLib.instance.api.crateApiSignalInitKeypair(keyPair: keyPair, regId: regId);
 
-Future<(int, Uint8List, Uint8List)> generateSignedKeyApi(
+Future<(int, Uint8List, Uint8List, Uint8List)> generateSignedKeyApi(
         {required KeychatIdentityKeyPair keyPair, required List<int> signalIdentityPrivateKey}) =>
     RustLib.instance.api
         .crateApiSignalGenerateSignedKeyApi(keyPair: keyPair, signalIdentityPrivateKey: signalIdentityPrivateKey);
 
-Future<(int, Uint8List)> generatePrekeyApi({required KeychatIdentityKeyPair keyPair}) =>
+Future<Uint8List> getSignedKeyApi({required KeychatIdentityKeyPair keyPair, required int signedKeyId}) =>
+    RustLib.instance.api.crateApiSignalGetSignedKeyApi(keyPair: keyPair, signedKeyId: signedKeyId);
+
+Future<void> storeSignedKeyApi(
+        {required KeychatIdentityKeyPair keyPair, required int signedKeyId, required List<int> record}) =>
+    RustLib.instance.api.crateApiSignalStoreSignedKeyApi(keyPair: keyPair, signedKeyId: signedKeyId, record: record);
+
+Future<(int, Uint8List, Uint8List)> generatePrekeyApi({required KeychatIdentityKeyPair keyPair}) =>
     RustLib.instance.api.crateApiSignalGeneratePrekeyApi(keyPair: keyPair);
+
+Future<Uint8List> getPrekeyApi({required KeychatIdentityKeyPair keyPair, required int prekeyId}) =>
+    RustLib.instance.api.crateApiSignalGetPrekeyApi(keyPair: keyPair, prekeyId: prekeyId);
+
+Future<void> storePrekeyApi(
+        {required KeychatIdentityKeyPair keyPair, required int prekeyId, required List<int> record}) =>
+    RustLib.instance.api.crateApiSignalStorePrekeyApi(keyPair: keyPair, prekeyId: prekeyId, record: record);
 
 Future<void> processPrekeyBundleApi(
         {required KeychatIdentityKeyPair keyPair,

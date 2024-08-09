@@ -141,20 +141,20 @@ pub fn init_keypair(key_pair: KeychatIdentityKeyPair, reg_id: u32) -> Result<()>
     result
 }
 
-//bob_signed_id, bob_signed_public, bob_signed_signature
+//bob_signed_id, bob_signed_public, bob_signed_signature, record
 pub fn generate_signed_key_api(
     key_pair: KeychatIdentityKeyPair,
     signal_identity_private_key: Vec<u8>,
-) -> Result<(u32, Vec<u8>, Vec<u8>)> {
+) -> Result<(u32, Vec<u8>, Vec<u8>, Vec<u8>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let bob_identity_private = PrivateKey::deserialize(&signal_identity_private_key)?;
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
-            format_err!("<signal api fn[process_prekey_bundle_api]> Can not get store err.")
+            format_err!("<signal api fn[generate_signed_key_api]> Can not get store err.")
         })?;
         if !store.store_map.contains_key(&key_pair) {
-            info!("process_prekey_bundle_api key_pair do not init.");
+            info!("generate_signed_key_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
         let store = store
@@ -165,26 +165,80 @@ pub fn generate_signed_key_api(
             .signed_pre_key_store
             .generate_signed_key(bob_identity_private)
             .await?;
-        // bob_sign_id, pair.public_key, bob_signed_signature
+        // bob_sign_id, pair.public_key, bob_signed_signature, record
         Ok((
             bob_signed_info.0,
             bob_signed_info.1.serialize().into(),
             bob_signed_info.2,
+            bob_signed_info.3,
         ))
     });
     result
 }
 
-//bob_prekey_id, bob_prekey_public
-pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec<u8>)> {
+pub fn get_signed_key_api(key_pair: KeychatIdentityKeyPair, signed_key_id: u32) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
-            format_err!("<signal api fn[process_prekey_bundle_api]> Can not get store err.")
+            format_err!("<signal api fn[get_signed_key_api]> Can not get store err.")
         })?;
         if !store.store_map.contains_key(&key_pair) {
-            info!("process_prekey_bundle_api key_pair do not init.");
+            info!("get_signed_key_api key_pair do not init.");
+            init_keypair(key_pair, 0)?;
+        }
+        let store = store
+            .store_map
+            .get_mut(&key_pair)
+            .expect("get store from keypair err");
+        let record = store
+            .signed_pre_key_store
+            .get_signed_pre_key(signed_key_id.into())
+            .await?;
+        Ok(record.serialize()?)
+    });
+    result
+}
+
+pub fn store_signed_key_api(
+    key_pair: KeychatIdentityKeyPair,
+    signed_key_id: u32,
+    record: Vec<u8>,
+) -> Result<()> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<signal api fn[store_signed_key_api]> Can not get store err.")
+        })?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("store_signed_key_api key_pair do not init.");
+            init_keypair(key_pair, 0)?;
+        }
+        let store = store
+            .store_map
+            .get_mut(&key_pair)
+            .expect("get store from keypair err");
+        let signed_key_record = SignedPreKeyRecord::deserialize(&record)?;
+        store
+            .signed_pre_key_store
+            .save_signed_pre_key(signed_key_id.into(), &signed_key_record)
+            .await?;
+        Ok(())
+    });
+    result
+}
+
+//bob_prekey_id, bob_prekey_public, record
+pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec<u8>, Vec<u8>)> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<signal api fn[generate_prekey_api]> Can not get store err.")
+        })?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("generate_prekey_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
         let store = store
@@ -192,8 +246,62 @@ pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec
             .get_mut(&key_pair)
             .expect("get store from keypair err");
         let prekey_info = store.pre_key_store.generate_pre_key().await?;
-        // prekey_id, pair.public_key
-        Ok((prekey_info.0, prekey_info.1.serialize().into()))
+        // prekey_id, pair.public_key, record
+        Ok((
+            prekey_info.0,
+            prekey_info.1.serialize().into(),
+            prekey_info.2,
+        ))
+    });
+    result
+}
+
+pub fn get_prekey_api(key_pair: KeychatIdentityKeyPair, prekey_id: u32) -> Result<Vec<u8>> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<signal api fn[get_prekey_api]> Can not get store err."))?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("get_prekey_api key_pair do not init.");
+            init_keypair(key_pair, 0)?;
+        }
+        let store = store
+            .store_map
+            .get_mut(&key_pair)
+            .expect("get store from keypair err");
+        let record = store.pre_key_store.get_pre_key(prekey_id.into()).await?;
+        Ok(record.serialize()?)
+    });
+    result
+}
+
+pub fn store_prekey_api(
+    key_pair: KeychatIdentityKeyPair,
+    prekey_id: u32,
+    record: Vec<u8>,
+) -> Result<()> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<signal api fn[store_prekey_api]> Can not get store err.")
+        })?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("store_prekey_api key_pair do not init.");
+            init_keypair(key_pair, 0)?;
+        }
+        let store = store
+            .store_map
+            .get_mut(&key_pair)
+            .expect("get store from keypair err");
+        let prekey_record = PreKeyRecord::deserialize(&record)?;
+        store
+            .pre_key_store
+            .save_pre_key(prekey_id.into(), &prekey_record)
+            .await?;
+        Ok(())
     });
     result
 }

@@ -189,10 +189,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (String, int) dco_decode_record_string_u_32(dynamic raw);
 
   @protected
-  (int, Uint8List) dco_decode_record_u_32_list_prim_u_8_strict(dynamic raw);
+  (int, Uint8List, Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
-  (int, Uint8List, Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
+  (int, Uint8List, Uint8List, Uint8List)
+      dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
   (BigInt, BigInt) dco_decode_record_u_64_usize(dynamic raw);
@@ -413,11 +414,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (String, int) sse_decode_record_string_u_32(SseDeserializer deserializer);
 
   @protected
-  (int, Uint8List) sse_decode_record_u_32_list_prim_u_8_strict(SseDeserializer deserializer);
-
-  @protected
   (int, Uint8List, Uint8List) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
       SseDeserializer deserializer);
+
+  @protected
+  (
+    int,
+    Uint8List,
+    Uint8List,
+    Uint8List
+  ) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   (BigInt, BigInt) sse_decode_record_u_64_usize(SseDeserializer deserializer);
@@ -639,11 +645,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_record_string_u_32((String, int) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_u_32_list_prim_u_8_strict((int, Uint8List) self, SseSerializer serializer);
-
-  @protected
   void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
       (int, Uint8List, Uint8List) self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(
+      (int, Uint8List, Uint8List, Uint8List) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_u_64_usize((BigInt, BigInt) self, SseSerializer serializer);

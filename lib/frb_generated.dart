@@ -56,7 +56,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.1.0';
 
   @override
-  int get rustContentHash => -86046086;
+  int get rustContentHash => -640261273;
 
   static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
     stem: 'keychat_rust_ffi_plugin',
@@ -217,11 +217,11 @@ abstract class RustLibApi extends BaseApi {
   Future<(Uint8List, String?, String, List<String>?)> crateApiSignalEncryptSignal(
       {required KeychatIdentityKeyPair keyPair, required String ptext, required KeychatProtocolAddress remoteAddress});
 
-  Future<(int, Uint8List)> crateApiSignalGeneratePrekeyApi({required KeychatIdentityKeyPair keyPair});
+  Future<(int, Uint8List, Uint8List)> crateApiSignalGeneratePrekeyApi({required KeychatIdentityKeyPair keyPair});
 
   Future<(Uint8List, Uint8List)> crateApiSignalGenerateSignalIds();
 
-  Future<(int, Uint8List, Uint8List)> crateApiSignalGenerateSignedKeyApi(
+  Future<(int, Uint8List, Uint8List, Uint8List)> crateApiSignalGenerateSignedKeyApi(
       {required KeychatIdentityKeyPair keyPair, required List<int> signalIdentityPrivateKey});
 
   Future<List<String>> crateApiSignalGetAllAliceAddrs({required KeychatIdentityKeyPair keyPair});
@@ -229,8 +229,12 @@ abstract class RustLibApi extends BaseApi {
   Future<KeychatIdentityKey?> crateApiSignalGetIdentity(
       {required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address});
 
+  Future<Uint8List> crateApiSignalGetPrekeyApi({required KeychatIdentityKeyPair keyPair, required int prekeyId});
+
   Future<KeychatSignalSession?> crateApiSignalGetSession(
       {required KeychatIdentityKeyPair keyPair, required String address, required String deviceId});
+
+  Future<Uint8List> crateApiSignalGetSignedKeyApi({required KeychatIdentityKeyPair keyPair, required int signedKeyId});
 
   Future<void> crateApiSignalInit(
       {required String dbPath, required KeychatIdentityKeyPair keyPair, required int regId});
@@ -255,6 +259,12 @@ abstract class RustLibApi extends BaseApi {
 
   Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr(
       {required KeychatIdentityKeyPair keyPair, required String address});
+
+  Future<void> crateApiSignalStorePrekeyApi(
+      {required KeychatIdentityKeyPair keyPair, required int prekeyId, required List<int> record});
+
+  Future<void> crateApiSignalStoreSignedKeyApi(
+      {required KeychatIdentityKeyPair keyPair, required int signedKeyId, required List<int> record});
 
   Future<bool> crateApiSignalUpdateAliceAddr(
       {required KeychatIdentityKeyPair keyPair,
@@ -1781,7 +1791,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<(int, Uint8List)> crateApiSignalGeneratePrekeyApi({required KeychatIdentityKeyPair keyPair}) {
+  Future<(int, Uint8List, Uint8List)> crateApiSignalGeneratePrekeyApi({required KeychatIdentityKeyPair keyPair}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -1789,7 +1799,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_record_u_32_list_prim_u_8_strict,
+        decodeSuccessData: sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiSignalGeneratePrekeyApiConstMeta,
@@ -1826,7 +1836,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<(int, Uint8List, Uint8List)> crateApiSignalGenerateSignedKeyApi(
+  Future<(int, Uint8List, Uint8List, Uint8List)> crateApiSignalGenerateSignedKeyApi(
       {required KeychatIdentityKeyPair keyPair, required List<int> signalIdentityPrivateKey}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -1836,7 +1846,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict,
+        decodeSuccessData: sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiSignalGenerateSignedKeyApiConstMeta,
@@ -1899,6 +1909,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<Uint8List> crateApiSignalGetPrekeyApi({required KeychatIdentityKeyPair keyPair, required int prekeyId}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+        sse_encode_u_32(prekeyId, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiSignalGetPrekeyApiConstMeta,
+      argValues: [keyPair, prekeyId],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiSignalGetPrekeyApiConstMeta => const TaskConstMeta(
+        debugName: "get_prekey_api",
+        argNames: ["keyPair", "prekeyId"],
+      );
+
+  @override
   Future<KeychatSignalSession?> crateApiSignalGetSession(
       {required KeychatIdentityKeyPair keyPair, required String address, required String deviceId}) {
     return handler.executeNormal(NormalTask(
@@ -1907,7 +1941,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
         sse_encode_String(address, serializer);
         sse_encode_String(deviceId, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_box_autoadd_keychat_signal_session,
@@ -1925,6 +1959,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<Uint8List> crateApiSignalGetSignedKeyApi({required KeychatIdentityKeyPair keyPair, required int signedKeyId}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+        sse_encode_u_32(signedKeyId, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiSignalGetSignedKeyApiConstMeta,
+      argValues: [keyPair, signedKeyId],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiSignalGetSignedKeyApiConstMeta => const TaskConstMeta(
+        debugName: "get_signed_key_api",
+        argNames: ["keyPair", "signedKeyId"],
+      );
+
+  @override
   Future<void> crateApiSignalInit(
       {required String dbPath, required KeychatIdentityKeyPair keyPair, required int regId}) {
     return handler.executeNormal(NormalTask(
@@ -1933,7 +1991,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(dbPath, serializer);
         sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
         sse_encode_u_32(regId, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1957,7 +2015,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
         sse_encode_u_32(regId, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1980,7 +2038,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(dbPath, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -2003,7 +2061,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_record_string_u_32,
@@ -2045,7 +2103,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bobSigedSig, serializer);
         sse_encode_u_32(bobPrekeyId, serializer);
         sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -2092,7 +2150,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
         sse_encode_String(address, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_box_autoadd_keychat_signal_session,
@@ -2110,6 +2168,58 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<void> crateApiSignalStorePrekeyApi(
+      {required KeychatIdentityKeyPair keyPair, required int prekeyId, required List<int> record}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+        sse_encode_u_32(prekeyId, serializer);
+        sse_encode_list_prim_u_8_loose(record, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiSignalStorePrekeyApiConstMeta,
+      argValues: [keyPair, prekeyId, record],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiSignalStorePrekeyApiConstMeta => const TaskConstMeta(
+        debugName: "store_prekey_api",
+        argNames: ["keyPair", "prekeyId", "record"],
+      );
+
+  @override
+  Future<void> crateApiSignalStoreSignedKeyApi(
+      {required KeychatIdentityKeyPair keyPair, required int signedKeyId, required List<int> record}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+        sse_encode_u_32(signedKeyId, serializer);
+        sse_encode_list_prim_u_8_loose(record, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiSignalStoreSignedKeyApiConstMeta,
+      argValues: [keyPair, signedKeyId, record],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiSignalStoreSignedKeyApiConstMeta => const TaskConstMeta(
+        debugName: "store_signed_key_api",
+        argNames: ["keyPair", "signedKeyId", "record"],
+      );
+
+  @override
   Future<bool> crateApiSignalUpdateAliceAddr(
       {required KeychatIdentityKeyPair keyPair,
       required String address,
@@ -2122,7 +2232,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(address, serializer);
         sse_encode_String(deviceId, serializer);
         sse_encode_String(aliceAddr, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -2620,19 +2730,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, Uint8List) dco_decode_record_u_32_list_prim_u_8_strict(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    final arr = raw as List<dynamic>;
-    if (arr.length != 2) {
-      throw Exception('Expected 2 elements, got ${arr.length}');
-    }
-    return (
-      dco_decode_u_32(arr[0]),
-      dco_decode_list_prim_u_8_strict(arr[1]),
-    );
-  }
-
-  @protected
   (int, Uint8List, Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -2643,6 +2740,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       dco_decode_u_32(arr[0]),
       dco_decode_list_prim_u_8_strict(arr[1]),
       dco_decode_list_prim_u_8_strict(arr[2]),
+    );
+  }
+
+  @protected
+  (int, Uint8List, Uint8List, Uint8List)
+      dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4) {
+      throw Exception('Expected 4 elements, got ${arr.length}');
+    }
+    return (
+      dco_decode_u_32(arr[0]),
+      dco_decode_list_prim_u_8_strict(arr[1]),
+      dco_decode_list_prim_u_8_strict(arr[2]),
+      dco_decode_list_prim_u_8_strict(arr[3]),
     );
   }
 
@@ -3376,14 +3489,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, Uint8List) sse_decode_record_u_32_list_prim_u_8_strict(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_field0 = sse_decode_u_32(deserializer);
-    var var_field1 = sse_decode_list_prim_u_8_strict(deserializer);
-    return (var_field0, var_field1);
-  }
-
-  @protected
   (int, Uint8List, Uint8List) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -3391,6 +3496,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_field1 = sse_decode_list_prim_u_8_strict(deserializer);
     var var_field2 = sse_decode_list_prim_u_8_strict(deserializer);
     return (var_field0, var_field1, var_field2);
+  }
+
+  @protected
+  (int, Uint8List, Uint8List, Uint8List)
+      sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_field0 = sse_decode_u_32(deserializer);
+    var var_field1 = sse_decode_list_prim_u_8_strict(deserializer);
+    var var_field2 = sse_decode_list_prim_u_8_strict(deserializer);
+    var var_field3 = sse_decode_list_prim_u_8_strict(deserializer);
+    return (var_field0, var_field1, var_field2, var_field3);
   }
 
   @protected
@@ -4004,19 +4121,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_record_u_32_list_prim_u_8_strict((int, Uint8List) self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_u_32(self.$1, serializer);
-    sse_encode_list_prim_u_8_strict(self.$2, serializer);
-  }
-
-  @protected
   void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
       (int, Uint8List, Uint8List) self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.$1, serializer);
     sse_encode_list_prim_u_8_strict(self.$2, serializer);
     sse_encode_list_prim_u_8_strict(self.$3, serializer);
+  }
+
+  @protected
+  void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(
+      (int, Uint8List, Uint8List, Uint8List) self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.$1, serializer);
+    sse_encode_list_prim_u_8_strict(self.$2, serializer);
+    sse_encode_list_prim_u_8_strict(self.$3, serializer);
+    sse_encode_list_prim_u_8_strict(self.$4, serializer);
   }
 
   @protected
