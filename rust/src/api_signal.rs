@@ -366,6 +366,7 @@ pub fn encrypt_signal(
     key_pair: KeychatIdentityKeyPair,
     ptext: String,
     remote_address: KeychatProtocolAddress,
+    is_prekey: Option<bool>,
 ) -> Result<(Vec<u8>, Option<String>, String, Option<Vec<String>>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
@@ -390,6 +391,7 @@ pub fn encrypt_signal(
             &mut store.session_store,
             &mut store.identity_store,
             SystemTime::now(),
+            is_prekey,
         )
         .await?;
         // encrypt msg, my_receiver_addr, msg_keys_hash, alice_addrs_pre

@@ -5,10 +5,10 @@ use rust::api_signal::signal_store::libsignal_protocol::*;
 use rust::api_signal::*;
 
 fn main() {
-    // let _ = test_x3dh_db();
+    let _ = test_kdf();
     // let _= test_state();
     // let _ = test_db();
-    let _ = test_parse_prekey();
+    // let _ = test_parse_prekey();
 }
 
 fn test_parse_prekey() -> Result<()> {
@@ -287,6 +287,7 @@ fn test_x3dh_db() -> Result<()> {
         alice_identity_key_pair,
         alice2bob_msg.to_string(),
         bob_address.clone(),
+        None,
     )
     .unwrap();
     init(
@@ -314,6 +315,7 @@ fn test_x3dh_db() -> Result<()> {
         bob_identity_key_pair,
         bobs_response_to_alice.to_string(),
         alice_address.clone(),
+        None,
     )
     .unwrap();
     // alice decrypt bob
@@ -362,6 +364,7 @@ fn test_x3dh_db() -> Result<()> {
         alice_identity_key_pair,
         alice2tom_msg.to_string(),
         tom_address.clone(),
+        None,
     )
     .unwrap();
     init(
@@ -389,6 +392,7 @@ fn test_x3dh_db() -> Result<()> {
         tom_identity_key_pair,
         tom_response_to_alice.to_string(),
         alice_address.clone(),
+        None,
     )
     .unwrap();
     // alice decrypt tom
@@ -414,6 +418,7 @@ fn test_x3dh_db() -> Result<()> {
         alice_identity_key_pair,
         alice2bob_msg2.to_string(),
         bob_address.clone(),
+        None,
     )
     .unwrap();
     // bob decrypt Alice
@@ -435,6 +440,7 @@ fn test_x3dh_db() -> Result<()> {
         bob_identity_key_pair,
         bobs_response_to_alice2.to_string(),
         alice_address.clone(),
+        None,
     )
     .unwrap();
     // alice decrypt bob
@@ -461,6 +467,7 @@ fn test_x3dh_db() -> Result<()> {
         alice_identity_key_pair,
         alice_response_to_tom.to_string(),
         tom_address.clone(),
+        None,
     )
     .unwrap();
     // tom decrypt alice
@@ -483,6 +490,7 @@ fn test_x3dh_db() -> Result<()> {
         tom_identity_key_pair,
         tom2alice_msg.to_string(),
         alice_address.clone(),
+        None,
     )
     .unwrap();
     // alice decrypt tom
@@ -600,6 +608,7 @@ fn test_x3dh_db2() -> Result<()> {
         alice_identity_key_pair,
         alice2bob_msg.to_string(),
         bob_address.clone(),
+        None,
     )
     .unwrap();
     init(
@@ -627,6 +636,7 @@ fn test_x3dh_db2() -> Result<()> {
         bob_identity_key_pair,
         bobs_response_to_alice.to_string(),
         alice_address.clone(),
+        None,
     )
     .unwrap();
     // alice decrypt bob
@@ -649,6 +659,7 @@ fn test_x3dh_db2() -> Result<()> {
         bob_identity_key_pair,
         bobs_response_to_alice2.to_string(),
         alice_address.clone(),
+        None,
     )
     .unwrap();
     // alice decrypt bob
@@ -668,6 +679,322 @@ fn test_x3dh_db2() -> Result<()> {
     Ok(())
 }
 
+fn test_x3dh_db3() -> Result<()> {
+    let db_path = ".signal_test.db";
+    let db_path2 = ".signal_test2.db";
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
+    let device_id3: DeviceId = 3.into();
+
+    //alice info
+    let alice_identity_public =
+        hex::decode("051e9e15755cee5707a77c164625ca340fdb56c16b20514e7df4e09d01cd2c7316")
+            .expect("valid hex");
+    let alice_identity_private =
+        hex::decode("70648cfae815fd73ab93c673f6827eec45f6688f8ce5fb73f5444999cc0a506e")
+            .expect("valid hex");
+    let alice_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: alice_identity_public.as_slice().try_into().unwrap(),
+        private_key: alice_identity_private.as_slice().try_into().unwrap(),
+    };
+    let registration_id_alice = 1;
+    let alice_address = KeychatProtocolAddress {
+        name: "alice".to_owned(),
+        device_id: device_id1.into(),
+    };
+
+    //bob info
+    let bob_identity_public =
+        hex::decode("05f191f40dff0e56fe8833282f5512cf8f68e28794140f650324220f5ed3ee7e4d")
+            .expect("valid hex");
+    let bob_identity_private =
+        hex::decode("38393385efdc31e5565c20610e665429430f6bfb9320adb4e5cbff680febae6e")
+            .expect("valid hex");
+    let bob_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: bob_identity_public.as_slice().try_into().unwrap(),
+        private_key: bob_identity_private.as_slice().try_into().unwrap(),
+    };
+    let registration_id_bob = 1;
+    let bob_address = KeychatProtocolAddress {
+        name: "bob".to_owned(),
+        device_id: device_id2.into(),
+    };
+
+    // tom info
+    let tom_identity_public =
+        hex::decode("0515e97b26c5cbca6f39dce5cc55db22cd948598d370b87c1ce4919d665aeaab27")
+            .expect("valid hex");
+    let tom_identity_private =
+        hex::decode("4875f9558f57bd7629d2792afaaf331ea10e6e8d1cbe28448e3850b923243b5c")
+            .expect("valid hex");
+    let tom_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: tom_identity_public.as_slice().try_into().unwrap(),
+        private_key: tom_identity_private.as_slice().try_into().unwrap(),
+    };
+    let registration_id_tom = 1;
+    let tom_address = KeychatProtocolAddress {
+        name: "tom".to_owned(),
+        device_id: device_id3.into(),
+    };
+
+    /*
+     * first alice to bob then  bob to alice
+     */
+    init(
+        db_path.to_owned(),
+        alice_identity_key_pair,
+        registration_id_alice,
+    )
+    .expect("init error");
+    let bob_info = generate_signed_key_api(alice_identity_key_pair, bob_identity_private)?;
+
+    let bob_signed_id = bob_info.0;
+    println!("bob_sign_id {:?}", bob_signed_id);
+    let bob_signed_key_public = bob_info.1;
+    let bob_signed_signature = bob_info.2;
+
+    let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
+
+    process_prekey_bundle_api(
+        alice_identity_key_pair,
+        bob_address.clone(),
+        registration_id_bob,
+        device_id2.into(),
+        KeychatIdentityKey {
+            public_key: bob_identity_public.as_slice().try_into().unwrap(),
+        },
+        bob_signed_id.into(),
+        bob_signed_key_public,
+        bob_signed_signature,
+        bob_prekey_info.0.into(),
+        bob_prekey_info.1,
+    )
+    .unwrap();
+
+    let alice2bob_msg = "Alice to Bob";
+    // alice to bob
+    let alice2bob_encrypt = encrypt_signal(
+        alice_identity_key_pair,
+        alice2bob_msg.to_string(),
+        bob_address.clone(),
+        Some(false),
+    )
+    .unwrap();
+
+    let alice2bob_bob_decrypt = decrypt_signal(
+        bob_identity_key_pair,
+        alice2bob_encrypt.0,
+        alice_address.clone(),
+        1,
+        true,
+    )
+    .unwrap();
+    println!(
+        "alice2bob_bob_decrypt {:?}",
+        String::from_utf8(alice2bob_bob_decrypt.0).expect("valid utf8")
+    );
+
+    // let alice2bob_msg2 = "Alice to Bob 2";
+    // // alice to bob
+    // let alice2bob_encrypt2 = encrypt_signal(
+    //     alice_identity_key_pair,
+    //     alice2bob_msg2.to_string(),
+    //     bob_address.clone(),
+    //     Some(true)
+    // )
+    //     .unwrap();
+    // println!("hhhhhh");
+    //
+    // let alice2bob_bob_decrypt2 = decrypt_signal(
+    //     bob_identity_key_pair,
+    //     alice2bob_encrypt2.0,
+    //     alice_address.clone(),
+    //     1,
+    //     false,
+    // )
+    //     .unwrap();
+    // println!(
+    //     "alice2bob_bob_decrypt {:?}",
+    //     String::from_utf8(alice2bob_bob_decrypt2.0).expect("valid utf8")
+    // );
+
+    Ok(())
+}
+
+fn test_kdf() -> Result<()> {
+    let db_path = ".signal_test.db";
+    let db_path2 = ".signal_test2.db";
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
+
+    //alice info
+    let alice_identity_public =
+        hex::decode("051e9e15755cee5707a77c164625ca340fdb56c16b20514e7df4e09d01cd2c7316")
+            .expect("valid hex");
+    let alice_identity_private =
+        hex::decode("70648cfae815fd73ab93c673f6827eec45f6688f8ce5fb73f5444999cc0a506e")
+            .expect("valid hex");
+    let alice_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: alice_identity_public.as_slice().try_into().unwrap(),
+        private_key: alice_identity_private.as_slice().try_into().unwrap(),
+    };
+    let registration_id_alice = 1;
+    let alice_address = KeychatProtocolAddress {
+        name: "alice".to_owned(),
+        device_id: device_id1.into(),
+    };
+
+    //bob info
+    let bob_identity_public =
+        hex::decode("05f191f40dff0e56fe8833282f5512cf8f68e28794140f650324220f5ed3ee7e4d")
+            .expect("valid hex");
+    let bob_identity_private =
+        hex::decode("38393385efdc31e5565c20610e665429430f6bfb9320adb4e5cbff680febae6e")
+            .expect("valid hex");
+    let bob_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: bob_identity_public.as_slice().try_into().unwrap(),
+        private_key: bob_identity_private.as_slice().try_into().unwrap(),
+    };
+    let registration_id_bob = 1;
+    let bob_address = KeychatProtocolAddress {
+        name: "bob".to_owned(),
+        device_id: device_id2.into(),
+    };
+
+    /*
+     * first alice to bob then  bob to alice
+     */
+    init(
+        db_path.to_owned(),
+        alice_identity_key_pair,
+        registration_id_alice,
+    )
+    .expect("init error");
+    let bob_info = generate_signed_key_api(alice_identity_key_pair, bob_identity_private)?;
+
+    let bob_signed_id = bob_info.0;
+    println!("bob_sign_id {:?}", bob_signed_id);
+    let bob_signed_key_public = bob_info.1;
+    let bob_signed_signature = bob_info.2;
+
+    let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
+
+    process_prekey_bundle_api(
+        alice_identity_key_pair,
+        bob_address.clone(),
+        registration_id_bob,
+        device_id2.into(),
+        KeychatIdentityKey {
+            public_key: bob_identity_public.as_slice().try_into().unwrap(),
+        },
+        bob_signed_id.into(),
+        bob_signed_key_public,
+        bob_signed_signature,
+        bob_prekey_info.0.into(),
+        bob_prekey_info.1,
+    )
+    .unwrap();
+
+    let alice2bob_msg0 = "Alice to Bob 0";
+    // alice to bob
+    let alice2bob_encrypt0 = encrypt_signal(
+        alice_identity_key_pair,
+        alice2bob_msg0.to_string(),
+        bob_address.clone(),
+        None,
+    )
+    .unwrap();
+
+    let alice2bob_msg1 = "Alice to Bob 1";
+    // alice to bob
+    let alice2bob_encrypt1 = encrypt_signal(
+        alice_identity_key_pair,
+        alice2bob_msg1.to_string(),
+        bob_address.clone(),
+        None,
+    )
+        .unwrap();
+
+    let alice2bob_msg2 = "Alice to Bob 2";
+    // alice to bob
+    let alice2bob_encrypt2 = encrypt_signal(
+        alice_identity_key_pair,
+        alice2bob_msg2.to_string(),
+        bob_address.clone(),
+        Some(true),
+    )
+    .unwrap();
+
+    init(
+        db_path2.to_owned(),
+        bob_identity_key_pair,
+        registration_id_bob,
+    )
+    .expect("init error");
+
+    let alice2bob_bob_decrypt0 = decrypt_signal(
+        bob_identity_key_pair,
+        alice2bob_encrypt0.0,
+        alice_address.clone(),
+        1,
+        true,
+    )
+    .unwrap();
+    println!(
+        "alice2bob_bob_decrypt0 {:?}",
+        String::from_utf8(alice2bob_bob_decrypt0.0).expect("valid utf8")
+    );
+
+    let alice2bob_bob_decrypt1 = decrypt_signal(
+        bob_identity_key_pair,
+        alice2bob_encrypt1.0,
+        alice_address.clone(),
+        1,
+        true,
+    )
+        .unwrap();
+    println!(
+        "alice2bob_bob_decrypt1 {:?}",
+        String::from_utf8(alice2bob_bob_decrypt1.0).expect("valid utf8")
+    );
+
+    let alice2bob_bob_decrypt2 = decrypt_signal(
+        bob_identity_key_pair,
+        alice2bob_encrypt2.0,
+        alice_address.clone(),
+        1,
+        false,
+    )
+    .unwrap();
+    println!(
+        "alice2bob_bob_decrypt2 {:?}",
+        String::from_utf8(alice2bob_bob_decrypt2.0).expect("valid utf8")
+    );
+
+    let alice2bob_msg3 = "Alice to Bob 3";
+    // alice to bob
+    let alice2bob_encrypt3 = encrypt_signal(
+        alice_identity_key_pair,
+        alice2bob_msg3.to_string(),
+        bob_address.clone(),
+        None,
+    )
+        .unwrap();
+
+    let alice2bob_bob_decrypt3 = decrypt_signal(
+        bob_identity_key_pair,
+        alice2bob_encrypt3.0,
+        alice_address.clone(),
+        1,
+        false,
+    )
+    .unwrap();
+    println!(
+        "alice2bob_bob_decrypt3 {:?}",
+        String::from_utf8(alice2bob_bob_decrypt3.0).expect("valid utf8")
+    );
+    Ok(())
+}
 // fn test_double_db5() -> Result<()> {
 
 //     let db_path1 = ".signal_test.db";

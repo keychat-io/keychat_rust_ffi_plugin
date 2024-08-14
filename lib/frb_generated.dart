@@ -215,7 +215,10 @@ abstract class RustLibApi extends BaseApi {
   Future<bool> crateApiSignalDeleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair, required int deviceId});
 
   Future<(Uint8List, String?, String, List<String>?)> crateApiSignalEncryptSignal(
-      {required KeychatIdentityKeyPair keyPair, required String ptext, required KeychatProtocolAddress remoteAddress});
+      {required KeychatIdentityKeyPair keyPair,
+      required String ptext,
+      required KeychatProtocolAddress remoteAddress,
+      bool? isPrekey});
 
   Future<(int, Uint8List, Uint8List)> crateApiSignalGeneratePrekeyApi({required KeychatIdentityKeyPair keyPair});
 
@@ -1766,13 +1769,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<(Uint8List, String?, String, List<String>?)> crateApiSignalEncryptSignal(
-      {required KeychatIdentityKeyPair keyPair, required String ptext, required KeychatProtocolAddress remoteAddress}) {
+      {required KeychatIdentityKeyPair keyPair,
+      required String ptext,
+      required KeychatProtocolAddress remoteAddress,
+      bool? isPrekey}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
         sse_encode_String(ptext, serializer);
         sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
+        sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
       },
       codec: SseCodec(
@@ -1780,14 +1787,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiSignalEncryptSignalConstMeta,
-      argValues: [keyPair, ptext, remoteAddress],
+      argValues: [keyPair, ptext, remoteAddress, isPrekey],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiSignalEncryptSignalConstMeta => const TaskConstMeta(
         debugName: "encrypt_signal",
-        argNames: ["keyPair", "ptext", "remoteAddress"],
+        argNames: ["keyPair", "ptext", "remoteAddress", "isPrekey"],
       );
 
   @override

@@ -2330,6 +2330,7 @@ fn wire__crate__api_signal__encrypt_signal_impl(
             let api_ptext = <String>::sse_decode(&mut deserializer);
             let api_remote_address =
                 <crate::api_signal::KeychatProtocolAddress>::sse_decode(&mut deserializer);
+            let api_is_prekey = <Option<bool>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
@@ -2338,6 +2339,7 @@ fn wire__crate__api_signal__encrypt_signal_impl(
                             api_key_pair,
                             api_ptext,
                             api_remote_address,
+                            api_is_prekey,
                         )?;
                         Ok(output_ok)
                     })(),

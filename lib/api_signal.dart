@@ -69,8 +69,10 @@ Future<void> processPrekeyBundleApi(
 Future<(Uint8List, String?, String, List<String>?)> encryptSignal(
         {required KeychatIdentityKeyPair keyPair,
         required String ptext,
-        required KeychatProtocolAddress remoteAddress}) =>
-    RustLib.instance.api.crateApiSignalEncryptSignal(keyPair: keyPair, ptext: ptext, remoteAddress: remoteAddress);
+        required KeychatProtocolAddress remoteAddress,
+        bool? isPrekey}) =>
+    RustLib.instance.api
+        .crateApiSignalEncryptSignal(keyPair: keyPair, ptext: ptext, remoteAddress: remoteAddress, isPrekey: isPrekey);
 
 Future<(String, int)> parseIdentityFromPrekeySignalMessage({required List<int> ciphertext}) =>
     RustLib.instance.api.crateApiSignalParseIdentityFromPrekeySignalMessage(ciphertext: ciphertext);
