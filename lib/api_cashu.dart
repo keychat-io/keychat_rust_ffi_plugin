@@ -7,11 +7,11 @@ import 'api_cashu/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `load_mints_from_database_background_step0`, `new`, `try_load_mints`
+// These functions are ignored because they are not marked as `pub`: `load_mints_from_database_background`, `new`, `try_load_mints`
 // These types are ignored because they are not used by any `pub` functions: `STATE`, `State`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `prepare_one_proofs`
-// These functions are ignored (category: IgnoreBecauseOwnerTyShouldIgnore): `all_mints_loaded`, `get_wallet`, `lock`
+// These functions are ignored (category: IgnoreBecauseOwnerTyShouldIgnore): `get_wallet`, `lock`
 
 Future<void> initDb({required String dbpath, String? words}) =>
     RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words);
