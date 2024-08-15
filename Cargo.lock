@@ -427,7 +427,7 @@ checksum = "8318a53db07bb3f8dca91a600466bdb3f2eaadeedfdbcf02e1accbad9271ba50"
 [[package]]
 name = "cashu-wallet"
 version = "0.2.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240726#a699940d7bce8b3843a14a17b0cfad00cf5d60bf"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240807#d0f407cce8fc7a5439cf9f96df8520938f02667a"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -454,7 +454,7 @@ dependencies = [
 [[package]]
 name = "cashu-wallet-sqlite"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240726#a699940d7bce8b3843a14a17b0cfad00cf5d60bf"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240807#d0f407cce8fc7a5439cf9f96df8520938f02667a"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -480,12 +480,13 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.1.10"
+version = "1.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9e8aabfac534be767c909e0690571677d49f41bd8465ae876fe043d52ba5292"
+checksum = "5fb8dd288a69fc53a1996d7ecfbf4a20d59065bff137ce7e56bbd620de191189"
 dependencies = [
  "jobserver",
  "libc",
+ "shlex",
 ]
 
 [[package]]
@@ -1587,7 +1588,7 @@ checksum = "4ec2a862134d2a7d32d7983ddcdd1c4923530833c9f2ea1a44fc5fa473989058"
 [[package]]
 name = "libsignal-core"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/libsignal.git?branch=kdf#d39af6761049f3babadeb918eadc312ce60c8347"
+source = "git+https://github.com/keychat-io/libsignal.git?branch=kc#274c112befcb2760b82eaaec57b1b54c2adb1440"
 dependencies = [
  "num_enum",
  "uuid",
@@ -1596,7 +1597,7 @@ dependencies = [
 [[package]]
 name = "libsignal-protocol"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/libsignal.git?branch=kdf#d39af6761049f3babadeb918eadc312ce60c8347"
+source = "git+https://github.com/keychat-io/libsignal.git?branch=kc#274c112befcb2760b82eaaec57b1b54c2adb1440"
 dependencies = [
  "aes",
  "aes-gcm-siv",
@@ -2651,9 +2652,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "shlex"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
+
+[[package]]
 name = "signal-crypto"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/libsignal.git?branch=kdf#d39af6761049f3babadeb918eadc312ce60c8347"
+source = "git+https://github.com/keychat-io/libsignal.git?branch=kc#274c112befcb2760b82eaaec57b1b54c2adb1440"
 dependencies = [
  "aes",
  "cbc",
@@ -2670,7 +2677,7 @@ dependencies = [
 [[package]]
 name = "signal-store"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/signal-storage.git?rev=48218c3#48218c36b19476e829ad294405d789a992e2c641"
+source = "git+https://github.com/keychat-io/signal-storage.git?rev=f1f2647#f1f26479f2ef0de73c65c0cd2e459f0ccfe6ea9d"
 dependencies = [
  "anyhow",
  "async-trait",
