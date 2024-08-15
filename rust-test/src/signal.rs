@@ -913,7 +913,7 @@ fn test_kdf() -> Result<()> {
         bob_address.clone(),
         None,
     )
-        .unwrap();
+    .unwrap();
 
     let alice2bob_msg2 = "Alice to Bob 2";
     // alice to bob
@@ -952,7 +952,7 @@ fn test_kdf() -> Result<()> {
         1,
         true,
     )
-        .unwrap();
+    .unwrap();
     println!(
         "alice2bob_bob_decrypt1 {:?}",
         String::from_utf8(alice2bob_bob_decrypt1.0).expect("valid utf8")
@@ -979,7 +979,7 @@ fn test_kdf() -> Result<()> {
         bob_address.clone(),
         None,
     )
-        .unwrap();
+    .unwrap();
 
     let alice2bob_bob_decrypt3 = decrypt_signal(
         bob_identity_key_pair,
