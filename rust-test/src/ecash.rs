@@ -100,6 +100,10 @@ fn main() {
     // let s = api::send(amount, MINT_URL.to_string(), None).err();
     // info!("send {}:{:?}\n", amount, s);
 
+    // let amount = 1;
+    // let s = api::send_stamp(amount, MINT_URL.to_string(), None).err();
+    // info!("send_stamp {}:{:?}\n", amount, s);
+
     // loop {
     //     let s = api::prepare_one_proofs(0, MINT_URL.to_string());
     //     info!("prepare_one_proofs 0:{:?}\n", s);
