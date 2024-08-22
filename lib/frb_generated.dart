@@ -217,7 +217,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<bool> crateApiSignalDeleteIdentity({required KeychatIdentityKeyPair keyPair, required String address});
 
-  Future<void> crateApiSignalDeleteSession(
+  Future<bool> crateApiSignalDeleteSession(
       {required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address});
 
   Future<bool> crateApiSignalDeleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair, required int deviceId});
@@ -1703,7 +1703,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiSignalDeleteSession(
+  Future<bool> crateApiSignalDeleteSession(
       {required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -1713,7 +1713,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 59, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
+        decodeSuccessData: sse_decode_bool,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiSignalDeleteSessionConstMeta,

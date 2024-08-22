@@ -106,7 +106,7 @@ Future<bool> containsSession({required KeychatIdentityKeyPair keyPair, required 
 Future<bool> deleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair, required int deviceId}) =>
     RustLib.instance.api.crateApiSignalDeleteSessionByDeviceId(keyPair: keyPair, deviceId: deviceId);
 
-Future<void> deleteSession({required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address}) =>
+Future<bool> deleteSession({required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address}) =>
     RustLib.instance.api.crateApiSignalDeleteSession(keyPair: keyPair, address: address);
 
 Future<List<String>> getAllAliceAddrs({required KeychatIdentityKeyPair keyPair}) =>
