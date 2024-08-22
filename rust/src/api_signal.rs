@@ -607,7 +607,7 @@ pub fn delete_session_by_device_id(
 pub fn delete_session(
     key_pair: KeychatIdentityKeyPair,
     address: KeychatProtocolAddress,
-) -> Result<()> {
+) -> Result<bool> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -623,8 +623,8 @@ pub fn delete_session(
             .store_map
             .get_mut(&key_pair)
             .expect("get store from keypair err");
-        store.session_store.delete_session(&address).await?;
-        Ok(())
+        let del = store.session_store.delete_session(&address).await?;
+        Ok(del)
     });
     result
 }
