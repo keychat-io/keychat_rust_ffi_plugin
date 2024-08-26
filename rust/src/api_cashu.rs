@@ -398,7 +398,11 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     Ok(a)
 }
 
-pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::Result<Transaction> {
+pub fn send_stamp(
+    amount: u64,
+    active_mint: String,
+    info: Option<String>,
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -406,7 +410,56 @@ pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::R
     let mint_url: cashu_wallet::Url = active_mint.parse()?;
     let mut state = State::lock()?;
 
-    try_load_mints(&mut state, false).ok();
+    let bs = state.rt.block_on(state.get_wallet()?.get_balances())?;
+    let mut bs = bs
+        .into_iter()
+        .filter(|(k, _v)| k.unit() == CURRENCY_UNIT_SAT && *_v >= amount)
+        .map(|(k, _v)| k.mint().to_owned())
+        .collect::<Vec<_>>();
+
+    if let Some(p) = bs.iter().position(|p| *p == active_mint) {
+        if p != 0 && bs.len() > 1 {
+            bs.swap(p, 0)
+        }
+    }
+
+    for k in bs {
+        let mint_url = k.parse()?;
+        let tx = __send(&mut state, amount, &mint_url, info.clone());
+        // info!("send_stamp {} {} got: {:?}", k, amount, tx);
+
+        if tx.is_err() && !(state.get_wallet()?.contains(&mint_url)?) {
+            error!("send_stamp {} {} failed: {:?}", k, amount, tx);
+            continue;
+        } else {
+            return tx;
+        }
+    }
+
+    // last try ?
+    let tx = __send(&mut state, amount, &mint_url, info.clone());
+    tx
+}
+
+pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::Result<Transaction> {
+    if amount == 0 {
+        bail!("can't send amount 0");
+    }
+
+    let mint_url: cashu_wallet::Url = active_mint.parse()?;
+    let mut state = State::lock()?;
+    __send(&mut state, amount, &mint_url, info)
+}
+
+use cashu_wallet::wallet::MintUrl;
+#[frb(ignore)]
+pub fn __send(
+    state: &mut StdMutexGuard<'static, State>,
+    amount: u64,
+    mint_url: &MintUrl,
+    info: Option<String>,
+) -> anyhow::Result<Transaction> {
+    try_load_mints(state, false).ok();
 
     let sats = state.sats;
     let w = state.get_wallet()?;
@@ -425,6 +478,13 @@ pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::R
             cashu_wallet::select_send_proofs::<cashu_wallet_sqlite::StoreError>(amount, &mut ps)?;
         if amount == 1 && sats > 1 && (&ps[..=select]).sum().to_u64() > 1 {
             let change = std::cmp::min(psv, sats.into());
+
+            if wallet.is_none() {
+                w.add_mint_with_units(mint_url.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                    .await?;
+                wallet = Some(w.get_wallet(&mint_url)?);
+            }
+
             let coins = w
                 .prepare_one_proofs(&mint_url, change, Some(CURRENCY_UNIT_SAT))
                 .await;
