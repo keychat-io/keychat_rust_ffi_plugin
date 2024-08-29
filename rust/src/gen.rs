@@ -1034,14 +1034,14 @@ fn wire__crate__api_cashu__send_stamp_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_amount = <u64>::sse_decode(&mut deserializer);
-            let api_active_mint = <String>::sse_decode(&mut deserializer);
+            let api_mints = <Vec<String>>::sse_decode(&mut deserializer);
             let api_info = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu::send_stamp(api_amount, api_active_mint, api_info)?;
+                            crate::api_cashu::send_stamp(api_amount, api_mints, api_info)?;
                         Ok(output_ok)
                     })(),
                 )

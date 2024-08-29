@@ -34,8 +34,8 @@ Future<String> getBalances() => RustLib.instance.api.crateApiCashuGetBalances();
 Future<List<Transaction>> receiveToken({required String encodedToken}) =>
     RustLib.instance.api.crateApiCashuReceiveToken(encodedToken: encodedToken);
 
-Future<Transaction> sendStamp({required BigInt amount, required String activeMint, String? info}) =>
-    RustLib.instance.api.crateApiCashuSendStamp(amount: amount, activeMint: activeMint, info: info);
+Future<Transaction> sendStamp({required BigInt amount, required List<String> mints, String? info}) =>
+    RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
 
 Future<Transaction> send({required BigInt amount, required String activeMint, String? info}) =>
     RustLib.instance.api.crateApiCashuSend(amount: amount, activeMint: activeMint, info: info);

@@ -8,6 +8,7 @@ use api::*;
 
 const DB_PATH: &str = "rustest.db";
 const MINT_URL: &str = "https://8333.space:3338/";
+const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
     let logger = tracing_subscriber::fmt::fmt().with_line_number(true);
@@ -101,7 +102,7 @@ fn main() {
     // info!("send {}:{:?}\n", amount, s);
 
     // let amount = 1;
-    // let s = api::send_stamp(amount, MINT_URL.to_string(), None).err();
+    // let s = api::send_stamp(amount, vec![MINT_URL_MINIBITS.to_owned(), MINT_URL.to_owned()], None).err();
     // info!("send_stamp {}:{:?}\n", amount, s);
 
     // loop {
