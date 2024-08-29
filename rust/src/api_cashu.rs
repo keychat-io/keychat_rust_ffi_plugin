@@ -3,6 +3,7 @@ use cashu_wallet::wallet::AmountHelper;
 use cashu_wallet::wallet::HttpOptions;
 use cashu_wallet::wallet::MnemonicInfo;
 use cashu_wallet::wallet::ProofsHelper;
+use cashu_wallet::wallet::WalletError;
 use cashu_wallet::wallet::CURRENCY_UNIT_SAT;
 use cashu_wallet_sqlite::StoreError;
 use std::sync::Arc;
@@ -400,36 +401,45 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
 
 pub fn send_stamp(
     amount: u64,
-    active_mint: String,
+    mints: Vec<String>,
     info: Option<String>,
 ) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
 
-    let mint_url: cashu_wallet::Url = active_mint.parse()?;
     let mut state = State::lock()?;
 
     let bs = state.rt.block_on(state.get_wallet()?.get_balances())?;
-    let mut bs = bs
+
+    let mut mints_first = Vec::new();
+    let mut mints_second = Vec::new();
+    for (k, _v) in bs
         .into_iter()
         .filter(|(k, _v)| k.unit() == CURRENCY_UNIT_SAT && *_v >= amount)
-        .map(|(k, _v)| k.mint().to_owned())
-        .collect::<Vec<_>>();
-
-    if let Some(p) = bs.iter().position(|p| *p == active_mint) {
-        if p != 0 && bs.len() > 1 {
-            bs.swap(p, 0)
+    {
+        let mint_url: MintUrl = k.mint().parse()?;
+        if mints
+            .iter()
+            .any(|m| m.trim_end_matches('/') == k.mint().trim_end_matches('/'))
+        {
+            mints_first.push(mint_url);
+        } else {
+            mints_second.push(mint_url);
         }
     }
 
-    for k in bs {
-        let mint_url = k.parse()?;
+    for mint_url in mints_first.iter().chain(mints_second.iter()) {
         let tx = __send(&mut state, amount, &mint_url, info.clone());
-        // info!("send_stamp {} {} got: {:?}", k, amount, tx);
+        debug!("send_stamp {} {} got: {:?}", mint_url, amount, tx);
 
         if tx.is_err() && !(state.get_wallet()?.contains(&mint_url)?) {
-            error!("send_stamp {} {} failed: {:?}", k, amount, tx);
+            error!(
+                "send_stamp {} {} failed: {:?}",
+                mint_url.as_str(),
+                amount,
+                tx
+            );
             continue;
         } else {
             return tx;
@@ -437,6 +447,11 @@ pub fn send_stamp(
     }
 
     // last try ?
+    let mint_url = mints_first
+        .iter()
+        .chain(mints_second.iter())
+        .next()
+        .ok_or_else(|| WalletError::insufficant_funds())?;
     let tx = __send(&mut state, amount, &mint_url, info.clone());
     tx
 }

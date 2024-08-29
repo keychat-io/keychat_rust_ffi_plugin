@@ -133,7 +133,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Transaction> crateApiCashuSend({required BigInt amount, required String activeMint, String? info});
 
-  Future<Transaction> crateApiCashuSendStamp({required BigInt amount, required String activeMint, String? info});
+  Future<Transaction> crateApiCashuSendStamp({required BigInt amount, required List<String> mints, String? info});
 
   Future<bool> crateApiCashuSetMnemonic({String? words});
 
@@ -924,12 +924,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Transaction> crateApiCashuSendStamp({required BigInt amount, required String activeMint, String? info}) {
+  Future<Transaction> crateApiCashuSendStamp({required BigInt amount, required List<String> mints, String? info}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_u_64(amount, serializer);
-        sse_encode_String(activeMint, serializer);
+        sse_encode_list_String(mints, serializer);
         sse_encode_opt_String(info, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28, port: port_);
       },
@@ -938,14 +938,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiCashuSendStampConstMeta,
-      argValues: [amount, activeMint, info],
+      argValues: [amount, mints, info],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiCashuSendStampConstMeta => const TaskConstMeta(
         debugName: "send_stamp",
-        argNames: ["amount", "activeMint", "info"],
+        argNames: ["amount", "mints", "info"],
       );
 
   @override
