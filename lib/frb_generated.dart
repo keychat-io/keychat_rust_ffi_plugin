@@ -113,7 +113,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<List<Mint>> crateApiCashuInitCashu({required int prepareSatsOnceTime});
 
-  Future<void> crateApiCashuInitDb({required String dbpath, String? words});
+  Future<void> crateApiCashuInitDb({required String dbpath, String? words, required bool dev});
 
   Future<Transaction> crateApiCashuMelt({required String invoice, required String activeMint, BigInt? amount});
 
@@ -704,12 +704,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiCashuInitDb({required String dbpath, String? words}) {
+  Future<void> crateApiCashuInitDb({required String dbpath, String? words, required bool dev}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(dbpath, serializer);
         sse_encode_opt_String(words, serializer);
+        sse_encode_bool(dev, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19, port: port_);
       },
       codec: SseCodec(
@@ -717,14 +718,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiCashuInitDbConstMeta,
-      argValues: [dbpath, words],
+      argValues: [dbpath, words, dev],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiCashuInitDbConstMeta => const TaskConstMeta(
         debugName: "init_db",
-        argNames: ["dbpath", "words"],
+        argNames: ["dbpath", "words", "dev"],
       );
 
   @override

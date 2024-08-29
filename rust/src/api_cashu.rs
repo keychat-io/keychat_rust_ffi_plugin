@@ -70,7 +70,7 @@ lazy_static! {
         StdMutex::new(State::new().expect("failed to create tokio runtime"));
 }
 
-pub fn init_db(dbpath: String, words: Option<String>) -> anyhow::Result<()> {
+pub fn init_db(dbpath: String, words: Option<String>, dev: bool) -> anyhow::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
 
     let mut mnemonic = None;
@@ -89,7 +89,29 @@ pub fn init_db(dbpath: String, words: Option<String>) -> anyhow::Result<()> {
         .connection_verbose(true);
 
     let fut = async move {
-        let store = LitePool::open(&dbpath, Default::default()).await?;
+        use cashu_wallet_sqlite::sqlx::{self, sqlite::SqliteLockingMode};
+
+        // prevent other thread open it
+        let mut lockmode = SqliteLockingMode::Exclusive;
+        if dev {
+            lockmode = SqliteLockingMode::Normal;
+        }
+
+        let opts = dbpath
+            .parse::<sqlx::sqlite::SqliteConnectOptions>()?
+            .create_if_missing(true)
+            .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal)
+            // or normal
+            .synchronous(sqlx::sqlite::SqliteSynchronous::Full)
+            .locking_mode(lockmode);
+
+        info!("SqlitePool open: {:?}", opts);
+        let db = sqlx::sqlite::SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(opts)
+            .await?;
+
+        let store = LitePool::new(db, Default::default()).await?;
         let w = Wallet::with_mnemonic(store, c, mnemonic);
 
         // not return error
