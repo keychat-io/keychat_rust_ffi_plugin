@@ -697,11 +697,12 @@ fn wire__crate__api_cashu__init_db_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_dbpath = <String>::sse_decode(&mut deserializer);
             let api_words = <Option<String>>::sse_decode(&mut deserializer);
+            let api_dev = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::init_db(api_dbpath, api_words)?;
+                        let output_ok = crate::api_cashu::init_db(api_dbpath, api_words, api_dev)?;
                         Ok(output_ok)
                     })(),
                 )

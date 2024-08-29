@@ -25,7 +25,7 @@ fn main() {
     let mi = MnemonicInfo::with_words(words).unwrap();
     println!("{}: {}", mi.pubkey(), words);
 
-    let r1 = api::init_db(DB_PATH.to_string(), Some(words.to_owned()));
+    let r1 = api::init_db(DB_PATH.to_string(), Some(words.to_owned()), false);
     info!("init_db {}: {:?}", DB_PATH, r1);
 
     let start = std::time::Instant::now();

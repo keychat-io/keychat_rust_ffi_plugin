@@ -13,8 +13,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `__send`, `get_mnemonic_info`, `prepare_one_proofs`
 // These functions are ignored (category: IgnoreBecauseOwnerTyShouldIgnore): `get_wallet`, `lock`
 
-Future<void> initDb({required String dbpath, String? words}) =>
-    RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words);
+Future<void> initDb({required String dbpath, String? words, required bool dev}) =>
+    RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words, dev: dev);
 
 Future<bool> closeDb() => RustLib.instance.api.crateApiCashuCloseDb();
 
