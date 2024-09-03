@@ -32,6 +32,8 @@ String getHexPubkeyByBech32({required String bech32}) =>
 
 String getBech32PubkeyByHex({required String hex}) => RustLib.instance.api.crateApiNostrGetBech32PubkeyByHex(hex: hex);
 
+String getBech32PrikeyByHex({required String hex}) => RustLib.instance.api.crateApiNostrGetBech32PrikeyByHex(hex: hex);
+
 String getHexPrikeyByBech32({required String bech32}) =>
     RustLib.instance.api.crateApiNostrGetHexPrikeyByBech32(bech32: bech32);
 
