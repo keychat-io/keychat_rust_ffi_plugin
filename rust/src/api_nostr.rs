@@ -171,6 +171,15 @@ pub fn get_bech32_pubkey_by_hex(hex: String) -> String {
 }
 
 #[frb(sync)]
+pub fn get_bech32_prikey_by_hex(hex: String) -> String {
+    if hex.starts_with("nsec") {
+        return hex;
+    }
+    let key =  SecretKey::from_hex(hex).expect("hex to secret key error");
+    key.to_bech32().expect("prikey key to bech32 error")
+}
+
+#[frb(sync)]
 pub fn get_hex_prikey_by_bech32(bech32: String) -> String {
     if !bech32.starts_with("nsec") {
         return bech32;

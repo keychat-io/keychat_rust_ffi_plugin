@@ -259,6 +259,15 @@ mod tests {
     }
 
     #[test]
+    fn get_bech32_prikey_by_hex() {
+        let prikey_bech32: &str = "nsec1qn4d6u3uxnyu05wrtepjsw2jpqxk4m0lzdv0e8n6amh0u2yupccsh28kvf";
+        let prikey_hex: &str = "04eadd723c34c9c7d1c35e43283952080d6aedff1358fc9e7aeeeefe289c0e31";
+        let res = nostr::get_bech32_prikey_by_hex(prikey_hex.to_string());
+        // print!("res :{:?}", res);
+        assert_eq!(&res, &prikey_bech32);
+    }
+
+    #[test]
     fn get_hex_pubkey_by_bech32() {
         let prikey_bech32: &str = "npub1aqvcvjd4qrvasvvw4d9hyur8x4w45p63twjd7ssnetfgnr7yplfslzt7z6";
         let prikey_hex: &str = "e8198649b500d9d8318eab4b727067355d5a07515ba4df4213cad2898fc40fd3";
