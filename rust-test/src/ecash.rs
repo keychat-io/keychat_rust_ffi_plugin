@@ -19,8 +19,9 @@ fn main() {
         logger.with_max_level(max).init();
     }
 
-    let migen = MnemonicInfo::generate(12).unwrap();
-    println!("{}: {}", migen.pubkey(), migen.mnemonic().to_string());
+    let migen_words = MnemonicInfo::generate_words(12).unwrap();
+    let migen = MnemonicInfo::with_words(&migen_words).unwrap();
+    println!("{}: {}", migen.pubkey(), migen_words);
     let words = "sample lock neither measure violin animal upgrade shrimp wash crazy guilt issue";
     let mi = MnemonicInfo::with_words(words).unwrap();
     println!("{}: {}", mi.pubkey(), words);
@@ -57,7 +58,7 @@ fn main() {
     #[rustfmt::skip]
     let pubkey = api::get_mnemonic_info().unwrap().unwrap();
     #[rustfmt::skip]
-    let _r2 = api::set_mnemonic(Some(migen.mnemonic().to_string().to_owned())).unwrap();
+    let _r2 = api::set_mnemonic(Some(migen_words.clone())).unwrap();
     #[rustfmt::skip]
     let pubkey2 =api::get_mnemonic_info().unwrap().unwrap();
     assert_eq!(pubkey, mi.pubkey());
@@ -77,7 +78,7 @@ fn main() {
     let r6 = api::receive_token(encoded_token_8338.to_string());
     info!("receive_token_8338: {:?}", r6);
     let encoded_token_minibits: &str = "
-    cashuAeyJ0b2tlbiI6W3sibWludCI6Imh0dHBzOi8vbWludC5taW5pYml0cy5jYXNoL0JpdGNvaW4iLCJwcm9vZnMiOlt7ImFtb3VudCI6MSwiaWQiOiIwMDUwMDU1MGYwNDk0MTQ2Iiwic2VjcmV0IjoiM2E4ZDYwZGVhNTQzZTAzYzU4MTIxODdkYjY3MzU2MTEzOWRkMmM0NzVmN2MwOGY1YjIxMzcxZWJjMGM5ZTBhYiIsIkMiOiIwMjEwNDY4N2ZkYTFjZjBmNTA5ZGFiZDc5MGE5MTFhNDJkOGQ2OGM2Nzc0Y2M0NjFlMWM5ZThlODFiZmNhOTQyMmUiLCJ0cyI6MTcyMzA0MDI1NjQ4MiwidW5pdCI6InNhdCJ9XX1dLCJ1bml0Ijoic2F0In0=
+    cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSAB1nj-LBrNvYXCBo2FhAWFzeEA3NGM2Mzk4MDBlYTc1MmI1NWQ3MjFkMDM4NGY0NGU3NDcxZjkzMTk4MGJkYTljZWU5MDk0YzQyYmZkNGRlMmViYWNYIQIwlROa-xDBc1uOzVUBeWN3hzkr-yk0VyYAd096_PmbQg
     ".trim();
     let r6 = api::receive_token(encoded_token_minibits.to_string());
     info!("receive_token-minibits: {:?}", r6);

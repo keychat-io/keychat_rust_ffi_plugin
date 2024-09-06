@@ -3,6 +3,7 @@ use cashu_wallet::wallet::AmountHelper;
 use cashu_wallet::wallet::HttpOptions;
 use cashu_wallet::wallet::MnemonicInfo;
 use cashu_wallet::wallet::ProofsHelper;
+use cashu_wallet::wallet::Token;
 use cashu_wallet::wallet::WalletError;
 use cashu_wallet::wallet::CURRENCY_UNIT_SAT;
 use cashu_wallet_sqlite::StoreError;
@@ -382,7 +383,8 @@ pub fn get_balances() -> anyhow::Result<String> {
 }
 
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> {
-    let token: cashu_wallet::wallet::Token = encoded_token.parse()?;
+    let token: Token = encoded_token.parse()?;
+    let token = token.into_v3()?;
 
     let mut state = State::lock()?;
     try_load_mints(&mut state, false).ok();
@@ -397,7 +399,7 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> 
         }
 
         let mut txs = vec![];
-        w.receive_tokens_full_limit_unit(&token, &mut txs, &[CURRENCY_UNIT_SAT])
+        w.receive_tokens_full_limit_unit(&token.into(), &mut txs, &[CURRENCY_UNIT_SAT])
             .await
             .map(|_| txs)
     };
@@ -560,8 +562,13 @@ pub fn __send(
         let (mut ps, send_start_idx) = tokens.into_inner();
         let ps = &mut ps[send_start_idx..];
         ps.iter_mut().for_each(|p| p.raw.dleq = None);
-        let cashu_tokens =
-            WalletForMint::proofs_to_token(&*ps, mint_url.clone(), None, Some(CURRENCY_UNIT_SAT))?;
+        let cashu_tokens = WalletForMint::proofs_to_token(
+            &*ps,
+            mint_url.clone(),
+            None,
+            Some(CURRENCY_UNIT_SAT),
+            true,
+        )?;
 
         let mut tx: Transaction = CashuTransaction::new(
             TransactionStatus::Pending,
@@ -847,7 +854,9 @@ pub fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
 }
 
 pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
-    let token: cashu_wallet::wallet::Token = encoded_token.parse()?;
+    let token: Token = encoded_token.parse()?;
+    let token = token.into_v3()?;
+
     if token.token.is_empty() {
         bail!("empty token")
     }
