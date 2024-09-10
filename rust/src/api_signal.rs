@@ -78,9 +78,7 @@ pub fn init(db_path: String, key_pair: KeychatIdentityKeyPair, reg_id: u32) -> R
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         if store.is_none() {
-            let pool = LitePool::open(&db_path, Default::default())
-                .await
-                .expect("<signal api fn[init]> init sqlite err.");
+            let pool = LitePool::open(&db_path, Default::default()).await?;
             *store = Some(SignalStore {
                 pool,
                 store_map: HashMap::new(),
@@ -92,8 +90,7 @@ pub fn init(db_path: String, key_pair: KeychatIdentityKeyPair, reg_id: u32) -> R
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[init]> Can not get store err."))?;
 
-        let keychat_store = KeyChatSignalProtocolStore::new(map.pool.clone(), key_pair_2, reg_id)
-            .expect("<signal api fn[init]> new keychat_store err.");
+        let keychat_store = KeyChatSignalProtocolStore::new(map.pool.clone(), key_pair_2, reg_id)?;
         map.store_map.entry(key_pair).or_insert(keychat_store);
 
         Ok(())
@@ -157,10 +154,12 @@ pub fn generate_signed_key_api(
             info!("generate_signed_key_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!(
+                "<signal api fn[generate_signed_key_api]> Can not get store from store_map."
+            )
+        })?;
+
         let bob_signed_info = store
             .signed_pre_key_store
             .generate_signed_key(bob_identity_private)
@@ -187,10 +186,9 @@ pub fn get_signed_key_api(key_pair: KeychatIdentityKeyPair, signed_key_id: u32) 
             info!("get_signed_key_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[get_signed_key_api]> Can not get store from store_map.")
+        })?;
         let record = store
             .signed_pre_key_store
             .get_signed_pre_key(signed_key_id.into())
@@ -215,10 +213,9 @@ pub fn store_signed_key_api(
             info!("store_signed_key_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[store_signed_key_api]> Can not get store from store_map.")
+        })?;
         let signed_key_record = SignedPreKeyRecord::deserialize(&record)?;
         store
             .signed_pre_key_store
@@ -241,10 +238,9 @@ pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec
             info!("generate_prekey_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[generate_prekey_api]> Can not get store from store_map.")
+        })?;
         let prekey_info = store.pre_key_store.generate_pre_key().await?;
         // prekey_id, pair.public_key, record
         Ok((
@@ -267,10 +263,9 @@ pub fn get_prekey_api(key_pair: KeychatIdentityKeyPair, prekey_id: u32) -> Resul
             info!("get_prekey_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[get_prekey_api]> Can not get store from store_map.")
+        })?;
         let record = store.pre_key_store.get_pre_key(prekey_id.into()).await?;
         Ok(record.serialize()?)
     });
@@ -292,10 +287,9 @@ pub fn store_prekey_api(
             info!("store_prekey_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[store_prekey_api]> Can not get store from store_map.")
+        })?;
         let prekey_record = PreKeyRecord::deserialize(&record)?;
         store
             .pre_key_store
@@ -332,10 +326,11 @@ pub fn process_prekey_bundle_api(
             info!("process_prekey_bundle_api key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!(
+                "<signal api fn[process_prekey_bundle_api]> Can not get store from store_map."
+            )
+        })?;
         let bob_signed_public = PublicKey::deserialize(&bob_signed_public)?;
         let bob_prekey_public = PublicKey::deserialize(&bob_prekey_public)?;
         let bob_prekey = Some((bob_prekey_id.into(), bob_prekey_public));
@@ -380,10 +375,9 @@ pub fn encrypt_signal(
             info!("encrypt_signal key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[encrypt_signal]> Can not get store from store_map.")
+        })?;
 
         let cipher_text = message_encrypt(
             ptext.as_bytes(),
@@ -445,10 +439,9 @@ pub fn decrypt_signal(
             info!("decrypt_signal key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[decrypt_signal]> can not get store from store_map.")
+        })?;
         let decrypt_msg = if is_prekey {
             let ciphertext = PreKeySignalMessage::try_from(ciphertext.as_ref())?;
             message_decrypt_prekey(
@@ -497,10 +490,11 @@ pub fn session_contain_alice_addr(
             info!("session_contain_alice_addr key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!(
+                "<signal api fn[session_contain_alice_addr]> can not get store from store_map."
+            )
+        })?;
         let session = store
             .session_store
             .session_contain_alice_addr(&address)
@@ -538,11 +532,9 @@ pub fn update_alice_addr(
             info!("update_alice_addr key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
-
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[update_alice_addr]> can not get store from store_map.")
+        })?;
         let flag = store
             .session_store
             .update_alice_addr(&address, &device_id, &alice_addr)
@@ -567,10 +559,9 @@ pub fn contains_session(
             info!("contains_session key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[contains_session]> can not get store from store_map.")
+        })?;
         let flag = store.session_store.contains_session(&address).await?;
         Ok(flag)
     });
@@ -591,10 +582,11 @@ pub fn delete_session_by_device_id(
             info!("delete_session_by_device_id key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!(
+                "<signal api fn[delete_session_by_device_id]> can not get store from store_map."
+            )
+        })?;
         let flag = store
             .session_store
             .delete_session_by_device_id(device_id)
@@ -619,10 +611,9 @@ pub fn delete_session(
             info!("delete_session key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[delete_session]> cat not get store from store_map.")
+        })?;
         let del = store.session_store.delete_session(&address).await?;
         Ok(del)
     });
@@ -640,10 +631,9 @@ pub fn get_all_alice_addrs(key_pair: KeychatIdentityKeyPair) -> Result<Vec<Strin
             info!("get_all_alice_addrs key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[get_all_alice_addrs]> can not get store from store_map.")
+        })?;
         let alice_addrs = store.session_store.get_all_alice_addrs().await?;
         Ok(alice_addrs)
     });
@@ -665,10 +655,9 @@ pub fn get_session(
             info!("get_session key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[get_session]> can not get store from store_map.")
+        })?;
         let session = store
             .session_store
             .get_session(&address, &device_id)
@@ -705,10 +694,9 @@ pub fn delete_identity(key_pair: KeychatIdentityKeyPair, address: String) -> Res
             info!("delete_identity key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[delete_identity]> can not get store from store_map.")
+        })?;
         let flag = store.identity_store.delete_identity(&address).await?;
         Ok(flag)
     });
@@ -724,28 +712,29 @@ pub fn get_identity(
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
-            .ok_or_else(|| format_err!("<signal api fn[get_identity]> can not get store err."))?;
+            .ok_or_else(|| format_err!("<signal api fn[get_identity]> can not get store."))?;
         let address = ProtocolAddress::new(address.name, address.device_id.into());
         if !store.store_map.contains_key(&key_pair) {
             info!("get_identity key_pair do not init.");
             init_keypair(key_pair, 0)?;
         }
-        let store = store
-            .store_map
-            .get_mut(&key_pair)
-            .expect("get store from keypair err");
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[get_identity]> can not get store from store_map.")
+        })?;
         let identity = store.identity_store.get_identity(&address).await?;
         if identity.is_none() {
             return Ok(None);
         }
         Ok(Some(KeychatIdentityKey {
             public_key: identity
-                .expect("<signal api fn[get_identity]> public_key get value err.")
+                .unwrap()
                 .public_key()
                 .serialize()
                 .to_vec()
                 .try_into()
-                .expect("<signal api fn[get_identity]> public_key [u8] to [u8:33] err."),
+                .map_err(|_| {
+                    format_err!("<signal api fn[get_identity]> public_key [u8] to [u8:33] err.")
+                })?,
         }))
     });
     result

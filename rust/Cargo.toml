@@ -19,7 +19,7 @@ serde_json = "1.0.96"
 thiserror = "1.0.40"
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
 
-signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "72271d2"}
+signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "c844443"}
 cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
 cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
