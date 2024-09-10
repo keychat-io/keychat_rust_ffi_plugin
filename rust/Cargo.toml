@@ -9,7 +9,7 @@ crate-type = ["rlib","cdylib", "staticlib"]
 [dependencies]
 anyhow = "1.0.57"
 async-trait = "0.1.73"
-flutter_rust_bridge = "=2.1.0"
+flutter_rust_bridge = "=2.3.0"
 hex = "0.4.3"
 lazy_static = "1.4.0"
 log = "0.4.17"
@@ -19,7 +19,7 @@ serde_json = "1.0.96"
 thiserror = "1.0.40"
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
 
-signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "dc8c41b"}
+signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "c844443"}
 cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
 cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
