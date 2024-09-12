@@ -5,9 +5,9 @@ use rust::api_signal::signal_store::libsignal_protocol::*;
 use rust::api_signal::*;
 
 fn main() {
-    let _ = test_kdf();
+    // let _ = test_kdf();
     // let _= test_state();
-    // let _ = test_db();
+    let _ = test_db();
     // let _ = test_parse_prekey();
 }
 
@@ -41,9 +41,24 @@ fn test_db() -> Result<()> {
     };
     init(db.to_string(), alice_identity_key_pair, 0).expect("init error");
 
+
+    //bob info
+    let bob_identity_public =
+        hex::decode("05f191f40dff0e56fe8833282f5512cf8f68e28794140f650324220f5ed3ee7e4d")
+            .expect("valid hex");
+    let bob_identity_private =
+        hex::decode("38393385efdc31e5565c20610e665429430f6bfb9320adb4e5cbff680febae6e")
+            .expect("valid hex");
+    let bob_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: bob_identity_public.as_slice().try_into().unwrap(),
+        private_key: bob_identity_private.as_slice().try_into().unwrap(),
+    };
+    
+    let t = generate_signed_key_api(bob_identity_key_pair, alice_identity_private);
+    println!("generate_signed_key_api {:?}", t);
     //test alice_identity_key_pair
-    let t1 = get_all_alice_addrs(alice_identity_key_pair);
-    println!("alice_identity_key_pair alice address {:?}", t1.unwrap());
+    let t1 = get_all_alice_addrs(bob_identity_key_pair);
+    println!("bob_identity_key_pair alice address {:?}", t1.unwrap());
 
     //test get_session
     let t1 = get_session(
