@@ -5,16 +5,38 @@ use rust::api_signal::signal_store::libsignal_protocol::*;
 use rust::api_signal::*;
 
 fn main() {
-    let _ = test_kdf();
+    // let _ = test_kdf();
     // let _= test_state();
     // let _ = test_db();
-    // let _ = test_parse_prekey();
+    let _ = test_parse_is_prekey_message2();
+    // let _ = test_x3dh_db();
 }
 
 fn test_parse_prekey() -> Result<()> {
     let content = "NAjZtOSOChIhBcM1rtFjYuE6mdak4ql1iSVVbnaRGLH0Na09ZwN6qmRIGiEFXffW+BrVSqmLimFmOQauD3ehoRY/19Ee6ejQBNqxczoiswE0CiEFfrVjB2BM4qaumzeg2TtTcxLHQuqmoP1S9+DXuw1fPHcQABgAIoABbDOaq43qsrmQuvWEsAIrE1DErRiC5tDtmpfWOk4rT33bi7AkD5EFtVoMG5k4PhvvcVuTyg8BqXr6i1NpN7AMunpuplGn79He8TXMluJ6jZcI7HEKkvO0irXWZsEADnHYcLY/n0qhPk4cHwxQGGJmkp37VYFGyYdd8q71roHVi9RyDE3+VfM5iCgAMNyA+ocM";
     let cipher_text = general_purpose::STANDARD.decode(content).unwrap();
     let re = parse_identity_from_prekey_signal_message(cipher_text).unwrap();
+    println!("the result is {:?}", re);
+    Ok(())
+}
+
+fn test_parse_is_prekey_message() -> Result<()> {
+    let content = "NAjZtOSOChIhBcM1rtFjYuE6mdak4ql1iSVVbnaRGLH0Na09ZwN6qmRIGiEFXffW+BrVSqmLimFmOQauD3ehoRY/19Ee6ejQBNqxczoiswE0CiEFfrVjB2BM4qaumzeg2TtTcxLHQuqmoP1S9+DXuw1fPHcQABgAIoABbDOaq43qsrmQuvWEsAIrE1DErRiC5tDtmpfWOk4rT33bi7AkD5EFtVoMG5k4PhvvcVuTyg8BqXr6i1NpN7AMunpuplGn79He8TXMluJ6jZcI7HEKkvO0irXWZsEADnHYcLY/n0qhPk4cHwxQGGJmkp37VYFGyYdd8q71roHVi9RyDE3+VfM5iCgAMNyA+ocM";
+    let cipher_text = general_purpose::STANDARD.decode(content).unwrap();
+    let re = parse_is_prekey_signal_message(cipher_text).unwrap();
+    println!("the result is {:?}", re);
+    Ok(())
+}
+
+fn test_parse_is_prekey_message2() -> Result<()> {
+    let cipher_text = [
+        52, 10, 33, 5, 123, 4, 193, 146, 66, 82, 212, 67, 197, 105, 34, 120, 117, 46, 253, 30, 167,
+        232, 40, 130, 18, 7, 244, 136, 193, 159, 11, 234, 147, 41, 98, 103, 16, 0, 24, 0, 34, 32,
+        109, 233, 105, 107, 190, 190, 223, 158, 66, 52, 98, 155, 43, 172, 89, 253, 228, 231, 182,
+        247, 165, 255, 196, 140, 74, 80, 240, 204, 231, 225, 201, 103, 35, 178, 185, 36, 84, 185,
+        224, 24,
+    ];
+    let re = parse_is_prekey_signal_message(cipher_text.to_vec()).unwrap();
     println!("the result is {:?}", re);
     Ok(())
 }
@@ -41,9 +63,23 @@ fn test_db() -> Result<()> {
     };
     init(db.to_string(), alice_identity_key_pair, 0).expect("init error");
 
+    //bob info
+    let bob_identity_public =
+        hex::decode("05f191f40dff0e56fe8833282f5512cf8f68e28794140f650324220f5ed3ee7e4d")
+            .expect("valid hex");
+    let bob_identity_private =
+        hex::decode("38393385efdc31e5565c20610e665429430f6bfb9320adb4e5cbff680febae6e")
+            .expect("valid hex");
+    let bob_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: bob_identity_public.as_slice().try_into().unwrap(),
+        private_key: bob_identity_private.as_slice().try_into().unwrap(),
+    };
+
+    let t = generate_signed_key_api(bob_identity_key_pair, alice_identity_private);
+    println!("generate_signed_key_api {:?}", t);
     //test alice_identity_key_pair
-    let t1 = get_all_alice_addrs(alice_identity_key_pair);
-    println!("alice_identity_key_pair alice address {:?}", t1.unwrap());
+    let t1 = get_all_alice_addrs(bob_identity_key_pair);
+    println!("bob_identity_key_pair alice address {:?}", t1.unwrap());
 
     //test get_session
     let t1 = get_session(
@@ -318,6 +354,11 @@ fn test_x3dh_db() -> Result<()> {
         None,
     )
     .unwrap();
+
+    println!(
+        "bobs_response_to_alice_encrypt {:?}",
+        bobs_response_to_alice_encrypt
+    );
     // alice decrypt bob
     let alice_decrypts_from_bob = decrypt_signal(
         alice_identity_key_pair,
