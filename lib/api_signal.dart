@@ -77,6 +77,9 @@ Future<(Uint8List, String?, String, List<String>?)> encryptSignal(
 Future<(String, int)> parseIdentityFromPrekeySignalMessage({required List<int> ciphertext}) =>
     RustLib.instance.api.crateApiSignalParseIdentityFromPrekeySignalMessage(ciphertext: ciphertext);
 
+Future<bool> parseIsPrekeySignalMessage({required List<int> ciphertext}) =>
+    RustLib.instance.api.crateApiSignalParseIsPrekeySignalMessage(ciphertext: ciphertext);
+
 Future<(Uint8List, Uint8List)> generateSignalIds() => RustLib.instance.api.crateApiSignalGenerateSignalIds();
 
 Future<(Uint8List, String, List<String>?)> decryptSignal(
