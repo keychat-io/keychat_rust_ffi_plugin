@@ -13,6 +13,10 @@ path = "src/signal.rs"
 name = "ecash"
 path = "src/ecash.rs"
 
+[[bin]]
+name = "mls"
+path = "src/mls.rs"
+
 [dependencies]
 rust = {package = "keychat_rust_ffi_plugin", path = "../rust"}
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
