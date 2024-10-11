@@ -624,8 +624,8 @@ fn test_complex() -> Result<()> {
         g_mls_group.export_secret(&g_provider, "", &[], 32).unwrap()
     );
 
-     // A send msg
-     let msg5 = send_msg(
+    // A send msg
+    let msg5 = send_msg(
         &mut a_mls_group,
         &a_provider,
         &a_identity,
@@ -662,7 +662,6 @@ fn test_complex() -> Result<()> {
     Ok(())
 }
 
-
 // if add some members, for example due to F reply dely and lack of one commit, this will lead to F tree is diff from others.
 // So if dely, but every operation F should receive it, and process it in order by time, if not it will be error.
 fn test_complex2() -> Result<()> {
@@ -687,8 +686,6 @@ fn test_complex2() -> Result<()> {
     let f_provider = create_provider(f.to_string())?;
     let g_provider = create_provider(g.to_string())?;
 
-    let group_create_config = group_create_config()?;
-
     let a_identity = create_identity(a.to_string(), &a_provider)?;
     let mut b_identity = create_identity(b.to_string(), &b_provider)?;
     let mut c_identity = create_identity(c.to_string(), &c_provider)?;
@@ -704,11 +701,18 @@ fn test_complex2() -> Result<()> {
     let f_pk = create_key_package(&f_provider, &mut f_identity)?;
     let g_pk = create_key_package(&g_provider, &mut g_identity)?;
 
+    let group_create_config = group_create_config()?;
+
     let mut a_mls_group =
         create_mls_group(group_name, &group_create_config, &a_provider, &a_identity)?;
 
     // A add B F, but F not reply right now
-    let welcome = add_members(&mut a_mls_group, &a_provider, &a_identity, &[b_pk, f_pk.clone()])?;
+    let welcome = add_members(
+        &mut a_mls_group,
+        &a_provider,
+        &a_identity,
+        &[b_pk, f_pk.clone()],
+    )?;
     let mut b_mls_group = bob_join_mls_group(welcome.1.clone(), &b_provider, &group_create_config)?;
     // let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
 
@@ -721,7 +725,6 @@ fn test_complex2() -> Result<()> {
         "b_mls_group export secret {:?}",
         b_mls_group.export_secret(&b_provider, "", &[], 32).unwrap()
     );
-
 
     println!("--B add C G --------------");
 
@@ -811,7 +814,6 @@ fn test_complex2() -> Result<()> {
         String::from_utf8(credential4.to_vec()).unwrap()
     );
 
-
     let members = g_mls_group.members().collect::<Vec<_>>();
     println!("{}", members.len());
     let credential0 = members[0].credential.serialized_content();
@@ -828,21 +830,19 @@ fn test_complex2() -> Result<()> {
         String::from_utf8(credential4.to_vec()).unwrap()
     );
 
-
-
     println!("--A add D --------------");
 
     // A add D
     let welcome3 = add_member(&mut a_mls_group, &a_provider, &a_identity, d_pk)?;
-    let mut d_mls_group = bob_join_mls_group(welcome3.1.clone(), &d_provider, &group_create_config)?;
+    let mut d_mls_group =
+        bob_join_mls_group(welcome3.1.clone(), &d_provider, &group_create_config)?;
 
     // // A add D F
     // let welcome3 = add_members(&mut a_mls_group, &a_provider, &a_identity, &[d_pk, f_pk.clone()])?;
 
     println!("--f_mls_group --------------");
     let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
-     let _ = others_commit_add_member(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
-
+    let _ = others_commit_add_member(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
 
     // B commit
     let _ = others_commit_add_member(&mut b_mls_group, welcome3.0.clone(), &b_provider)?;

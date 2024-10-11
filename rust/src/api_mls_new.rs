@@ -2,20 +2,22 @@ use kc::identity::Identity;
 use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig};
 use openmls::key_packages::KeyPackage;
-use openmls::prelude::{
-    LeafNodeIndex, MlsMessageIn, MlsMessageOut, ProcessedMessageContent, StagedWelcome,
-};
+use openmls::prelude::tls_codec::Deserialize;
+use openmls::prelude::{LeafNodeIndex, MlsMessageIn, ProcessedMessageContent, StagedWelcome};
 use openmls_sqlite_storage::LitePool;
 use openmls_traits::types::Ciphersuite;
 
 use anyhow::Result;
-use bincode;
 use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
+// use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use bincode;
+// use crate::gen::{RustOpaque, RustOpaqueMoi, RustAutoOpaque};
+// use flutter_rust_bridge::DartOpaque;
+// use flutter_rust_bridge::frb;
 
 pub(crate) const CIPHERSUITE: Ciphersuite =
     Ciphersuite::MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519;
@@ -57,6 +59,7 @@ pub fn init_mls_db(db_path: String) -> Result<()> {
     result
 }
 
+// OpenMlsRustPersistentCrypto not support serialize now
 pub fn create_provider(nostr_id: String) -> Result<OpenMlsRustPersistentCrypto> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
@@ -67,7 +70,6 @@ pub fn create_provider(nostr_id: String) -> Result<OpenMlsRustPersistentCrypto> 
             .ok_or_else(|| format_err!("<mls api fn[create_provider]> Can not get store err."))?;
 
         let provider = OpenMlsRustPersistentCrypto::new(nostr_id, store.pool.clone()).await;
-
         Ok(provider)
     });
     result
@@ -76,53 +78,57 @@ pub fn create_provider(nostr_id: String) -> Result<OpenMlsRustPersistentCrypto> 
 pub fn create_identity(
     nostr_id: String,
     provider: &OpenMlsRustPersistentCrypto,
-) -> Result<Identity> {
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let identity = Identity::new(CIPHERSUITE, provider, nostr_id.as_bytes());
-
-        Ok(identity)
+        let serialized: Vec<u8> = bincode::serialize(&identity)?;
+        Ok(serialized)
     });
     result
 }
 
 pub fn create_key_package(
     provider: &OpenMlsRustPersistentCrypto,
-    identity: &mut Identity,
-) -> Result<KeyPackage> {
+    identity: Vec<u8>,
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
+        let mut identity: Identity = bincode::deserialize(&identity)?;
         let key_package = identity.add_key_package(CIPHERSUITE, provider);
-
-        Ok(key_package)
+        let serialized: Vec<u8> = bincode::serialize(&key_package)?;
+        Ok(serialized)
     });
     result
 }
 
-pub fn group_create_config() -> Result<MlsGroupCreateConfig> {
+pub fn group_create_config() -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let config = MlsGroupCreateConfig::builder()
             .use_ratchet_tree_extension(true)
             .build();
-
-        Ok(config)
+        let serialized: Vec<u8> = bincode::serialize(&config)?;
+        Ok(serialized)
     });
     result
 }
 
 pub fn create_mls_group(
     group_name: String,
-    group_create_config: &MlsGroupCreateConfig,
+    group_create_config: Vec<u8>,
     provider: &OpenMlsRustPersistentCrypto,
-    identity: &Identity,
+    identity: Vec<u8>,
 ) -> Result<MlsGroup> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
+        let group_create_config: MlsGroupCreateConfig = bincode::deserialize(&group_create_config)?;
+        let identity: Identity = bincode::deserialize(&identity)?;
+
         let mls_group = MlsGroup::new_with_group_id(
             provider,
             &identity.signer,
-            group_create_config,
+            &group_create_config,
             GroupId::from_slice(group_name.as_bytes()),
             identity.credential_with_key.clone(),
         )
@@ -133,15 +139,18 @@ pub fn create_mls_group(
     result
 }
 
-// only add one every time
+// only add one friend every time
 pub fn add_member(
     alice_mls_group: &mut MlsGroup,
     alice_provider: &OpenMlsRustPersistentCrypto,
-    alice_identity: &Identity,
-    bob_key_package: KeyPackage,
-) -> Result<(MlsMessageOut, MlsMessageOut)> {
+    alice_identity: Vec<u8>,
+    bob_key_package: Vec<u8>,
+) -> Result<(Vec<u8>, Vec<u8>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
+        let alice_identity: Identity = bincode::deserialize(&alice_identity)?;
+        let bob_key_package: KeyPackage = bincode::deserialize(&bob_key_package)?;
+
         let (queued_msg, welcome, _) = alice_mls_group.add_members(
             alice_provider,
             &alice_identity.signer,
@@ -149,40 +158,51 @@ pub fn add_member(
         )?;
 
         alice_mls_group.merge_pending_commit(alice_provider)?;
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        let serialized_welcome: Vec<u8> = welcome.to_bytes()?;
 
-        Ok((queued_msg, welcome))
+        Ok((serialized_queued_msg, serialized_welcome))
     });
     result
 }
 
-// add several every time
+// add several friends every time
 pub fn add_members(
     alice_mls_group: &mut MlsGroup,
     alice_provider: &OpenMlsRustPersistentCrypto,
-    alice_identity: &Identity,
-    key_packages: &[KeyPackage],
-) -> Result<(MlsMessageOut, MlsMessageOut)> {
+    alice_identity: Vec<u8>,
+    key_packages: Vec<Vec<u8>>,
+) -> Result<(Vec<u8>, Vec<u8>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
+        let alice_identity: Identity = bincode::deserialize(&alice_identity)?;
+        let mut kps: Vec<KeyPackage> = Vec::new();
+        for kp in key_packages {
+            let kp: KeyPackage = bincode::deserialize(&kp)?;
+            kps.push(kp);
+        }
+
         let (queued_msg, welcome, _) =
-            alice_mls_group.add_members(alice_provider, &alice_identity.signer, key_packages)?;
+            alice_mls_group.add_members(alice_provider, &alice_identity.signer, &kps)?;
 
         alice_mls_group.merge_pending_commit(alice_provider)?;
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        let serialized_welcome: Vec<u8> = welcome.to_bytes()?;
 
-        Ok((queued_msg, welcome))
+        Ok((serialized_queued_msg, serialized_welcome))
     });
     result
 }
 
 pub fn bob_join_mls_group(
-    welcome: MlsMessageOut,
+    welcome: Vec<u8>,
     bob_provider: &OpenMlsRustPersistentCrypto,
-    group_create_config: &MlsGroupCreateConfig,
+    group_create_config: Vec<u8>,
 ) -> Result<MlsGroup> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
-        let welcome: MlsMessageIn = welcome.into();
+        let group_create_config: MlsGroupCreateConfig = bincode::deserialize(&group_create_config)?;
+        let welcome = MlsMessageIn::tls_deserialize_exact(&welcome)?;
         let welcome = welcome.into_welcome().ok_or_else(|| {
             format_err!(
                 "<mls api fn[bob_join_mls_group]> expected the message to be a welcome message."
@@ -213,12 +233,12 @@ pub fn bob_join_mls_group(
 // only group is not null, and other members should execute this
 pub fn others_commit_add_member(
     mls_group: &mut MlsGroup,
-    queued_msg: MlsMessageOut,
+    queued_msg: Vec<u8>,
     provider: &OpenMlsRustPersistentCrypto,
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         let alice_processed_message = mls_group.process_message(
             provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
@@ -244,16 +264,17 @@ pub fn others_commit_add_member(
 pub fn send_msg(
     alice_mls_group: &mut MlsGroup,
     alice_provider: &OpenMlsRustPersistentCrypto,
-    alice_identity: &Identity,
+    alice_identity: Vec<u8>,
     msg: String,
-) -> Result<MlsMessageOut> {
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let alice_identity: Identity = bincode::deserialize(&alice_identity)?;
         let msg_out = alice_mls_group
             .create_message(alice_provider, &alice_identity.signer, msg.as_bytes())
             .map_err(|_| format_err!("<mls api fn[send_msg]> Error send message."))?;
-        Ok(msg_out)
+        let serialized_msg_out: Vec<u8> = msg_out.to_bytes()?;
+        Ok(serialized_msg_out)
     });
     result
 }
@@ -261,11 +282,11 @@ pub fn send_msg(
 pub fn decrypt_msg(
     bob_mls_group: &mut MlsGroup,
     bob_provider: &OpenMlsRustPersistentCrypto,
-    msg: MlsMessageOut,
+    msg: Vec<u8>,
 ) -> Result<String> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let msg = MlsMessageIn::tls_deserialize_exact(&msg)?;
         let processed_message = bob_mls_group
             .process_message(
                 bob_provider,
@@ -290,12 +311,12 @@ pub fn decrypt_msg(
 pub fn remove_member(
     alice_mls_group: &mut MlsGroup,
     bob_mls_group: &mut MlsGroup,
-    alice_identity: &Identity,
+    alice_identity: Vec<u8>,
     alice_provider: &OpenMlsRustPersistentCrypto,
-) -> Result<MlsMessageOut> {
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let alice_identity: Identity = bincode::deserialize(&alice_identity)?;
         // alice remove bob, so alice should konw bob's mls_group
         let (queued_msg, _welcome, _group_info) = alice_mls_group.remove_members(
             alice_provider,
@@ -305,39 +326,51 @@ pub fn remove_member(
 
         alice_mls_group.merge_pending_commit(alice_provider)?;
 
-        Ok(queued_msg)
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        Ok(serialized_queued_msg)
     });
     result
 }
 
+pub fn get_lead_node_index(mls_group: MlsGroup) -> Result<Vec<u8>> {
+    let lead_node_index = mls_group.own_leaf_index();
+    let lead_node_index_vec = bincode::serialize(&lead_node_index)?;
+    Ok(lead_node_index_vec)
+}
+
 pub fn remove_members(
     alice_mls_group: &mut MlsGroup,
-    members: &[LeafNodeIndex],
-    alice_identity: &Identity,
+    members: Vec<Vec<u8>>,
+    alice_identity: Vec<u8>,
     alice_provider: &OpenMlsRustPersistentCrypto,
-) -> Result<MlsMessageOut> {
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let alice_identity: Identity = bincode::deserialize(&alice_identity)?;
+        let mut leaf_nodes: Vec<LeafNodeIndex> = Vec::new();
+        for m in members {
+            let m: LeafNodeIndex = bincode::deserialize(&m)?;
+            leaf_nodes.push(m);
+        }
         // alice remove bob, so alice should konw bob's mls_group
         let (queued_msg, _welcome, _group_info) =
-            alice_mls_group.remove_members(alice_provider, &alice_identity.signer, &members)?;
+            alice_mls_group.remove_members(alice_provider, &alice_identity.signer, &leaf_nodes)?;
 
         alice_mls_group.merge_pending_commit(alice_provider)?;
-
-        Ok(queued_msg)
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        Ok(serialized_queued_msg)
     });
     result
 }
 
 pub fn others_commit_remove_member(
     mls_group: &mut MlsGroup,
-    queued_msg: MlsMessageOut,
+    queued_msg: Vec<u8>,
     provider: &OpenMlsRustPersistentCrypto,
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         let processed_message = mls_group.process_message(
             provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
@@ -369,27 +402,28 @@ pub fn others_commit_remove_member(
 
 pub fn self_leave(
     mls_group: &mut MlsGroup,
-    identity: &Identity,
+    identity: Vec<u8>,
     provider: &OpenMlsRustPersistentCrypto,
-) -> Result<MlsMessageOut> {
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let identity: Identity = bincode::deserialize(&identity)?;
         let queued_msg = mls_group.leave_group(provider, &identity.signer)?;
 
-        Ok(queued_msg)
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        Ok(serialized_queued_msg)
     });
     result
 }
 
 pub fn others_proposal_leave(
     mls_group: &mut MlsGroup,
-    queued_msg: MlsMessageOut,
+    queued_msg: Vec<u8>,
     provider: &OpenMlsRustPersistentCrypto,
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         let processed_message = mls_group.process_message(
             provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
@@ -413,12 +447,12 @@ pub fn others_proposal_leave(
 
 pub fn admin_commit_leave(
     mls_group: &mut MlsGroup,
-    identity: &Identity,
+    identity: Vec<u8>,
     provider: &OpenMlsRustPersistentCrypto,
-) -> Result<MlsMessageOut> {
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let identity: Identity = bincode::deserialize(&identity)?;
         let (queued_msg, _welcome_option, _group_info) =
             mls_group.commit_to_pending_proposals(provider, &identity.signer)?;
 
@@ -430,8 +464,8 @@ pub fn admin_commit_leave(
         } else {
             unreachable!("<mls api fn[admin_commit_leave]> Expected a StagedCommit.");
         }
-
-        Ok(queued_msg)
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        Ok(serialized_queued_msg)
     });
     result
 }
@@ -439,12 +473,12 @@ pub fn admin_commit_leave(
 // expect admin, queued_msg is from admin
 pub fn normal_member_commit_leave(
     mls_group: &mut MlsGroup,
-    queued_msg: MlsMessageOut,
+    queued_msg: Vec<u8>,
     provider: &OpenMlsRustPersistentCrypto,
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
+        let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         // === Leave operation from normal member's perspective ===
         let processed_message = mls_group.process_message(
             provider,
