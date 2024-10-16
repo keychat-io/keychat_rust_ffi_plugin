@@ -181,7 +181,6 @@ pub fn bob_join_mls_group(
 ) -> Result<MlsGroup> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let welcome: MlsMessageIn = welcome.into();
         let welcome = welcome.into_welcome().ok_or_else(|| {
             format_err!(
@@ -218,7 +217,6 @@ pub fn others_commit_add_member(
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let alice_processed_message = mls_group.process_message(
             provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
@@ -249,7 +247,6 @@ pub fn send_msg(
 ) -> Result<MlsMessageOut> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let msg_out = alice_mls_group
             .create_message(alice_provider, &alice_identity.signer, msg.as_bytes())
             .map_err(|_| format_err!("<mls api fn[send_msg]> Error send message."))?;
@@ -265,7 +262,6 @@ pub fn decrypt_msg(
 ) -> Result<String> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let processed_message = bob_mls_group
             .process_message(
                 bob_provider,
@@ -295,7 +291,6 @@ pub fn remove_member(
 ) -> Result<MlsMessageOut> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         // alice remove bob, so alice should konw bob's mls_group
         let (queued_msg, _welcome, _group_info) = alice_mls_group.remove_members(
             alice_provider,
@@ -318,7 +313,6 @@ pub fn remove_members(
 ) -> Result<MlsMessageOut> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         // alice remove bob, so alice should konw bob's mls_group
         let (queued_msg, _welcome, _group_info) =
             alice_mls_group.remove_members(alice_provider, &alice_identity.signer, &members)?;
@@ -337,7 +331,6 @@ pub fn others_commit_remove_member(
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let processed_message = mls_group.process_message(
             provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
@@ -374,7 +367,6 @@ pub fn self_leave(
 ) -> Result<MlsMessageOut> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let queued_msg = mls_group.leave_group(provider, &identity.signer)?;
 
         Ok(queued_msg)
@@ -389,7 +381,6 @@ pub fn others_proposal_leave(
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let processed_message = mls_group.process_message(
             provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
@@ -418,7 +409,6 @@ pub fn admin_commit_leave(
 ) -> Result<MlsMessageOut> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         let (queued_msg, _welcome_option, _group_info) =
             mls_group.commit_to_pending_proposals(provider, &identity.signer)?;
 
@@ -444,7 +434,6 @@ pub fn normal_member_commit_leave(
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
-
         // === Leave operation from normal member's perspective ===
         let processed_message = mls_group.process_message(
             provider,

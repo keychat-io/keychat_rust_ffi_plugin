@@ -1,6 +1,6 @@
 use anyhow::Result;
-use rust::api_mls_new::*;
 use bincode;
+use rust::api_mls_new::*;
 
 fn main() {
     // let _ = test_basic();
@@ -321,14 +321,25 @@ fn test_complex() -> Result<()> {
     let f_pk = create_key_package(&f_provider, f_identity.clone())?;
     let g_pk = create_key_package(&g_provider, g_identity.clone())?;
 
-    let mut a_mls_group =
-        create_mls_group(group_name, group_create_config.clone(), &a_provider, a_identity.clone())?;
+    let mut a_mls_group = create_mls_group(
+        group_name,
+        group_create_config.clone(),
+        &a_provider,
+        a_identity.clone(),
+    )?;
 
     // A add B
-    let welcome = add_members(&mut a_mls_group, &a_provider, a_identity.clone(), [b_pk, f_pk].to_vec())?;
-    let mut b_mls_group = bob_join_mls_group(welcome.1.clone(), &b_provider, group_create_config.clone())?;
+    let welcome = add_members(
+        &mut a_mls_group,
+        &a_provider,
+        a_identity.clone(),
+        [b_pk, f_pk].to_vec(),
+    )?;
+    let mut b_mls_group =
+        bob_join_mls_group(welcome.1.clone(), &b_provider, group_create_config.clone())?;
 
-    let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, group_create_config.clone())?;
+    let mut f_mls_group =
+        bob_join_mls_group(welcome.1.clone(), &f_provider, group_create_config.clone())?;
 
     // A send msg to B
     let msg = send_msg(
@@ -392,7 +403,12 @@ fn test_complex() -> Result<()> {
     println!("--B add C F G --------------");
 
     // B add C and G
-    let welcome2 = add_members(&mut b_mls_group, &b_provider, b_identity.clone(), [c_pk, g_pk].to_vec())?;
+    let welcome2 = add_members(
+        &mut b_mls_group,
+        &b_provider,
+        b_identity.clone(),
+        [c_pk, g_pk].to_vec(),
+    )?;
 
     let mut c_mls_group =
         bob_join_mls_group(welcome2.1.clone(), &c_provider, group_create_config.clone())?;
@@ -523,7 +539,11 @@ fn test_complex() -> Result<()> {
     // A remove B F
     let queued_msg = remove_members(
         &mut a_mls_group,
-        [bincode::serialize(&b_mls_group.own_leaf_index())?, bincode::serialize(&f_mls_group.own_leaf_index())?].to_vec(),
+        [
+            bincode::serialize(&b_mls_group.own_leaf_index())?,
+            bincode::serialize(&f_mls_group.own_leaf_index())?,
+        ]
+        .to_vec(),
         a_identity.clone(),
         &a_provider,
     )?;
@@ -634,8 +654,8 @@ fn test_complex() -> Result<()> {
         g_mls_group.export_secret(&g_provider, "", &[], 32).unwrap()
     );
 
-     // A send msg
-     let msg5 = send_msg(
+    // A send msg
+    let msg5 = send_msg(
         &mut a_mls_group,
         &a_provider,
         a_identity.clone(),

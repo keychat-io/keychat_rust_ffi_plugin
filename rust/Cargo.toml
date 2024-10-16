@@ -25,10 +25,10 @@ cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git"
 
 # openmls = { git = "https://github.com/keychat-io/openmls.git", tag = "v0.6.0-pre.3", features = ["kc", "openmls", "openmls_traits", "openmls_sqlite_storage"] }
 
-kc = {path = "../openmls-openmls-v0.6.0-pre.3/kc"}
-openmls = {path = "../openmls-openmls-v0.6.0-pre.3/openmls"}
-openmls_traits = {path = "../openmls-openmls-v0.6.0-pre.3/traits"}
-openmls_sqlite_storage = {path = "../openmls-openmls-v0.6.0-pre.3/sqlite_storage"}
+# kc = {path = "../openmls-openmls-v0.6.0-pre.3/kc"}
+# openmls = {path = "../openmls-openmls-v0.6.0-pre.3/openmls"}
+# openmls_traits = {path = "../openmls-openmls-v0.6.0-pre.3/traits"}
+# openmls_sqlite_storage = {path = "../openmls-openmls-v0.6.0-pre.3/sqlite_storage"}
 
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
 # cashu-wallet-sqlite = {path = "../../cashu-wallet-rs/store-sqlite"}

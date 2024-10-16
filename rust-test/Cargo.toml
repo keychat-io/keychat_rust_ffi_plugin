@@ -21,6 +21,10 @@ path = "src/mls.rs"
 name = "mls_new"
 path = "src/mls_new.rs"
 
+[[bin]]
+name = "mls_new2"
+path = "src/mls_new2.rs"
+
 [dependencies]
 rust = {package = "keychat_rust_ffi_plugin", path = "../rust"}
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}

@@ -15,9 +15,6 @@ use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
 // use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use bincode;
-// use crate::gen::{RustOpaque, RustOpaqueMoi, RustAutoOpaque};
-// use flutter_rust_bridge::DartOpaque;
-// use flutter_rust_bridge::frb;
 
 pub(crate) const CIPHERSUITE: Ciphersuite =
     Ciphersuite::MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519;
@@ -59,7 +56,7 @@ pub fn init_mls_db(db_path: String) -> Result<()> {
     result
 }
 
-// OpenMlsRustPersistentCrypto not support serialize now
+// OpenMlsRustPersistentCrypto do not support serialize now
 pub fn create_provider(nostr_id: String) -> Result<OpenMlsRustPersistentCrypto> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
@@ -138,6 +135,8 @@ pub fn create_mls_group(
     });
     result
 }
+
+// only MlsGroup and OpenMlsRustPersistentCrypto do not support serialize
 
 // only add one friend every time
 pub fn add_member(
