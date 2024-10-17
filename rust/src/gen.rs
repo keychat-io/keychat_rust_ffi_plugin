@@ -51,7 +51,7 @@ fn wire__crate__api_cashu__add_mint_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "add_mint",
             port: Some(port_),
@@ -69,12 +69,13 @@ fn wire__crate__api_cashu__add_mint_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_url = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::add_mint(api_url)?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::add_mint(api_url).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -86,7 +87,7 @@ fn wire__crate__api_cashu__check_pending_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "check_pending",
             port: Some(port_),
@@ -103,12 +104,13 @@ fn wire__crate__api_cashu__check_pending_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::check_pending()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::check_pending().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -120,7 +122,7 @@ fn wire__crate__api_cashu__check_proofs_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "check_proofs",
             port: Some(port_),
@@ -137,12 +139,13 @@ fn wire__crate__api_cashu__check_proofs_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::check_proofs()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::check_proofs().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -154,7 +157,7 @@ fn wire__crate__api_cashu__check_transaction_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "check_transaction",
             port: Some(port_),
@@ -172,12 +175,13 @@ fn wire__crate__api_cashu__check_transaction_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_id = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::check_transaction(api_id)?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::check_transaction(api_id).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -189,7 +193,7 @@ fn wire__crate__api_cashu__close_db_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "close_db",
             port: Some(port_),
@@ -206,12 +210,13 @@ fn wire__crate__api_cashu__close_db_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::close_db()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::close_db().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -293,7 +298,7 @@ fn wire__crate__api_cashu__get_balances_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_balances",
             port: Some(port_),
@@ -310,12 +315,13 @@ fn wire__crate__api_cashu__get_balances_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::get_balances()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::get_balances().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -327,7 +333,7 @@ fn wire__crate__api_cashu__get_cashu_pending_transactions_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_cashu_pending_transactions",
             port: Some(port_),
@@ -344,12 +350,13 @@ fn wire__crate__api_cashu__get_cashu_pending_transactions_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::get_cashu_pending_transactions()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::get_cashu_pending_transactions().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -361,7 +368,7 @@ fn wire__crate__api_cashu__get_cashu_transactions_with_offset_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_cashu_transactions_with_offset",
             port: Some(port_),
@@ -380,14 +387,16 @@ fn wire__crate__api_cashu__get_cashu_transactions_with_offset_impl(
             let api_offset = <usize>::sse_decode(&mut deserializer);
             let api_limit = <usize>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok = crate::api_cashu::get_cashu_transactions_with_offset(
                             api_offset, api_limit,
-                        )?;
+                        )
+                        .await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -399,7 +408,7 @@ fn wire__crate__api_cashu__get_ln_pending_transactions_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_ln_pending_transactions",
             port: Some(port_),
@@ -416,12 +425,13 @@ fn wire__crate__api_cashu__get_ln_pending_transactions_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::get_ln_pending_transactions()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::get_ln_pending_transactions().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -433,7 +443,7 @@ fn wire__crate__api_cashu__get_ln_transactions_with_offset_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_ln_transactions_with_offset",
             port: Some(port_),
@@ -452,14 +462,16 @@ fn wire__crate__api_cashu__get_ln_transactions_with_offset_impl(
             let api_offset = <usize>::sse_decode(&mut deserializer);
             let api_limit = <usize>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok = crate::api_cashu::get_ln_transactions_with_offset(
                             api_offset, api_limit,
-                        )?;
+                        )
+                        .await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -471,7 +483,7 @@ fn wire__crate__api_cashu__get_mints_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_mints",
             port: Some(port_),
@@ -488,12 +500,13 @@ fn wire__crate__api_cashu__get_mints_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::get_mints()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::get_mints().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -505,7 +518,7 @@ fn wire__crate__api_cashu__get_pending_transactions_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_pending_transactions",
             port: Some(port_),
@@ -522,12 +535,13 @@ fn wire__crate__api_cashu__get_pending_transactions_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::get_pending_transactions()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::get_pending_transactions().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -539,7 +553,7 @@ fn wire__crate__api_cashu__get_pending_transactions_count_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_pending_transactions_count",
             port: Some(port_),
@@ -556,12 +570,13 @@ fn wire__crate__api_cashu__get_pending_transactions_count_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::get_pending_transactions_count()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::get_pending_transactions_count().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -573,7 +588,7 @@ fn wire__crate__api_cashu__get_transactions_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_transactions",
             port: Some(port_),
@@ -590,12 +605,13 @@ fn wire__crate__api_cashu__get_transactions_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::get_transactions()?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::get_transactions().await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -607,7 +623,7 @@ fn wire__crate__api_cashu__get_transactions_with_offset_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_transactions_with_offset",
             port: Some(port_),
@@ -626,13 +642,15 @@ fn wire__crate__api_cashu__get_transactions_with_offset_impl(
             let api_offset = <usize>::sse_decode(&mut deserializer);
             let api_limit = <usize>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok =
-                            crate::api_cashu::get_transactions_with_offset(api_offset, api_limit)?;
+                            crate::api_cashu::get_transactions_with_offset(api_offset, api_limit)
+                                .await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -644,7 +662,7 @@ fn wire__crate__api_cashu__init_cashu_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "init_cashu",
             port: Some(port_),
@@ -662,12 +680,14 @@ fn wire__crate__api_cashu__init_cashu_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_prepare_sats_once_time = <u16>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::init_cashu(api_prepare_sats_once_time)?;
+                    (move || async move {
+                        let output_ok =
+                            crate::api_cashu::init_cashu(api_prepare_sats_once_time).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -679,7 +699,7 @@ fn wire__crate__api_cashu__init_db_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "init_db",
             port: Some(port_),
@@ -699,12 +719,14 @@ fn wire__crate__api_cashu__init_db_impl(
             let api_words = <Option<String>>::sse_decode(&mut deserializer);
             let api_dev = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::init_db(api_dbpath, api_words, api_dev)?;
+                    (move || async move {
+                        let output_ok =
+                            crate::api_cashu::init_db(api_dbpath, api_words, api_dev).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -716,7 +738,7 @@ fn wire__crate__api_cashu__melt_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "melt",
             port: Some(port_),
@@ -736,13 +758,15 @@ fn wire__crate__api_cashu__melt_impl(
             let api_active_mint = <String>::sse_decode(&mut deserializer);
             let api_amount = <Option<u64>>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok =
-                            crate::api_cashu::melt(api_invoice, api_active_mint, api_amount)?;
+                            crate::api_cashu::melt(api_invoice, api_active_mint, api_amount)
+                                .await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -754,7 +778,7 @@ fn wire__crate__api_cashu__mint_token_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "mint_token",
             port: Some(port_),
@@ -774,13 +798,15 @@ fn wire__crate__api_cashu__mint_token_impl(
             let api_hash = <String>::sse_decode(&mut deserializer);
             let api_active_mint = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok =
-                            crate::api_cashu::mint_token(api_amount, api_hash, api_active_mint)?;
+                            crate::api_cashu::mint_token(api_amount, api_hash, api_active_mint)
+                                .await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -792,7 +818,7 @@ fn wire__crate__api_cashu__receive_token_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "receive_token",
             port: Some(port_),
@@ -810,12 +836,13 @@ fn wire__crate__api_cashu__receive_token_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_encoded_token = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::receive_token(api_encoded_token)?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::receive_token(api_encoded_token).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -827,7 +854,7 @@ fn wire__crate__api_cashu__remove_mint_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "remove_mint",
             port: Some(port_),
@@ -845,12 +872,13 @@ fn wire__crate__api_cashu__remove_mint_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_url = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::remove_mint(api_url)?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::remove_mint(api_url).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -862,7 +890,7 @@ fn wire__crate__api_cashu__remove_transactions_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "remove_transactions",
             port: Some(port_),
@@ -882,15 +910,17 @@ fn wire__crate__api_cashu__remove_transactions_impl(
             let api_kind =
                 <crate::api_cashu::types::TransactionStatus>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok = crate::api_cashu::remove_transactions(
                             api_unix_timestamp_ms_le,
                             api_kind,
-                        )?;
+                        )
+                        .await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -902,7 +932,7 @@ fn wire__crate__api_cashu__request_mint_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "request_mint",
             port: Some(port_),
@@ -921,13 +951,14 @@ fn wire__crate__api_cashu__request_mint_impl(
             let api_amount = <u64>::sse_decode(&mut deserializer);
             let api_active_mint = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok =
-                            crate::api_cashu::request_mint(api_amount, api_active_mint)?;
+                            crate::api_cashu::request_mint(api_amount, api_active_mint).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -939,7 +970,7 @@ fn wire__crate__api_cashu__restore_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "restore",
             port: Some(port_),
@@ -959,16 +990,18 @@ fn wire__crate__api_cashu__restore_impl(
             let api_words = <Option<String>>::sse_decode(&mut deserializer);
             let api_sleepms_after_check_a_batch = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok = crate::api_cashu::restore(
                             api_mint,
                             api_words,
                             api_sleepms_after_check_a_batch,
-                        )?;
+                        )
+                        .await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -980,7 +1013,7 @@ fn wire__crate__api_cashu__send_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "send",
             port: Some(port_),
@@ -1000,13 +1033,14 @@ fn wire__crate__api_cashu__send_impl(
             let api_active_mint = <String>::sse_decode(&mut deserializer);
             let api_info = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok =
-                            crate::api_cashu::send(api_amount, api_active_mint, api_info)?;
+                            crate::api_cashu::send(api_amount, api_active_mint, api_info).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -1018,7 +1052,7 @@ fn wire__crate__api_cashu__send_stamp_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "send_stamp",
             port: Some(port_),
@@ -1038,13 +1072,14 @@ fn wire__crate__api_cashu__send_stamp_impl(
             let api_mints = <Vec<String>>::sse_decode(&mut deserializer);
             let api_info = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
+                    (move || async move {
                         let output_ok =
-                            crate::api_cashu::send_stamp(api_amount, api_mints, api_info)?;
+                            crate::api_cashu::send_stamp(api_amount, api_mints, api_info).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
@@ -1056,7 +1091,7 @@ fn wire__crate__api_cashu__set_mnemonic_impl(
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "set_mnemonic",
             port: Some(port_),
@@ -1074,12 +1109,13 @@ fn wire__crate__api_cashu__set_mnemonic_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_words = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
+            move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_cashu::set_mnemonic(api_words)?;
+                    (move || async move {
+                        let output_ok = crate::api_cashu::set_mnemonic(api_words).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
