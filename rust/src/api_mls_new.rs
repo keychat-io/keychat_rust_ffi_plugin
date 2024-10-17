@@ -8,13 +8,12 @@ use openmls_sqlite_storage::LitePool;
 use openmls_traits::types::Ciphersuite;
 
 use anyhow::Result;
+use bincode;
 use lazy_static::lazy_static;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
-// use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use bincode;
 
 pub(crate) const CIPHERSUITE: Ciphersuite =
     Ciphersuite::MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519;

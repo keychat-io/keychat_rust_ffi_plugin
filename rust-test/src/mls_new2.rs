@@ -11,7 +11,7 @@ fn main() {
 fn test_basic() -> Result<()> {
     println!("start -------------- start");
 
-    let group_name = "G1";
+    let group_name = "G3";
 
     let a = "A";
     let b = "B";

@@ -6,10 +6,13 @@ use openmls::prelude::tls_codec::Deserialize;
 use openmls::prelude::{LeafNodeIndex, MlsMessageIn, ProcessedMessageContent, StagedWelcome};
 use openmls_sqlite_storage::LitePool;
 use openmls_traits::types::Ciphersuite;
+use openmls_traits::OpenMlsProvider;
 
 use anyhow::Result;
 use bincode;
 use lazy_static::lazy_static;
+use openmls_sqlite_storage::sqlx;
+use sqlx::Row;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
@@ -32,13 +35,15 @@ pub struct User {
     group_list: HashSet<String>,
     pub(crate) identity: RefCell<Identity>,
     #[serde(skip)]
-    provider: OpenMlsRustPersistentCrypto,
+    pub provider: OpenMlsRustPersistentCrypto,
+    #[serde(skip)]
+    pub pool: LitePool,
 }
 
 impl User {
     /// Create a new user with the given name and a fresh set of credentials.
     pub async fn new(username: String, pool: LitePool) -> Self {
-        let crypto = OpenMlsRustPersistentCrypto::new(username.clone(), pool).await;
+        let crypto = OpenMlsRustPersistentCrypto::new(username.clone(), pool.clone()).await;
         let out = Self {
             groups: RefCell::new(HashMap::new()),
             group_list: HashSet::new(),
@@ -48,6 +53,7 @@ impl User {
                 username.clone().as_bytes(),
             )),
             provider: crypto,
+            pool,
         };
         out
     }
@@ -109,7 +115,6 @@ impl User {
             let kp: KeyPackage = bincode::deserialize(&kp)?;
             kps.push(kp);
         }
-        // Build a proposal with this key package and do the MLS bits.
         let mut groups = self.groups.borrow_mut();
         let group = match groups.get_mut(&group_name) {
             Some(g) => g,
@@ -376,23 +381,15 @@ impl User {
         let (queued_msg, _welcome_option, _group_info) = mls_group
             .commit_to_pending_proposals(&self.provider, &self.identity.borrow().signer)?;
 
-        // if let Some(staged_commit) = mls_group.pending_commit() {
-        //     let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
-        //         format_err!("<mls api fn[admin_commit_leave]> Expected a proposal.")
-        //     })?;
-        //     mls_group
-        //         .merge_staged_commit(&self.provider, staged_commit.clone())?;
-        // } else {
-        //     unreachable!("<mls api fn[admin_commit_leave]> Expected a StagedCommit.");
-        // }
-        let staged_commit = mls_group.pending_commit().cloned().ok_or_else(|| {
-            format_err!("<mls api fn[admin_commit_leave]> Expected a StagedCommit.")
-        })?;
-        let _remove = staged_commit
-            .remove_proposals()
-            .next()
-            .ok_or_else(|| format_err!("<mls api fn[admin_commit_leave]> Expected a proposal."))?;
-        mls_group.merge_staged_commit(&self.provider, staged_commit)?;
+        if let Some(staged_commit) = mls_group.pending_commit() {
+            let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
+                format_err!("<mls api fn[admin_commit_leave]> Expected a proposal.")
+            })?;
+            let staged_commit_clone = staged_commit.clone();
+            mls_group.merge_staged_commit(&self.provider, staged_commit_clone)?;
+        } else {
+            unreachable!("<mls api fn[admin_commit_leave]> Expected a StagedCommit.");
+        }
 
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         Ok(serialized_queued_msg)
@@ -435,9 +432,91 @@ impl User {
         Ok(())
     }
 
-    pub async fn save() {}
-    pub async fn load() {}
-    // pub async fn get_latest(group_name: String) -> Result<User>{
+    pub async fn save(&mut self, nostr_id: String) -> Result<()> {
+        let sql = format!("INSERT INTO user (user_id, identity, group_list) values(?, ?, ?)",);
+        let identity = serde_json::to_vec(&*self.identity.borrow())?;
+        let group_list = serde_json::to_string(&self.group_list)?;
+        let sql = sqlx::query(&sql)
+            .bind(nostr_id)
+            .bind(&identity)
+            .bind(group_list);
+
+        let result = sql.execute(&self.pool.db).await;
+        match result {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                eprintln!("Error saving user: {:?}", e);
+                Err(e.into())
+            }
+        }
+        // sql.execute(&self.pool.db).await?;
+        // Ok(())
+    }
+
+    pub async fn update(&mut self, nostr_id: String, is_identity: bool) -> Result<()> {
+        let is_user = User::load(nostr_id.clone(), self.pool.clone()).await?;
+        // if none then insert first
+        if is_user.is_none() {
+            return self.save(nostr_id).await;
+        }
+        if is_identity {
+            let sql = format!("UPDATE user set identity = ? where user_id = ?",);
+            let identity = serde_json::to_vec(&*self.identity.borrow())?;
+            sqlx::query(&sql)
+                .bind(identity)
+                .bind(nostr_id)
+                .execute(&self.pool.db)
+                .await?;
+        } else {
+            let sql = format!("UPDATE user set group_list = ? where user_id = ?",);
+            let group_list = serde_json::to_string(&self.group_list)?;
+
+            sqlx::query(&sql)
+                .bind(group_list)
+                .bind(nostr_id)
+                .execute(&self.pool.db)
+                .await?;
+        }
+        Ok(())
+    }
+
+    pub async fn load(nostr_id: String, pool: LitePool) -> Result<Option<User>> {
+        let sql = format!("select identity, group_list from user where user_id = ?",);
+        let result = sqlx::query(&sql)
+            .bind(nostr_id.clone())
+            .fetch_optional(&pool.db)
+            .await?;
+
+        if let Some(rows) = result {
+            let identity: Vec<u8> = rows.get(0);
+            let group_list: Option<String> = rows.get(1);
+            let group_list: HashSet<String> =
+                serde_json::from_str(&group_list.unwrap_or_default())?;
+
+            let mut user = Self::new(nostr_id.clone(), pool).await;
+            user.group_list = group_list;
+            user.identity = serde_json::from_slice(&identity)?;
+
+            let groups = user.groups.get_mut();
+            for group_name in &user.group_list {
+                let mlsgroup = MlsGroup::load(
+                    user.provider.storage(),
+                    &GroupId::from_slice(group_name.as_bytes()),
+                )?;
+                let grp = Group {
+                    mls_group: RefCell::new(mlsgroup.unwrap()),
+                };
+                groups.insert(group_name.clone(), grp);
+            }
+            return Ok(Some(user));
+        }
+
+        Ok(None)
+    }
+
+    // pub async fn auto_save(&mut self, nostr_id: String) -> Result<()> {
+    //     self.update(nostr_id).await
+    // }
 
     // }
 }
@@ -477,8 +556,6 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
         let mut store = STORE.lock().await;
         if store.is_none() {
             let pool = LitePool::open(&db_path, Default::default()).await?;
-            // let user = User::new(nostr_id, pool.clone()).await;
-            // *store = Some(MlsStore { pool, user });
             *store = Some(MlsStore {
                 pool,
                 user: HashMap::new(),
@@ -488,10 +565,14 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
         let map = store
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[init]> Can not get store err."))?;
-        let user = User::new(nostr_id.clone(), map.pool.clone()).await;
-
-        map.user.entry(nostr_id).or_insert(user);
-        // println!("init_mls_db {:?}", map.user.len());
+        // first load from db, if none then create new user
+        let user_op = User::load(nostr_id.clone(), map.pool.clone()).await?;
+        if user_op.is_none() {
+            let user = User::new(nostr_id.clone(), map.pool.clone()).await;
+            map.user.entry(nostr_id).or_insert(user);
+        } else {
+            map.user.entry(nostr_id).or_insert(user_op.unwrap());
+        }
 
         Ok(())
     });
@@ -537,8 +618,10 @@ pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[create_key_package]> Can not get store from user.")
         })?;
-
         let key_package = user.create_key_package()?;
+        
+
+        user.update(nostr_id, true).await?;
         let serialized: Vec<u8> = bincode::serialize(&key_package)?;
         Ok(serialized)
     });
@@ -578,6 +661,7 @@ pub fn create_mls_group(
             format_err!("<signal api fn[create_mls_group]> Can not get store from user.")
         })?;
         let mls_group = user.create_mls_group(group_name.clone(), group_create_config)?;
+        user.update(nostr_id, false).await?;
         Ok(mls_group)
     });
     result
@@ -605,7 +689,7 @@ pub fn add_members(
             format_err!("<signal api fn[add_members]> Can not get store from user.")
         })?;
         let (queued_msg, welcome) = user.add_members(group_name, key_packages)?;
-
+        // user.auto_save(nostr_id).await?;
         Ok((queued_msg, welcome))
     });
     result
@@ -633,7 +717,7 @@ pub fn bob_join_mls_group(
             format_err!("<signal api fn[bob_join_mls_group]> Can not get store from user.")
         })?;
         let _mls_group = user.bob_join_mls_group(group_name, welcome, group_create_config)?;
-
+        user.update(nostr_id, false).await?;
         Ok(())
     });
     result
@@ -662,6 +746,7 @@ pub fn others_commit_add_member(
         })?;
 
         user.others_commit_add_member(group_name, queued_msg)?;
+        // user.auto_save(nostr_id).await?;
         Ok(())
     });
     result
@@ -752,6 +837,7 @@ pub fn remove_members(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[remove_members]> Can not get store from user.")
         })?;
+        // user.auto_save(nostr_id).await?;
         Ok(user.remove_members(group_name, members)?)
     });
     result
@@ -779,6 +865,7 @@ pub fn others_commit_remove_member(
         })?;
 
         user.others_commit_remove_member(group_name, queued_msg)?;
+        // user.auto_save(nostr_id).await?;
         Ok(())
     });
     result
