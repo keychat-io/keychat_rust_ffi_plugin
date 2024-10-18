@@ -9,9 +9,7 @@ use openmls_sqlite_storage::LitePool;
 use openmls_traits::types::Ciphersuite;
 
 use anyhow::Result;
-use bincode;
 use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use tokio::runtime::Runtime;

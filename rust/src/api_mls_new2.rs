@@ -1,9 +1,11 @@
 use kc::identity::Identity;
 use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
-use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig};
+use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
 use openmls::key_packages::KeyPackage;
 use openmls::prelude::tls_codec::Deserialize;
-use openmls::prelude::{LeafNodeIndex, MlsMessageIn, ProcessedMessageContent, StagedWelcome};
+use openmls::prelude::{
+    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, StagedWelcome,
+};
 use openmls_sqlite_storage::LitePool;
 use openmls_traits::types::Ciphersuite;
 use openmls_traits::OpenMlsProvider;
@@ -69,6 +71,29 @@ impl User {
         Ok(export_secret)
     }
 
+    pub fn get_tree_hash(&self, group_name: String) -> Result<Vec<u8>> {
+        let mut groups = self.groups.borrow_mut();
+        let group = match groups.get_mut(&group_name) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+        };
+        let mls_group = group.mls_group.borrow_mut();
+        let tree_hash = mls_group.tree_hash().to_vec();
+        Ok(tree_hash)
+    }
+
+    pub fn get_group_config(&self, group_name: String) -> Result<Vec<u8>> {
+        let mut groups = self.groups.borrow_mut();
+        let group = match groups.get_mut(&group_name) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+        };
+        let mls_group = group.mls_group.borrow_mut();
+        let group_config = mls_group.configuration();
+        let group_config_vec = bincode::serialize(&group_config)?;
+        Ok(group_config_vec)
+    }
+
     pub fn create_key_package(&mut self) -> Result<KeyPackage> {
         let key_package = self
             .identity
@@ -77,12 +102,11 @@ impl User {
         Ok(key_package)
     }
 
-    pub fn create_mls_group(
-        &mut self,
-        group_name: String,
-        group_create_config: Vec<u8>,
-    ) -> Result<MlsGroup> {
-        let group_create_config: MlsGroupCreateConfig = bincode::deserialize(&group_create_config)?;
+    // return group join config
+    pub fn create_mls_group(&mut self, group_name: String) -> Result<Vec<u8>> {
+        let group_create_config = MlsGroupCreateConfig::builder()
+            .use_ratchet_tree_extension(true)
+            .build();
 
         let mls_group = MlsGroup::new_with_group_id(
             &self.provider,
@@ -101,8 +125,9 @@ impl User {
 
         self.groups.borrow_mut().insert(group_name.clone(), group);
         self.group_list.insert(group_name);
-
-        Ok(mls_group)
+        let group_config = group_create_config.join_config();
+        let group_config_vec = bincode::serialize(&group_config)?;
+        Ok(group_config_vec)
     }
 
     pub fn add_members(
@@ -135,9 +160,9 @@ impl User {
         &mut self,
         group_name: String,
         welcome: Vec<u8>,
-        group_create_config: Vec<u8>,
-    ) -> Result<MlsGroup> {
-        let group_create_config: MlsGroupCreateConfig = bincode::deserialize(&group_create_config)?;
+        group_join_config: Vec<u8>,
+    ) -> Result<()> {
+        let group_join_config: MlsGroupJoinConfig = bincode::deserialize(&group_join_config)?;
         let welcome = MlsMessageIn::tls_deserialize_exact(&welcome)?;
         let welcome = welcome.into_welcome().ok_or_else(|| {
             format_err!(
@@ -145,21 +170,19 @@ impl User {
             )
         })?;
 
-        let bob_mls_group = StagedWelcome::new_from_welcome(
-            &self.provider,
-            group_create_config.join_config(),
-            welcome,
-            None,
-        )
-        .map_err(|_| {
-            format_err!(
+        let bob_mls_group =
+            StagedWelcome::new_from_welcome(&self.provider, &group_join_config, welcome, None)
+                .map_err(|_| {
+                    format_err!(
                 "<mls api fn[bob_join_mls_group]> Error creating StagedWelcome from Welcome."
             )
-        })?
-        .into_group(&self.provider)
-        .map_err(|_| {
-            format_err!("<mls api fn[bob_join_mls_group]> Error creating group from StagedWelcome.")
-        })?;
+                })?
+                .into_group(&self.provider)
+                .map_err(|_| {
+                    format_err!(
+                        "<mls api fn[bob_join_mls_group]> Error creating group from StagedWelcome."
+                    )
+                })?;
 
         let group = Group {
             mls_group: RefCell::new(bob_mls_group.clone()),
@@ -172,15 +195,11 @@ impl User {
         self.groups.borrow_mut().insert(group_name.clone(), group);
         self.group_list.insert(group_name);
 
-        Ok(bob_mls_group)
+        Ok(())
     }
 
-    // only group is not null, and other members should execute this
-    pub fn others_commit_add_member(
-        &mut self,
-        group_name: String,
-        queued_msg: Vec<u8>,
-    ) -> Result<()> {
+    // this is used for add member and update, only group is not null, and other members should execute this
+    pub fn others_commit_normal(&mut self, group_name: String, queued_msg: Vec<u8>) -> Result<()> {
         let mut groups = self.groups.borrow_mut();
         let group = match groups.get_mut(&group_name) {
             Some(g) => g,
@@ -191,7 +210,7 @@ impl User {
         let alice_processed_message = mls_group.process_message(
             &self.provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
-                format_err!("<mls api fn[others_commit_add_member]> Unexpected message type")
+                format_err!("<mls api fn[others_commit_normal]> Unexpected message type")
             })?,
         )?;
 
@@ -201,7 +220,7 @@ impl User {
             mls_group.merge_staged_commit(&self.provider, *staged_commit)?;
         } else {
             Err(anyhow::anyhow!(
-                "<mls api fn[others_commit_add_member]> Expected a StagedCommit."
+                "<mls api fn[others_commit_normal]> Expected a StagedCommit."
             ))?;
         }
 
@@ -320,7 +339,6 @@ impl User {
             // Merge staged Commit
             mls_group.merge_staged_commit(&self.provider, *staged_commit)?;
         } else {
-            // unreachable!("Expected a StagedCommit.");
             Err(anyhow::anyhow!(
                 "<mls api fn[others_commit_remove_member]> Expected a StagedCommit."
             ))?;
@@ -432,6 +450,27 @@ impl User {
         Ok(())
     }
 
+    // only admin excute it, update the tree info
+    pub fn self_update(&mut self, group_name: String) -> Result<Vec<u8>> {
+        let mut groups = self.groups.borrow_mut();
+        let group = match groups.get_mut(&group_name) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+        };
+        let mut mls_group = group.mls_group.borrow_mut();
+        let (queued_msg, _welcome_option, _group_info) = mls_group.self_update(
+            &self.provider,
+            &self.identity.borrow().signer,
+            LeafNodeParameters::default(),
+        )?;
+        mls_group.merge_pending_commit(&self.provider)?;
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        // let serialized_welcome: Vec<u8> =
+        //     welcome_option.map_or_else(|| Ok(vec![]), |welcome| welcome.to_bytes())?;
+
+        Ok(serialized_queued_msg)
+    }
+
     pub async fn save(&mut self, nostr_id: String) -> Result<()> {
         let sql = format!("INSERT INTO user (user_id, identity, group_list) values(?, ?, ?)",);
         let identity = serde_json::to_vec(&*self.identity.borrow())?;
@@ -449,7 +488,6 @@ impl User {
                 Err(e.into())
             }
         }
-        // sql.execute(&self.pool.db).await?;
         // Ok(())
     }
 
@@ -514,16 +552,10 @@ impl User {
         Ok(None)
     }
 
-    // pub async fn auto_save(&mut self, nostr_id: String) -> Result<()> {
-    //     self.update(nostr_id).await
-    // }
-
-    // }
 }
 
 pub struct MlsStore {
     pub pool: LitePool,
-    // pub user: User,
     pub user: HashMap<String, User>,
 }
 
@@ -549,7 +581,7 @@ macro_rules! lock_runtime {
     };
 }
 
-// when init db then create the user
+// when init db then create the user, every user show init it
 pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
@@ -602,6 +634,30 @@ pub fn get_export_secret(nostr_id: String, group_name: String) -> Result<Vec<u8>
     result
 }
 
+pub fn get_tree_hash(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<mls api fn[create_key_package]> Can not get store err.")
+        })?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("create_key_package key_pair do not init.");
+            return Err(format_err!(
+                "<signal api fn[create_key_package]> nostr_id do not init."
+            ));
+        }
+        let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
+            format_err!("<signal api fn[create_key_package]> Can not get store from user.")
+        })?;
+
+        let export_secret = user.get_tree_hash(group_name)?;
+        Ok(export_secret)
+    });
+    result
+}
+
+// only join new group that need to create it
 pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
@@ -619,7 +675,6 @@ pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
             format_err!("<signal api fn[create_key_package]> Can not get store from user.")
         })?;
         let key_package = user.create_key_package()?;
-        
 
         user.update(nostr_id, true).await?;
         let serialized: Vec<u8> = bincode::serialize(&key_package)?;
@@ -640,11 +695,7 @@ pub fn create_group_config() -> Result<Vec<u8>> {
     result
 }
 
-pub fn create_mls_group(
-    nostr_id: String,
-    group_name: String,
-    group_create_config: Vec<u8>,
-) -> Result<MlsGroup> {
+pub fn get_group_config(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -660,9 +711,32 @@ pub fn create_mls_group(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[create_mls_group]> Can not get store from user.")
         })?;
-        let mls_group = user.create_mls_group(group_name.clone(), group_create_config)?;
+        let config = user.get_group_config(group_name.clone())?;
+        Ok(config)
+    });
+    result
+}
+
+// when create group, then return the group join config
+pub fn create_mls_group(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<mls api fn[create_mls_group]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("create_key_package key_pair do not init.");
+            return Err(format_err!(
+                "<signal api fn[create_mls_group]> nostr_id do not init."
+            ));
+        }
+        let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
+            format_err!("<signal api fn[create_mls_group]> Can not get store from user.")
+        })?;
+        let group_config = user.create_mls_group(group_name.clone())?;
         user.update(nostr_id, false).await?;
-        Ok(mls_group)
+        Ok(group_config)
     });
     result
 }
@@ -689,17 +763,17 @@ pub fn add_members(
             format_err!("<signal api fn[add_members]> Can not get store from user.")
         })?;
         let (queued_msg, welcome) = user.add_members(group_name, key_packages)?;
-        // user.auto_save(nostr_id).await?;
         Ok((queued_msg, welcome))
     });
     result
 }
 
+// others join the group
 pub fn bob_join_mls_group(
     nostr_id: String,
     group_name: String,
     welcome: Vec<u8>,
-    group_create_config: Vec<u8>,
+    group_join_config: Vec<u8>,
 ) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
@@ -716,7 +790,7 @@ pub fn bob_join_mls_group(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[bob_join_mls_group]> Can not get store from user.")
         })?;
-        let _mls_group = user.bob_join_mls_group(group_name, welcome, group_create_config)?;
+        let _mls_group = user.bob_join_mls_group(group_name, welcome, group_join_config)?;
         user.update(nostr_id, false).await?;
         Ok(())
     });
@@ -724,7 +798,7 @@ pub fn bob_join_mls_group(
 }
 
 // only group is not null, and other members should execute this
-pub fn others_commit_add_member(
+pub fn others_commit_normal(
     nostr_id: String,
     group_name: String,
     queued_msg: Vec<u8>,
@@ -745,8 +819,7 @@ pub fn others_commit_add_member(
             format_err!("<signal api fn[others_commit_add_member]> Can not get store from user.")
         })?;
 
-        user.others_commit_add_member(group_name, queued_msg)?;
-        // user.auto_save(nostr_id).await?;
+        user.others_commit_normal(group_name, queued_msg)?;
         Ok(())
     });
     result
@@ -796,6 +869,7 @@ pub fn decrypt_msg(nostr_id: String, group_name: String, msg: Vec<u8>) -> Result
     result
 }
 
+// when remove remembers, should use this lead node
 pub fn get_lead_node_index(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
@@ -837,7 +911,6 @@ pub fn remove_members(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[remove_members]> Can not get store from user.")
         })?;
-        // user.auto_save(nostr_id).await?;
         Ok(user.remove_members(group_name, members)?)
     });
     result
@@ -865,7 +938,6 @@ pub fn others_commit_remove_member(
         })?;
 
         user.others_commit_remove_member(group_name, queued_msg)?;
-        // user.auto_save(nostr_id).await?;
         Ok(())
     });
     result
@@ -888,6 +960,27 @@ pub fn self_leave(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
             format_err!("<signal api fn[self_leave]> Can not get store from user.")
         })?;
         Ok(user.self_leave(group_name)?)
+    });
+    result
+}
+
+pub fn self_update(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<mls api fn[self_leave]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("self_leave nostr_id do not init.");
+            return Err(format_err!(
+                "<signal api fn[self_leave]> nostr_id do not init."
+            ));
+        }
+        let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
+            format_err!("<signal api fn[self_leave]> Can not get store from user.")
+        })?;
+        Ok(user.self_update(group_name)?)
     });
     result
 }

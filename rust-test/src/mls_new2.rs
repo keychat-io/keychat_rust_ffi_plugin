@@ -3,15 +3,92 @@ use rust::api_mls_new2::*;
 
 fn main() {
     let _ = test_basic();
+    // let _ = test_exist_group();
     // let _ = test_complex();
     // let _ = test_complex2();
 }
 
+fn test_exist_group() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_name = "G1";
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+    let f = "F";
+    let g = "G";
+
+    let db_path = "./mls-lite.sqlite";
+    // every user show init this
+    init_mls_db(db_path.to_string(), a.to_string())?;
+    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_path.to_string(), c.to_string())?;
+    init_mls_db(db_path.to_string(), d.to_string())?;
+    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_path.to_string(), f.to_string())?;
+    init_mls_db(db_path.to_string(), g.to_string())?;
+
+    let group_join_config = get_group_config(a.to_string(), group_name.to_string())?;
+
+    let f_pk = create_key_package(f.to_string())?;
+    let g_pk = create_key_package(g.to_string())?;
+
+    // A add G
+    let welcome = add_members(a.to_string(), group_name.to_string(), [f_pk, g_pk].to_vec())?;
+
+    // F join in the group
+    bob_join_mls_group(
+        f.to_string(),
+        group_name.to_string(),
+        welcome.1.clone(),
+        group_join_config.clone(),
+    )?;
+
+    // G join in the group
+    bob_join_mls_group(
+        g.to_string(),
+        group_name.to_string(),
+        welcome.1.clone(),
+        group_join_config.clone(),
+    )?;
+
+    // D commit
+    let _ = others_commit_normal(d.to_string(), group_name.to_string(), welcome.0.clone())?;
+
+    // E commit
+    let _ = others_commit_normal(e.to_string(), group_name.to_string(), welcome.0.clone())?;
+
+    // A send msg to G
+    let msg = send_msg(
+        a.to_string(),
+        group_name.to_string(),
+        "hello, G".to_string(),
+    )?;
+    // F decrypt A's msg
+    let text = decrypt_msg(f.to_string(), group_name.to_string(), msg.clone())?;
+    println!("A send msg to F ,the result is {:?}", text);
+
+    // E decrypt A's msg
+    let text = decrypt_msg(e.to_string(), group_name.to_string(), msg.clone())?;
+    println!("A send msg to E ,the result is {:?}", text);
+
+    // G decrypt A's msg
+    let text = decrypt_msg(g.to_string(), group_name.to_string(), msg.clone())?;
+    println!("A send msg to G ,the result is {:?}", text);
+
+    // D decrypt A's msg
+    let text = decrypt_msg(d.to_string(), group_name.to_string(), msg.clone())?;
+    println!("A send msg to D ,the result is {:?}", text);
+
+    Ok(())
+}
 // create add send_msg decrypt_msg remove leave
 fn test_basic() -> Result<()> {
     println!("start -------------- start");
 
-    let group_name = "G3";
+    let group_name = "G1";
 
     let a = "A";
     let b = "B";
@@ -27,19 +104,13 @@ fn test_basic() -> Result<()> {
     init_mls_db(db_path.to_string(), d.to_string())?;
     init_mls_db(db_path.to_string(), e.to_string())?;
 
-    let group_create_config = create_group_config()?;
-
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
     let d_pk = create_key_package(d.to_string())?;
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    create_mls_group(
-        a.to_string(),
-        group_name.to_string(),
-        group_create_config.clone(),
-    )?;
+    let group_join_config = create_mls_group(a.to_string(), group_name.to_string())?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_name.to_string(), [b_pk].to_vec())?;
@@ -49,7 +120,7 @@ fn test_basic() -> Result<()> {
         b.to_string(),
         group_name.to_string(),
         welcome.1,
-        group_create_config.clone(),
+        group_join_config.clone(),
     )?;
 
     // A send msg to B
@@ -83,6 +154,16 @@ fn test_basic() -> Result<()> {
         get_export_secret(b.to_string(), group_name.to_string()).unwrap()
     );
 
+    println!(
+        "a_mls_group tree hash {:?}",
+        get_tree_hash(a.to_string(), group_name.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group tree hash {:?}",
+        get_tree_hash(b.to_string(), group_name.to_string()).unwrap()
+    );
+
     println!("--B add C --------------");
 
     // B add C
@@ -93,10 +174,10 @@ fn test_basic() -> Result<()> {
         c.to_string(),
         group_name.to_string(),
         welcome2.1,
-        group_create_config.clone(),
+        group_join_config.clone(),
     )?;
     // A commit
-    let _ = others_commit_add_member(a.to_string(), group_name.to_string(), welcome2.0)?;
+    let _ = others_commit_normal(a.to_string(), group_name.to_string(), welcome2.0)?;
 
     // B send msg
     let msg3 = send_msg(
@@ -129,6 +210,21 @@ fn test_basic() -> Result<()> {
         get_export_secret(c.to_string(), group_name.to_string()).unwrap()
     );
 
+    println!(
+        "a_mls_group tree hash {:?}",
+        get_tree_hash(a.to_string(), group_name.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group tree hash {:?}",
+        get_tree_hash(b.to_string(), group_name.to_string()).unwrap()
+    );
+
+    println!(
+        "c_mls_group tree hash {:?}",
+        get_tree_hash(c.to_string(), group_name.to_string()).unwrap()
+    );
+
     println!("--A add D --------------");
 
     // A add D
@@ -139,14 +235,14 @@ fn test_basic() -> Result<()> {
         d.to_string(),
         group_name.to_string(),
         welcome3.1,
-        group_create_config.clone(),
+        group_join_config.clone(),
     )?;
 
     // B commit
-    let _ = others_commit_add_member(b.to_string(), group_name.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(b.to_string(), group_name.to_string(), welcome3.0.clone())?;
 
     // C commit
-    let _ = others_commit_add_member(c.to_string(), group_name.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(c.to_string(), group_name.to_string(), welcome3.0.clone())?;
 
     // A send msg
     let msg4 = send_msg(
@@ -197,13 +293,13 @@ fn test_basic() -> Result<()> {
     )?;
 
     // B commit
-    let _ = others_commit_add_member(b.to_string(), group_name.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(b.to_string(), group_name.to_string(), queued_msg.clone())?;
 
     // C commit
-    let _ = others_commit_add_member(c.to_string(), group_name.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(c.to_string(), group_name.to_string(), queued_msg.clone())?;
 
     // D commit
-    let _ = others_commit_add_member(d.to_string(), group_name.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(d.to_string(), group_name.to_string(), queued_msg.clone())?;
 
     println!("--A remove B --------------");
 
@@ -230,13 +326,13 @@ fn test_basic() -> Result<()> {
         e.to_string(),
         group_name.to_string(),
         welcome4.1,
-        group_create_config.clone(),
+        group_join_config.clone(),
     )?;
 
     // C commit
-    let _ = others_commit_add_member(c.to_string(), group_name.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(c.to_string(), group_name.to_string(), welcome4.0.clone())?;
     // D commit
-    let _ = others_commit_add_member(d.to_string(), group_name.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(d.to_string(), group_name.to_string(), welcome4.0.clone())?;
 
     println!("--A add E --------------");
 
@@ -279,6 +375,31 @@ fn test_basic() -> Result<()> {
     let _ = normal_member_commit_leave(e.to_string(), group_name.to_string(), queued_msg.clone())?;
     // C commit
     let _ = normal_member_commit_leave(c.to_string(), group_name.to_string(), queued_msg.clone())?;
+
+    println!(
+        "a_mls_group export secret {:?}",
+        get_export_secret(a.to_string(), group_name.to_string()).unwrap()
+    );
+
+    println!(
+        "d_mls_group export secret {:?}",
+        get_export_secret(d.to_string(), group_name.to_string()).unwrap()
+    );
+
+    println!(
+        "e_mls_group export secret {:?}",
+        get_export_secret(e.to_string(), group_name.to_string()).unwrap()
+    );
+
+    println!("--A UPDATE --------------");
+
+    // admin update
+    let queued_msg = self_update(a.to_string(), group_name.to_string())?;
+
+    // E commit
+    let _ = others_commit_normal(e.to_string(), group_name.to_string(), queued_msg.clone())?;
+    // D commit
+    let _ = others_commit_normal(d.to_string(), group_name.to_string(), queued_msg.clone())?;
 
     println!(
         "a_mls_group export secret {:?}",
@@ -434,9 +555,9 @@ fn test_basic() -> Result<()> {
 //         bob_join_mls_group(welcome2.1.clone(), &g_provider, group_create_config.clone())?;
 
 //     // A commit
-//     let _ = others_commit_add_member(&mut a_mls_group, welcome2.0.clone(), &a_provider)?;
+//     let _ = others_commit_normal(&mut a_mls_group, welcome2.0.clone(), &a_provider)?;
 //     // F commit
-//     let _ = others_commit_add_member(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
+//     let _ = others_commit_normal(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
 
 //     // B send msg
 //     let msg3 = send_msg(
@@ -493,13 +614,13 @@ fn test_basic() -> Result<()> {
 //     let mut d_mls_group = bob_join_mls_group(welcome3.1, &d_provider, group_create_config.clone())?;
 
 //     // B commit
-//     let _ = others_commit_add_member(&mut b_mls_group, welcome3.0.clone(), &b_provider)?;
+//     let _ = others_commit_normal(&mut b_mls_group, welcome3.0.clone(), &b_provider)?;
 //     // C commit
-//     let _ = others_commit_add_member(&mut c_mls_group, welcome3.0.clone(), &c_provider)?;
+//     let _ = others_commit_normal(&mut c_mls_group, welcome3.0.clone(), &c_provider)?;
 //     // F commit
-//     let _ = others_commit_add_member(&mut f_mls_group, welcome3.0.clone(), &f_provider)?;
+//     let _ = others_commit_normal(&mut f_mls_group, welcome3.0.clone(), &f_provider)?;
 //     // F commit
-//     let _ = others_commit_add_member(&mut g_mls_group, welcome3.0.clone(), &g_provider)?;
+//     let _ = others_commit_normal(&mut g_mls_group, welcome3.0.clone(), &g_provider)?;
 
 //     // A send msg
 //     let msg4 = send_msg(
@@ -599,11 +720,11 @@ fn test_basic() -> Result<()> {
 //     let mut e_mls_group = bob_join_mls_group(welcome4.1, &e_provider, group_create_config.clone())?;
 
 //     // C commit
-//     let _ = others_commit_add_member(&mut c_mls_group, welcome4.0.clone(), &c_provider)?;
+//     let _ = others_commit_normal(&mut c_mls_group, welcome4.0.clone(), &c_provider)?;
 //     // D commit
-//     let _ = others_commit_add_member(&mut d_mls_group, welcome4.0.clone(), &d_provider)?;
+//     let _ = others_commit_normal(&mut d_mls_group, welcome4.0.clone(), &d_provider)?;
 //     // G commit
-//     let _ = others_commit_add_member(&mut g_mls_group, welcome4.0.clone(), &g_provider)?;
+//     let _ = others_commit_normal(&mut g_mls_group, welcome4.0.clone(), &g_provider)?;
 
 //     println!("--A add E --------------");
 //     println!(
@@ -782,9 +903,9 @@ fn test_basic() -> Result<()> {
 //         bob_join_mls_group(welcome2.1.clone(), &g_provider, &group_create_config)?;
 
 //     // A commit
-//     let _ = others_commit_add_member(&mut a_mls_group, welcome2.0.clone(), &a_provider)?;
+//     let _ = others_commit_normal(&mut a_mls_group, welcome2.0.clone(), &a_provider)?;
 //     // // F commit
-//     // let _ = others_commit_add_member(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
+//     // let _ = others_commit_normal(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
 
 //     println!("--------------");
 
@@ -883,17 +1004,17 @@ fn test_basic() -> Result<()> {
 
 //     println!("--f_mls_group --------------");
 //     let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
-//      let _ = others_commit_add_member(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
+//      let _ = others_commit_normal(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
 
 //     // B commit
-//     let _ = others_commit_add_member(&mut b_mls_group, welcome3.0.clone(), &b_provider)?;
+//     let _ = others_commit_normal(&mut b_mls_group, welcome3.0.clone(), &b_provider)?;
 //     // C commit
-//     let _ = others_commit_add_member(&mut c_mls_group, welcome3.0.clone(), &c_provider)?;
+//     let _ = others_commit_normal(&mut c_mls_group, welcome3.0.clone(), &c_provider)?;
 //     println!("--F commit --------------");
 //     // F commit, add some members, due to F reply dely, lead to F lack ont commit
-//     let _ = others_commit_add_member(&mut f_mls_group, welcome3.0.clone(), &f_provider)?;
+//     let _ = others_commit_normal(&mut f_mls_group, welcome3.0.clone(), &f_provider)?;
 //     // G commit
-//     let _ = others_commit_add_member(&mut g_mls_group, welcome3.0.clone(), &g_provider)?;
+//     let _ = others_commit_normal(&mut g_mls_group, welcome3.0.clone(), &g_provider)?;
 
 //     println!(
 //         "a_mls_group export secret {:?}",
@@ -964,11 +1085,11 @@ fn test_basic() -> Result<()> {
 //     let mut e_mls_group = bob_join_mls_group(welcome4.1, &e_provider, &group_create_config)?;
 
 //     // C commit
-//     let _ = others_commit_add_member(&mut c_mls_group, welcome4.0.clone(), &c_provider)?;
+//     let _ = others_commit_normal(&mut c_mls_group, welcome4.0.clone(), &c_provider)?;
 //     // D commit
-//     let _ = others_commit_add_member(&mut d_mls_group, welcome4.0.clone(), &d_provider)?;
+//     let _ = others_commit_normal(&mut d_mls_group, welcome4.0.clone(), &d_provider)?;
 //     // G commit
-//     let _ = others_commit_add_member(&mut g_mls_group, welcome4.0.clone(), &g_provider)?;
+//     let _ = others_commit_normal(&mut g_mls_group, welcome4.0.clone(), &g_provider)?;
 
 //     println!("--A add E --------------");
 //     println!(
