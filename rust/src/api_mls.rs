@@ -110,7 +110,7 @@ pub fn group_create_config() -> Result<MlsGroupCreateConfig> {
 }
 
 pub fn create_mls_group(
-    group_name: String,
+    group_id: String,
     group_create_config: &MlsGroupCreateConfig,
     provider: &OpenMlsRustPersistentCrypto,
     identity: &Identity,
@@ -121,7 +121,7 @@ pub fn create_mls_group(
             provider,
             &identity.signer,
             group_create_config,
-            GroupId::from_slice(group_name.as_bytes()),
+            GroupId::from_slice(group_id.as_bytes()),
             identity.credential_with_key.clone(),
         )
         .map_err(|_| format_err!("<mls api fn[create_mls_group]> execute err."))?;

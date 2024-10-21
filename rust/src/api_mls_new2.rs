@@ -44,7 +44,7 @@ pub struct User {
 
 impl User {
     /// Create a new user with the given name and a fresh set of credentials.
-    pub async fn new(username: String, pool: LitePool) -> Self {
+    pub(crate) async fn new(username: String, pool: LitePool) -> Self {
         let crypto = OpenMlsRustPersistentCrypto::new(username.clone(), pool.clone()).await;
         let out = Self {
             groups: RefCell::new(HashMap::new()),
@@ -60,33 +60,33 @@ impl User {
         out
     }
 
-    pub fn get_export_secret(&self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn get_export_secret(&self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mls_group = group.mls_group.borrow_mut();
         let export_secret = mls_group.export_secret(&self.provider, "", &[], 32)?;
         Ok(export_secret)
     }
 
-    pub fn get_tree_hash(&self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn get_tree_hash(&self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mls_group = group.mls_group.borrow_mut();
         let tree_hash = mls_group.tree_hash().to_vec();
         Ok(tree_hash)
     }
 
-    pub fn get_group_config(&self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn get_group_config(&self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mls_group = group.mls_group.borrow_mut();
         let group_config = mls_group.configuration();
@@ -94,7 +94,7 @@ impl User {
         Ok(group_config_vec)
     }
 
-    pub fn create_key_package(&mut self) -> Result<KeyPackage> {
+    pub(crate) fn create_key_package(&mut self) -> Result<KeyPackage> {
         let key_package = self
             .identity
             .borrow_mut()
@@ -103,7 +103,7 @@ impl User {
     }
 
     // return group join config
-    pub fn create_mls_group(&mut self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn create_mls_group(&mut self, group_id: String) -> Result<Vec<u8>> {
         let group_create_config = MlsGroupCreateConfig::builder()
             .use_ratchet_tree_extension(true)
             .build();
@@ -112,27 +112,27 @@ impl User {
             &self.provider,
             &self.identity.borrow().signer,
             &group_create_config,
-            GroupId::from_slice(group_name.as_bytes()),
+            GroupId::from_slice(group_id.as_bytes()),
             self.identity.borrow().credential_with_key.clone(),
         )?;
         let group = Group {
             mls_group: RefCell::new(mls_group.clone()),
         };
 
-        if self.groups.borrow().contains_key(&group_name) {
-            panic!("Group '{}' existed already", group_name);
+        if self.groups.borrow().contains_key(&group_id) {
+            panic!("Group '{}' existed already", group_id);
         }
 
-        self.groups.borrow_mut().insert(group_name.clone(), group);
-        self.group_list.insert(group_name);
+        self.groups.borrow_mut().insert(group_id.clone(), group);
+        self.group_list.insert(group_id);
         let group_config = group_create_config.join_config();
         let group_config_vec = bincode::serialize(&group_config)?;
         Ok(group_config_vec)
     }
 
-    pub fn add_members(
+    pub(crate) fn add_members(
         &mut self,
-        group_name: String,
+        group_id: String,
         key_packages: Vec<Vec<u8>>,
     ) -> Result<(Vec<u8>, Vec<u8>)> {
         let mut kps: Vec<KeyPackage> = Vec::new();
@@ -141,9 +141,9 @@ impl User {
             kps.push(kp);
         }
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let (queued_msg, welcome, _) =
@@ -156,9 +156,9 @@ impl User {
         Ok((serialized_queued_msg, serialized_welcome))
     }
 
-    pub fn bob_join_mls_group(
+    pub(crate) fn bob_join_mls_group(
         &mut self,
-        group_name: String,
+        group_id: String,
         welcome: Vec<u8>,
         group_join_config: Vec<u8>,
     ) -> Result<()> {
@@ -169,6 +169,15 @@ impl User {
                 "<mls api fn[bob_join_mls_group]> expected the message to be a welcome message."
             )
         })?;
+
+        // used key_package need to delete
+        let mut ident = self.identity.borrow_mut();
+        for secret in welcome.secrets().iter() {
+            let key_package_hash = &secret.new_member();
+            if ident.kp.contains_key(key_package_hash.as_slice()) {
+                ident.kp.remove(key_package_hash.as_slice());
+            }
+        }
 
         let bob_mls_group =
             StagedWelcome::new_from_welcome(&self.provider, &group_join_config, welcome, None)
@@ -188,22 +197,22 @@ impl User {
             mls_group: RefCell::new(bob_mls_group.clone()),
         };
 
-        if self.groups.borrow().contains_key(&group_name) {
-            panic!("Group '{}' existed already", group_name);
+        if self.groups.borrow().contains_key(&group_id) {
+            panic!("Group '{}' existed already", group_id);
         }
 
-        self.groups.borrow_mut().insert(group_name.clone(), group);
-        self.group_list.insert(group_name);
+        self.groups.borrow_mut().insert(group_id.clone(), group);
+        self.group_list.insert(group_id);
 
         Ok(())
     }
 
     // this is used for add member and update, only group is not null, and other members should execute this
-    pub fn others_commit_normal(&mut self, group_name: String, queued_msg: Vec<u8>) -> Result<()> {
+    pub(crate) fn others_commit_normal(&mut self, group_id: String, queued_msg: Vec<u8>) -> Result<()> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
@@ -227,11 +236,11 @@ impl User {
         Ok(())
     }
 
-    pub fn send_msg(&mut self, group_name: String, msg: String) -> Result<Vec<u8>> {
+    pub(crate) fn send_msg(&mut self, group_id: String, msg: String) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let msg_out = group
             .mls_group
@@ -246,11 +255,11 @@ impl User {
         Ok(serialized_msg_out)
     }
 
-    pub fn decrypt_msg(&mut self, group_name: String, msg: Vec<u8>) -> Result<String> {
+    pub(crate) fn decrypt_msg(&mut self, group_id: String, msg: Vec<u8>) -> Result<String> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let msg = MlsMessageIn::tls_deserialize_exact(&msg)?;
         let processed_message = group
@@ -274,22 +283,22 @@ impl User {
         }
     }
 
-    pub fn get_lead_node_index(&mut self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn get_lead_node_index(&mut self, group_id: String) -> Result<Vec<u8>> {
         let groups = self.groups.borrow();
-        let group = match groups.get(&group_name) {
+        let group = match groups.get(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let lead_node_index = group.mls_group.borrow_mut().own_leaf_index();
         let lead_node_index_vec = bincode::serialize(&lead_node_index)?;
         Ok(lead_node_index_vec)
     }
 
-    pub fn remove_members(&mut self, group_name: String, members: Vec<Vec<u8>>) -> Result<Vec<u8>> {
+    pub(crate) fn remove_members(&mut self, group_id: String, members: Vec<Vec<u8>>) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let mut leaf_nodes: Vec<LeafNodeIndex> = Vec::new();
@@ -309,15 +318,15 @@ impl User {
         Ok(serialized_queued_msg)
     }
 
-    pub fn others_commit_remove_member(
+    pub(crate) fn others_commit_remove_member(
         &mut self,
-        group_name: String,
+        group_id: String,
         queued_msg: Vec<u8>,
     ) -> Result<()> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
@@ -347,11 +356,11 @@ impl User {
         Ok(())
     }
 
-    pub fn self_leave(&mut self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn self_leave(&mut self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let queued_msg = group
             .mls_group
@@ -362,11 +371,11 @@ impl User {
         Ok(serialized_queued_msg)
     }
 
-    pub fn others_proposal_leave(&mut self, group_name: String, queued_msg: Vec<u8>) -> Result<()> {
+    pub(crate) fn others_proposal_leave(&mut self, group_id: String, queued_msg: Vec<u8>) -> Result<()> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
@@ -389,11 +398,11 @@ impl User {
         Ok(())
     }
 
-    pub fn admin_commit_leave(&mut self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn admin_commit_leave(&mut self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let (queued_msg, _welcome_option, _group_info) = mls_group
@@ -414,15 +423,15 @@ impl User {
     }
 
     // expect admin, queued_msg is from admin
-    pub fn normal_member_commit_leave(
+    pub(crate) fn normal_member_commit_leave(
         &mut self,
-        group_name: String,
+        group_id: String,
         queued_msg: Vec<u8>,
     ) -> Result<()> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
@@ -451,11 +460,11 @@ impl User {
     }
 
     // only admin excute it, update the tree info
-    pub fn self_update(&mut self, group_name: String) -> Result<Vec<u8>> {
+    pub(crate) fn self_update(&mut self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self.groups.borrow_mut();
-        let group = match groups.get_mut(&group_name) {
+        let group = match groups.get_mut(&group_id) {
             Some(g) => g,
-            _ => return Err(anyhow::anyhow!("No group with name {group_name} known.")),
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mut mls_group = group.mls_group.borrow_mut();
         let (queued_msg, _welcome_option, _group_info) = mls_group.self_update(
@@ -471,7 +480,7 @@ impl User {
         Ok(serialized_queued_msg)
     }
 
-    pub async fn save(&mut self, nostr_id: String) -> Result<()> {
+    pub(crate) async fn save(&mut self, nostr_id: String) -> Result<()> {
         let sql = format!("INSERT INTO user (user_id, identity, group_list) values(?, ?, ?)",);
         let identity = serde_json::to_vec(&*self.identity.borrow())?;
         let group_list = serde_json::to_string(&self.group_list)?;
@@ -491,7 +500,7 @@ impl User {
         // Ok(())
     }
 
-    pub async fn update(&mut self, nostr_id: String, is_identity: bool) -> Result<()> {
+    pub(crate) async fn update(&mut self, nostr_id: String, is_identity: bool) -> Result<()> {
         let is_user = User::load(nostr_id.clone(), self.pool.clone()).await?;
         // if none then insert first
         if is_user.is_none() {
@@ -518,7 +527,7 @@ impl User {
         Ok(())
     }
 
-    pub async fn load(nostr_id: String, pool: LitePool) -> Result<Option<User>> {
+    pub(crate) async fn load(nostr_id: String, pool: LitePool) -> Result<Option<User>> {
         let sql = format!("select identity, group_list from user where user_id = ?",);
         let result = sqlx::query(&sql)
             .bind(nostr_id.clone())
@@ -536,15 +545,15 @@ impl User {
             user.identity = serde_json::from_slice(&identity)?;
 
             let groups = user.groups.get_mut();
-            for group_name in &user.group_list {
+            for group_id in &user.group_list {
                 let mlsgroup = MlsGroup::load(
                     user.provider.storage(),
-                    &GroupId::from_slice(group_name.as_bytes()),
+                    &GroupId::from_slice(group_id.as_bytes()),
                 )?;
                 let grp = Group {
                     mls_group: RefCell::new(mlsgroup.unwrap()),
                 };
-                groups.insert(group_name.clone(), grp);
+                groups.insert(group_id.clone(), grp);
             }
             return Ok(Some(user));
         }
@@ -611,7 +620,7 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
     result
 }
 
-pub fn get_export_secret(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn get_export_secret(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -628,13 +637,13 @@ pub fn get_export_secret(nostr_id: String, group_name: String) -> Result<Vec<u8>
             format_err!("<signal api fn[create_key_package]> Can not get store from user.")
         })?;
 
-        let export_secret = user.get_export_secret(group_name)?;
+        let export_secret = user.get_export_secret(group_id)?;
         Ok(export_secret)
     });
     result
 }
 
-pub fn get_tree_hash(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn get_tree_hash(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -651,7 +660,7 @@ pub fn get_tree_hash(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
             format_err!("<signal api fn[create_key_package]> Can not get store from user.")
         })?;
 
-        let export_secret = user.get_tree_hash(group_name)?;
+        let export_secret = user.get_tree_hash(group_id)?;
         Ok(export_secret)
     });
     result
@@ -695,7 +704,7 @@ pub fn create_group_config() -> Result<Vec<u8>> {
     result
 }
 
-pub fn get_group_config(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn get_group_config(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -711,14 +720,23 @@ pub fn get_group_config(nostr_id: String, group_name: String) -> Result<Vec<u8>>
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[create_mls_group]> Can not get store from user.")
         })?;
-        let config = user.get_group_config(group_name.clone())?;
+        let config = user.get_group_config(group_id.clone())?;
         Ok(config)
     });
     result
 }
 
+/* 
+    Group IDs SHOULD be constructed in such a way that 
+    there is an overwhelmingly low probability of honest group creators generating the same group ID, 
+    even without assistance from the Delivery Service. This can be done, for example, 
+    by making the group ID a freshly generated random value of size KDF.Nh. 
+    The Delivery Service MAY attempt to ensure that group IDs are globally unique 
+    by rejecting the creation of new groups with a previously used ID.
+ */
+
 // when create group, then return the group join config
-pub fn create_mls_group(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn create_mls_group(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -734,7 +752,7 @@ pub fn create_mls_group(nostr_id: String, group_name: String) -> Result<Vec<u8>>
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[create_mls_group]> Can not get store from user.")
         })?;
-        let group_config = user.create_mls_group(group_name.clone())?;
+        let group_config = user.create_mls_group(group_id.clone())?;
         user.update(nostr_id, false).await?;
         Ok(group_config)
     });
@@ -744,7 +762,7 @@ pub fn create_mls_group(nostr_id: String, group_name: String) -> Result<Vec<u8>>
 // add several friends every time
 pub fn add_members(
     nostr_id: String,
-    group_name: String,
+    group_id: String,
     key_packages: Vec<Vec<u8>>,
 ) -> Result<(Vec<u8>, Vec<u8>)> {
     let rt = lock_runtime!();
@@ -762,7 +780,7 @@ pub fn add_members(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[add_members]> Can not get store from user.")
         })?;
-        let (queued_msg, welcome) = user.add_members(group_name, key_packages)?;
+        let (queued_msg, welcome) = user.add_members(group_id, key_packages)?;
         Ok((queued_msg, welcome))
     });
     result
@@ -771,7 +789,7 @@ pub fn add_members(
 // others join the group
 pub fn bob_join_mls_group(
     nostr_id: String,
-    group_name: String,
+    group_id: String,
     welcome: Vec<u8>,
     group_join_config: Vec<u8>,
 ) -> Result<()> {
@@ -790,7 +808,7 @@ pub fn bob_join_mls_group(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[bob_join_mls_group]> Can not get store from user.")
         })?;
-        let _mls_group = user.bob_join_mls_group(group_name, welcome, group_join_config)?;
+        let _mls_group = user.bob_join_mls_group(group_id, welcome, group_join_config)?;
         user.update(nostr_id, false).await?;
         Ok(())
     });
@@ -800,7 +818,7 @@ pub fn bob_join_mls_group(
 // only group is not null, and other members should execute this
 pub fn others_commit_normal(
     nostr_id: String,
-    group_name: String,
+    group_id: String,
     queued_msg: Vec<u8>,
 ) -> Result<()> {
     let rt = lock_runtime!();
@@ -819,13 +837,13 @@ pub fn others_commit_normal(
             format_err!("<signal api fn[others_commit_add_member]> Can not get store from user.")
         })?;
 
-        user.others_commit_normal(group_name, queued_msg)?;
+        user.others_commit_normal(group_id, queued_msg)?;
         Ok(())
     });
     result
 }
 
-pub fn send_msg(nostr_id: String, group_name: String, msg: String) -> Result<Vec<u8>> {
+pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
 
     let result = rt.block_on(async {
@@ -843,12 +861,12 @@ pub fn send_msg(nostr_id: String, group_name: String, msg: String) -> Result<Vec
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<signal api fn[send_msg]> Can not get store from user."))?;
-        Ok(user.send_msg(group_name, msg)?)
+        Ok(user.send_msg(group_id, msg)?)
     });
     result
 }
 
-pub fn decrypt_msg(nostr_id: String, group_name: String, msg: Vec<u8>) -> Result<String> {
+pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<String> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -864,13 +882,13 @@ pub fn decrypt_msg(nostr_id: String, group_name: String, msg: Vec<u8>) -> Result
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[decrypt_msg]> Can not get store from user.")
         })?;
-        Ok(user.decrypt_msg(group_name, msg)?)
+        Ok(user.decrypt_msg(group_id, msg)?)
     });
     result
 }
 
 // when remove remembers, should use this lead node
-pub fn get_lead_node_index(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn get_lead_node_index(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -886,14 +904,14 @@ pub fn get_lead_node_index(nostr_id: String, group_name: String) -> Result<Vec<u
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[get_lead_node_index]> Can not get store from user.")
         })?;
-        Ok(user.get_lead_node_index(group_name)?)
+        Ok(user.get_lead_node_index(group_id)?)
     });
     result
 }
 
 pub fn remove_members(
     nostr_id: String,
-    group_name: String,
+    group_id: String,
     members: Vec<Vec<u8>>,
 ) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
@@ -911,14 +929,14 @@ pub fn remove_members(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[remove_members]> Can not get store from user.")
         })?;
-        Ok(user.remove_members(group_name, members)?)
+        Ok(user.remove_members(group_id, members)?)
     });
     result
 }
 
 pub fn others_commit_remove_member(
     nostr_id: String,
-    group_name: String,
+    group_id: String,
     queued_msg: Vec<u8>,
 ) -> Result<()> {
     let rt = lock_runtime!();
@@ -937,13 +955,13 @@ pub fn others_commit_remove_member(
             format_err!("<signal api fn[others_commit_remove_member]> Can not get store from user.")
         })?;
 
-        user.others_commit_remove_member(group_name, queued_msg)?;
+        user.others_commit_remove_member(group_id, queued_msg)?;
         Ok(())
     });
     result
 }
 
-pub fn self_leave(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn self_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -959,12 +977,12 @@ pub fn self_leave(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[self_leave]> Can not get store from user.")
         })?;
-        Ok(user.self_leave(group_name)?)
+        Ok(user.self_leave(group_id)?)
     });
     result
 }
 
-pub fn self_update(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn self_update(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -980,14 +998,14 @@ pub fn self_update(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[self_leave]> Can not get store from user.")
         })?;
-        Ok(user.self_update(group_name)?)
+        Ok(user.self_update(group_id)?)
     });
     result
 }
 
 pub fn others_proposal_leave(
     nostr_id: String,
-    group_name: String,
+    group_id: String,
     queued_msg: Vec<u8>,
 ) -> Result<()> {
     let rt = lock_runtime!();
@@ -1005,13 +1023,13 @@ pub fn others_proposal_leave(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[others_proposal_leave]> Can not get store from user.")
         })?;
-        user.others_proposal_leave(group_name, queued_msg)?;
+        user.others_proposal_leave(group_id, queued_msg)?;
         Ok(())
     });
     result
 }
 
-pub fn admin_commit_leave(nostr_id: String, group_name: String) -> Result<Vec<u8>> {
+pub fn admin_commit_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -1027,7 +1045,7 @@ pub fn admin_commit_leave(nostr_id: String, group_name: String) -> Result<Vec<u8
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[admin_commit_leave]> Can not get store from user.")
         })?;
-        Ok(user.admin_commit_leave(group_name)?)
+        Ok(user.admin_commit_leave(group_id)?)
     });
     result
 }
@@ -1035,7 +1053,7 @@ pub fn admin_commit_leave(nostr_id: String, group_name: String) -> Result<Vec<u8
 // expect admin, queued_msg is from admin
 pub fn normal_member_commit_leave(
     nostr_id: String,
-    group_name: String,
+    group_id: String,
     queued_msg: Vec<u8>,
 ) -> Result<()> {
     let rt = lock_runtime!();
@@ -1053,7 +1071,7 @@ pub fn normal_member_commit_leave(
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<signal api fn[normal_member_commit_leave]> Can not get store from user.")
         })?;
-        user.normal_member_commit_leave(group_name, queued_msg)?;
+        user.normal_member_commit_leave(group_id, queued_msg)?;
 
         Ok(())
     });

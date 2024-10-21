@@ -10,7 +10,7 @@ fn main() {
 // create add send_msg decrypt_msg remove leave
 fn test_basic() -> Result<()> {
     println!("start --------------start");
-    let group_name = "G1".to_string();
+    let group_id = "G1".to_string();
     let a = "A";
     let b = "B";
     let c = "C";
@@ -40,7 +40,7 @@ fn test_basic() -> Result<()> {
     let e_pk = create_key_package(&e_provider, &mut e_identity)?;
 
     let mut a_mls_group =
-        create_mls_group(group_name, &group_create_config, &a_provider, &a_identity)?;
+        create_mls_group(group_id, &group_create_config, &a_provider, &a_identity)?;
 
     // A add B
     let welcome = add_member(&mut a_mls_group, &a_provider, &a_identity, b_pk)?;
@@ -274,7 +274,7 @@ fn test_basic() -> Result<()> {
 
 fn test_complex() -> Result<()> {
     println!("start --------------start");
-    let group_name = "G1".to_string();
+    let group_id = "G1".to_string();
     let a = "A";
     let b = "B";
     let c = "C";
@@ -312,7 +312,7 @@ fn test_complex() -> Result<()> {
     let g_pk = create_key_package(&g_provider, &mut g_identity)?;
 
     let mut a_mls_group =
-        create_mls_group(group_name, &group_create_config, &a_provider, &a_identity)?;
+        create_mls_group(group_id, &group_create_config, &a_provider, &a_identity)?;
 
     // A add B
     let welcome = add_members(&mut a_mls_group, &a_provider, &a_identity, &[b_pk, f_pk])?;
@@ -666,7 +666,7 @@ fn test_complex() -> Result<()> {
 // So if dely, but every operation F should receive it, and process it in order by time, if not it will be error.
 fn test_complex2() -> Result<()> {
     println!("start --------------start");
-    let group_name = "G2".to_string();
+    let group_id = "G2".to_string();
     let a = "A";
     let b = "B";
     let c = "C";
@@ -704,7 +704,7 @@ fn test_complex2() -> Result<()> {
     let group_create_config = group_create_config()?;
 
     let mut a_mls_group =
-        create_mls_group(group_name, &group_create_config, &a_provider, &a_identity)?;
+        create_mls_group(group_id, &group_create_config, &a_provider, &a_identity)?;
 
     // A add B F, but F not reply right now
     let welcome = add_members(
