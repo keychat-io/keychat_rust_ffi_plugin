@@ -192,7 +192,7 @@ pub fn add_members(
     result
 }
 
-pub fn bob_join_mls_group(
+pub fn join_mls_group(
     welcome: Vec<u8>,
     bob_provider: &OpenMlsRustPersistentCrypto,
     group_create_config: Vec<u8>,
@@ -203,7 +203,7 @@ pub fn bob_join_mls_group(
         let welcome = MlsMessageIn::tls_deserialize_exact(&welcome)?;
         let welcome = welcome.into_welcome().ok_or_else(|| {
             format_err!(
-                "<mls api fn[bob_join_mls_group]> expected the message to be a welcome message."
+                "<mls api fn[join_mls_group]> expected the message to be a welcome message."
             )
         })?;
 
@@ -214,13 +214,11 @@ pub fn bob_join_mls_group(
             None,
         )
         .map_err(|_| {
-            format_err!(
-                "<mls api fn[bob_join_mls_group]> Error creating StagedWelcome from Welcome."
-            )
+            format_err!("<mls api fn[join_mls_group]> Error creating StagedWelcome from Welcome.")
         })?
         .into_group(bob_provider)
         .map_err(|_| {
-            format_err!("<mls api fn[bob_join_mls_group]> Error creating group from StagedWelcome.")
+            format_err!("<mls api fn[join_mls_group]> Error creating group from StagedWelcome.")
         })?;
 
         Ok(bob_mls_group)

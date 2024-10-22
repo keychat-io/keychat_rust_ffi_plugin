@@ -45,7 +45,7 @@ fn test_basic() -> Result<()> {
     // A add B
     let welcome = add_member(&mut a_mls_group, &a_provider, &a_identity, b_pk)?;
 
-    let mut b_mls_group = bob_join_mls_group(welcome.1, &b_provider, &group_create_config)?;
+    let mut b_mls_group = join_mls_group(welcome.1, &b_provider, &group_create_config)?;
 
     // A send msg to B
     let msg = send_msg(
@@ -84,7 +84,7 @@ fn test_basic() -> Result<()> {
     // B add C
     let welcome2 = add_member(&mut b_mls_group, &b_provider, &b_identity, c_pk)?;
 
-    let mut c_mls_group = bob_join_mls_group(welcome2.1, &c_provider, &group_create_config)?;
+    let mut c_mls_group = join_mls_group(welcome2.1, &c_provider, &group_create_config)?;
     // A commit
     let _ = others_commit_add_member(&mut a_mls_group, welcome2.0, &a_provider)?;
 
@@ -125,7 +125,7 @@ fn test_basic() -> Result<()> {
     // A add D
     let welcome3 = add_member(&mut a_mls_group, &a_provider, &a_identity, d_pk)?;
 
-    let mut d_mls_group = bob_join_mls_group(welcome3.1, &d_provider, &group_create_config)?;
+    let mut d_mls_group = join_mls_group(welcome3.1, &d_provider, &group_create_config)?;
 
     // B commit
     let _ = others_commit_add_member(&mut b_mls_group, welcome3.0.clone(), &b_provider)?;
@@ -204,7 +204,7 @@ fn test_basic() -> Result<()> {
     // A add E
     let welcome4 = add_member(&mut a_mls_group, &a_provider, &a_identity, e_pk)?;
 
-    let mut e_mls_group = bob_join_mls_group(welcome4.1, &e_provider, &group_create_config)?;
+    let mut e_mls_group = join_mls_group(welcome4.1, &e_provider, &group_create_config)?;
 
     // C commit
     let _ = others_commit_add_member(&mut c_mls_group, welcome4.0.clone(), &c_provider)?;
@@ -316,9 +316,9 @@ fn test_complex() -> Result<()> {
 
     // A add B
     let welcome = add_members(&mut a_mls_group, &a_provider, &a_identity, &[b_pk, f_pk])?;
-    let mut b_mls_group = bob_join_mls_group(welcome.1.clone(), &b_provider, &group_create_config)?;
+    let mut b_mls_group = join_mls_group(welcome.1.clone(), &b_provider, &group_create_config)?;
 
-    let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
+    let mut f_mls_group = join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
 
     // A send msg to B
     let msg = send_msg(
@@ -384,11 +384,9 @@ fn test_complex() -> Result<()> {
     // B add C and G
     let welcome2 = add_members(&mut b_mls_group, &b_provider, &b_identity, &[c_pk, g_pk])?;
 
-    let mut c_mls_group =
-        bob_join_mls_group(welcome2.1.clone(), &c_provider, &group_create_config)?;
+    let mut c_mls_group = join_mls_group(welcome2.1.clone(), &c_provider, &group_create_config)?;
 
-    let mut g_mls_group =
-        bob_join_mls_group(welcome2.1.clone(), &g_provider, &group_create_config)?;
+    let mut g_mls_group = join_mls_group(welcome2.1.clone(), &g_provider, &group_create_config)?;
 
     // A commit
     let _ = others_commit_add_member(&mut a_mls_group, welcome2.0.clone(), &a_provider)?;
@@ -447,7 +445,7 @@ fn test_complex() -> Result<()> {
     // A add D
     let welcome3 = add_member(&mut a_mls_group, &a_provider, &a_identity, d_pk)?;
 
-    let mut d_mls_group = bob_join_mls_group(welcome3.1, &d_provider, &group_create_config)?;
+    let mut d_mls_group = join_mls_group(welcome3.1, &d_provider, &group_create_config)?;
 
     // B commit
     let _ = others_commit_add_member(&mut b_mls_group, welcome3.0.clone(), &b_provider)?;
@@ -549,7 +547,7 @@ fn test_complex() -> Result<()> {
     // A add E
     let welcome4 = add_member(&mut a_mls_group, &a_provider, &a_identity, e_pk)?;
 
-    let mut e_mls_group = bob_join_mls_group(welcome4.1, &e_provider, &group_create_config)?;
+    let mut e_mls_group = join_mls_group(welcome4.1, &e_provider, &group_create_config)?;
 
     // C commit
     let _ = others_commit_add_member(&mut c_mls_group, welcome4.0.clone(), &c_provider)?;
@@ -713,8 +711,8 @@ fn test_complex2() -> Result<()> {
         &a_identity,
         &[b_pk, f_pk.clone()],
     )?;
-    let mut b_mls_group = bob_join_mls_group(welcome.1.clone(), &b_provider, &group_create_config)?;
-    // let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
+    let mut b_mls_group = join_mls_group(welcome.1.clone(), &b_provider, &group_create_config)?;
+    // let mut f_mls_group = join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
 
     println!(
         "a_mls_group export secret {:?}",
@@ -731,13 +729,11 @@ fn test_complex2() -> Result<()> {
     // B add C and G
     let welcome2 = add_members(&mut b_mls_group, &b_provider, &b_identity, &[c_pk, g_pk])?;
 
-    // let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
+    // let mut f_mls_group = join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
 
-    let mut c_mls_group =
-        bob_join_mls_group(welcome2.1.clone(), &c_provider, &group_create_config)?;
+    let mut c_mls_group = join_mls_group(welcome2.1.clone(), &c_provider, &group_create_config)?;
 
-    let mut g_mls_group =
-        bob_join_mls_group(welcome2.1.clone(), &g_provider, &group_create_config)?;
+    let mut g_mls_group = join_mls_group(welcome2.1.clone(), &g_provider, &group_create_config)?;
 
     // A commit
     let _ = others_commit_add_member(&mut a_mls_group, welcome2.0.clone(), &a_provider)?;
@@ -834,14 +830,13 @@ fn test_complex2() -> Result<()> {
 
     // A add D
     let welcome3 = add_member(&mut a_mls_group, &a_provider, &a_identity, d_pk)?;
-    let mut d_mls_group =
-        bob_join_mls_group(welcome3.1.clone(), &d_provider, &group_create_config)?;
+    let mut d_mls_group = join_mls_group(welcome3.1.clone(), &d_provider, &group_create_config)?;
 
     // // A add D F
     // let welcome3 = add_members(&mut a_mls_group, &a_provider, &a_identity, &[d_pk, f_pk.clone()])?;
 
     println!("--f_mls_group --------------");
-    let mut f_mls_group = bob_join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
+    let mut f_mls_group = join_mls_group(welcome.1.clone(), &f_provider, &group_create_config)?;
     let _ = others_commit_add_member(&mut f_mls_group, welcome2.0.clone(), &f_provider)?;
 
     // B commit
@@ -920,7 +915,7 @@ fn test_complex2() -> Result<()> {
     // A add E
     let welcome4 = add_member(&mut a_mls_group, &a_provider, &a_identity, e_pk)?;
 
-    let mut e_mls_group = bob_join_mls_group(welcome4.1, &e_provider, &group_create_config)?;
+    let mut e_mls_group = join_mls_group(welcome4.1, &e_provider, &group_create_config)?;
 
     // C commit
     let _ = others_commit_add_member(&mut c_mls_group, welcome4.0.clone(), &c_provider)?;
