@@ -23,10 +23,10 @@ signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = 
 cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
 cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
 
-openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc"}
-openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc"}
-openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc"}
-kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc"}
+openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls"}
+openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls_traits"}
+openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls_sqlite_storage"}
+kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "kc"}
 
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
 # cashu-wallet-sqlite = {path = "../../cashu-wallet-rs/store-sqlite"}
