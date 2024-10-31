@@ -2,9 +2,9 @@ use anyhow::Result;
 use rust::api_mls::*;
 
 fn main() {
-    // let _ = test_basic();
+    let _ = test_basic();
     // let _ = test_exist_group();
-    let _ = test_normal();
+    // let _ = test_basic2();
     // let _ = test_replay_delay();
 }
 
@@ -37,6 +37,8 @@ fn test_exist_group() -> Result<()> {
 
     // A add G
     let welcome = add_members(a.to_string(), group_id.to_string(), [f_pk, g_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // F join in the group
     join_mls_group(
@@ -110,6 +112,8 @@ fn test_basic() -> Result<()> {
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
     join_mls_group(
@@ -156,6 +160,8 @@ fn test_basic() -> Result<()> {
 
     // B add C
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk].to_vec())?;
+    // B commit
+    adder_self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
     join_mls_group(
@@ -217,6 +223,8 @@ fn test_basic() -> Result<()> {
 
     // A add D
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
     join_mls_group(
@@ -304,6 +312,8 @@ fn test_basic() -> Result<()> {
 
     // A add E
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
     join_mls_group(
@@ -436,6 +446,8 @@ fn test_normal() -> Result<()> {
 
     // A add B F
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
     join_mls_group(
@@ -513,6 +525,8 @@ fn test_normal() -> Result<()> {
 
     // B add C and G
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
+    // B commit
+    adder_self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
     join_mls_group(
@@ -610,6 +624,8 @@ fn test_normal() -> Result<()> {
 
     // A add D
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
     join_mls_group(
@@ -784,6 +800,8 @@ fn test_normal() -> Result<()> {
     println!("--A add E --------------");
     // A add E
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
     join_mls_group(
@@ -1043,6 +1061,126 @@ fn test_normal() -> Result<()> {
     Ok(())
 }
 
+fn test_basic2() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+
+    let db_path = "./mls-lite.sqlite";
+
+    init_mls_db(db_path.to_string(), a.to_string())?;
+    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_path.to_string(), c.to_string())?;
+    init_mls_db(db_path.to_string(), d.to_string())?;
+    init_mls_db(db_path.to_string(), e.to_string())?;
+
+    let b_pk = create_key_package(b.to_string())?;
+    let c_pk = create_key_package(c.to_string())?;
+    let d_pk = create_key_package(d.to_string())?;
+    let e_pk = create_key_package(e.to_string())?;
+
+    // a create group
+    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+
+    // A add B
+    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
+
+    // b join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id.to_string(),
+        welcome.1,
+        group_join_config.clone(),
+    )?;
+
+    // A send msg to B
+    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    // B decrypt A's msg
+    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+
+    println!("A send msg to B ,the result is {:?}", text);
+
+    // B send msg to A
+    let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    // A decrypt B's msg
+    let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.0)?;
+    println!("B send msg to A ,the result is {:?}", text2);
+
+    println!(
+        "a_mls_group export secret {:?}",
+        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group export secret {:?}",
+        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "a_mls_group tree hash {:?}",
+        get_tree_hash(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group tree hash {:?}",
+        get_tree_hash(b.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!("--B add C --------------");
+
+    // B add C
+    let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk].to_vec())?;
+
+    // B send msg
+    let msg3 = send_msg(
+        b.to_string(),
+        group_id.to_string(),
+        "notice A, you need to update, C will join in.".to_string(),
+    )?;
+
+    // A decrypt B's msg
+    let text3 = decrypt_msg(a.to_string(), group_id.to_string(), msg3.0.clone())?;
+    println!("B send msg to A ,the result is {:?}", text3);
+
+    // c join the group
+    join_mls_group(
+        c.to_string(),
+        group_id.to_string(),
+        welcome2.1,
+        group_join_config.clone(),
+    )?;
+
+    // B commit add
+    adder_self_commit(b.to_string(), group_id.to_string())?;
+    // A commit
+    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0)?;
+
+    // B send msg
+    let msg4 = send_msg(
+        b.to_string(),
+        group_id.to_string(),
+        "hello, A, C.".to_string(),
+    )?;
+
+    // C decrypt B's msg
+    let text4 = decrypt_msg(c.to_string(), group_id.to_string(), msg4.0.clone())?;
+    println!("B send msg to C ,the result is {:?}", text4);
+
+    // A decrypt B's msg
+    let text4 = decrypt_msg(a.to_string(), group_id.to_string(), msg4.0.clone())?;
+    println!("B send msg to A ,the result is {:?}", text4);
+
+    println!("--------------");
+    Ok(())
+}
 // if add some members, for example due to F reply delay and lack of one commit, this will lead to F tree is diff from others.
 // So if dely, but every operation F should receive it, and process it in order by time, if not it will be error.
 fn test_replay_delay() -> Result<()> {
@@ -1076,6 +1214,8 @@ fn test_replay_delay() -> Result<()> {
 
     // A add B F, but F not reply right now
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
     join_mls_group(
@@ -1107,6 +1247,8 @@ fn test_replay_delay() -> Result<()> {
 
     // B add C and G
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
+    // A commit
+    adder_self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
     join_mls_group(
@@ -1163,6 +1305,8 @@ fn test_replay_delay() -> Result<()> {
 
     // A add D
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
     join_mls_group(
@@ -1261,6 +1405,8 @@ fn test_replay_delay() -> Result<()> {
     println!("--A add E --------------");
     // A add E
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
+    // A commit
+    adder_self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
     join_mls_group(

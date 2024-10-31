@@ -32,3 +32,5 @@ rust/target/
 **.db-shm
 **.db
 target/
+**.sqlite
+**.sqlite-wal

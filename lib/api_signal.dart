@@ -7,7 +7,7 @@ import 'frb_generated.dart';
 import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These types are ignored because they are not used by any `pub` functions: `RUNTIME`, `STORE`, `SignalStore`
+// These types are ignored because they are not used by any `pub` functions: `SignalStore`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `cmp`, `cmp`, `cmp`, `deref`, `deref`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `hash`, `hash`, `initialize`, `initialize`, `partial_cmp`, `partial_cmp`, `partial_cmp`
 
 /// init db and KeyChatSignalProtocolStore, this is used for testing

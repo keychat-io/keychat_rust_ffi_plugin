@@ -67,7 +67,8 @@ impl User {
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let mls_group = group.mls_group.borrow_mut();
-        let export_secret = mls_group.export_secret(&self.provider, "", &[], 32)?;
+        // let export_secret = mls_group.export_secret(&self.provider, "", &[], 32)?;
+        let export_secret = mls_group.export_secret(&self.provider, "keychat", b"keychat", 32)?;
         Ok(export_secret)
     }
 
@@ -145,11 +146,22 @@ impl User {
         let mut mls_group = group.mls_group.borrow_mut();
         let (queued_msg, welcome, _) =
             mls_group.add_members(&self.provider, &self.identity.borrow().signer, &kps)?;
-
-        mls_group.merge_pending_commit(&self.provider)?;
+        // split this for method adder_self_commit
+        // mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         let serialized_welcome: Vec<u8> = welcome.to_bytes()?;
         Ok((serialized_queued_msg, serialized_welcome))
+    }
+
+    pub(crate) fn adder_self_commit(&mut self, group_id: String) -> Result<()> {
+        let mut groups = self.groups.borrow_mut();
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
+        };
+        let mut mls_group = group.mls_group.borrow_mut();
+        mls_group.merge_pending_commit(&self.provider)?;
+        Ok(())
     }
 
     pub(crate) fn join_mls_group(
@@ -245,11 +257,16 @@ impl User {
             )
             .map_err(|_| format_err!("<mls api fn[send_msg]> Error send message."))?;
         let serialized_msg_out: Vec<u8> = msg_out.to_bytes()?;
-        let tree_hash = mls_group.tree_hash().to_vec();
-        Ok((serialized_msg_out, tree_hash))
+        // let tree_hash = mls_group.tree_hash().to_vec();
+        let export_secret = mls_group.export_secret(&self.provider, "keychat", b"keychat", 32)?;
+        Ok((serialized_msg_out, export_secret))
     }
 
-    pub(crate) fn decrypt_msg(&mut self, group_id: String, msg: Vec<u8>) -> Result<String> {
+    pub(crate) fn decrypt_msg(
+        &mut self,
+        group_id: String,
+        msg: Vec<u8>,
+    ) -> Result<(String, String)> {
         let mut groups = self.groups.borrow_mut();
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
@@ -265,11 +282,13 @@ impl User {
                     .ok_or_else(|| format_err!("Unexpected message type"))?,
             )
             .map_err(|_| format_err!("<mls api fn[send_msg]> Error decrypt message."))?;
+        let sender_content =
+            String::from_utf8(processed_message.credential().serialized_content().to_vec())?;
         if let ProcessedMessageContent::ApplicationMessage(application_message) =
             processed_message.into_content()
         {
-            let text = String::from_utf8(application_message.into_bytes()).unwrap();
-            Ok(text)
+            let text = String::from_utf8(application_message.into_bytes())?;
+            Ok((text, sender_content))
         } else {
             Err(anyhow::anyhow!(
                 "<mls api fn[decrypt_msg]> Unexpected application_message."
@@ -766,6 +785,29 @@ pub fn add_members(
     result
 }
 
+pub fn adder_self_commit(nostr_id: String, group_id: String) -> Result<()> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<mls api fn[add_members]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("create_key_package key_pair do not init.");
+            return Err(format_err!(
+                "<mls api fn[add_members]> nostr_id do not init."
+            ));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<mls api fn[add_members]> Can not get store from user."))?;
+        user.adder_self_commit(group_id)?;
+        Ok(())
+    });
+    result
+}
+
 // others join the group
 pub fn join_mls_group(
     nostr_id: String,
@@ -838,7 +880,7 @@ pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<(Vec<
     result
 }
 
-pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<String> {
+pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<(String, String)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
