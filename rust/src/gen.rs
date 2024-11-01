@@ -26,6 +26,7 @@
 // Section: imports
 
 use crate::api_mls::*;
+use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};

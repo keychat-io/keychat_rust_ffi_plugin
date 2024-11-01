@@ -18,7 +18,8 @@ use sqlx::Row;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
-use std::{cell::RefCell, collections::HashMap, str};
+use std::sync::RwLock;
+use std::{collections::HashMap, str};
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
 
@@ -27,15 +28,15 @@ pub(crate) const CIPHERSUITE: Ciphersuite =
 
 #[derive(Debug)]
 pub struct Group {
-    mls_group: RefCell<MlsGroup>,
+    mls_group: RwLock<MlsGroup>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct User {
     #[serde(skip)]
-    pub(crate) groups: RefCell<HashMap<String, Group>>,
+    pub(crate) groups: RwLock<HashMap<String, Group>>,
     group_list: HashSet<String>,
-    pub(crate) identity: RefCell<Identity>,
+    pub(crate) identity: RwLock<Identity>,
     #[serde(skip)]
     pub provider: OpenMlsRustPersistentCrypto,
     #[serde(skip)]
@@ -47,9 +48,9 @@ impl User {
     pub(crate) async fn new(username: String, pool: LitePool) -> Self {
         let crypto = OpenMlsRustPersistentCrypto::new(username.clone(), pool.clone()).await;
         let out = Self {
-            groups: RefCell::new(HashMap::new()),
+            groups: RwLock::new(HashMap::new()),
             group_list: HashSet::new(),
-            identity: RefCell::new(Identity::new(
+            identity: RwLock::new(Identity::new(
                 CIPHERSUITE,
                 &crypto,
                 username.clone().as_bytes(),
@@ -61,45 +62,63 @@ impl User {
     }
 
     pub(crate) fn get_export_secret(&self, group_id: String) -> Result<Vec<u8>> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mls_group = group.mls_group.borrow_mut();
-        // let export_secret = mls_group.export_secret(&self.provider, "", &[], 32)?;
+        let mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let export_secret = mls_group.export_secret(&self.provider, "keychat", b"keychat", 32)?;
         Ok(export_secret)
     }
 
     pub(crate) fn get_tree_hash(&self, group_id: String) -> Result<Vec<u8>> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mls_group = group.mls_group.borrow_mut();
+        let mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let tree_hash = mls_group.tree_hash().to_vec();
         Ok(tree_hash)
     }
 
     pub(crate) fn get_group_config(&self, group_id: String) -> Result<Vec<u8>> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mls_group = group.mls_group.borrow_mut();
+        let mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group_config = mls_group.configuration();
         let group_config_vec = bincode::serialize(&group_config)?;
         Ok(group_config_vec)
     }
 
     pub(crate) fn create_key_package(&mut self) -> Result<KeyPackage> {
-        let key_package = self
+        let mut identity = self
             .identity
-            .borrow_mut()
-            .add_key_package(CIPHERSUITE, &self.provider);
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let key_package = identity.add_key_package(CIPHERSUITE, &self.provider);
         Ok(key_package)
     }
 
@@ -108,21 +127,37 @@ impl User {
         let group_create_config = MlsGroupCreateConfig::builder()
             .use_ratchet_tree_extension(true)
             .build();
+        let identity = self
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         let mls_group = MlsGroup::new_with_group_id(
             &self.provider,
-            &self.identity.borrow().signer,
+            &identity.signer,
             &group_create_config,
             GroupId::from_slice(group_id.as_bytes()),
-            self.identity.borrow().credential_with_key.clone(),
+            identity.credential_with_key.clone(),
         )?;
         let group = Group {
-            mls_group: RefCell::new(mls_group.clone()),
+            mls_group: RwLock::new(mls_group.clone()),
         };
-        if self.groups.borrow().contains_key(&group_id) {
-            panic!("Group '{}' existed already", group_id);
+        {
+            let groups = self
+                .groups
+                .read()
+                .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+
+            if groups.contains_key(&group_id) {
+                panic!("Group '{}' existed already", group_id);
+            }
         }
-        self.groups.borrow_mut().insert(group_id.clone(), group);
+
+        self.groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?
+            .insert(group_id.clone(), group);
         self.group_list.insert(group_id);
+
         let group_config = group_create_config.join_config();
         let group_config_vec = bincode::serialize(&group_config)?;
         Ok(group_config_vec)
@@ -138,14 +173,28 @@ impl User {
             let kp: KeyPackage = bincode::deserialize(&kp)?;
             kps.push(kp);
         }
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
-        let (queued_msg, welcome, _) =
-            mls_group.add_members(&self.provider, &self.identity.borrow().signer, &kps)?;
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+
+        let (queued_msg, welcome, _) = mls_group.add_members(
+            &self.provider,
+            &self
+                .identity
+                .read()
+                .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?
+                .signer,
+            &kps,
+        )?;
         // split this for method adder_self_commit
         // mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
@@ -154,12 +203,18 @@ impl User {
     }
 
     pub(crate) fn adder_self_commit(&mut self, group_id: String) -> Result<()> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         mls_group.merge_pending_commit(&self.provider)?;
         Ok(())
     }
@@ -178,7 +233,10 @@ impl User {
             )
         })?;
         // used key_package need to delete
-        let mut ident = self.identity.borrow_mut();
+        let mut ident = self
+            .identity
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         for secret in welcome.secrets().iter() {
             let key_package_hash = &secret.new_member();
             if ident.kp.contains_key(key_package_hash.as_slice()) {
@@ -199,12 +257,22 @@ impl User {
                     )
                 })?;
         let group = Group {
-            mls_group: RefCell::new(bob_mls_group.clone()),
+            mls_group: RwLock::new(bob_mls_group.clone()),
         };
-        if self.groups.borrow().contains_key(&group_id) {
-            panic!("Group '{}' existed already", group_id);
+        {
+            let groups = self
+                .groups
+                .read()
+                .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+            if groups.contains_key(&group_id) {
+                panic!("Group '{}' existed already", group_id);
+            }
         }
-        self.groups.borrow_mut().insert(group_id.clone(), group);
+
+        self.groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?
+            .insert(group_id.clone(), group);
         self.group_list.insert(group_id);
 
         Ok(())
@@ -216,12 +284,18 @@ impl User {
         group_id: String,
         queued_msg: Vec<u8>,
     ) -> Result<()> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         let alice_processed_message = mls_group.process_message(
             &self.provider,
@@ -243,18 +317,24 @@ impl User {
     }
 
     pub(crate) fn send_msg(&mut self, group_id: String, msg: String) -> Result<(Vec<u8>, Vec<u8>)> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let identity = self
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         let msg_out = mls_group
-            .create_message(
-                &self.provider,
-                &self.identity.borrow().signer,
-                msg.as_bytes(),
-            )
+            .create_message(&self.provider, &identity.signer, msg.as_bytes())
             .map_err(|_| format_err!("<mls api fn[send_msg]> Error send message."))?;
         let serialized_msg_out: Vec<u8> = msg_out.to_bytes()?;
         // let tree_hash = mls_group.tree_hash().to_vec();
@@ -267,15 +347,20 @@ impl User {
         group_id: String,
         msg: Vec<u8>,
     ) -> Result<(String, String)> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
         let msg = MlsMessageIn::tls_deserialize_exact(&msg)?;
-        let processed_message = group
+        let mut mls_group = group
             .mls_group
-            .borrow_mut()
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let processed_message = mls_group
             .process_message(
                 &self.provider,
                 msg.into_protocol_message()
@@ -297,12 +382,19 @@ impl User {
     }
 
     pub(crate) fn get_lead_node_index(&mut self, group_id: String) -> Result<Vec<u8>> {
-        let groups = self.groups.borrow();
+        let groups = self
+            .groups
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         let group = match groups.get(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let lead_node_index = group.mls_group.borrow_mut().own_leaf_index();
+        let lead_node_index = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?
+            .own_leaf_index();
         let lead_node_index_vec = bincode::serialize(&lead_node_index)?;
         Ok(lead_node_index_vec)
     }
@@ -312,23 +404,30 @@ impl User {
         group_id: String,
         members: Vec<Vec<u8>>,
     ) -> Result<Vec<u8>> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let mut leaf_nodes: Vec<LeafNodeIndex> = Vec::new();
         for m in members {
             let m: LeafNodeIndex = bincode::deserialize(&m)?;
             leaf_nodes.push(m);
         }
+        let identity = self
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         // alice remove bob, so alice should konw bob's mls_group
-        let (queued_msg, _welcome, _group_info) = mls_group.remove_members(
-            &self.provider,
-            &self.identity.borrow().signer,
-            &leaf_nodes,
-        )?;
+        let (queued_msg, _welcome, _group_info) =
+            mls_group.remove_members(&self.provider, &identity.signer, &leaf_nodes)?;
         mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         Ok(serialized_queued_msg)
@@ -339,12 +438,18 @@ impl User {
         group_id: String,
         queued_msg: Vec<u8>,
     ) -> Result<()> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         let processed_message = mls_group.process_message(
             &self.provider,
@@ -370,15 +475,23 @@ impl User {
     }
 
     pub(crate) fn self_leave(&mut self, group_id: String) -> Result<Vec<u8>> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let queued_msg = group
+        let identity = self
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let mut mls_group = group
             .mls_group
-            .borrow_mut()
-            .leave_group(&self.provider, &self.identity.borrow().signer)?;
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let queued_msg = mls_group.leave_group(&self.provider, &identity.signer)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         Ok(serialized_queued_msg)
     }
@@ -388,12 +501,18 @@ impl User {
         group_id: String,
         queued_msg: Vec<u8>,
     ) -> Result<()> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         let processed_message = mls_group.process_message(
             &self.provider,
@@ -413,14 +532,24 @@ impl User {
     }
 
     pub(crate) fn admin_commit_leave(&mut self, group_id: String) -> Result<Vec<u8>> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
-        let (queued_msg, _welcome_option, _group_info) = mls_group
-            .commit_to_pending_proposals(&self.provider, &self.identity.borrow().signer)?;
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let identity = self
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let (queued_msg, _welcome_option, _group_info) =
+            mls_group.commit_to_pending_proposals(&self.provider, &identity.signer)?;
         if let Some(staged_commit) = mls_group.pending_commit() {
             let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
                 format_err!("<mls api fn[admin_commit_leave]> Expected a proposal.")
@@ -440,12 +569,18 @@ impl User {
         group_id: String,
         queued_msg: Vec<u8>,
     ) -> Result<()> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
         // === Leave operation from normal member's perspective ===
         let processed_message = mls_group.process_message(
@@ -471,15 +606,25 @@ impl User {
 
     // only admin excute it, update the tree info
     pub(crate) fn self_update(&mut self, group_id: String) -> Result<Vec<u8>> {
-        let mut groups = self.groups.borrow_mut();
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let group = match groups.get_mut(&group_id) {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {group_id} known.")),
         };
-        let mut mls_group = group.mls_group.borrow_mut();
+        let mut mls_group = group
+            .mls_group
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let identity = self
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
         let (queued_msg, _welcome_option, _group_info) = mls_group.self_update(
             &self.provider,
-            &self.identity.borrow().signer,
+            &identity.signer,
             LeafNodeParameters::default(),
         )?;
         mls_group.merge_pending_commit(&self.provider)?;
@@ -491,7 +636,11 @@ impl User {
 
     pub(crate) async fn save(&mut self, nostr_id: String) -> Result<()> {
         let sql = format!("INSERT INTO user (user_id, identity, group_list) values(?, ?, ?)",);
-        let identity = serde_json::to_vec(&*self.identity.borrow())?;
+        let identity = self
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let identity = serde_json::to_vec(&*identity)?;
         let group_list = serde_json::to_string(&self.group_list)?;
         let sql = sqlx::query(&sql)
             .bind(nostr_id)
@@ -516,7 +665,11 @@ impl User {
         }
         if is_identity {
             let sql = format!("UPDATE user set identity = ? where user_id = ?",);
-            let identity = serde_json::to_vec(&*self.identity.borrow())?;
+            let identity = self
+                .identity
+                .read()
+                .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+            let identity = serde_json::to_vec(&*identity)?;
             sqlx::query(&sql)
                 .bind(identity)
                 .bind(nostr_id)
@@ -546,19 +699,23 @@ impl User {
             let group_list: HashSet<String> =
                 serde_json::from_str(&group_list.unwrap_or_default())?;
             let mut user = Self::new(nostr_id.clone(), pool).await;
+
             user.group_list = group_list;
             user.identity = serde_json::from_slice(&identity)?;
-            let groups = user.groups.get_mut();
+
+            let mut groups: HashMap<String, Group> = HashMap::new();
+
             for group_id in &user.group_list {
                 let mlsgroup = MlsGroup::load(
                     user.provider.storage(),
                     &GroupId::from_slice(group_id.as_bytes()),
                 )?;
                 let grp = Group {
-                    mls_group: RefCell::new(mlsgroup.unwrap()),
+                    mls_group: RwLock::new(mlsgroup.unwrap()),
                 };
                 groups.insert(group_id.clone(), grp);
             }
+            user.groups = RwLock::new(groups);
             return Ok(Some(user));
         }
         Ok(None)
