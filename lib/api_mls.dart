@@ -3,13 +3,11 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import 'api_cashu/check.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `add_members`, `adder_self_commit`, `admin_commit_leave`, `create_key_package`, `create_mls_group`, `decrypt_msg`, `get_export_secret`, `get_group_config`, `get_lead_node_index`, `get_tree_hash`, `join_mls_group`, `load`, `new`, `normal_member_commit_leave`, `others_commit_normal`, `others_commit_remove_member`, `others_proposal_leave`, `remove_members`, `save`, `self_leave`, `self_update`, `send_msg`, `update`
-// These types are ignored because they are not used by any `pub` functions: `Group`, `MlsStore`, `RUNTIME`, `STORE`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `deref`, `fmt`, `initialize`, `initialize`
+// These types are ignored because they are not used by any `pub` functions: `MlsStore`, `RUNTIME`, `STORE`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `deref`, `initialize`, `initialize`
 
 Future<void> initMlsDb({required String dbPath, required String nostrId}) =>
     RustLib.instance.api.crateApiMlsInitMlsDb(dbPath: dbPath, nostrId: nostrId);
@@ -80,17 +78,3 @@ Future<Uint8List> adminCommitLeave({required String nostrId, required String gro
 Future<void> normalMemberCommitLeave(
         {required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsNormalMemberCommitLeave(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OpenMlsRustPersistentCrypto>>
-abstract class OpenMlsRustPersistentCrypto implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<User>>
-abstract class User implements RustOpaqueInterface {
-  LitePool get pool;
-
-  OpenMlsRustPersistentCrypto get provider;
-
-  set pool(LitePool pool);
-
-  set provider(OpenMlsRustPersistentCrypto provider);
-}

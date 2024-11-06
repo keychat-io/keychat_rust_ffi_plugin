@@ -68,7 +68,7 @@ use cashu_wallet_sqlite::Tables;
 
 #[frb(ignore)]
 #[derive(Debug, Clone)]
-pub struct LitePool(cashu_wallet_sqlite::LitePool);
+pub struct LitePool(pub cashu_wallet_sqlite::LitePool);
 impl LitePool {
     /// https://docs.rs/sqlx-sqlite/0.7.1/sqlx_sqlite/struct.SqliteConnectOptions.html#impl-FromStr-for-SqliteConnectOptions
     pub async fn open(dbpath: &str, tables: Tables) -> Result<LitePool, StoreError> {
