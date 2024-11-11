@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.3.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 695836860;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1697010156;
 
 // Section: executor
 
@@ -1126,43 +1126,6 @@ fn wire__crate__api_mls__add_members_impl(
         },
     )
 }
-fn wire__crate__api_mls__adder_self_commit_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "adder_self_commit",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_nostr_id = <String>::sse_decode(&mut deserializer);
-            let api_group_id = <String>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok =
-                            crate::api_mls::adder_self_commit(api_nostr_id, api_group_id)?;
-                        Ok(output_ok)
-                    })(),
-                )
-            }
-        },
-    )
-}
 fn wire__crate__api_mls__admin_commit_leave_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -1768,6 +1731,42 @@ fn wire__crate__api_mls__remove_members_impl(
                             api_group_id,
                             api_members,
                         )?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api_mls__self_commit_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "self_commit",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_nostr_id = <String>::sse_decode(&mut deserializer);
+            let api_group_id = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api_mls::self_commit(api_nostr_id, api_group_id)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4879,30 +4878,30 @@ fn pde_ffi_dispatcher_primary_impl(
         28 => wire__crate__api_cashu__send_stamp_impl(port, ptr, rust_vec_len, data_len),
         29 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
         30 => wire__crate__api_mls__add_members_impl(port, ptr, rust_vec_len, data_len),
-        31 => wire__crate__api_mls__adder_self_commit_impl(port, ptr, rust_vec_len, data_len),
-        32 => wire__crate__api_mls__admin_commit_leave_impl(port, ptr, rust_vec_len, data_len),
-        33 => wire__crate__api_mls__create_group_config_impl(port, ptr, rust_vec_len, data_len),
-        34 => wire__crate__api_mls__create_key_package_impl(port, ptr, rust_vec_len, data_len),
-        35 => wire__crate__api_mls__create_mls_group_impl(port, ptr, rust_vec_len, data_len),
-        36 => wire__crate__api_mls__decrypt_msg_impl(port, ptr, rust_vec_len, data_len),
-        37 => wire__crate__api_mls__get_export_secret_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__api_mls__get_group_config_impl(port, ptr, rust_vec_len, data_len),
-        39 => wire__crate__api_mls__get_lead_node_index_impl(port, ptr, rust_vec_len, data_len),
-        40 => wire__crate__api_mls__get_tree_hash_impl(port, ptr, rust_vec_len, data_len),
-        41 => wire__crate__api_mls__init_mls_db_impl(port, ptr, rust_vec_len, data_len),
-        42 => wire__crate__api_mls__join_mls_group_impl(port, ptr, rust_vec_len, data_len),
-        43 => {
+        31 => wire__crate__api_mls__admin_commit_leave_impl(port, ptr, rust_vec_len, data_len),
+        32 => wire__crate__api_mls__create_group_config_impl(port, ptr, rust_vec_len, data_len),
+        33 => wire__crate__api_mls__create_key_package_impl(port, ptr, rust_vec_len, data_len),
+        34 => wire__crate__api_mls__create_mls_group_impl(port, ptr, rust_vec_len, data_len),
+        35 => wire__crate__api_mls__decrypt_msg_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__api_mls__get_export_secret_impl(port, ptr, rust_vec_len, data_len),
+        37 => wire__crate__api_mls__get_group_config_impl(port, ptr, rust_vec_len, data_len),
+        38 => wire__crate__api_mls__get_lead_node_index_impl(port, ptr, rust_vec_len, data_len),
+        39 => wire__crate__api_mls__get_tree_hash_impl(port, ptr, rust_vec_len, data_len),
+        40 => wire__crate__api_mls__init_mls_db_impl(port, ptr, rust_vec_len, data_len),
+        41 => wire__crate__api_mls__join_mls_group_impl(port, ptr, rust_vec_len, data_len),
+        42 => {
             wire__crate__api_mls__normal_member_commit_leave_impl(port, ptr, rust_vec_len, data_len)
         }
-        44 => wire__crate__api_mls__others_commit_normal_impl(port, ptr, rust_vec_len, data_len),
-        45 => wire__crate__api_mls__others_commit_remove_member_impl(
+        43 => wire__crate__api_mls__others_commit_normal_impl(port, ptr, rust_vec_len, data_len),
+        44 => wire__crate__api_mls__others_commit_remove_member_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        46 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
-        47 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
+        45 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
+        46 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
+        47 => wire__crate__api_mls__self_commit_impl(port, ptr, rust_vec_len, data_len),
         48 => wire__crate__api_mls__self_leave_impl(port, ptr, rust_vec_len, data_len),
         49 => wire__crate__api_mls__self_update_impl(port, ptr, rust_vec_len, data_len),
         50 => wire__crate__api_mls__send_msg_impl(port, ptr, rust_vec_len, data_len),

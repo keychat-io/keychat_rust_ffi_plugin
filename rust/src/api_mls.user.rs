@@ -175,14 +175,14 @@ impl User {
                 .signer,
             &kps,
         )?;
-        // split this for method adder_self_commit
+        // split this for method self_commit
         // mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         let serialized_welcome: Vec<u8> = welcome.to_bytes()?;
         Ok((serialized_queued_msg, serialized_welcome))
     }
 
-    pub(crate) fn adder_self_commit(&mut self, group_id: String) -> Result<()> {
+    pub(crate) fn self_commit(&mut self, group_id: String) -> Result<()> {
         let mut groups = self
             .groups
             .write()
@@ -208,17 +208,17 @@ impl User {
                 "<mls api fn[join_mls_group]> expected the message to be a welcome message."
             )
         })?;
-        // used key_package need to delete
-        let mut ident = self
-            .identity
-            .write()
-            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
-        for secret in welcome.secrets().iter() {
-            let key_package_hash = &secret.new_member();
-            if ident.kp.contains_key(key_package_hash.as_slice()) {
-                ident.kp.remove(key_package_hash.as_slice());
-            }
-        }
+        // // used key_package need to delete
+        // let mut ident = self
+        //     .identity
+        //     .write()
+        //     .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        // for secret in welcome.secrets().iter() {
+        //     let key_package_hash = &secret.new_member();
+        //     if ident.kp.contains_key(key_package_hash.as_slice()) {
+        //         ident.kp.remove(key_package_hash.as_slice());
+        //     }
+        // }
         let bob_mls_group =
             StagedWelcome::new_from_welcome(&self.provider, &group_join_config, welcome, None)
                 .map_err(|_| {
@@ -394,7 +394,8 @@ impl User {
             group
                 .mls_group
                 .remove_members(&self.provider, &identity.signer, &leaf_nodes)?;
-        group.mls_group.merge_pending_commit(&self.provider)?;
+        // split this for method self_commit
+        // group.mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         Ok(serialized_queued_msg)
     }
@@ -580,7 +581,8 @@ impl User {
             &identity.signer,
             LeafNodeParameters::default(),
         )?;
-        group.mls_group.merge_pending_commit(&self.provider)?;
+        // split this for method self_commit
+        // group.mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         Ok(serialized_queued_msg)
     }

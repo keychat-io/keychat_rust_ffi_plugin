@@ -234,22 +234,22 @@ pub fn add_members(
     result
 }
 
-pub fn adder_self_commit(nostr_id: String, group_id: String) -> Result<()> {
+pub fn self_commit(nostr_id: String, group_id: String) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
-            .ok_or_else(|| format_err!("<fn[adder_self_commit]> Can not get store err."))?;
+            .ok_or_else(|| format_err!("<fn[self_commit]> Can not get store err."))?;
         if !store.user.contains_key(&nostr_id) {
-            error!("<fn[adder_self_commit]> key_pair do not init.");
-            return Err(format_err!("<fn[adder_self_commit]> nostr_id do not init."));
+            error!("<fn[self_commit]> key_pair do not init.");
+            return Err(format_err!("<fn[self_commit]> nostr_id do not init."));
         }
         let user = store
             .user
             .get_mut(&nostr_id)
-            .ok_or_else(|| format_err!("<fn[adder_self_commit]> Can not get store from user."))?;
-        user.adder_self_commit(group_id)?;
+            .ok_or_else(|| format_err!("<fn[self_commit]> Can not get store from user."))?;
+        user.self_commit(group_id)?;
         Ok(())
     });
     result

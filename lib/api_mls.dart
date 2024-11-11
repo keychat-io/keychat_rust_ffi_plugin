@@ -33,8 +33,8 @@ Future<(Uint8List, Uint8List)> addMembers(
         {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
     RustLib.instance.api.crateApiMlsAddMembers(nostrId: nostrId, groupId: groupId, keyPackages: keyPackages);
 
-Future<void> adderSelfCommit({required String nostrId, required String groupId}) =>
-    RustLib.instance.api.crateApiMlsAdderSelfCommit(nostrId: nostrId, groupId: groupId);
+Future<void> selfCommit({required String nostrId, required String groupId}) =>
+    RustLib.instance.api.crateApiMlsSelfCommit(nostrId: nostrId, groupId: groupId);
 
 Future<void> joinMlsGroup(
         {required String nostrId,

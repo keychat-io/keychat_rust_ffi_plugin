@@ -3,9 +3,152 @@ use rust::api_mls::*;
 
 fn main() {
     let _ = test_basic();
+    // let _ = test_self_decrypt();
+    // let _ = test_diff_groups();
     // let _ = test_exist_group();
-    // let _ = test_basic2();
+    // let _ = test_diff_db2();
     // let _ = test_replay_delay();
+}
+
+fn test_diff_db1() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let a = "A";
+    let db_path = "./mls-liteA.sqlite";
+
+    init_mls_db(db_path.to_string(), a.to_string())?;
+
+    // a create group
+    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    println!("The group_join_config is: {:?}", group_join_config);
+
+    let b_pk = [
+        0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 164, 211, 109, 112, 177, 156, 218, 244,
+        51, 130, 85, 53, 30, 239, 78, 113, 102, 33, 98, 61, 191, 96, 161, 69, 208, 208, 101, 131,
+        23, 114, 88, 32, 0, 0, 0, 0, 0, 0, 0, 171, 147, 177, 201, 63, 70, 198, 109, 30, 186, 205,
+        179, 177, 22, 122, 232, 128, 22, 72, 103, 156, 66, 42, 34, 10, 135, 153, 108, 237, 219,
+        158, 18, 32, 0, 0, 0, 0, 0, 0, 0, 213, 167, 151, 33, 182, 209, 24, 144, 72, 246, 81, 163,
+        190, 185, 52, 65, 239, 164, 246, 163, 215, 57, 126, 117, 185, 26, 64, 159, 139, 80, 174,
+        101, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 66, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 2, 0, 3, 0, 77, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2,
+        0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0,
+        0, 3, 0, 0, 0, 4, 0, 0, 0, 6, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 153,
+        122, 45, 103, 0, 0, 0, 0, 169, 70, 156, 103, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0,
+        0, 0, 0, 0, 0, 69, 220, 45, 144, 212, 86, 208, 58, 147, 229, 122, 176, 193, 113, 131, 75,
+        79, 89, 211, 84, 212, 14, 167, 152, 181, 49, 232, 84, 107, 218, 176, 134, 47, 104, 63, 43,
+        1, 68, 232, 66, 13, 213, 10, 202, 36, 18, 198, 103, 78, 51, 167, 104, 72, 50, 238, 131,
+        152, 167, 209, 14, 142, 94, 161, 14, 0, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 186,
+        169, 255, 221, 2, 214, 70, 117, 175, 28, 239, 31, 79, 228, 182, 208, 202, 1, 94, 86, 243,
+        24, 119, 196, 204, 89, 228, 25, 189, 209, 214, 41, 77, 136, 8, 148, 198, 51, 51, 159, 233,
+        226, 108, 178, 57, 100, 172, 174, 51, 159, 202, 159, 126, 10, 20, 156, 107, 210, 253, 186,
+        216, 116, 124, 13,
+    ]
+    .to_vec();
+
+    // A add B
+    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    println!("The welcome is: {:?}", welcome);
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+    // A send msg to B
+    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+
+    println!("A send msg to B ,the result is {:?}", msg);
+    Ok(())
+}
+
+fn test_diff_db2() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let b = "B";
+    let db_path = "./mls-liteB.sqlite";
+
+    init_mls_db(db_path.to_string(), b.to_string())?;
+
+    let b_pk = create_key_package(b.to_string())?;
+    println!("The b_pk is: {:?}", b_pk);
+
+    // a create group
+    let group_join_config = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 1, 5, 0, 0, 0, 232, 3, 0, 0,
+    ]
+    .to_vec();
+
+    // A add B
+    let welcome = [
+        0, 1, 0, 3, 0, 1, 64, 152, 32, 177, 99, 98, 128, 139, 162, 232, 218, 114, 90, 128, 153, 66,
+        124, 187, 8, 12, 74, 76, 13, 82, 177, 57, 167, 198, 116, 182, 176, 167, 40, 23, 243, 32,
+        195, 241, 7, 94, 227, 136, 197, 24, 130, 23, 78, 111, 233, 252, 39, 68, 244, 54, 229, 184,
+        139, 100, 76, 46, 178, 130, 61, 50, 236, 81, 45, 63, 64, 84, 24, 242, 236, 135, 187, 239,
+        2, 130, 194, 220, 138, 113, 97, 134, 114, 79, 100, 229, 77, 239, 75, 100, 59, 35, 67, 252,
+        11, 30, 70, 189, 235, 112, 84, 210, 24, 9, 136, 144, 253, 39, 213, 36, 174, 72, 44, 1, 100,
+        254, 109, 19, 73, 186, 69, 88, 140, 246, 36, 132, 23, 223, 237, 166, 213, 11, 103, 152, 2,
+        119, 152, 183, 147, 153, 138, 26, 197, 118, 131, 65, 222, 225, 25, 23, 204, 161, 66, 177,
+        21, 102, 57, 212, 108, 118, 213, 185, 230, 145, 50, 143, 164, 225, 221, 65, 119, 2, 90,
+        152, 244, 72, 214, 247, 72, 26, 217, 22, 1, 233, 14, 222, 198, 211, 243, 140, 18, 40, 75,
+        147, 167, 24, 179, 125, 251, 194, 112, 167, 145, 204, 121, 0, 192, 70, 219, 123, 189, 131,
+        35, 12, 62, 65, 182, 115, 174, 4, 42, 62, 31, 180, 29, 87, 51, 197, 209, 126, 85, 52, 237,
+        163, 111, 21, 92, 35, 165, 196, 15, 14, 219, 88, 227, 145, 216, 51, 45, 66, 86, 221, 122,
+        76, 177, 128, 132, 177, 50, 226, 91, 98, 55, 164, 91, 109, 247, 179, 198, 136, 193, 107,
+        188, 77, 21, 0, 106, 108, 123, 33, 247, 217, 223, 48, 24, 86, 113, 227, 216, 114, 224, 253,
+        89, 150, 157, 187, 10, 110, 87, 202, 78, 245, 22, 12, 245, 15, 137, 118, 185, 48, 209, 51,
+        43, 150, 12, 148, 207, 253, 115, 74, 167, 199, 198, 65, 227, 239, 230, 236, 252, 249, 202,
+        72, 2, 116, 128, 24, 217, 80, 26, 6, 35, 9, 184, 190, 170, 113, 230, 73, 206, 20, 80, 79,
+        61, 86, 3, 244, 143, 90, 233, 219, 146, 226, 166, 240, 51, 70, 52, 177, 46, 196, 73, 126,
+        197, 60, 191, 182, 85, 55, 64, 37, 140, 253, 80, 111, 147, 133, 38, 23, 144, 118, 106, 225,
+        116, 54, 47, 93, 3, 70, 58, 197, 177, 166, 68, 120, 223, 188, 210, 75, 103, 193, 163, 233,
+        200, 0, 229, 52, 245, 126, 253, 199, 214, 67, 74, 7, 244, 114, 116, 185, 252, 248, 92, 191,
+        197, 110, 115, 151, 91, 110, 111, 158, 167, 71, 115, 182, 88, 38, 22, 218, 65, 13, 255,
+        228, 132, 195, 105, 88, 11, 120, 90, 255, 46, 123, 248, 10, 59, 11, 248, 24, 37, 215, 147,
+        249, 51, 43, 93, 135, 133, 63, 82, 156, 47, 164, 121, 166, 232, 87, 67, 221, 207, 27, 82,
+        95, 219, 85, 154, 19, 155, 37, 183, 28, 195, 180, 42, 124, 185, 223, 2, 44, 176, 205, 20,
+        32, 207, 16, 51, 134, 52, 201, 130, 4, 234, 144, 221, 215, 61, 73, 195, 56, 201, 184, 225,
+        35, 69, 142, 22, 98, 253, 131, 170, 106, 61, 43, 186, 27, 205, 172, 108, 116, 101, 243,
+        245, 200, 183, 237, 88, 140, 141, 252, 217, 111, 222, 99, 118, 122, 17, 222, 168, 227, 104,
+        255, 133, 232, 58, 197, 163, 247, 115, 154, 157, 148, 211, 91, 55, 208, 234, 196, 183, 130,
+        97, 78, 90, 98, 84, 189, 171, 73, 87, 46, 25, 44, 25, 27, 127, 150, 59, 231, 100, 130, 133,
+        179, 25, 234, 231, 174, 194, 143, 131, 150, 152, 207, 84, 219, 126, 183, 48, 229, 46, 3,
+        185, 154, 154, 74, 29, 187, 117, 142, 79, 206, 230, 111, 105, 232, 126, 129, 47, 111, 225,
+        237, 94, 108, 236, 251, 196, 18, 127, 174, 210, 6, 245, 183, 56, 166, 100, 220, 247, 32,
+        176, 103, 79, 21, 198, 95, 37, 154, 214, 8, 125, 81, 193, 251, 81, 52, 181, 220, 92, 153,
+        71, 23, 120, 42, 142, 22, 71, 165, 43, 134, 64, 3, 15, 219, 236, 85, 112, 177, 61, 5, 118,
+        174, 225, 115, 230, 130, 156, 210, 177, 113, 235, 54, 66, 253, 199, 206, 146, 13, 65, 124,
+        53, 179, 209, 100, 23, 101, 157, 192, 33, 11, 135, 248, 245, 225, 218, 223, 91, 37, 150,
+        138, 178, 216, 94, 134, 5, 247, 222, 31, 55, 163, 65, 1, 33, 85, 225, 153, 242, 210, 42,
+        163, 67, 149, 168, 6, 143, 38, 67, 138, 239, 151, 11, 54, 48, 241, 18, 133, 201, 4, 235,
+        229, 172, 166, 46, 37, 114, 222, 120, 85, 48, 186, 145, 150, 250, 154, 193, 248, 2, 213,
+        162, 105, 246, 6, 43, 143, 15, 239, 148, 8, 226, 166, 142, 248, 217, 144, 7, 237, 64, 141,
+        51, 212, 16, 172, 221, 195, 41, 239, 111, 21, 43, 181, 151, 29, 72, 113, 18, 204, 167,
+    ]
+    .to_vec();
+
+    // b join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id.to_string(),
+        welcome,
+        group_join_config,
+    )?;
+    let msg = [
+        0, 1, 0, 2, 2, 71, 49, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 28, 231, 68, 57, 222, 238, 153, 36,
+        202, 193, 244, 141, 146, 123, 207, 174, 216, 253, 62, 44, 89, 18, 85, 255, 179, 37, 190, 6,
+        104, 64, 91, 179, 190, 1, 202, 39, 176, 193, 98, 121, 231, 51, 241, 0, 73, 115, 5, 242, 32,
+        249, 135, 86, 182, 200, 10, 231, 62, 226, 88, 27, 85, 247, 116, 112, 133, 253, 94, 26, 155,
+        76, 4, 89, 86, 237, 114, 154, 159, 0, 20, 219, 211, 187, 105, 101, 200, 142, 95, 182, 27,
+        195, 169, 155, 232, 249, 135, 240, 183, 155, 216, 121, 209, 23, 236, 63, 38, 224, 211, 199,
+        233, 108, 94, 177, 232, 125, 2, 34, 166, 66, 41, 249, 115, 246,
+    ]
+    .to_vec();
+    // B decrypt A's msg
+    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg)?;
+
+    println!("A send msg to B ,the result is {:?}", text);
+    Ok(())
 }
 
 fn test_exist_group() -> Result<()> {
@@ -38,7 +181,7 @@ fn test_exist_group() -> Result<()> {
     // A add G
     let welcome = add_members(a.to_string(), group_id.to_string(), [f_pk, g_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // F join in the group
     join_mls_group(
@@ -83,10 +226,12 @@ fn test_exist_group() -> Result<()> {
     Ok(())
 }
 // create add send_msg decrypt_msg remove leave
-fn test_basic() -> Result<()> {
+
+fn test_diff_groups() -> Result<()> {
     println!("start -------------- start");
 
     let group_id = "G1";
+    let group_id2 = "G2";
 
     let a = "A";
     let b = "B";
@@ -111,9 +256,154 @@ fn test_basic() -> Result<()> {
     let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
 
     // A add B
+    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk.clone()].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // b join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id.to_string(),
+        welcome.1,
+        group_join_config.clone(),
+    )?;
+
+    // A send msg
+    let msg = send_msg(
+        a.to_string(),
+        group_id.to_string(),
+        "hello, A to B".to_string(),
+    )?;
+    // B decrypt A's msg
+    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    println!("A send msg to B ,the result is {:?}", text);
+
+    // create second group use the same keypackage
+    // c create group
+    let group_join_config2 = create_mls_group(c.to_string(), group_id2.to_string())?;
+
+    // C add B
+    let welcome2 = add_members(
+        c.to_string(),
+        group_id2.to_string(),
+        [b_pk.clone()].to_vec(),
+    )?;
+    // A commit
+    self_commit(c.to_string(), group_id2.to_string())?;
+    // b join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id2.to_string(),
+        welcome2.1,
+        group_join_config2.clone(),
+    )?;
+    println!("join_mls_group");
+
+    // C send msg
+    let msg = send_msg(
+        c.to_string(),
+        group_id2.to_string(),
+        "hello, C to B".to_string(),
+    )?;
+    // B decrypt A's msg
+    let text = decrypt_msg(b.to_string(), group_id2.to_string(), msg.0)?;
+    println!("C send msg to B ,the result is {:?}", text);
+
+    Ok(())
+}
+
+// could not decrypt self msg?
+fn test_self_decrypt() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G11";
+
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+
+    let db_path = "./mls-lite.sqlite";
+
+    init_mls_db(db_path.to_string(), a.to_string())?;
+    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_path.to_string(), c.to_string())?;
+    init_mls_db(db_path.to_string(), d.to_string())?;
+    init_mls_db(db_path.to_string(), e.to_string())?;
+
+    let b0_pk = create_key_package(b.to_string())?;
+    let b1_pk = create_key_package(b.to_string())?;
+    let b2_pk = create_key_package(b.to_string())?;
+    let b_pk = create_key_package(b.to_string())?;
+
+    // a create group
+    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+
+    // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // b join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id.to_string(),
+        welcome.1,
+        group_join_config.clone(),
+    )?;
+
+    // A send msg
+    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    // // A decrypt A's msg
+    let text = decrypt_msg(a.to_string(), group_id.to_string(), msg.0.clone())?;
+    println!("A send msg to A ,the result is {:?}", text);
+    // B decrypt A's msg
+    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    println!("A send msg to B ,the result is {:?}", text);
+    Ok(())
+}
+
+fn test_basic() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+
+    let db_path = "./mls-lite.sqlite";
+
+    // let users = vec![a, b, c, d, e];
+    // let base_db_path = "./mls-lite";
+    // for user in users {
+    //     let db_path = format!("{}-{}.sqlite", base_db_path, user);
+    //     init_mls_db(db_path.to_string(), user.to_string())?;
+    // }
+
+    init_mls_db(db_path.to_string(), a.to_string())?;
+    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_path.to_string(), c.to_string())?;
+    init_mls_db(db_path.to_string(), d.to_string())?;
+    init_mls_db(db_path.to_string(), e.to_string())?;
+
+    let b0_pk = create_key_package(b.to_string())?;
+    let b_pk = create_key_package(b.to_string())?;
+    let c_pk = create_key_package(c.to_string())?;
+    let d0_pk = create_key_package(d.to_string())?;
+    let d_pk = create_key_package(d.to_string())?;
+    let e_pk = create_key_package(e.to_string())?;
+
+    // a create group
+    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+
+    // A add B
+    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
     join_mls_group(
@@ -161,7 +451,7 @@ fn test_basic() -> Result<()> {
     // B add C
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk].to_vec())?;
     // B commit
-    adder_self_commit(b.to_string(), group_id.to_string())?;
+    self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
     join_mls_group(
@@ -224,7 +514,7 @@ fn test_basic() -> Result<()> {
     // A add D
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
     join_mls_group(
@@ -283,6 +573,8 @@ fn test_basic() -> Result<()> {
 
     // A remove B
     let queued_msg = remove_members(a.to_string(), group_id.to_string(), [b_leaf_node].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -313,7 +605,7 @@ fn test_basic() -> Result<()> {
     // A add E
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
     join_mls_group(
@@ -389,6 +681,8 @@ fn test_basic() -> Result<()> {
 
     // admin update
     let queued_msg = self_update(a.to_string(), group_id.to_string())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // E commit
     let _ = others_commit_normal(e.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -447,7 +741,7 @@ fn test_normal() -> Result<()> {
     // A add B F
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
     join_mls_group(
@@ -526,7 +820,7 @@ fn test_normal() -> Result<()> {
     // B add C and G
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
     // B commit
-    adder_self_commit(b.to_string(), group_id.to_string())?;
+    self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
     join_mls_group(
@@ -625,7 +919,7 @@ fn test_normal() -> Result<()> {
     // A add D
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
     join_mls_group(
@@ -735,6 +1029,8 @@ fn test_normal() -> Result<()> {
 
     // A remove B
     let queued_msg = remove_members(a.to_string(), group_id.to_string(), [b_leaf_node].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -801,7 +1097,7 @@ fn test_normal() -> Result<()> {
     // A add E
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
     join_mls_group(
@@ -959,6 +1255,8 @@ fn test_normal() -> Result<()> {
     println!("--A UPDATE --------------");
     // admin update
     let queued_msg = self_update(a.to_string(), group_id.to_string())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // D commit
     let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -1091,7 +1389,7 @@ fn test_basic2() -> Result<()> {
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
     join_mls_group(
@@ -1159,7 +1457,7 @@ fn test_basic2() -> Result<()> {
     )?;
 
     // B commit add
-    adder_self_commit(b.to_string(), group_id.to_string())?;
+    self_commit(b.to_string(), group_id.to_string())?;
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0)?;
 
@@ -1215,7 +1513,7 @@ fn test_replay_delay() -> Result<()> {
     // A add B F, but F not reply right now
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
     join_mls_group(
@@ -1248,7 +1546,7 @@ fn test_replay_delay() -> Result<()> {
     // B add C and G
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
     // A commit
-    adder_self_commit(b.to_string(), group_id.to_string())?;
+    self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
     join_mls_group(
@@ -1306,7 +1604,7 @@ fn test_replay_delay() -> Result<()> {
     // A add D
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
     join_mls_group(
@@ -1370,6 +1668,8 @@ fn test_replay_delay() -> Result<()> {
         group_id.to_string(),
         [b_leaf_node, f_leaf_node].to_vec(),
     )?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -1406,7 +1706,7 @@ fn test_replay_delay() -> Result<()> {
     // A add E
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
     // A commit
-    adder_self_commit(a.to_string(), group_id.to_string())?;
+    self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
     join_mls_group(
