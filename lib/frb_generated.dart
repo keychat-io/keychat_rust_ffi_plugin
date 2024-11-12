@@ -156,7 +156,8 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiMlsGetGroupConfig({required String nostrId, required String groupId});
 
-  Future<Uint8List> crateApiMlsGetLeadNodeIndex({required String nostrId, required String groupId});
+  Future<Uint8List> crateApiMlsGetLeadNodeIndex(
+      {required String nostrIdAdmin, required String nostrIdCommon, required String groupId});
 
   Future<Uint8List> crateApiMlsGetTreeHash({required String nostrId, required String groupId});
 
@@ -1225,11 +1226,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiMlsGetLeadNodeIndex({required String nostrId, required String groupId}) {
+  Future<Uint8List> crateApiMlsGetLeadNodeIndex(
+      {required String nostrIdAdmin, required String nostrIdCommon, required String groupId}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(nostrId, serializer);
+        sse_encode_String(nostrIdAdmin, serializer);
+        sse_encode_String(nostrIdCommon, serializer);
         sse_encode_String(groupId, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38, port: port_);
       },
@@ -1238,14 +1241,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsGetLeadNodeIndexConstMeta,
-      argValues: [nostrId, groupId],
+      argValues: [nostrIdAdmin, nostrIdCommon, groupId],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiMlsGetLeadNodeIndexConstMeta => const TaskConstMeta(
         debugName: "get_lead_node_index",
-        argNames: ["nostrId", "groupId"],
+        argNames: ["nostrIdAdmin", "nostrIdCommon", "groupId"],
       );
 
   @override

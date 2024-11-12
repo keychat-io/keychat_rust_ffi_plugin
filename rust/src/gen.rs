@@ -1403,14 +1403,18 @@ fn wire__crate__api_mls__get_lead_node_index_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_nostr_id = <String>::sse_decode(&mut deserializer);
+            let api_nostr_id_admin = <String>::sse_decode(&mut deserializer);
+            let api_nostr_id_common = <String>::sse_decode(&mut deserializer);
             let api_group_id = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok =
-                            crate::api_mls::get_lead_node_index(api_nostr_id, api_group_id)?;
+                        let output_ok = crate::api_mls::get_lead_node_index(
+                            api_nostr_id_admin,
+                            api_nostr_id_common,
+                            api_group_id,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )

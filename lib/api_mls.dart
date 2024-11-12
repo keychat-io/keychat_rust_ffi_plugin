@@ -53,8 +53,10 @@ Future<(Uint8List, Uint8List)> sendMsg({required String nostrId, required String
 Future<(String, String)> decryptMsg({required String nostrId, required String groupId, required List<int> msg}) =>
     RustLib.instance.api.crateApiMlsDecryptMsg(nostrId: nostrId, groupId: groupId, msg: msg);
 
-Future<Uint8List> getLeadNodeIndex({required String nostrId, required String groupId}) =>
-    RustLib.instance.api.crateApiMlsGetLeadNodeIndex(nostrId: nostrId, groupId: groupId);
+Future<Uint8List> getLeadNodeIndex(
+        {required String nostrIdAdmin, required String nostrIdCommon, required String groupId}) =>
+    RustLib.instance.api
+        .crateApiMlsGetLeadNodeIndex(nostrIdAdmin: nostrIdAdmin, nostrIdCommon: nostrIdCommon, groupId: groupId);
 
 Future<Uint8List> removeMembers({required String nostrId, required String groupId, required List<Uint8List> members}) =>
     RustLib.instance.api.crateApiMlsRemoveMembers(nostrId: nostrId, groupId: groupId, members: members);

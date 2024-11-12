@@ -367,7 +367,7 @@ impl User {
         Ok(lead_node_index_vec)
     }
 
-    pub(crate) fn get_lead_node_index(&mut self, nostr_id: String, group_id: String) -> Result<Vec<u8>> {
+    pub(crate) fn get_lead_node_index(&mut self, nostr_id_common: String, group_id: String) -> Result<Vec<u8>> {
         let groups = self
             .groups
             .read()
@@ -379,7 +379,7 @@ impl User {
         let members = group.mls_group.members().collect::<Vec<Member>>();
         for member in members {
             let credential = member.credential.serialized_content();
-            if String::from_utf8(credential.to_vec())? == nostr_id {
+            if String::from_utf8(credential.to_vec())? == nostr_id_common {
                 let lead_node_index = member.index;
                 return Ok(bincode::serialize(&lead_node_index)?);
             }

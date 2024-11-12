@@ -347,14 +347,14 @@ pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<(
 }
 
 // when remove remembers, should use this lead node
-pub fn get_lead_node_index(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
+pub fn get_lead_node_index(nostr_id_admin: String, nostr_id_common: String, group_id: String) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
             .ok_or_else(|| format_err!("<fn[get_lead_node_index]> Can not get store err."))?;
-        if !store.user.contains_key(&nostr_id) {
+        if !store.user.contains_key(&nostr_id_admin) {
             error!("<fn[get_lead_node_index]> nostr_id do not init.");
             return Err(format_err!(
                 "<fn[get_lead_node_index]> nostr_id do not init."
@@ -362,9 +362,9 @@ pub fn get_lead_node_index(nostr_id: String, group_id: String) -> Result<Vec<u8>
         }
         let user = store
             .user
-            .get_mut(&nostr_id)
+            .get_mut(&nostr_id_admin)
             .ok_or_else(|| format_err!("<fn[get_lead_node_index]> Can not get store from user."))?;
-        Ok(user.get_lead_node_index(nostr_id, group_id)?)
+        Ok(user.get_lead_node_index(nostr_id_common, group_id)?)
     });
     result
 }

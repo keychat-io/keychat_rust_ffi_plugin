@@ -355,12 +355,13 @@ fn test_self_decrypt() -> Result<()> {
 
     // A send msg
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
-    // // A decrypt A's msg
+
+    // B decrypt A's msg
+    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0.clone())?;
+    println!("A send msg to B ,the result is {:?}", text);
+    // A decrypt A's msg
     let text = decrypt_msg(a.to_string(), group_id.to_string(), msg.0.clone())?;
     println!("A send msg to A ,the result is {:?}", text);
-    // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
-    println!("A send msg to B ,the result is {:?}", text);
     Ok(())
 }
 
@@ -569,7 +570,7 @@ fn test_basic() -> Result<()> {
         get_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
-    let b_leaf_node = get_lead_node_index(b.to_string(), group_id.to_string())?;
+    let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
 
     // A remove B
     let queued_msg = remove_members(a.to_string(), group_id.to_string(), [b_leaf_node].to_vec())?;
@@ -645,6 +646,24 @@ fn test_basic() -> Result<()> {
     println!("--C leave --------------");
 
     let queued_msg = self_leave(c.to_string(), group_id.to_string())?;
+
+    // when C proposal that can not send msg again.
+    // // C send msg
+    // let msg5 = send_msg(
+    //     c.to_string(),
+    //     group_id.to_string(),
+    //     "C hello, ADE".to_string(),
+    // )?;
+    //
+    // // A decrypt C's msg
+    // let text5 = decrypt_msg(a.to_string(), group_id.to_string(), msg5.0.clone())?;
+    // println!("C send msg to A ,the result is {:?}", text5);
+
+    println!(
+        "c self_leave c_mls_group export secret {:?}",
+        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+    );
+
     // A proposal
     let _ = others_proposal_leave(a.to_string(), group_id.to_string(), queued_msg.clone())?;
     // D proposal
@@ -666,6 +685,11 @@ fn test_basic() -> Result<()> {
         "a_mls_group export secret {:?}",
         get_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
+
+    // println!(
+    //     "c_mls_group export secret {:?}",
+    //     get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+    // );
 
     println!(
         "d_mls_group export secret {:?}",
@@ -1025,7 +1049,7 @@ fn test_normal() -> Result<()> {
 
     println!("--A remove B --------------");
 
-    let b_leaf_node = get_lead_node_index(b.to_string(), group_id.to_string())?;
+    let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
 
     // A remove B
     let queued_msg = remove_members(a.to_string(), group_id.to_string(), [b_leaf_node].to_vec())?;
@@ -1659,8 +1683,8 @@ fn test_replay_delay() -> Result<()> {
 
     println!("--A remove B F --------------");
 
-    let b_leaf_node = get_lead_node_index(b.to_string(), group_id.to_string())?;
-    let f_leaf_node = get_lead_node_index(f.to_string(), group_id.to_string())?;
+    let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
+    let f_leaf_node = get_lead_node_index(a.to_string(), f.to_string(), group_id.to_string())?;
 
     // A remove B F
     let queued_msg = remove_members(
