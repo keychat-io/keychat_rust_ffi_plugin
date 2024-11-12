@@ -8,7 +8,7 @@ use std::sync::RwLock;
 
 pub use kc::identity::Identity;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
-pub use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
+pub use openmls::group::{GroupId, Member, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
 pub use openmls_sqlite_storage::MLSLitePool;
 pub use openmls_traits::OpenMlsProvider;
 
@@ -353,7 +353,7 @@ impl User {
         }
     }
 
-    pub(crate) fn get_lead_node_index(&mut self, group_id: String) -> Result<Vec<u8>> {
+    pub(crate) fn _get_own_lead_node_index(&mut self, group_id: String) -> Result<Vec<u8>> {
         let groups = self
             .groups
             .read()
@@ -365,6 +365,26 @@ impl User {
         let lead_node_index = group.mls_group.own_leaf_index();
         let lead_node_index_vec = bincode::serialize(&lead_node_index)?;
         Ok(lead_node_index_vec)
+    }
+
+    pub(crate) fn get_lead_node_index(&mut self, nostr_id: String, group_id: String) -> Result<Vec<u8>> {
+        let groups = self
+            .groups
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let group = match groups.get(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        let members = group.mls_group.members().collect::<Vec<Member>>();
+        for member in members {
+            let credential = member.credential.serialized_content();
+            if String::from_utf8(credential.to_vec())? == nostr_id {
+                let lead_node_index = member.index;
+                return Ok(bincode::serialize(&lead_node_index)?);
+            }
+        }
+        Err(anyhow::anyhow!("No member found with the given nostr_id."))
     }
 
     pub(crate) fn remove_members(

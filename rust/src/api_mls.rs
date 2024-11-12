@@ -364,7 +364,7 @@ pub fn get_lead_node_index(nostr_id: String, group_id: String) -> Result<Vec<u8>
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[get_lead_node_index]> Can not get store from user."))?;
-        Ok(user.get_lead_node_index(group_id)?)
+        Ok(user.get_lead_node_index(nostr_id, group_id)?)
     });
     result
 }
