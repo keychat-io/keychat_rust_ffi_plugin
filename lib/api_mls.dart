@@ -74,8 +74,11 @@ Future<Uint8List> selfUpdate({required String nostrId, required String groupId})
 Future<void> othersProposalLeave({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersProposalLeave(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
-Future<Uint8List> adminCommitLeave({required String nostrId, required String groupId}) =>
+Future<void> adminCommitLeave({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsAdminCommitLeave(nostrId: nostrId, groupId: groupId);
+
+Future<Uint8List> adminProposalLeave({required String nostrId, required String groupId}) =>
+    RustLib.instance.api.crateApiMlsAdminProposalLeave(nostrId: nostrId, groupId: groupId);
 
 Future<void> normalMemberCommitLeave(
         {required String nostrId, required String groupId, required List<int> queuedMsg}) =>

@@ -485,7 +485,7 @@ pub fn others_proposal_leave(
     result
 }
 
-pub fn admin_commit_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
+pub fn admin_commit_leave(nostr_id: String, group_id: String) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -504,9 +504,30 @@ pub fn admin_commit_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>>
             .ok_or_else(|| format_err!("<fn[admin_commit_leave]> Can not get store from user."))?;
         Ok(user.admin_commit_leave(group_id)?)
     });
-    result
+    Ok(())
 }
 
+pub fn admin_proposal_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[admin_commit_leave]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[admin_commit_leave]> nostr_id do not init.");
+            return Err(format_err!(
+                "<fn[admin_commit_leave]> nostr_id do not init."
+            ));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[admin_commit_leave]> Can not get store from user."))?;
+        Ok(user.admin_proposal_leave(group_id)?)
+    });
+    result
+}
 // expect admin, queued_msg is from admin
 pub fn normal_member_commit_leave(
     nostr_id: String,

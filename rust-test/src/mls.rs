@@ -671,8 +671,9 @@ fn test_basic() -> Result<()> {
     // E proposal
     let _ = others_proposal_leave(e.to_string(), group_id.to_string(), queued_msg.clone())?;
 
-    // admin commit
-    let queued_msg = admin_commit_leave(a.to_string(), group_id.to_string())?;
+    // admin proposal and commit
+    let queued_msg = admin_proposal_leave(a.to_string(), group_id.to_string())?;
+    let _ = admin_commit_leave(a.to_string(), group_id.to_string())?;
 
     // D commit
     let _ = normal_member_commit_leave(d.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -1212,8 +1213,9 @@ fn test_normal() -> Result<()> {
     // G proposal
     let _ = others_proposal_leave(g.to_string(), group_id.to_string(), queued_msg.clone())?;
 
-    // admin commit
-    let queued_msg = admin_commit_leave(a.to_string(), group_id.to_string())?;
+    // admin proposal and commit
+    let queued_msg = admin_proposal_leave(a.to_string(), group_id.to_string())?;
+    let _ = admin_commit_leave(a.to_string(), group_id.to_string())?;
 
     // C commit
     let _ = normal_member_commit_leave(c.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -1782,8 +1784,9 @@ fn test_replay_delay() -> Result<()> {
     // G proposal
     let _ = others_proposal_leave(g.to_string(), group_id.to_string(), queued_msg.clone())?;
 
-    // admin commit
-    let queued_msg = admin_commit_leave(a.to_string(), group_id.to_string())?;
+    // admin proposal and commit
+    let queued_msg = admin_proposal_leave(a.to_string(), group_id.to_string())?;
+    let _ = admin_commit_leave(a.to_string(), group_id.to_string())?;
 
     // C commit
     let _ = normal_member_commit_leave(c.to_string(), group_id.to_string(), queued_msg.clone())?;

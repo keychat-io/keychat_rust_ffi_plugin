@@ -512,7 +512,30 @@ impl User {
         Ok(())
     }
 
-    pub(crate) fn admin_commit_leave(&mut self, group_id: String) -> Result<Vec<u8>> {
+    pub(crate) fn admin_commit_leave(&mut self, group_id: String) -> Result<()> {
+        let mut groups = self
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        if let Some(staged_commit) = group.mls_group.pending_commit() {
+            let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
+                format_err!("<mls api fn[admin_commit_leave]> Expected a proposal.")
+            })?;
+            let staged_commit_clone = staged_commit.clone();
+            group
+                .mls_group
+                .merge_staged_commit(&self.provider, staged_commit_clone)?;
+        } else {
+            unreachable!("<mls api fn[admin_commit_leave]> Expected a StagedCommit.");
+        }
+        Ok(())
+    }
+
+    pub(crate) fn admin_proposal_leave(&mut self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self
             .groups
             .write()
@@ -528,17 +551,18 @@ impl User {
         let (queued_msg, _welcome_option, _group_info) = group
             .mls_group
             .commit_to_pending_proposals(&self.provider, &identity.signer)?;
-        if let Some(staged_commit) = group.mls_group.pending_commit() {
-            let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
-                format_err!("<mls api fn[admin_commit_leave]> Expected a proposal.")
-            })?;
-            let staged_commit_clone = staged_commit.clone();
-            group
-                .mls_group
-                .merge_staged_commit(&self.provider, staged_commit_clone)?;
-        } else {
-            unreachable!("<mls api fn[admin_commit_leave]> Expected a StagedCommit.");
-        }
+        // this use fn admin_commit_leave instead
+        // if let Some(staged_commit) = group.mls_group.pending_commit() {
+        //     let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
+        //         format_err!("<mls api fn[admin_commit_leave]> Expected a proposal.")
+        //     })?;
+        //     let staged_commit_clone = staged_commit.clone();
+        //     group
+        //         .mls_group
+        //         .merge_staged_commit(&self.provider, staged_commit_clone)?;
+        // } else {
+        //     unreachable!("<mls api fn[admin_commit_leave]> Expected a StagedCommit.");
+        // }
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         Ok(serialized_queued_msg)
     }
