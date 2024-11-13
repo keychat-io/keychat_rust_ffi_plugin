@@ -8,6 +8,15 @@ This project is a starting point for a Flutter
 [FFI plugin](https://docs.flutter.dev/development/platform-integration/c-interop),
 a specialized package that includes native code directly invoked with Dart FFI.
 
+## Commands
+```
+rustc --print target-list
+cd rust
+cargo build --target aarch64-apple-ios --release --target-dir target
+cargo build --target aarch64-linux-android --release --target-dir target 
+cargo build --target aarch64-apple-darwin --release --target-dir target 
+```
+
 ## Project structure
 
 This template uses the following structure:
