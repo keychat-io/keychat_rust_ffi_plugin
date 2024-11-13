@@ -283,23 +283,24 @@ pub fn join_mls_group(
     result
 }
 
-pub fn after_remove(nostr_id: String, group_id: String) -> Result<()> {
+pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
-            .ok_or_else(|| format_err!("<fn[after_remove]> Can not get store err."))?;
+            .ok_or_else(|| format_err!("<fn[delete_group]> Can not get store err."))?;
         if !store.user.contains_key(&nostr_id) {
-            error!("<fn[after_remove]> nostr_id do not init.");
+            error!("<fn[delete_group]> nostr_id do not init.");
             return Err(format_err!(
-                "<fn[after_remove]> nostr_id do not init."
+                "<fn[delete_group]> nostr_id do not init."
             ));
         }
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
-            format_err!("<fn[after_remove]> Can not get store from user.")
+            format_err!("<fn[delete_group]> Can not get store from user.")
         })?;
-        user.after_remove(group_id)?;
+        user.delete_group(group_id)?;
+        user.update(nostr_id, false).await?;
         Ok(())
     });
     result

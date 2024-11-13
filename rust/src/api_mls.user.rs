@@ -195,7 +195,7 @@ impl User {
         Ok(())
     }
 
-    pub(crate) fn after_remove(&mut self, group_id: String) -> Result<()> {
+    pub(crate) fn delete_group(&mut self, group_id: String) -> Result<()> {
         let mut groups = self
             .groups
             .write()

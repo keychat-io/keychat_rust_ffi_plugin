@@ -44,6 +44,9 @@ Future<void> joinMlsGroup(
     RustLib.instance.api.crateApiMlsJoinMlsGroup(
         nostrId: nostrId, groupId: groupId, welcome: welcome, groupJoinConfig: groupJoinConfig);
 
+Future<void> deleteGroup({required String nostrId, required String groupId}) =>
+    RustLib.instance.api.crateApiMlsDeleteGroup(nostrId: nostrId, groupId: groupId);
+
 Future<void> othersCommitNormal({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersCommitNormal(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 

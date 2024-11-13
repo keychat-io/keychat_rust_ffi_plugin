@@ -2,13 +2,13 @@ use anyhow::Result;
 use rust::api_mls::*;
 
 fn main() {
-    // let _ = test_basic();
+    let _ = test_basic();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
     // let _ = test_exist_group();
     // let _ = test_diff_db2();
     // let _ = test_replay_delay();
-    let _ = test_remove_then_add_group();
+    // let _ = test_remove_then_add_group();
 }
 
 fn test_diff_db1() -> Result<()> {
@@ -282,7 +282,7 @@ fn test_remove_then_add_group() -> Result<()> {
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
-    let _ = after_remove(b.to_string(), group_id.to_string())?;
+    let _ = delete_group(b.to_string(), group_id.to_string())?;
 
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -309,7 +309,7 @@ fn test_remove_then_add_group() -> Result<()> {
         "a_mls_group export secret {:?}",
         get_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
-    
+
     Ok(())
 }
 
