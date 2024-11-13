@@ -2,12 +2,13 @@ use anyhow::Result;
 use rust::api_mls::*;
 
 fn main() {
-    let _ = test_basic();
+    // let _ = test_basic();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
     // let _ = test_exist_group();
     // let _ = test_diff_db2();
     // let _ = test_replay_delay();
+    let _ = test_remove_then_add_group();
 }
 
 fn test_diff_db1() -> Result<()> {
@@ -225,7 +226,92 @@ fn test_exist_group() -> Result<()> {
 
     Ok(())
 }
-// create add send_msg decrypt_msg remove leave
+
+fn test_remove_then_add_group() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+
+    let db_path = "./mls-lite.sqlite";
+    // every user show init this
+    init_mls_db(db_path.to_string(), a.to_string())?;
+    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_path.to_string(), c.to_string())?;
+    init_mls_db(db_path.to_string(), d.to_string())?;
+
+    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+
+    let b_pk = create_key_package(b.to_string())?;
+    let b_pk2 = create_key_package(b.to_string())?;
+    let c_pk = create_key_package(c.to_string())?;
+
+    // A add B C
+    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk.clone(), c_pk].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // B join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id.to_string(),
+        welcome.1.clone(),
+        group_join_config.clone(),
+    )?;
+
+    // C join in the group
+    join_mls_group(
+        c.to_string(),
+        group_id.to_string(),
+        welcome.1.clone(),
+        group_join_config.clone(),
+    )?;
+    println!(
+        "a_mls_group export secret {:?}",
+        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
+    // A remove B
+    let queued_msg = remove_members(a.to_string(), group_id.to_string(), [b_leaf_node].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // B commit
+    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = after_remove(b.to_string(), group_id.to_string())?;
+
+    // C commit
+    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+
+    println!(
+        "a_mls_group export secret {:?}",
+        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    // then A add B again
+    // A add B
+    let welcome2 = add_members(a.to_string(), group_id.to_string(), [b_pk2.clone()].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // B join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id.to_string(),
+        welcome2.1.clone(),
+        group_join_config.clone(),
+    )?;
+    println!(
+        "a_mls_group export secret {:?}",
+        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+    );
+    
+    Ok(())
+}
 
 fn test_diff_groups() -> Result<()> {
     println!("start -------------- start");
@@ -312,7 +398,7 @@ fn test_diff_groups() -> Result<()> {
     Ok(())
 }
 
-// could not decrypt self msg?
+// could not decrypt self msg? YES
 fn test_self_decrypt() -> Result<()> {
     println!("start -------------- start");
 
@@ -359,12 +445,14 @@ fn test_self_decrypt() -> Result<()> {
     // B decrypt A's msg
     let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0.clone())?;
     println!("A send msg to B ,the result is {:?}", text);
-    // A decrypt A's msg
-    let text = decrypt_msg(a.to_string(), group_id.to_string(), msg.0.clone())?;
-    println!("A send msg to A ,the result is {:?}", text);
+    // A can not decrypt self msg
+    // // A decrypt A's msg
+    // let text = decrypt_msg(a.to_string(), group_id.to_string(), msg.0.clone())?;
+    // println!("A send msg to A ,the result is {:?}", text);
     Ok(())
 }
 
+// create add send_msg decrypt_msg remove leave
 fn test_basic() -> Result<()> {
     println!("start -------------- start");
 
@@ -659,11 +747,6 @@ fn test_basic() -> Result<()> {
     // let text5 = decrypt_msg(a.to_string(), group_id.to_string(), msg5.0.clone())?;
     // println!("C send msg to A ,the result is {:?}", text5);
 
-    println!(
-        "c self_leave c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
-    );
-
     // A proposal
     let _ = others_proposal_leave(a.to_string(), group_id.to_string(), queued_msg.clone())?;
     // D proposal
@@ -673,6 +756,23 @@ fn test_basic() -> Result<()> {
 
     // admin proposal and commit
     let queued_msg = admin_proposal_leave(a.to_string(), group_id.to_string())?;
+    println!(
+        "c self_leave a_mls_group export secret {:?}",
+        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    // when A proposal that can not send msg again.
+    // A send msg
+    // let msg5 = send_msg(
+    //     a.to_string(),
+    //     group_id.to_string(),
+    //     "A hello, DCE".to_string(),
+    // )?;
+
+    // // A decrypt C's msg
+    // let text5 = decrypt_msg(d.to_string(), group_id.to_string(), msg5.0.clone())?;
+    // println!("A send msg to D ,the result is {:?}", text5);
+
     let _ = admin_commit_leave(a.to_string(), group_id.to_string())?;
 
     // D commit

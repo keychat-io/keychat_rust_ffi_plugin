@@ -283,6 +283,28 @@ pub fn join_mls_group(
     result
 }
 
+pub fn after_remove(nostr_id: String, group_id: String) -> Result<()> {
+    let rt = lock_runtime!();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[after_remove]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[after_remove]> nostr_id do not init.");
+            return Err(format_err!(
+                "<fn[after_remove]> nostr_id do not init."
+            ));
+        }
+        let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
+            format_err!("<fn[after_remove]> Can not get store from user.")
+        })?;
+        user.after_remove(group_id)?;
+        Ok(())
+    });
+    result
+}
+
 // only group is not null, and other members should execute this
 pub fn others_commit_normal(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Result<()> {
     let rt = lock_runtime!();
