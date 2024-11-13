@@ -15,7 +15,7 @@ cd rust
 cargo build --target aarch64-apple-ios --release --target-dir target
 
 android_tools=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin
-xport CC_aarch64_linux_android=$android_tools/aarch64-linux-android21-clang                           
+export CC_aarch64_linux_android=$android_tools/aarch64-linux-android21-clang                           
 export AR_aarch64_linux_android=$android_tools/llvm-ar
 export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$android_tools/aarch64-linux-android21-clang
 
