@@ -13,6 +13,12 @@ a specialized package that includes native code directly invoked with Dart FFI.
 rustc --print target-list
 cd rust
 cargo build --target aarch64-apple-ios --release --target-dir target
+
+android_tools=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin
+xport CC_aarch64_linux_android=$android_tools/aarch64-linux-android21-clang                           
+export AR_aarch64_linux_android=$android_tools/llvm-ar
+export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$android_tools/aarch64-linux-android21-clang
+
 cargo build --target aarch64-linux-android --release --target-dir target 
 cargo build --target aarch64-apple-darwin --release --target-dir target 
 ```
