@@ -110,6 +110,9 @@ Future<String> generateSeedFromRatchetkeyPair({required String seedKey}) =>
 Future<String> generateMessageKeyHash({required String seedKey}) =>
     RustLib.instance.api.crateApiNostrGenerateMessageKeyHash(seedKey: seedKey);
 
+Future<String> generateSeedFromKey({required List<int> seedKey}) =>
+    RustLib.instance.api.crateApiNostrGenerateSeedFromKey(seedKey: seedKey);
+
 class NostrEvent {
   /// Id
   final String id;

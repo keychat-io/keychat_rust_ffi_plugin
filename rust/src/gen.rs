@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.3.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 698339485;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1170606119;
 
 // Section: executor
 
@@ -2420,6 +2420,41 @@ fn wire__crate__api_nostr__generate_secp256k1_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok = crate::api_nostr::generate_secp256k1()?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api_nostr__generate_seed_from_key_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "generate_seed_from_key",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_seed_key = <Vec<u8>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api_nostr::generate_seed_from_key(api_seed_key)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5008,77 +5043,80 @@ fn pde_ffi_dispatcher_primary_impl(
             data_len,
         ),
         64 => wire__crate__api_nostr__generate_secp256k1_impl(port, ptr, rust_vec_len, data_len),
-        65 => wire__crate__api_nostr__generate_seed_from_ratchetkey_pair_impl(
+        65 => {
+            wire__crate__api_nostr__generate_seed_from_key_impl(port, ptr, rust_vec_len, data_len)
+        }
+        66 => wire__crate__api_nostr__generate_seed_from_ratchetkey_pair_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        66 => wire__crate__api_nostr__generate_simple_impl(port, ptr, rust_vec_len, data_len),
-        69 => wire__crate__api_nostr__get_encrypt_event_impl(port, ptr, rust_vec_len, data_len),
-        73 => wire__crate__api_nostr__get_unencrypt_event_impl(port, ptr, rust_vec_len, data_len),
-        74 => wire__crate__api_nostr__import_from_phrase_impl(port, ptr, rust_vec_len, data_len),
-        75 => {
+        67 => wire__crate__api_nostr__generate_simple_impl(port, ptr, rust_vec_len, data_len),
+        70 => wire__crate__api_nostr__get_encrypt_event_impl(port, ptr, rust_vec_len, data_len),
+        74 => wire__crate__api_nostr__get_unencrypt_event_impl(port, ptr, rust_vec_len, data_len),
+        75 => wire__crate__api_nostr__import_from_phrase_impl(port, ptr, rust_vec_len, data_len),
+        76 => {
             wire__crate__api_nostr__import_from_phrase_with_impl(port, ptr, rust_vec_len, data_len)
         }
-        76 => wire__crate__api_nostr__import_key_impl(port, ptr, rust_vec_len, data_len),
-        77 => wire__crate__api_nostr__set_metadata_impl(port, ptr, rust_vec_len, data_len),
-        78 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
-        79 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
-        80 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
-        81 => wire__crate__api_signal__contains_session_impl(port, ptr, rust_vec_len, data_len),
-        82 => wire__crate__api_signal__decrypt_signal_impl(port, ptr, rust_vec_len, data_len),
-        83 => wire__crate__api_signal__delete_identity_impl(port, ptr, rust_vec_len, data_len),
-        84 => wire__crate__api_signal__delete_session_impl(port, ptr, rust_vec_len, data_len),
-        85 => wire__crate__api_signal__delete_session_by_device_id_impl(
+        77 => wire__crate__api_nostr__import_key_impl(port, ptr, rust_vec_len, data_len),
+        78 => wire__crate__api_nostr__set_metadata_impl(port, ptr, rust_vec_len, data_len),
+        79 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        80 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
+        81 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        82 => wire__crate__api_signal__contains_session_impl(port, ptr, rust_vec_len, data_len),
+        83 => wire__crate__api_signal__decrypt_signal_impl(port, ptr, rust_vec_len, data_len),
+        84 => wire__crate__api_signal__delete_identity_impl(port, ptr, rust_vec_len, data_len),
+        85 => wire__crate__api_signal__delete_session_impl(port, ptr, rust_vec_len, data_len),
+        86 => wire__crate__api_signal__delete_session_by_device_id_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        86 => wire__crate__api_signal__encrypt_signal_impl(port, ptr, rust_vec_len, data_len),
-        87 => wire__crate__api_signal__generate_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        88 => wire__crate__api_signal__generate_signal_ids_impl(port, ptr, rust_vec_len, data_len),
-        89 => {
+        87 => wire__crate__api_signal__encrypt_signal_impl(port, ptr, rust_vec_len, data_len),
+        88 => wire__crate__api_signal__generate_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        89 => wire__crate__api_signal__generate_signal_ids_impl(port, ptr, rust_vec_len, data_len),
+        90 => {
             wire__crate__api_signal__generate_signed_key_api_impl(port, ptr, rust_vec_len, data_len)
         }
-        90 => wire__crate__api_signal__get_all_alice_addrs_impl(port, ptr, rust_vec_len, data_len),
-        91 => wire__crate__api_signal__get_identity_impl(port, ptr, rust_vec_len, data_len),
-        92 => wire__crate__api_signal__get_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        93 => wire__crate__api_signal__get_session_impl(port, ptr, rust_vec_len, data_len),
-        94 => wire__crate__api_signal__get_signed_key_api_impl(port, ptr, rust_vec_len, data_len),
-        95 => wire__crate__api_signal__init_impl(port, ptr, rust_vec_len, data_len),
-        96 => wire__crate__api_signal__init_keypair_impl(port, ptr, rust_vec_len, data_len),
-        97 => wire__crate__api_signal__init_signal_db_impl(port, ptr, rust_vec_len, data_len),
-        98 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
+        91 => wire__crate__api_signal__get_all_alice_addrs_impl(port, ptr, rust_vec_len, data_len),
+        92 => wire__crate__api_signal__get_identity_impl(port, ptr, rust_vec_len, data_len),
+        93 => wire__crate__api_signal__get_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        94 => wire__crate__api_signal__get_session_impl(port, ptr, rust_vec_len, data_len),
+        95 => wire__crate__api_signal__get_signed_key_api_impl(port, ptr, rust_vec_len, data_len),
+        96 => wire__crate__api_signal__init_impl(port, ptr, rust_vec_len, data_len),
+        97 => wire__crate__api_signal__init_keypair_impl(port, ptr, rust_vec_len, data_len),
+        98 => wire__crate__api_signal__init_signal_db_impl(port, ptr, rust_vec_len, data_len),
+        99 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        99 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
+        100 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        100 => wire__crate__api_signal__process_prekey_bundle_api_impl(
+        101 => wire__crate__api_signal__process_prekey_bundle_api_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        101 => wire__crate__api_signal__session_contain_alice_addr_impl(
+        102 => wire__crate__api_signal__session_contain_alice_addr_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        102 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        103 => {
+        103 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        104 => {
             wire__crate__api_signal__store_signed_key_api_impl(port, ptr, rust_vec_len, data_len)
         }
-        104 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
+        105 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -5091,11 +5129,11 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        67 => wire__crate__api_nostr__get_bech32_prikey_by_hex_impl(ptr, rust_vec_len, data_len),
-        68 => wire__crate__api_nostr__get_bech32_pubkey_by_hex_impl(ptr, rust_vec_len, data_len),
-        70 => wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(ptr, rust_vec_len, data_len),
-        71 => wire__crate__api_nostr__get_hex_pubkey_by_bech32_impl(ptr, rust_vec_len, data_len),
-        72 => wire__crate__api_nostr__get_hex_pubkey_by_prikey_impl(ptr, rust_vec_len, data_len),
+        68 => wire__crate__api_nostr__get_bech32_prikey_by_hex_impl(ptr, rust_vec_len, data_len),
+        69 => wire__crate__api_nostr__get_bech32_pubkey_by_hex_impl(ptr, rust_vec_len, data_len),
+        71 => wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(ptr, rust_vec_len, data_len),
+        72 => wire__crate__api_nostr__get_hex_pubkey_by_bech32_impl(ptr, rust_vec_len, data_len),
+        73 => wire__crate__api_nostr__get_hex_pubkey_by_prikey_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

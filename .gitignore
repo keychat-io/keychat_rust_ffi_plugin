@@ -28,6 +28,7 @@ migrate_working_dir/
 .dart_tool/
 build/
 rust/target/
+rust/api-mls/
 **.db-wal
 **.db-shm
 **.db
