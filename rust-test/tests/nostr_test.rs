@@ -159,7 +159,7 @@ mod tests {
     fn get_unencrypt_event() {
         let result = nostr::get_unencrypt_event(
             ALICE_SK.to_string(),
-            PUBKEY_HEX.to_string(),
+            vec![PUBKEY_HEX.to_string()],
             "1234".to_string(),
             None,
         );
