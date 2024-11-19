@@ -53,7 +53,8 @@ Future<void> othersCommitNormal({required String nostrId, required String groupI
 Future<(Uint8List, Uint8List?)> sendMsg({required String nostrId, required String groupId, required String msg}) =>
     RustLib.instance.api.crateApiMlsSendMsg(nostrId: nostrId, groupId: groupId, msg: msg);
 
-Future<(String, String)> decryptMsg({required String nostrId, required String groupId, required List<int> msg}) =>
+Future<(String, String, Uint8List?)> decryptMsg(
+        {required String nostrId, required String groupId, required List<int> msg}) =>
     RustLib.instance.api.crateApiMlsDecryptMsg(nostrId: nostrId, groupId: groupId, msg: msg);
 
 Future<Uint8List> getLeadNodeIndex(

@@ -193,7 +193,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (Uint8List, String, List<String>?) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
 
   @protected
-  (String, String) dco_decode_record_string_string(dynamic raw);
+  (String, String, Uint8List?) dco_decode_record_string_string_opt_list_prim_u_8_strict(dynamic raw);
 
   @protected
   (String, int) dco_decode_record_string_u_32(dynamic raw);
@@ -427,7 +427,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
-  (String, String) sse_decode_record_string_string(SseDeserializer deserializer);
+  (String, String, Uint8List?) sse_decode_record_string_string_opt_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   (String, int) sse_decode_record_string_u_32(SseDeserializer deserializer);
@@ -668,7 +668,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       (Uint8List, String, List<String>?) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_string_string((String, String) self, SseSerializer serializer);
+  void sse_encode_record_string_string_opt_list_prim_u_8_strict(
+      (String, String, Uint8List?) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_string_u_32((String, int) self, SseSerializer serializer);

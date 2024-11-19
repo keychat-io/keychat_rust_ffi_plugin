@@ -290,7 +290,7 @@ impl User {
         )?;
 
         if let ProcessedMessageContent::StagedCommitMessage(staged_commit) =
-            alice_processed_message.into_content()
+            alice_processed_message.0.into_content()
         {
             group
                 .mls_group
@@ -333,7 +333,7 @@ impl User {
         &mut self,
         group_id: String,
         msg: Vec<u8>,
-    ) -> Result<(String, String)> {
+    ) -> Result<(String, String, Option<Vec<u8>>)> {
         let mut groups = self
             .groups
             .write()
@@ -352,12 +352,12 @@ impl User {
             )
             .map_err(|_| format_err!("<mls api fn[decrypt_msg]> Error decrypt message."))?;
         let sender_content =
-            String::from_utf8(processed_message.credential().serialized_content().to_vec())?;
+            String::from_utf8(processed_message.0.credential().serialized_content().to_vec())?;
         if let ProcessedMessageContent::ApplicationMessage(application_message) =
-            processed_message.into_content()
+            processed_message.0.into_content()
         {
             let text = String::from_utf8(application_message.into_bytes())?;
-            Ok((text, sender_content))
+            Ok((text, sender_content, processed_message.1))
         } else {
             Err(anyhow::anyhow!(
                 "<mls api fn[decrypt_msg]> Unexpected application_message."
@@ -454,7 +454,7 @@ impl User {
         )?;
         // Check that we receive the correct proposal
         if let ProcessedMessageContent::StagedCommitMessage(staged_commit) =
-            processed_message.into_content()
+            processed_message.0.into_content()
         {
             // let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
             //     format_err!("<mls api fn[others_commit_remove_member]> Expected a proposal.")
@@ -513,7 +513,7 @@ impl User {
         )?;
         // Store proposal
         if let ProcessedMessageContent::ProposalMessage(staged_proposal) =
-            processed_message.into_content()
+            processed_message.0.into_content()
         {
             group
                 .mls_group
@@ -603,7 +603,7 @@ impl User {
         )?;
         // Check that we received the correct proposals
         if let ProcessedMessageContent::StagedCommitMessage(staged_commit) =
-            processed_message.into_content()
+            processed_message.0.into_content()
         {
             // let _remove = staged_commit.remove_proposals().next().ok_or_else(|| {
             //     format_err!("<mls api fn[normal_member_commit_leave]> Expected a proposal.")

@@ -200,8 +200,9 @@ fn test_secret_key() -> Result<()> {
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
     println!("{:?}", msg.1.unwrap());
     // B decrypt A's msg
-    // let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
     // println!("A send msg to B ,the result is {:?}", text);
+    println!("{:?}", text.2.unwrap());
 
     // B send msg to A
     // let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
@@ -213,8 +214,9 @@ fn test_secret_key() -> Result<()> {
     let msg3 = send_msg(a.to_string(), group_id.to_string(), "hello, B2".to_string())?;
     println!("{:?}", msg3.1.unwrap());
     // B decrypt A's msg
-    // let text3 = decrypt_msg(b.to_string(), group_id.to_string(), msg3.0)?;
+    let text3 = decrypt_msg(b.to_string(), group_id.to_string(), msg3.0)?;
     // println!("A send msg to B2 ,the result is {:?}", text3);
+    println!("{:?}", text3.2.unwrap());
 
 
 

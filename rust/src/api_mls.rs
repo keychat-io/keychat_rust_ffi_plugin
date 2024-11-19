@@ -349,7 +349,7 @@ pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<(Vec<
     result
 }
 
-pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<(String, String)> {
+pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<(String, String, Option<Vec<u8>>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
