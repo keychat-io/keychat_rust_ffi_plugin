@@ -2,7 +2,8 @@ use anyhow::Result;
 use rust::api_mls::*;
 
 fn main() {
-    let _ = test_basic();
+    // let _ = test_basic();
+    let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
     // let _ = test_exist_group();
@@ -152,6 +153,92 @@ fn test_diff_db2() -> Result<()> {
     Ok(())
 }
 
+
+fn test_secret_key() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+
+    let db_path = "./mls-lite.sqlite";
+
+    init_mls_db(db_path.to_string(), a.to_string())?;
+    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_path.to_string(), c.to_string())?;
+    init_mls_db(db_path.to_string(), d.to_string())?;
+    init_mls_db(db_path.to_string(), e.to_string())?;
+
+    let b0_pk = create_key_package(b.to_string())?;
+    let b_pk = create_key_package(b.to_string())?;
+    let c_pk = create_key_package(c.to_string())?;
+    let d0_pk = create_key_package(d.to_string())?;
+    let d_pk = create_key_package(d.to_string())?;
+    let e_pk = create_key_package(e.to_string())?;
+
+    // a create group
+    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+
+    // A add B
+    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // b join in the group
+    join_mls_group(
+        b.to_string(),
+        group_id.to_string(),
+        welcome.1,
+        group_join_config.clone(),
+    )?;
+
+    // A send msg to B
+    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    println!("{:?}", msg.1.unwrap());
+    // B decrypt A's msg
+    // let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    // println!("A send msg to B ,the result is {:?}", text);
+
+    // B send msg to A
+    // let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    // A decrypt B's msg
+    // let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.0)?;
+    // println!("B send msg to A ,the result is {:?}", text2);
+
+    // A send msg to B
+    let msg3 = send_msg(a.to_string(), group_id.to_string(), "hello, B2".to_string())?;
+    println!("{:?}", msg3.1.unwrap());
+    // B decrypt A's msg
+    // let text3 = decrypt_msg(b.to_string(), group_id.to_string(), msg3.0)?;
+    // println!("A send msg to B2 ,the result is {:?}", text3);
+
+
+
+    println!(
+        "a_mls_group export secret {:?}",
+        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group export secret {:?}",
+        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "a_mls_group tree hash {:?}",
+        get_tree_hash(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group tree hash {:?}",
+        get_tree_hash(b.to_string(), group_id.to_string()).unwrap()
+    );
+    Ok(())
+}
 fn test_exist_group() -> Result<()> {
     println!("start -------------- start");
 

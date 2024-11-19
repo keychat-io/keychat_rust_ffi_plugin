@@ -329,7 +329,7 @@ pub fn others_commit_normal(nostr_id: String, group_id: String, queued_msg: Vec<
     result
 }
 
-pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<(Vec<u8>, Vec<u8>)> {
+pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;

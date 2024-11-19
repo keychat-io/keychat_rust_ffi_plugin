@@ -50,7 +50,7 @@ Future<void> deleteGroup({required String nostrId, required String groupId}) =>
 Future<void> othersCommitNormal({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersCommitNormal(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
-Future<(Uint8List, Uint8List)> sendMsg({required String nostrId, required String groupId, required String msg}) =>
+Future<(Uint8List, Uint8List?)> sendMsg({required String nostrId, required String groupId, required String msg}) =>
     RustLib.instance.api.crateApiMlsSendMsg(nostrId: nostrId, groupId: groupId, msg: msg);
 
 Future<(String, String)> decryptMsg({required String nostrId, required String groupId, required List<int> msg}) =>

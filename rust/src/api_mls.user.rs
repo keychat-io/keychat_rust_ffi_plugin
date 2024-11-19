@@ -303,7 +303,7 @@ impl User {
         Ok(())
     }
 
-    pub(crate) fn send_msg(&mut self, group_id: String, msg: String) -> Result<(Vec<u8>, Vec<u8>)> {
+    pub(crate) fn send_msg(&mut self, group_id: String, msg: String) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
         let mut groups = self
             .groups
             .write()
@@ -320,14 +320,13 @@ impl User {
             .mls_group
             .create_message(&self.provider, &identity.signer, msg.as_bytes())
             .map_err(|_| format_err!("<mls api fn[send_msg]> Error send message."))?;
-        let serialized_msg_out: Vec<u8> = msg_out.to_bytes()?;
-        // use export secret instead
-        // let tree_hash = mls_group.tree_hash().to_vec();
-        let export_secret =
-            group
-                .mls_group
-                .export_secret(&self.provider, "keychat", b"keychat", 32)?;
-        Ok((serialized_msg_out, export_secret))
+        let serialized_msg_out: Vec<u8> = msg_out.0.to_bytes()?;
+        // let export_secret =
+        //     group
+        //         .mls_group
+        //         .export_secret(&self.provider, "keychat", b"keychat", 32)?;
+        let ratchet_key = msg_out.1;
+        Ok((serialized_msg_out, ratchet_key))
     }
 
     pub(crate) fn decrypt_msg(
