@@ -253,7 +253,7 @@ abstract class RustLibApi extends BaseApi {
   String crateApiNostrGetHexPubkeyByPrikey({required String prikey});
 
   Future<String> crateApiNostrGetUnencryptEvent(
-      {required String senderKeys, required String receiverPubkey, required String content, String? reply});
+      {required String senderKeys, required List<String> receiverPubkeys, required String content, String? reply});
 
   Future<Secp256k1Account> crateApiNostrImportFromPhrase({required String phrase, String? password, int? account});
 
@@ -2136,12 +2136,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiNostrGetUnencryptEvent(
-      {required String senderKeys, required String receiverPubkey, required String content, String? reply}) {
+      {required String senderKeys, required List<String> receiverPubkeys, required String content, String? reply}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(senderKeys, serializer);
-        sse_encode_String(receiverPubkey, serializer);
+        sse_encode_list_String(receiverPubkeys, serializer);
         sse_encode_String(content, serializer);
         sse_encode_opt_String(reply, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
@@ -2151,14 +2151,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiNostrGetUnencryptEventConstMeta,
-      argValues: [senderKeys, receiverPubkey, content, reply],
+      argValues: [senderKeys, receiverPubkeys, content, reply],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiNostrGetUnencryptEventConstMeta => const TaskConstMeta(
         debugName: "get_unencrypt_event",
-        argNames: ["senderKeys", "receiverPubkey", "content", "reply"],
+        argNames: ["senderKeys", "receiverPubkeys", "content", "reply"],
       );
 
   @override

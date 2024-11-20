@@ -2754,7 +2754,7 @@ fn wire__crate__api_nostr__get_unencrypt_event_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_sender_keys = <String>::sse_decode(&mut deserializer);
-            let api_receiver_pubkey = <String>::sse_decode(&mut deserializer);
+            let api_receiver_pubkeys = <Vec<String>>::sse_decode(&mut deserializer);
             let api_content = <String>::sse_decode(&mut deserializer);
             let api_reply = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
@@ -2763,7 +2763,7 @@ fn wire__crate__api_nostr__get_unencrypt_event_impl(
                     (move || {
                         let output_ok = crate::api_nostr::get_unencrypt_event(
                             api_sender_keys,
-                            api_receiver_pubkey,
+                            api_receiver_pubkeys,
                             api_content,
                             api_reply,
                         )?;
