@@ -347,12 +347,16 @@ pub fn get_encrypt_event(
 // generate event, but do not encrypt content
 pub fn get_unencrypt_event(
     sender_keys: String,
-    receiver_pubkeys: Vec<String>,
+    receiver_pubkey: String,
     content: String,
     reply: Option<String>,
+    receiver_pubkey2: Option<String>,
 ) -> anyhow::Result<String> {
     let mut tags: Vec<Tag> = vec![];
-    for p in receiver_pubkeys {
+    for p in Some(receiver_pubkey)
+        .into_iter()
+        .chain(receiver_pubkey2.into_iter())
+    {
         let pubkey = get_xonly_pubkey(p)?;
         tags.push(Tag::public_key(pubkey));
     }
