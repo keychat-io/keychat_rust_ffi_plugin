@@ -5,6 +5,7 @@
 
 import 'api_cashu.dart';
 import 'api_cashu/types.dart';
+import 'api_mls.dart';
 import 'api_nostr.dart';
 import 'api_signal.dart';
 import 'dart:async';
@@ -104,6 +105,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<List<String>> dco_decode_list_list_String(dynamic raw);
 
   @protected
+  List<Uint8List> dco_decode_list_list_prim_u_8_strict(dynamic raw);
+
+  @protected
   List<LNTransaction> dco_decode_list_ln_transaction(dynamic raw);
 
   @protected
@@ -179,11 +183,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (Uint8List, Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  (Uint8List, Uint8List?) dco_decode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(dynamic raw);
+
+  @protected
   (Uint8List, String?, String, List<String>?) dco_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
       dynamic raw);
 
   @protected
   (Uint8List, String, List<String>?) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
+
+  @protected
+  (String, String, Uint8List?) dco_decode_record_string_string_opt_list_prim_u_8_strict(dynamic raw);
 
   @protected
   (String, int) dco_decode_record_string_u_32(dynamic raw);
@@ -328,6 +338,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<List<String>> sse_decode_list_list_String(SseDeserializer deserializer);
 
   @protected
+  List<Uint8List> sse_decode_list_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
   List<LNTransaction> sse_decode_list_ln_transaction(SseDeserializer deserializer);
 
   @protected
@@ -403,12 +416,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (Uint8List, Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  (Uint8List, Uint8List?) sse_decode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
   (Uint8List, String?, String, List<String>?) sse_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
       SseDeserializer deserializer);
 
   @protected
   (Uint8List, String, List<String>?) sse_decode_record_list_prim_u_8_strict_string_opt_list_string(
       SseDeserializer deserializer);
+
+  @protected
+  (String, String, Uint8List?) sse_decode_record_string_string_opt_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   (String, int) sse_decode_record_string_u_32(SseDeserializer deserializer);
@@ -558,6 +577,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_list_list_String(List<List<String>> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_list_prim_u_8_strict(List<Uint8List> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_ln_transaction(List<LNTransaction> self, SseSerializer serializer);
 
   @protected
@@ -634,12 +656,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       (Uint8List, Uint8List) self, SseSerializer serializer);
 
   @protected
+  void sse_encode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(
+      (Uint8List, Uint8List?) self, SseSerializer serializer);
+
+  @protected
   void sse_encode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
       (Uint8List, String?, String, List<String>?) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_list_prim_u_8_strict_string_opt_list_string(
       (Uint8List, String, List<String>?) self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_record_string_string_opt_list_prim_u_8_strict(
+      (String, String, Uint8List?) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_string_u_32((String, int) self, SseSerializer serializer);

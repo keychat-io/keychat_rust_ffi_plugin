@@ -7,6 +7,7 @@ edition = "2021"
 crate-type = ["rlib","cdylib", "staticlib"]
 
 [dependencies]
+pqcrypto-internals = "=0.2.5"
 anyhow = "1.0.57"
 async-trait = "0.1.73"
 flutter_rust_bridge = "=2.3.0"
@@ -22,6 +23,12 @@ tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
 signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "9c61d60"}
 cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
 cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
+
+openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls"}
+openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls_traits"}
+openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls_sqlite_storage"}
+kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "kc"}
+
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
 # cashu-wallet-sqlite = {path = "../../cashu-wallet-rs/store-sqlite"}
 #
@@ -32,3 +39,4 @@ bip39 = {version = "2.0", features = ["rand"]}
 bitcoin = "0.30"
 ed25519-dalek = {version = "2.1.1", features = ["digest"]}
 nostr = {version = "0.33", default-features = false, features = ["std", "nip04", "nip06", "nip44", "nip59"] }
+bincode = "1.3.3" 

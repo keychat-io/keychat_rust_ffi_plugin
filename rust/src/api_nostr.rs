@@ -347,13 +347,16 @@ pub fn get_encrypt_event(
 // generate event, but do not encrypt content
 pub fn get_unencrypt_event(
     sender_keys: String,
-    receiver_pubkey: String,
+    receiver_pubkeys: Vec<String>,
     content: String,
     reply: Option<String>,
 ) -> anyhow::Result<String> {
-    let pubkey = get_xonly_pubkey(receiver_pubkey)?;
+    let mut tags: Vec<Tag> = vec![];
+    for p in receiver_pubkeys {
+        let pubkey = get_xonly_pubkey(p)?;
+        tags.push(Tag::public_key(pubkey));
+    }
 
-    let mut tags: Vec<Tag> = vec![Tag::public_key(pubkey)];
     if let Some(reply) = reply {
         tags.push(Tag::event(EventId::from_hex(reply)?));
     }
@@ -578,5 +581,21 @@ pub fn generate_message_key_hash(seed_key: String) -> Result<String, anyhow::Err
     secrets.extend_from_slice(&cipher_key);
     let msg_hash = sha256::Hash::hash(&secrets).to_string();
     let result = msg_hash[0..64].to_owned();
+    Ok(result)
+}
+
+pub fn generate_seed_from_key(seed_key: Vec<u8>) -> Result<String, anyhow::Error> {
+    let mut secrets = Vec::with_capacity(32 * 5);
+    secrets.extend_from_slice(&[0xFFu8; 32]);
+    secrets.extend_from_slice(&seed_key);
+
+    let secret_hash = sha256::Hash::hash(&secrets).to_string();
+    let secret_hash_64 = &secret_hash[0..64];
+    let secp = Secp256k1::new();
+    let secret_key =
+        nostr::secp256k1::SecretKey::from_slice(hex::decode(secret_hash_64)?.as_slice())?;
+    let public_key = PB256::from_secret_key(&secp, &secret_key);
+    let x_public_key = public_key.x_only_public_key().0.serialize();
+    let result = hex::encode(x_public_key);
     Ok(result)
 }

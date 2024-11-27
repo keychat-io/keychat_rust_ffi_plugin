@@ -66,9 +66,9 @@ Future<String> getEncryptEvent(
         senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content, reply: reply);
 
 Future<String> getUnencryptEvent(
-        {required String senderKeys, required String receiverPubkey, required String content, String? reply}) =>
+        {required String senderKeys, required List<String> receiverPubkeys, required String content, String? reply}) =>
     RustLib.instance.api.crateApiNostrGetUnencryptEvent(
-        senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content, reply: reply);
+        senderKeys: senderKeys, receiverPubkeys: receiverPubkeys, content: content, reply: reply);
 
 Future<String> encrypt({required String senderKeys, required String receiverPubkey, required String content}) =>
     RustLib.instance.api.crateApiNostrEncrypt(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
@@ -109,6 +109,9 @@ Future<String> generateSeedFromRatchetkeyPair({required String seedKey}) =>
 
 Future<String> generateMessageKeyHash({required String seedKey}) =>
     RustLib.instance.api.crateApiNostrGenerateMessageKeyHash(seedKey: seedKey);
+
+Future<String> generateSeedFromKey({required List<int> seedKey}) =>
+    RustLib.instance.api.crateApiNostrGenerateSeedFromKey(seedKey: seedKey);
 
 class NostrEvent {
   /// Id
