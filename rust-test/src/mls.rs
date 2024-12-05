@@ -153,7 +153,6 @@ fn test_diff_db2() -> Result<()> {
     Ok(())
 }
 
-
 fn test_secret_key() -> Result<()> {
     println!("start -------------- start");
 
@@ -217,8 +216,6 @@ fn test_secret_key() -> Result<()> {
     let text3 = decrypt_msg(b.to_string(), group_id.to_string(), msg3.0)?;
     // println!("A send msg to B2 ,the result is {:?}", text3);
     println!("{:?}", text3.2.unwrap());
-
-
 
     println!(
         "a_mls_group export secret {:?}",
@@ -339,7 +336,11 @@ fn test_remove_then_add_group() -> Result<()> {
     let c_pk = create_key_package(c.to_string())?;
 
     // A add B C
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk.clone(), c_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.clone(), c_pk].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
@@ -383,7 +384,11 @@ fn test_remove_then_add_group() -> Result<()> {
 
     // then A add B again
     // A add B
-    let welcome2 = add_members(a.to_string(), group_id.to_string(), [b_pk2.clone()].to_vec())?;
+    let welcome2 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk2.clone()].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
