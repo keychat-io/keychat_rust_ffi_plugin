@@ -292,13 +292,12 @@ pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
             .ok_or_else(|| format_err!("<fn[delete_group]> Can not get store err."))?;
         if !store.user.contains_key(&nostr_id) {
             error!("<fn[delete_group]> nostr_id do not init.");
-            return Err(format_err!(
-                "<fn[delete_group]> nostr_id do not init."
-            ));
+            return Err(format_err!("<fn[delete_group]> nostr_id do not init."));
         }
-        let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
-            format_err!("<fn[delete_group]> Can not get store from user.")
-        })?;
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[delete_group]> Can not get store from user."))?;
         user.delete_group(group_id)?;
         user.update(nostr_id, false).await?;
         Ok(())
@@ -329,7 +328,11 @@ pub fn others_commit_normal(nostr_id: String, group_id: String, queued_msg: Vec<
     result
 }
 
-pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
+pub fn send_msg(
+    nostr_id: String,
+    group_id: String,
+    msg: String,
+) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -349,7 +352,11 @@ pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<(Vec<
     result
 }
 
-pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<(String, String, Option<Vec<u8>>)> {
+pub fn decrypt_msg(
+    nostr_id: String,
+    group_id: String,
+    msg: Vec<u8>,
+) -> Result<(String, String, Option<Vec<u8>>)> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -370,7 +377,11 @@ pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<(
 }
 
 // when remove remembers, should use this lead node
-pub fn get_lead_node_index(nostr_id_admin: String, nostr_id_common: String, group_id: String) -> Result<Vec<u8>> {
+pub fn get_lead_node_index(
+    nostr_id_admin: String,
+    nostr_id_common: String,
+    group_id: String,
+) -> Result<Vec<u8>> {
     let rt = lock_runtime!();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;

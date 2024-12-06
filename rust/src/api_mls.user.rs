@@ -303,7 +303,11 @@ impl User {
         Ok(())
     }
 
-    pub(crate) fn send_msg(&mut self, group_id: String, msg: String) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
+    pub(crate) fn send_msg(
+        &mut self,
+        group_id: String,
+        msg: String,
+    ) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
         let mut groups = self
             .groups
             .write()
@@ -351,8 +355,13 @@ impl User {
                     .ok_or_else(|| format_err!("Unexpected message type"))?,
             )
             .map_err(|_| format_err!("<mls api fn[decrypt_msg]> Error decrypt message."))?;
-        let sender_content =
-            String::from_utf8(processed_message.0.credential().serialized_content().to_vec())?;
+        let sender_content = String::from_utf8(
+            processed_message
+                .0
+                .credential()
+                .serialized_content()
+                .to_vec(),
+        )?;
         if let ProcessedMessageContent::ApplicationMessage(application_message) =
             processed_message.0.into_content()
         {
@@ -379,7 +388,11 @@ impl User {
         Ok(lead_node_index_vec)
     }
 
-    pub(crate) fn get_lead_node_index(&mut self, nostr_id_common: String, group_id: String) -> Result<Vec<u8>> {
+    pub(crate) fn get_lead_node_index(
+        &mut self,
+        nostr_id_common: String,
+        group_id: String,
+    ) -> Result<Vec<u8>> {
         let groups = self
             .groups
             .read()
