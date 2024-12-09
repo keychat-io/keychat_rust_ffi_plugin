@@ -232,19 +232,25 @@ impl User {
         //         ident.kp.remove(key_package_hash.as_slice());
         //     }
         // }
-        let bob_mls_group =
-            StagedWelcome::new_from_welcome(&self.provider, &group_join_config, welcome, None)
-                .map_err(|_| {
-                    format_err!(
-                        "<mls api fn[join_mls_group]> Error creating StagedWelcome from Welcome."
-                    )
-                })?
-                .into_group(&self.provider)
-                .map_err(|_| {
-                    format_err!(
-                        "<mls api fn[join_mls_group]> Error creating group from StagedWelcome."
-                    )
-                })?;
+        let bob_mls_group = StagedWelcome::new_from_welcome(
+            &self.provider,
+            &group_join_config,
+            welcome,
+            None,
+        )
+        .map_err(|e| {
+            format_err!(
+                "<mls api fn[join_mls_group]> Error creating StagedWelcome from Welcome {}.",
+                e
+            )
+        })?
+        .into_group(&self.provider)
+        .map_err(|e| {
+            format_err!(
+                "<mls api fn[join_mls_group]> Error creating group from StagedWelcome {}.",
+                e
+            )
+        })?;
         let group = Group {
             mls_group: bob_mls_group.clone(),
         };
@@ -323,7 +329,7 @@ impl User {
         let msg_out = group
             .mls_group
             .create_message(&self.provider, &identity.signer, msg.as_bytes())
-            .map_err(|_| format_err!("<mls api fn[send_msg]> Error send message."))?;
+            .map_err(|e| format_err!("<mls api fn[send_msg]> Error send message {}.", e))?;
         let serialized_msg_out: Vec<u8> = msg_out.0.to_bytes()?;
         // let export_secret =
         //     group
@@ -354,7 +360,7 @@ impl User {
                 msg.into_protocol_message()
                     .ok_or_else(|| format_err!("Unexpected message type"))?,
             )
-            .map_err(|_| format_err!("<mls api fn[decrypt_msg]> Error decrypt message."))?;
+            .map_err(|e| format_err!("<mls api fn[decrypt_msg]> Error decrypt message {}.", e))?;
         let sender_content = String::from_utf8(
             processed_message
                 .0
