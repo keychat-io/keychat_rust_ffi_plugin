@@ -7,7 +7,6 @@ use signal_store::libsignal_protocol::*;
 use signal_store::{KeyChatSignalProtocolStore, LitePool};
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::sync::Mutex as StdMutex;
 use std::time::SystemTime;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
@@ -50,26 +49,13 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref RUNTIME: Arc<StdMutex<Runtime>> = Arc::new(StdMutex::new(
-        Runtime::new().expect("failed to create tokio runtime")
-    ));
-}
-
-macro_rules! lock_runtime {
-    () => {
-        match RUNTIME.lock() {
-            Ok(lock) => lock,
-            Err(err) => {
-                let err: anyhow::Error = anyhow!("Failed to lock the runtime mutex: {}", err);
-                return Err(err.into());
-            }
-        }
-    };
+    static ref RUNTIME: Arc<Runtime> =
+        Arc::new(Runtime::new().expect("failed to create tokio runtime for signal"));
 }
 
 /// init db and KeyChatSignalProtocolStore, this is used for testing
 pub fn init(db_path: String, key_pair: KeychatIdentityKeyPair, reg_id: u32) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let key_pair_2: IdentityKeyPair = IdentityKeyPair::new(
         IdentityKey::decode(&key_pair.identity_key)?,
         PrivateKey::deserialize(&key_pair.private_key)?,
@@ -100,7 +86,7 @@ pub fn init(db_path: String, key_pair: KeychatIdentityKeyPair, reg_id: u32) -> R
 
 /// init db
 pub fn init_signal_db(db_path: String) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let pool = LitePool::open(&db_path, Default::default()).await?;
         let mut store = STORE.lock().await;
@@ -135,7 +121,7 @@ async fn _init_keypair(
 
 /// init KeyChatSignalProtocolStore
 pub fn init_keypair(key_pair: KeychatIdentityKeyPair, reg_id: u32) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -153,7 +139,7 @@ pub fn generate_signed_key_api(
     key_pair: KeychatIdentityKeyPair,
     signal_identity_private_key: Vec<u8>,
 ) -> Result<(u32, Vec<u8>, Vec<u8>, Vec<u8>)> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let bob_identity_private = PrivateKey::deserialize(&signal_identity_private_key)?;
         let mut store = STORE.lock().await;
@@ -186,7 +172,7 @@ pub fn generate_signed_key_api(
 }
 
 pub fn get_signed_key_api(key_pair: KeychatIdentityKeyPair, signed_key_id: u32) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -213,7 +199,7 @@ pub fn store_signed_key_api(
     signed_key_id: u32,
     record: Vec<u8>,
 ) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -238,7 +224,7 @@ pub fn store_signed_key_api(
 
 //bob_prekey_id, bob_prekey_public, record
 pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec<u8>, Vec<u8>)> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -263,7 +249,7 @@ pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec
 }
 
 pub fn get_prekey_api(key_pair: KeychatIdentityKeyPair, prekey_id: u32) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -287,7 +273,7 @@ pub fn store_prekey_api(
     prekey_id: u32,
     record: Vec<u8>,
 ) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -322,7 +308,7 @@ pub fn process_prekey_bundle_api(
     bob_prekey_id: u32,
     bob_prekey_public: Vec<u8>,
 ) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut csprng = OsRng;
         let remote_address =
@@ -373,7 +359,7 @@ pub fn encrypt_signal(
     remote_address: KeychatProtocolAddress,
     is_prekey: Option<bool>,
 ) -> Result<(Vec<u8>, Option<String>, String, Option<Vec<String>>)> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -447,7 +433,7 @@ pub fn decrypt_signal(
     room_id: u32,
     is_prekey: bool,
 ) -> Result<(Vec<u8>, String, Option<Vec<String>>)> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut csprng = OsRng;
         let mut store = STORE.lock().await;
@@ -502,7 +488,7 @@ pub fn session_contain_alice_addr(
     key_pair: KeychatIdentityKeyPair,
     address: String,
 ) -> Result<Option<KeychatSignalSession>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -544,7 +530,7 @@ pub fn update_alice_addr(
     device_id: String,
     alice_addr: String,
 ) -> Result<bool> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -570,7 +556,7 @@ pub fn contains_session(
     key_pair: KeychatIdentityKeyPair,
     address: KeychatProtocolAddress,
 ) -> Result<bool> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -594,7 +580,7 @@ pub fn delete_session_by_device_id(
     key_pair: KeychatIdentityKeyPair,
     device_id: u32,
 ) -> Result<bool> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -622,7 +608,7 @@ pub fn delete_session(
     key_pair: KeychatIdentityKeyPair,
     address: KeychatProtocolAddress,
 ) -> Result<bool> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -643,7 +629,7 @@ pub fn delete_session(
 }
 
 pub fn get_all_alice_addrs(key_pair: KeychatIdentityKeyPair) -> Result<Vec<String>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -667,7 +653,7 @@ pub fn get_session(
     address: String,
     device_id: String,
 ) -> Result<Option<KeychatSignalSession>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -706,7 +692,7 @@ pub fn get_session(
  */
 
 pub fn delete_identity(key_pair: KeychatIdentityKeyPair, address: String) -> Result<bool> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -729,7 +715,7 @@ pub fn get_identity(
     key_pair: KeychatIdentityKeyPair,
     address: KeychatProtocolAddress,
 ) -> Result<Option<KeychatIdentityKey>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store

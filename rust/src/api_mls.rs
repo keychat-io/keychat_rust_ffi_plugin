@@ -3,7 +3,6 @@ use bincode;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::sync::Mutex as StdMutex;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
 
@@ -29,26 +28,13 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref RUNTIME: Arc<StdMutex<Runtime>> = Arc::new(StdMutex::new(
-        Runtime::new().expect("failed to create tokio runtime")
-    ));
-}
-
-macro_rules! lock_runtime {
-    () => {
-        match RUNTIME.lock() {
-            Ok(lock) => lock,
-            Err(err) => {
-                let err: anyhow::Error = anyhow!("Failed to lock the runtime mutex: {}", err);
-                return Err(err.into());
-            }
-        }
-    };
+    static ref RUNTIME: Arc<Runtime> =
+        Arc::new(Runtime::new().expect("failed to create tokio runtime for mls"));
 }
 
 // when init db then create the user, every user show init it
 pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         if store.is_none() {
@@ -76,7 +62,7 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
 }
 
 pub fn get_export_secret(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -97,7 +83,7 @@ pub fn get_export_secret(nostr_id: String, group_id: String) -> Result<Vec<u8>> 
 }
 
 pub fn get_tree_hash(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -119,7 +105,7 @@ pub fn get_tree_hash(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
 
 // only join new group that need to create it
 pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -144,7 +130,7 @@ pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
 }
 
 pub fn create_group_config() -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let config = MlsGroupCreateConfig::builder()
             .use_ratchet_tree_extension(true)
@@ -156,7 +142,7 @@ pub fn create_group_config() -> Result<Vec<u8>> {
 }
 
 pub fn get_group_config(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -187,7 +173,7 @@ pub fn get_group_config(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
 
 // when create group, then return the group join config
 pub fn create_mls_group(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -214,7 +200,7 @@ pub fn add_members(
     group_id: String,
     key_packages: Vec<Vec<u8>>,
 ) -> Result<(Vec<u8>, Vec<u8>)> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -235,7 +221,7 @@ pub fn add_members(
 }
 
 pub fn self_commit(nostr_id: String, group_id: String) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -262,7 +248,7 @@ pub fn join_mls_group(
     welcome: Vec<u8>,
     group_join_config: Vec<u8>,
 ) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -284,7 +270,7 @@ pub fn join_mls_group(
 }
 
 pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -307,7 +293,7 @@ pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
 
 // only group is not null, and other members should execute this
 pub fn others_commit_normal(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -333,7 +319,7 @@ pub fn send_msg(
     group_id: String,
     msg: String,
 ) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -357,7 +343,7 @@ pub fn decrypt_msg(
     group_id: String,
     msg: Vec<u8>,
 ) -> Result<(String, String, Option<Vec<u8>>)> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -382,7 +368,7 @@ pub fn get_lead_node_index(
     nostr_id_common: String,
     group_id: String,
 ) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -408,7 +394,7 @@ pub fn remove_members(
     group_id: String,
     members: Vec<Vec<u8>>,
 ) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -432,7 +418,7 @@ pub fn others_commit_remove_member(
     group_id: String,
     queued_msg: Vec<u8>,
 ) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -454,7 +440,7 @@ pub fn others_commit_remove_member(
 }
 
 pub fn self_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -474,7 +460,7 @@ pub fn self_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
 }
 
 pub fn self_update(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -498,7 +484,7 @@ pub fn others_proposal_leave(
     group_id: String,
     queued_msg: Vec<u8>,
 ) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -520,7 +506,7 @@ pub fn others_proposal_leave(
 }
 
 pub fn admin_commit_leave(nostr_id: String, group_id: String) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -538,11 +524,11 @@ pub fn admin_commit_leave(nostr_id: String, group_id: String) -> Result<()> {
             .ok_or_else(|| format_err!("<fn[admin_commit_leave]> Can not get store from user."))?;
         Ok(user.admin_commit_leave(group_id)?)
     });
-    Ok(())
+    result
 }
 
 pub fn admin_proposal_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
@@ -568,7 +554,7 @@ pub fn normal_member_commit_leave(
     group_id: String,
     queued_msg: Vec<u8>,
 ) -> Result<()> {
-    let rt = lock_runtime!();
+    let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
