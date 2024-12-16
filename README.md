@@ -10,6 +10,9 @@ a specialized package that includes native code directly invoked with Dart FFI.
 
 ## Commands
 ```
+rustup update stable
+cargo install flutter_rust_bridge_codegen@2.7.0
+
 rustc --print target-list
 cd rust
 cargo build --target aarch64-apple-ios --release --target-dir target
