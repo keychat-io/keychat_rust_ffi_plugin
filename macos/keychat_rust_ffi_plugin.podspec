@@ -30,9 +30,9 @@ A new Flutter FFI plugin project.
   }
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'MACOSX_DEPLOYMENT_TARGET' => '10.15',
+    'MACOSX_DEPLOYMENT_TARGET' => '13.0',
     # Flutter.framework does not contain a i386 slice.
-    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
+    'EXCLUDED_ARCHS[sdk=iphone*]' => 'i386 x86_64',
     'OTHER_LDFLAGS' => '-force_load ${BUILT_PRODUCTS_DIR}/libkeychat_rust_ffi_plugin.a',
   }
 end

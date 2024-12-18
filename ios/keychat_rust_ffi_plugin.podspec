@@ -18,7 +18,7 @@ A new Flutter FFI plugin project.
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   
-  s.ios.deployment_target  = '13.0'
+  s.ios.deployment_target  = '17.2'
 
   s.script_phase = {
     :name => 'Build Rust library',
@@ -32,8 +32,7 @@ A new Flutter FFI plugin project.
   }
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_OPTIMIZATION_LEVEL' => '-Owholemodule',
-    'GCC_OPTIMIZATION_LEVEL' => 's',
+    'IPHONEOS_DEPLOYMENT_TARGET' => '17.2',
     # Flutter.framework does not contain a i386 slice.
     'EXCLUDED_ARCHS[sdk=iphone*]' => 'i386 x86_64',
     'OTHER_LDFLAGS' => '-force_load ${BUILT_PRODUCTS_DIR}/libkeychat_rust_ffi_plugin.a',
