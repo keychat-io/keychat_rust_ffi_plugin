@@ -18,10 +18,10 @@ A new Flutter FFI plugin project.
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   
-  s.ios.deployment_target  = '17.2'
+  s.ios.deployment_target  = '15.0'
 
   s.script_phase = {
-    :name => 'Build Rust library',
+    :name => 'keychat_rust_ffi_plugin',
     # First argument is relative path to the `rust` folder, second is name of rust library
     :script => 'sh "$PODS_TARGET_SRCROOT/../cargokit/build_pod.sh" ../rust keychat_rust_ffi_plugin',
     :execution_position => :before_compile,
@@ -32,7 +32,7 @@ A new Flutter FFI plugin project.
   }
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'IPHONEOS_DEPLOYMENT_TARGET' => '17.2',
+    'IPHONEOS_DEPLOYMENT_TARGET' => '15.0',
     # Flutter.framework does not contain a i386 slice.
     'EXCLUDED_ARCHS[sdk=iphone*]' => 'i386 x86_64',
     'OTHER_LDFLAGS' => '-force_load ${BUILT_PRODUCTS_DIR}/libkeychat_rust_ffi_plugin.a',

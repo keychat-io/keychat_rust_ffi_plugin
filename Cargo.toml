@@ -3,11 +3,11 @@ resolver = "2"
 members = ["rust", "rust-test"]
 
 [profile.release]
-# debug = true
-# split-debuginfo = "packed"
-# lto = "fat" 
-opt-level = 3
-# panic = "abort"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = "none"
+opt-level = "z"
 
 [profile.dev]
 debug = 2
