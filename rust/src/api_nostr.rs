@@ -398,6 +398,18 @@ pub fn set_metadata(sender_keys: String, content: String) -> anyhow::Result<Stri
     Ok(result)
 }
 
+pub fn sign_event(sender_keys: String, content: String, created_at: u64, kind: u16, tags: Vec<Vec<String>>) -> anyhow::Result<String> {
+  let tags: Vec<Tag> = tags
+    .into_iter()
+    .map(|t| nostr::Tag::parse(&t).unwrap())
+    .collect();
+  let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
+  let event = EventBuilder::new(nostr::Kind::from(kind), content,tags );
+  let event_result = event.clone().custom_created_at(Timestamp::from(created_at)).to_event(&alice_keys)?;
+  let result = event_result.as_json();
+  Ok(result.to_string())
+}
+
 pub fn decrypt_event(sender_keys: String, json: String) -> anyhow::Result<String> {
     let event = nostr::event::Event::from_json(json)?;
     let pubkey = event

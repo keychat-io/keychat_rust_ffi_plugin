@@ -453,4 +453,18 @@ mod tests {
 
         assert_eq!(rumor.created_at, gift.created_at);
     }
+
+    #[test]
+    fn test_sign_event_invalid_keys() {
+      let sender_keys = "246ad4386c29680e5d9de9d3258708268d54c64a536c468b26b44b7dd921bc9a".to_string();
+      let content = "Test content".to_string();
+      let created_at = 1735021788;
+      let kind = 4;
+      let tags = vec![vec!["744bc6815ead8ae5db97a1f425ee8aead700a0ebd7ea9968704aee3e3f026f27".to_string()]];
+  
+      let result = nostr::sign_event(sender_keys, content, created_at, kind, tags);
+      println!("result :{:?}", result);
+      assert!(result.is_ok());
+    }
+  
 }
