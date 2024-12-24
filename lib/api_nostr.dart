@@ -79,6 +79,15 @@ Future<String> decrypt({required String senderKeys, required String receiverPubk
 Future<String> setMetadata({required String senderKeys, required String content}) =>
     RustLib.instance.api.crateApiNostrSetMetadata(senderKeys: senderKeys, content: content);
 
+Future<String> signEvent(
+        {required String senderKeys,
+        required String content,
+        required BigInt createdAt,
+        required int kind,
+        required List<List<String>> tags}) =>
+    RustLib.instance.api
+        .crateApiNostrSignEvent(senderKeys: senderKeys, content: content, createdAt: createdAt, kind: kind, tags: tags);
+
 Future<String> decryptEvent({required String senderKeys, required String json}) =>
     RustLib.instance.api.crateApiNostrDecryptEvent(senderKeys: senderKeys, json: json);
 

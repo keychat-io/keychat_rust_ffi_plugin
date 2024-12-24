@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.7.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1170606119;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1517807065;
 
 // Section: executor
 
@@ -3763,6 +3763,51 @@ fn wire__crate__api_cashu__set_mnemonic_impl(
         },
     )
 }
+fn wire__crate__api_nostr__sign_event_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "sign_event",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_sender_keys = <String>::sse_decode(&mut deserializer);
+            let api_content = <String>::sse_decode(&mut deserializer);
+            let api_created_at = <u64>::sse_decode(&mut deserializer);
+            let api_kind = <u16>::sse_decode(&mut deserializer);
+            let api_tags = <Vec<Vec<String>>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api_nostr::sign_event(
+                            api_sender_keys,
+                            api_content,
+                            api_created_at,
+                            api_kind,
+                            api_tags,
+                        )?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api_nostr__sign_schnorr_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -5119,14 +5164,15 @@ fn pde_ffi_dispatcher_primary_impl(
         ),
         98 => wire__crate__api_nostr__set_metadata_impl(port, ptr, rust_vec_len, data_len),
         99 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
-        100 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
-        101 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        102 => {
+        100 => wire__crate__api_nostr__sign_event_impl(port, ptr, rust_vec_len, data_len),
+        101 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        102 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        103 => {
             wire__crate__api_signal__store_signed_key_api_impl(port, ptr, rust_vec_len, data_len)
         }
-        103 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
-        104 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
-        105 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        104 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
+        105 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
+        106 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
