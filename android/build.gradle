@@ -25,9 +25,8 @@ rootProject.allprojects {
 apply plugin: "com.android.library"
 
 android {
-    if (project.android.hasProperty("namespace")) {
-        namespace = "com.keychat.keychat_rust_ffi_plugin"
-    }
+  
+    namespace = "com.keychat.keychat_rust_ffi_plugin"
 
     // Bumping the plugin compileSdk version requires all clients of this plugin
     // to bump the version in their app.
@@ -37,8 +36,8 @@ android {
     // declared in /android/app/build.gradle file of the Flutter project.
     // Replace it with a version number if this plugin requires a specific NDK version.
     // (e.g. ndkVersion "23.1.7779620")
-    ndkVersion = "28.0.12674087"
     // Invoke the shared CMake build with the Android Gradle Plugin.
+    ndkVersion "28.0.12674087"
     externalNativeBuild {
         cmake {
             path = "../src/CMakeLists.txt"
@@ -62,7 +61,7 @@ android {
         minSdk = 30
         ndk {
             // abiFilters 'x86','armeabi-v7a','arm64-v8a','x86_64'
-            abiFilters 'arm64-v8a', 'x86_64'
+            abiFilters 'arm64-v8a'
         }
     }
 }
