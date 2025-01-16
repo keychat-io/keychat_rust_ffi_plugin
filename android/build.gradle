@@ -23,6 +23,7 @@ rootProject.allprojects {
 }
 
 apply plugin: "com.android.library"
+apply from: 'aarch64-config.gradle'
 
 android {
   
