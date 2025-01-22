@@ -237,7 +237,11 @@ abstract class RustLibApi extends BaseApi {
   Future<Uint8List> crateApiMlsGetTreeHash({required String nostrId, required String groupId});
 
   Future<String> crateApiNostrGetUnencryptEvent(
-      {required String senderKeys, required List<String> receiverPubkeys, required String content, String? reply});
+      {required String senderKeys,
+      required List<String> receiverPubkeys,
+      required String content,
+      String? reply,
+      required int kind});
 
   Future<Secp256k1Account> crateApiNostrImportFromPhrase({required String phrase, String? password, int? account});
 
@@ -1921,7 +1925,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiNostrGetUnencryptEvent(
-      {required String senderKeys, required List<String> receiverPubkeys, required String content, String? reply}) {
+      {required String senderKeys,
+      required List<String> receiverPubkeys,
+      required String content,
+      String? reply,
+      required int kind}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -1929,6 +1937,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_String(receiverPubkeys, serializer);
         sse_encode_String(content, serializer);
         sse_encode_opt_String(reply, serializer);
+        sse_encode_u_16(kind, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65, port: port_);
       },
       codec: SseCodec(
@@ -1936,14 +1945,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiNostrGetUnencryptEventConstMeta,
-      argValues: [senderKeys, receiverPubkeys, content, reply],
+      argValues: [senderKeys, receiverPubkeys, content, reply, kind],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiNostrGetUnencryptEventConstMeta => const TaskConstMeta(
         debugName: "get_unencrypt_event",
-        argNames: ["senderKeys", "receiverPubkeys", "content", "reply"],
+        argNames: ["senderKeys", "receiverPubkeys", "content", "reply", "kind"],
       );
 
   @override

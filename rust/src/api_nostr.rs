@@ -350,6 +350,7 @@ pub fn get_unencrypt_event(
     receiver_pubkeys: Vec<String>,
     content: String,
     reply: Option<String>,
+    kind: u16
 ) -> anyhow::Result<String> {
     let mut tags: Vec<Tag> = vec![];
     for p in receiver_pubkeys {
@@ -363,7 +364,7 @@ pub fn get_unencrypt_event(
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
 
     let event =
-        EventBuilder::new(Kind::EncryptedDirectMessage, content, tags).to_event(&alice_keys)?;
+        EventBuilder::new(Kind::from(kind), content, tags).to_event(&alice_keys)?;
     Ok(event.as_json())
 }
 
