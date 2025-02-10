@@ -476,7 +476,7 @@ checksum = "9ac0150caa2ae65ca5bd83f25c7de183dea78d4d366469f148435e2acfbad0da"
 [[package]]
 name = "cashu-wallet"
 version = "0.2.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240905#d4a1f289e54f0bd99305bcfe95a7a2e82490b0a0"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=250206#b14bc03d15ecc885de6a9415dc18d18bedf35430"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -490,7 +490,6 @@ dependencies = [
  "lazy_static",
  "log",
  "rand",
- "redb",
  "reqwest",
  "serde",
  "serde_json",
@@ -504,7 +503,7 @@ dependencies = [
 [[package]]
 name = "cashu-wallet-sqlite"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=240905#d4a1f289e54f0bd99305bcfe95a7a2e82490b0a0"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=250206#b14bc03d15ecc885de6a9415dc18d18bedf35430"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -542,7 +541,7 @@ dependencies = [
 [[package]]
 name = "cdk"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/cdk?branch=public-000300#3f6089a45b334aaed5615317e790265e5ee4da0d"
+source = "git+https://github.com/keychat-io/cdk?branch=public-000301#f875c73c57cadf7c6ce38d4b34a4a574c8110833"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2721,15 +2720,6 @@ checksum = "1465873a3dfdaa8ae7cb14b4383657caab0b3e8a0aa9ae8e04b044854c8dfce2"
 dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
-]
-
-[[package]]
-name = "redb"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84b1de48a7cf7ba193e81e078d17ee2b786236eed1d3f7c60f8a09545efc4925"
-dependencies = [
- "libc",
 ]
 
 [[package]]
