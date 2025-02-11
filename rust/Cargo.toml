@@ -21,8 +21,8 @@ thiserror = "1.0.40"
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
 
 signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "bd60898"}
-cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
-cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "240905"}
+cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250206"}
+cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250206"}
 
 openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls"}
 openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package = "openmls_traits"}
