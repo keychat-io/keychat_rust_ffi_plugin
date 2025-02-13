@@ -162,6 +162,7 @@ mod tests {
             vec![PUBKEY_HEX.to_string()],
             "1234".to_string(),
             None,
+            4,
         );
 
         println!("result :{:?}", result.unwrap());
@@ -228,6 +229,44 @@ mod tests {
             prikey.to_string(),
             pubkey.to_string(),
             encrypted.unwrap().to_string(),
+        );
+
+        println!("result :{:?}", result);
+    }
+
+    #[test]
+    fn decrypt_nip44() {
+        let secret_key = "df4dc4fe3326e9e4c774c2df83db8b583a0d83d923b4dae1d10b8779b4ec055c";
+        // let receive_pubkey = "659f7522523c9b3df8d4eddd318f1c4574198e2b93de7a7f68ca7b6b4ee5f295";
+
+        let sender_pubkey: &str =
+            "dc5d04165bdbebb6d5f1f97ec14d636316d94a4b84a1756adb016f20a1215864";
+
+        let content = "AsnomWKbSmTUOt/JHOL5LzKoOZDbHxtiZubSHoh6kjZaFzJUexBAptV+ab7LuAvxwPaS51PHy/Om9Cr0PWXeDQpMqga9oFspQsDgBp3GCHsZRxgj07oUTAAjgZI/7nNZSMCaBnfPjyY/ZLW8+AOaGGmvsI3aykFlIk5N5g4+MfyL/a1GjG/yIPWHiqQ5WgPxjBk+IVP96CPb4J6CHI0XIHvB7GOO5qt9/iox+yegGAKyIzK0pir5B8HRwhw6aGWwnEftLHUqKEpr6CbUY/kca5pB0mJ0fieWANuqjpvry54+HZ3iXzD0cv8SpjgI7O5+EjxI0mykxuA6xlnR8+ZxJqXZZA5TvY0Vydj/FPjgtv85mic/JK7lqZCdbJ370BOCMyvRXAvwl4nNWsLdAWa/Dw5X7lS+1HzLoRqKNdzYbzGohTDMRah9BSABag284PdGeRdBuVyqtJ0zwsrKMSG4VjsAbw79eHoXRtB8mXq3w3D9AN/ZXtOwlbJX8VcOyYuu5UqX";
+        // let encrypted_content = "92wADtNzdf9FuJNrrrafTA==?iv=OAhsPYoWGn0wDpRl0cqNXw==";
+        let result = nostr::decrypt_nip44(
+            secret_key.to_string(),
+            sender_pubkey.to_string(),
+            content.to_string(),
+        );
+
+        println!("result :{:?}", result);
+    }
+
+    #[test]
+    fn encrypt_nip44() {
+        let secret_key = "88d73e03f5f66ee4740968b98e7f9f061e30c7de16ead405a16e1edd03efd4ba";
+        // let secret_key_pubkey = "68737ebd098e6ea9687499ba1e54c7e5023c6d0808752e4f95f9e1040d0531fd";
+
+        let receiver_pubkey: &str =
+            "659f7522523c9b3df8d4eddd318f1c4574198e2b93de7a7f68ca7b6b4ee5f295";
+
+        let content = "123";
+        // let encrypted_content = "92wADtNzdf9FuJNrrrafTA==?iv=OAhsPYoWGn0wDpRl0cqNXw==";
+        let result = nostr::encrypt_nip44(
+            secret_key.to_string(),
+            receiver_pubkey.to_string(),
+            content.to_string(),
         );
 
         println!("result :{:?}", result);
@@ -456,15 +495,17 @@ mod tests {
 
     #[test]
     fn test_sign_event_invalid_keys() {
-      let sender_keys = "246ad4386c29680e5d9de9d3258708268d54c64a536c468b26b44b7dd921bc9a".to_string();
-      let content = "Test content".to_string();
-      let created_at = 1735021788;
-      let kind = 4;
-      let tags = vec![vec!["744bc6815ead8ae5db97a1f425ee8aead700a0ebd7ea9968704aee3e3f026f27".to_string()]];
-  
-      let result = nostr::sign_event(sender_keys, content, created_at, kind, tags);
-      println!("result :{:?}", result);
-      assert!(result.is_ok());
+        let sender_keys =
+            "246ad4386c29680e5d9de9d3258708268d54c64a536c468b26b44b7dd921bc9a".to_string();
+        let content = "Test content".to_string();
+        let created_at = 1735021788;
+        let kind = 4;
+        let tags = vec![vec![
+            "744bc6815ead8ae5db97a1f425ee8aead700a0ebd7ea9968704aee3e3f026f27".to_string(),
+        ]];
+
+        let result = nostr::sign_event(sender_keys, content, created_at, kind, tags);
+        println!("result :{:?}", result);
+        assert!(result.is_ok());
     }
-  
 }

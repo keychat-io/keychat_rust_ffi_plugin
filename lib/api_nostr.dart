@@ -66,15 +66,26 @@ Future<String> getEncryptEvent(
         senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content, reply: reply);
 
 Future<String> getUnencryptEvent(
-        {required String senderKeys, required List<String> receiverPubkeys, required String content, String? reply}) =>
+        {required String senderKeys,
+        required List<String> receiverPubkeys,
+        required String content,
+        String? reply,
+        required int kind}) =>
     RustLib.instance.api.crateApiNostrGetUnencryptEvent(
-        senderKeys: senderKeys, receiverPubkeys: receiverPubkeys, content: content, reply: reply);
+        senderKeys: senderKeys, receiverPubkeys: receiverPubkeys, content: content, reply: reply, kind: kind);
 
 Future<String> encrypt({required String senderKeys, required String receiverPubkey, required String content}) =>
     RustLib.instance.api.crateApiNostrEncrypt(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
 
+Future<String> encryptNip44({required String senderKeys, required String receiverPubkey, required String content}) =>
+    RustLib.instance.api
+        .crateApiNostrEncryptNip44(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
+
 Future<String> decrypt({required String senderKeys, required String receiverPubkey, required String content}) =>
     RustLib.instance.api.crateApiNostrDecrypt(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
+
+Future<String> decryptNip44({required String secretKey, required String publicKey, required String content}) =>
+    RustLib.instance.api.crateApiNostrDecryptNip44(secretKey: secretKey, publicKey: publicKey, content: content);
 
 Future<String> setMetadata({required String senderKeys, required String content}) =>
     RustLib.instance.api.crateApiNostrSetMetadata(senderKeys: senderKeys, content: content);

@@ -5,6 +5,7 @@ use nostr::bitcoin::secp256k1::Secp256k1;
 use nostr::nips::nip04;
 use nostr::nips::nip06::FromMnemonic;
 use nostr::nips::nip19::{FromBech32, ToBech32};
+use nostr::nips::nip44;
 use nostr::secp256k1::hashes::{sha256, Hash};
 use nostr::secp256k1::schnorr::Signature as SchnorrSignature;
 use nostr::secp256k1::Message;
@@ -299,9 +300,10 @@ pub fn decrypt_gift(
     let seal = nostr::Event::from_json(&seal_json)?;
     seal.verify()?;
     let receiver = seal.pubkey;
-
+    //fix bug with amber app signEvent
+    let content = seal.content.replace(" ", "+");
     let rumor_json =
-        nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &seal.content)?;
+      nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
     let rumor = UnsignedEvent::from_json(&rumor_json)?;
 
     // Clients MUST verify if pubkey of the kind:13 is the same pubkey on the kind:14
@@ -350,6 +352,7 @@ pub fn get_unencrypt_event(
     receiver_pubkeys: Vec<String>,
     content: String,
     reply: Option<String>,
+    kind: u16,
 ) -> anyhow::Result<String> {
     let mut tags: Vec<Tag> = vec![];
     for p in receiver_pubkeys {
@@ -362,8 +365,7 @@ pub fn get_unencrypt_event(
     }
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
 
-    let event =
-        EventBuilder::new(Kind::EncryptedDirectMessage, content, tags).to_event(&alice_keys)?;
+    let event = EventBuilder::new(Kind::from(kind), content, tags).to_event(&alice_keys)?;
     Ok(event.as_json())
 }
 
@@ -379,6 +381,22 @@ pub fn encrypt(
     Ok(result)
 }
 
+pub fn encrypt_nip44(
+    sender_keys: String,
+    receiver_pubkey: String,
+    content: String,
+) -> anyhow::Result<String> {
+    let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
+    let pubkey = get_xonly_pubkey(receiver_pubkey)?;
+    let result = nip44::encrypt(
+        alice_keys.secret_key()?,
+        &pubkey,
+        content,
+        nip44::Version::V2,
+    )?;
+    Ok(result)
+}
+
 pub fn decrypt(
     sender_keys: String,
     receiver_pubkey: String,
@@ -390,6 +408,17 @@ pub fn decrypt(
     Ok(result)
 }
 
+pub fn decrypt_nip44(
+    secret_key: String,
+    public_key: String,
+    content: String,
+) -> anyhow::Result<String> {
+    let alice_keys: Keys = nostr::Keys::parse(&secret_key)?;
+    let pubkey = get_xonly_pubkey(public_key)?;
+    let result = nip44::decrypt(alice_keys.secret_key()?, &pubkey, content)?;
+    Ok(result)
+}
+
 pub fn set_metadata(sender_keys: String, content: String) -> anyhow::Result<String> {
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
     let tags = [];
@@ -398,16 +427,25 @@ pub fn set_metadata(sender_keys: String, content: String) -> anyhow::Result<Stri
     Ok(result)
 }
 
-pub fn sign_event(sender_keys: String, content: String, created_at: u64, kind: u16, tags: Vec<Vec<String>>) -> anyhow::Result<String> {
-  let tags: Vec<Tag> = tags
-    .into_iter()
-    .map(|t| nostr::Tag::parse(&t).unwrap())
-    .collect();
-  let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
-  let event = EventBuilder::new(nostr::Kind::from(kind), content,tags );
-  let event_result = event.clone().custom_created_at(Timestamp::from(created_at)).to_event(&alice_keys)?;
-  let result = event_result.as_json();
-  Ok(result.to_string())
+pub fn sign_event(
+    sender_keys: String,
+    content: String,
+    created_at: u64,
+    kind: u16,
+    tags: Vec<Vec<String>>,
+) -> anyhow::Result<String> {
+    let tags: Vec<Tag> = tags
+        .into_iter()
+        .map(|t| nostr::Tag::parse(&t).unwrap())
+        .collect();
+    let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
+    let event = EventBuilder::new(nostr::Kind::from(kind), content, tags);
+    let event_result = event
+        .clone()
+        .custom_created_at(Timestamp::from(created_at))
+        .to_event(&alice_keys)?;
+    let result = event_result.as_json();
+    Ok(result.to_string())
 }
 
 pub fn decrypt_event(sender_keys: String, json: String) -> anyhow::Result<String> {
