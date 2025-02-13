@@ -234,17 +234,38 @@ mod tests {
         println!("result :{:?}", result);
     }
 
-
     #[test]
     fn decrypt_nip44() {
-        let prikey = "nsec1vc3d6tmwkq33p86f9r2aqapwm4zv0aur34l4l3fl2vjr6ultgrtqael3up";
-        let pubkey: &str = "4a303ead948bd0977084b5afba2d1007179c3d93d8122dc31c7eba7bec0eb058";
+        let secret_key = "df4dc4fe3326e9e4c774c2df83db8b583a0d83d923b4dae1d10b8779b4ec055c";
+        // let receive_pubkey = "659f7522523c9b3df8d4eddd318f1c4574198e2b93de7a7f68ca7b6b4ee5f295";
 
-        let content = "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";
-         // let encrypted_content = "92wADtNzdf9FuJNrrrafTA==?iv=OAhsPYoWGn0wDpRl0cqNXw==";
+        let sender_pubkey: &str =
+            "dc5d04165bdbebb6d5f1f97ec14d636316d94a4b84a1756adb016f20a1215864";
+
+        let content = "AsnomWKbSmTUOt/JHOL5LzKoOZDbHxtiZubSHoh6kjZaFzJUexBAptV+ab7LuAvxwPaS51PHy/Om9Cr0PWXeDQpMqga9oFspQsDgBp3GCHsZRxgj07oUTAAjgZI/7nNZSMCaBnfPjyY/ZLW8+AOaGGmvsI3aykFlIk5N5g4+MfyL/a1GjG/yIPWHiqQ5WgPxjBk+IVP96CPb4J6CHI0XIHvB7GOO5qt9/iox+yegGAKyIzK0pir5B8HRwhw6aGWwnEftLHUqKEpr6CbUY/kca5pB0mJ0fieWANuqjpvry54+HZ3iXzD0cv8SpjgI7O5+EjxI0mykxuA6xlnR8+ZxJqXZZA5TvY0Vydj/FPjgtv85mic/JK7lqZCdbJ370BOCMyvRXAvwl4nNWsLdAWa/Dw5X7lS+1HzLoRqKNdzYbzGohTDMRah9BSABag284PdGeRdBuVyqtJ0zwsrKMSG4VjsAbw79eHoXRtB8mXq3w3D9AN/ZXtOwlbJX8VcOyYuu5UqX";
+        // let encrypted_content = "92wADtNzdf9FuJNrrrafTA==?iv=OAhsPYoWGn0wDpRl0cqNXw==";
         let result = nostr::decrypt_nip44(
-            prikey.to_string(),
-            pubkey.to_string(),
+            secret_key.to_string(),
+            sender_pubkey.to_string(),
+            content.to_string(),
+        );
+
+        println!("result :{:?}", result);
+    }
+
+    #[test]
+    fn encrypt_nip44() {
+        let secret_key = "88d73e03f5f66ee4740968b98e7f9f061e30c7de16ead405a16e1edd03efd4ba";
+        // let secret_key_pubkey = "68737ebd098e6ea9687499ba1e54c7e5023c6d0808752e4f95f9e1040d0531fd";
+
+        let receiver_pubkey: &str =
+            "659f7522523c9b3df8d4eddd318f1c4574198e2b93de7a7f68ca7b6b4ee5f295";
+
+        let content = "123";
+        // let encrypted_content = "92wADtNzdf9FuJNrrrafTA==?iv=OAhsPYoWGn0wDpRl0cqNXw==";
+        let result = nostr::encrypt_nip44(
+            secret_key.to_string(),
+            receiver_pubkey.to_string(),
             content.to_string(),
         );
 
@@ -474,15 +495,17 @@ mod tests {
 
     #[test]
     fn test_sign_event_invalid_keys() {
-      let sender_keys = "246ad4386c29680e5d9de9d3258708268d54c64a536c468b26b44b7dd921bc9a".to_string();
-      let content = "Test content".to_string();
-      let created_at = 1735021788;
-      let kind = 4;
-      let tags = vec![vec!["744bc6815ead8ae5db97a1f425ee8aead700a0ebd7ea9968704aee3e3f026f27".to_string()]];
-  
-      let result = nostr::sign_event(sender_keys, content, created_at, kind, tags);
-      println!("result :{:?}", result);
-      assert!(result.is_ok());
+        let sender_keys =
+            "246ad4386c29680e5d9de9d3258708268d54c64a536c468b26b44b7dd921bc9a".to_string();
+        let content = "Test content".to_string();
+        let created_at = 1735021788;
+        let kind = 4;
+        let tags = vec![vec![
+            "744bc6815ead8ae5db97a1f425ee8aead700a0ebd7ea9968704aee3e3f026f27".to_string(),
+        ]];
+
+        let result = nostr::sign_event(sender_keys, content, created_at, kind, tags);
+        println!("result :{:?}", result);
+        assert!(result.is_ok());
     }
-  
 }
