@@ -24,6 +24,11 @@ export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$android_tools/aarch64-linux-an
 
 cargo build --target aarch64-linux-android --release --target-dir target 
 cargo build --target aarch64-apple-darwin --release --target-dir target 
+
+
+# linux 
+rustup target add x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
+cargo build --target x86_64-unknown-linux-gnu --release --target-dir target
 ```
 
 ## Project structure

@@ -6,6 +6,9 @@ edition = "2021"
 [lib]
 crate-type = ["rlib","cdylib", "staticlib"]
 
+[target.'cfg(target_os = "linux")']
+crate-type = ["dylib"]
+
 [dependencies]
 pqcrypto-internals = "=0.2.5"
 anyhow = "1.0.57"
