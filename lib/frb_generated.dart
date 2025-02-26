@@ -211,7 +211,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiMlsGetGroupConfig({required String nostrId, required String groupId});
 
-  Future<String> crateApiNostrGetHexPrikeyByBech32({required String bech32});
+  String crateApiNostrGetHexPrikeyByBech32({required String bech32});
 
   String crateApiNostrGetHexPubkeyByBech32({required String bech32});
 
@@ -1656,12 +1656,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiNostrGetHexPrikeyByBech32({required String bech32}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
+  String crateApiNostrGetHexPrikeyByBech32({required String bech32}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(bech32, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53, port: port_);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53)!;
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,

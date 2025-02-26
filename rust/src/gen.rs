@@ -1980,16 +1980,15 @@ fn wire__crate__api_mls__get_group_config_impl(
     )
 }
 fn wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "get_hex_prikey_by_bech32",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
         },
         move || {
             let message = unsafe {
@@ -2003,14 +2002,11 @@ fn wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_bech32 = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| {
-                transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(
-                        crate::api_nostr::get_hex_prikey_by_bech32(api_bech32),
-                    )?;
-                    Ok(output_ok)
-                })())
-            }
+            transform_result_sse::<_, ()>((move || {
+                let output_ok =
+                    Result::<_, ()>::Ok(crate::api_nostr::get_hex_prikey_by_bech32(api_bech32))?;
+                Ok(output_ok)
+            })())
         },
     )
 }
@@ -5220,9 +5216,6 @@ fn pde_ffi_dispatcher_primary_impl(
         50 => wire__crate__api_nostr__get_encrypt_event_impl(port, ptr, rust_vec_len, data_len),
         51 => wire__crate__api_mls__get_export_secret_impl(port, ptr, rust_vec_len, data_len),
         52 => wire__crate__api_mls__get_group_config_impl(port, ptr, rust_vec_len, data_len),
-        53 => {
-            wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(port, ptr, rust_vec_len, data_len)
-        }
         56 => wire__crate__api_signal__get_identity_impl(port, ptr, rust_vec_len, data_len),
         57 => wire__crate__api_mls__get_lead_node_index_impl(port, ptr, rust_vec_len, data_len),
         58 => wire__crate__api_cashu__get_ln_pending_transactions_impl(
@@ -5347,6 +5340,7 @@ fn pde_ffi_dispatcher_sync_impl(
         30 => wire__crate__api_nostr__encode_bech32_impl(ptr, rust_vec_len, data_len),
         46 => wire__crate__api_nostr__get_bech32_prikey_by_hex_impl(ptr, rust_vec_len, data_len),
         47 => wire__crate__api_nostr__get_bech32_pubkey_by_hex_impl(ptr, rust_vec_len, data_len),
+        53 => wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(ptr, rust_vec_len, data_len),
         54 => wire__crate__api_nostr__get_hex_pubkey_by_bech32_impl(ptr, rust_vec_len, data_len),
         55 => wire__crate__api_nostr__get_hex_pubkey_by_prikey_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),

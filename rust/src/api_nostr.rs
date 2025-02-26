@@ -202,6 +202,8 @@ pub fn encode_bech32(hrp: String, data: String) -> anyhow::Result<String> {
     let encoded = bitcoin::bech32::encode(hrp.as_str(), converted_u5, bech32::Variant::Bech32)?;
     Ok(encoded)
 }
+
+#[frb(sync)]
 pub fn get_hex_prikey_by_bech32(bech32: String) -> String {
     if !bech32.starts_with("nsec") {
         return bech32;
