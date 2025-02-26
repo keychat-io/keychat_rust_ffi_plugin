@@ -315,6 +315,22 @@ mod tests {
     }
 
     #[test]
+    fn decode_bech32() {
+        let source: &str = "LNURL1DP68GURN8GHJ7UM9WFMXJCM99E3K7MF0V9CXJ0M385EKVCENXC6R2C35XVUKXEFCV5MKVV34X5EKZD3EV56NYD3HXQURZEPEXEJXXEPNXSCRVWFNV9NXZCN9XQ6XYEFHVGCXXCMYXYMNSERXFQ5FNS";
+        let except: &str = "https://service.com/api?q=3fc3645b439ce8e7f2553a69e5267081d96dcd340693afabe04be7b0ccd178df";
+        let res = nostr::decode_bech32(source.to_string());
+        assert_eq!(&res.unwrap(), except);
+    }
+
+    #[test]
+    fn encode_bech32() {
+        let except: &str = "LNURL1DP68GURN8GHJ7UM9WFMXJCM99E3K7MF0V9CXJ0M385EKVCENXC6R2C35XVUKXEFCV5MKVV34X5EKZD3EV56NYD3HXQURZEPEXEJXXEPNXSCRVWFNV9NXZCN9XQ6XYEFHVGCXXCMYXYMNSERXFQ5FNS";
+        let source: &str = "https://service.com/api?q=3fc3645b439ce8e7f2553a69e5267081d96dcd340693afabe04be7b0ccd178df";
+        let res = nostr::encode_bech32("LNURL".to_string(), source.to_string());
+        assert_eq!(&res.unwrap().to_uppercase(), except);
+    }
+
+    #[test]
     fn import_key() {
         let prikey_hex: &str = "f342982efe443c41b56020ad590bfa4f10c43e42540247b40dccc3343128d602";
         let res = nostr::import_key(prikey_hex.to_string()).unwrap();

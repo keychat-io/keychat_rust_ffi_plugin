@@ -1,4 +1,5 @@
 pub use bip39;
+use bitcoin::bech32;
 pub use nostr;
 
 use nostr::bitcoin::secp256k1::Secp256k1;
@@ -181,6 +182,26 @@ pub fn get_bech32_prikey_by_hex(hex: String) -> String {
 }
 
 #[frb(sync)]
+pub fn decode_bech32(content: String) -> anyhow::Result<String> {
+    use bitcoin::bech32;
+    let res = bech32::decode(content.as_ref())?;
+    let data = bech32::convert_bits(&res.1, 5, 8, false)?;
+    Ok(String::from_utf8(data)?)
+}
+
+#[frb(sync)]
+pub fn encode_bech32(hrp: String, data: String) -> anyhow::Result<String> {
+    use bitcoin::bech32::u5;
+    let data_bytes = data.as_bytes();
+    let converted = bech32::convert_bits(data_bytes, 8, 5, true)?;
+    // Convert Vec<u8> to Vec<u5>
+    let converted_u5: Vec<u5> = converted
+        .into_iter()
+        .map(u5::try_from_u8)
+        .collect::<Result<_, _>>()?;
+    let encoded = bitcoin::bech32::encode(hrp.as_str(), converted_u5, bech32::Variant::Bech32)?;
+    Ok(encoded)
+}
 pub fn get_hex_prikey_by_bech32(bech32: String) -> String {
     if !bech32.starts_with("nsec") {
         return bech32;
@@ -302,8 +323,7 @@ pub fn decrypt_gift(
     let receiver = seal.pubkey;
     //fix bug with amber app signEvent
     let content = seal.content.replace(" ", "+");
-    let rumor_json =
-      nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
+    let rumor_json = nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
     let rumor = UnsignedEvent::from_json(&rumor_json)?;
 
     // Clients MUST verify if pubkey of the kind:13 is the same pubkey on the kind:14
