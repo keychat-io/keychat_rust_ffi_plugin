@@ -29,6 +29,12 @@ cargo build --target aarch64-apple-darwin --release --target-dir target
 # linux 
 rustup target add x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
 cargo build --target x86_64-unknown-linux-gnu --release --target-dir target
+
+
+# windows
+rustup target add x86_64-pc-windows-msvc
+cargo build --target x86_64-pc-windows-msvc --release --target-dir target
+
 ```
 
 ## Project structure

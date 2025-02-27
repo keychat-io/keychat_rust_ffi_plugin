@@ -34,6 +34,11 @@ String getBech32PubkeyByHex({required String hex}) => RustLib.instance.api.crate
 
 String getBech32PrikeyByHex({required String hex}) => RustLib.instance.api.crateApiNostrGetBech32PrikeyByHex(hex: hex);
 
+String decodeBech32({required String content}) => RustLib.instance.api.crateApiNostrDecodeBech32(content: content);
+
+String encodeBech32({required String hrp, required String data}) =>
+    RustLib.instance.api.crateApiNostrEncodeBech32(hrp: hrp, data: data);
+
 String getHexPrikeyByBech32({required String bech32}) =>
     RustLib.instance.api.crateApiNostrGetHexPrikeyByBech32(bech32: bech32);
 
