@@ -302,8 +302,7 @@ pub fn decrypt_gift(
     let receiver = seal.pubkey;
     //fix bug with amber app signEvent
     let content = seal.content.replace(" ", "+");
-    let rumor_json =
-      nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
+    let rumor_json = nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
     let rumor = UnsignedEvent::from_json(&rumor_json)?;
 
     // Clients MUST verify if pubkey of the kind:13 is the same pubkey on the kind:14

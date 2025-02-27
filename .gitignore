@@ -33,5 +33,4 @@ rust/api-mls/
 **.db-shm
 **.db
 target/
-**.sqlite
-**.sqlite-wal
+**.sqlite*

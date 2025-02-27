@@ -2,8 +2,8 @@ use anyhow::Result;
 use rust::api_mls::*;
 
 fn main() {
-    // let _ = test_basic();
-    let _ = test_secret_key();
+    let _ = test_basic();
+    // let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
     // let _ = test_exist_group();
@@ -558,7 +558,7 @@ fn test_basic() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_path = "./mls-user.sqlite";
 
     // let users = vec![a, b, c, d, e];
     // let base_db_path = "./mls-lite";

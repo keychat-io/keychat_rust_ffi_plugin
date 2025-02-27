@@ -1,5 +1,6 @@
 use anyhow::Result;
 use bincode;
+use kc::user::MLSLitePool;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -9,7 +10,7 @@ use tokio::sync::Mutex;
 pub use kc::identity::Identity;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 pub use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
-pub use openmls_sqlite_storage::MLSLitePool;
+pub use openmls_sqlite_storage::{Connection, SqliteStorageProvider};
 pub use openmls_traits::OpenMlsProvider;
 
 #[path = "api_mls.user.rs"]
@@ -37,8 +38,9 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
+        let pool = MLSLitePool::open(&db_path, Default::default()).await?;
+
         if store.is_none() {
-            let pool = MLSLitePool::open(&db_path, Default::default()).await?;
             *store = Some(MlsStore {
                 pool,
                 user: HashMap::new(),
@@ -51,10 +53,12 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
         // first load from db, if none then create new user
         let user_op = User::load(nostr_id.clone(), map.pool.clone()).await?;
         if user_op.is_none() {
-            let user = User::new(nostr_id.clone(), map.pool.clone()).await;
+            let user = User::new(nostr_id.clone(), map.pool.clone()).await?;
             map.user.entry(nostr_id).or_insert(user);
         } else {
-            map.user.entry(nostr_id).or_insert(user_op.unwrap());
+            map.user.entry(nostr_id).or_insert(User {
+                mls_user: user_op.unwrap(),
+            });
         }
         Ok(())
     });
