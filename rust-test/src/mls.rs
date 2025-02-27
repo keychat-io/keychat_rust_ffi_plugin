@@ -18,9 +18,10 @@ fn test_diff_db1() -> Result<()> {
     let group_id = "G1";
 
     let a = "A";
-    let db_path = "./mls-liteA.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
 
     // a create group
     let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
@@ -67,9 +68,10 @@ fn test_diff_db2() -> Result<()> {
     let group_id = "G1";
 
     let b = "B";
-    let db_path = "./mls-liteB.sqlite";
-
-    init_mls_db(db_path.to_string(), b.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+   
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     println!("The b_pk is: {:?}", b_pk);
@@ -164,13 +166,13 @@ fn test_secret_key() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
-
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b_pk = create_key_package(b.to_string())?;
@@ -238,6 +240,7 @@ fn test_secret_key() -> Result<()> {
     );
     Ok(())
 }
+
 fn test_exist_group() -> Result<()> {
     println!("start -------------- start");
 
@@ -250,15 +253,15 @@ fn test_exist_group() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    // every user show init this
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), g.to_string())?;
 
     let group_join_config = get_group_config(a.to_string(), group_id.to_string())?;
 
@@ -322,12 +325,12 @@ fn test_remove_then_add_group() -> Result<()> {
     let c = "C";
     let d = "D";
 
-    let db_path = "./mls-lite.sqlite";
-    // every user show init this
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
 
     let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
 
@@ -419,13 +422,13 @@ fn test_diff_groups() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
-
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -504,13 +507,13 @@ fn test_self_decrypt() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
-
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b1_pk = create_key_package(b.to_string())?;
@@ -558,7 +561,8 @@ fn test_basic() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-user.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
 
     // let users = vec![a, b, c, d, e];
     // let base_db_path = "./mls-lite";
@@ -567,11 +571,11 @@ fn test_basic() -> Result<()> {
     //     init_mls_db(db_path.to_string(), user.to_string())?;
     // }
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b_pk = create_key_package(b.to_string())?;
@@ -938,14 +942,15 @@ fn test_normal() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), g.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -1590,13 +1595,13 @@ fn test_basic2() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
-
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -1712,14 +1717,15 @@ fn test_replay_delay() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    let db_mls_user = "./mls-user.sqlite";
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), db_mls_user.to_string(), g.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;

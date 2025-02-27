@@ -2885,13 +2885,18 @@ fn wire__crate__api_mls__init_mls_db_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_db_path = <String>::sse_decode(&mut deserializer);
+            let api_db_mls_base = <String>::sse_decode(&mut deserializer);
+            let api_db_mls_user = <String>::sse_decode(&mut deserializer);
             let api_nostr_id = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_mls::init_mls_db(api_db_path, api_nostr_id)?;
+                        let output_ok = crate::api_mls::init_mls_db(
+                            api_db_mls_base,
+                            api_db_mls_user,
+                            api_nostr_id,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )

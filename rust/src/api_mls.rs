@@ -34,11 +34,11 @@ lazy_static! {
 }
 
 // when init db then create the user, every user show init it
-pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
+pub fn init_mls_db(db_mls_base: String, db_mls_user: String, nostr_id: String) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
-        let pool = MLSLitePool::open(&db_path, Default::default()).await?;
+        let pool = MLSLitePool::open(&db_mls_user, Default::default()).await?;
 
         if store.is_none() {
             *store = Some(MlsStore {
@@ -51,9 +51,9 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
             .as_mut()
             .ok_or_else(|| format_err!("<fn[init_mls_db]> Can not get store err."))?;
         // first load from db, if none then create new user
-        let user_op = User::load(nostr_id.clone(), map.pool.clone()).await?;
+        let user_op = User::load(nostr_id.clone(), map.pool.clone(), db_mls_base.clone()).await?;
         if user_op.is_none() {
-            let user = User::new(nostr_id.clone(), map.pool.clone()).await?;
+            let user = User::new(nostr_id.clone(), map.pool.clone(), db_mls_base).await?;
             map.user.entry(nostr_id).or_insert(user);
         } else {
             map.user.entry(nostr_id).or_insert(User {
@@ -126,7 +126,7 @@ pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[create_key_package]> Can not get store from user."))?;
         let key_package = user.create_key_package()?;
-        user.update(nostr_id, true).await?;
+        user.update(nostr_id, true, user.mls_user.db_path.clone()).await?;
         let serialized: Vec<u8> = bincode::serialize(&key_package)?;
         Ok(serialized)
     });
@@ -192,7 +192,7 @@ pub fn create_mls_group(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store from user."))?;
         let group_config = user.create_mls_group(group_id.clone())?;
-        user.update(nostr_id, false).await?;
+        user.update(nostr_id, false, user.mls_user.db_path.clone()).await?;
         Ok(group_config)
     });
     result
@@ -267,7 +267,7 @@ pub fn join_mls_group(
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[join_mls_group]> Can not get store from user."))?;
         user.join_mls_group(group_id, welcome, group_join_config)?;
-        user.update(nostr_id, false).await?;
+        user.update(nostr_id, false, user.mls_user.db_path.clone()).await?;
         Ok(())
     });
     result
@@ -289,7 +289,7 @@ pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[delete_group]> Can not get store from user."))?;
         user.delete_group(group_id)?;
-        user.update(nostr_id, false).await?;
+        user.update(nostr_id, false, user.mls_user.db_path.clone()).await?;
         Ok(())
     });
     result

@@ -27,17 +27,17 @@ pub struct User {
 
 impl User {
     /// Create a new user with the given name and a fresh set of credentials.
-    pub(crate) async fn new(username: String, pool: MLSLitePool) -> Result<Self> {
-        let mls_user = MlsUser::new(username, pool).await?;
+    pub(crate) async fn new(username: String, pool: MLSLitePool, db_path: String) -> Result<Self> {
+        let mls_user = MlsUser::new(username, pool, db_path).await?;
         Ok(Self { mls_user })
     }
 
-    pub(crate) async fn update(&mut self, nostr_id: String, is_identity: bool) -> Result<()> {
-        self.mls_user.update(nostr_id, is_identity).await
+    pub(crate) async fn update(&mut self, nostr_id: String, is_identity: bool, db_path: String) -> Result<()> {
+        self.mls_user.update(nostr_id, is_identity, db_path).await
     }
 
-    pub(crate) async fn load(nostr_id: String, pool: MLSLitePool) -> Result<Option<MlsUser>> {
-        MlsUser::load(nostr_id, pool).await
+    pub(crate) async fn load(nostr_id: String, pool: MLSLitePool, db_path: String) -> Result<Option<MlsUser>> {
+        MlsUser::load(nostr_id, pool, db_path).await
     }
 
     pub(crate) fn get_export_secret(&self, group_id: String) -> Result<Vec<u8>> {
