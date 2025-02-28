@@ -269,7 +269,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiSignalInitKeypair({required KeychatIdentityKeyPair keyPair, required int regId});
 
-  Future<void> crateApiMlsInitMlsDb({required String dbMlsBase, required String dbMlsUser, required String nostrId});
+  Future<void> crateApiMlsInitMlsDb({required String dbPath, required String nostrId});
 
   Future<void> crateApiSignalInitSignalDb({required String dbPath});
 
@@ -2238,12 +2238,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiMlsInitMlsDb({required String dbMlsBase, required String dbMlsUser, required String nostrId}) {
+  Future<void> crateApiMlsInitMlsDb({required String dbPath, required String nostrId}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(dbMlsBase, serializer);
-        sse_encode_String(dbMlsUser, serializer);
+        sse_encode_String(dbPath, serializer);
         sse_encode_String(nostrId, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77, port: port_);
       },
@@ -2252,14 +2251,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsInitMlsDbConstMeta,
-      argValues: [dbMlsBase, dbMlsUser, nostrId],
+      argValues: [dbPath, nostrId],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiMlsInitMlsDbConstMeta => const TaskConstMeta(
         debugName: "init_mls_db",
-        argNames: ["dbMlsBase", "dbMlsUser", "nostrId"],
+        argNames: ["dbPath", "nostrId"],
       );
 
   @override

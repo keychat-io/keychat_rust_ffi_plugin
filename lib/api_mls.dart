@@ -9,8 +9,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These types are ignored because they are not used by any `pub` functions: `MlsStore`, `RUNTIME`, `STORE`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `deref`, `initialize`, `initialize`
 
-Future<void> initMlsDb({required String dbMlsBase, required String dbMlsUser, required String nostrId}) =>
-    RustLib.instance.api.crateApiMlsInitMlsDb(dbMlsBase: dbMlsBase, dbMlsUser: dbMlsUser, nostrId: nostrId);
+Future<void> initMlsDb({required String dbPath, required String nostrId}) =>
+    RustLib.instance.api.crateApiMlsInitMlsDb(dbPath: dbPath, nostrId: nostrId);
 
 Future<Uint8List> getExportSecret({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetExportSecret(nostrId: nostrId, groupId: groupId);

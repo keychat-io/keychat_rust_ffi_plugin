@@ -1834,7 +1834,6 @@ dependencies = [
  "openmls_traits",
  "pretty_env_logger",
  "rand_chacha",
- "rusqlite",
  "serde",
  "serde_json",
  "sqlx",
