@@ -2,12 +2,12 @@ pub use bip39;
 use bitcoin::bech32;
 pub use nostr;
 
-use nostr::bitcoin::secp256k1::Secp256k1;
+use bitcoin::secp256k1::hashes::{sha256, Hash};
+use bitcoin::secp256k1::Secp256k1;
 use nostr::nips::nip04;
 use nostr::nips::nip06::FromMnemonic;
 use nostr::nips::nip19::{FromBech32, ToBech32};
 use nostr::nips::nip44;
-use nostr::secp256k1::hashes::{sha256, Hash};
 use nostr::secp256k1::schnorr::Signature as SchnorrSignature;
 use nostr::secp256k1::Message;
 use nostr::secp256k1::PublicKey as PB256;
@@ -46,7 +46,7 @@ pub struct NostrEvent {
     /// Timestamp (seconds)
     pub created_at: u64,
     /// Kind
-    pub kind: u64,
+    pub kind: u16,
     /// Vector of [`Tag`]
     pub tags: Vec<Vec<String>>,
     /// Content
@@ -58,11 +58,11 @@ pub struct NostrEvent {
 pub fn generate_secp256k1() -> anyhow::Result<Secp256k1Account> {
     let keys = Keys::generate();
     let public_key = keys.public_key();
-    let secret_key = keys.secret_key()?;
+    let secret_key = keys.secret_key();
 
     let result = Secp256k1Account {
         pubkey: public_key.to_string(),
-        prikey: keys.secret_key()?.display_secret().to_string(),
+        prikey: keys.secret_key().display_secret().to_string(),
         pubkey_bech32: public_key.to_bech32()?,
         prikey_bech32: secret_key.to_bech32()?,
         mnemonic: None,
@@ -87,14 +87,14 @@ pub fn generate_simple() -> anyhow::Result<Secp256k1SimpleAccount> {
     let public_key = keys.public_key();
     let result: Secp256k1SimpleAccount = Secp256k1SimpleAccount {
         pubkey: public_key.to_string(),
-        prikey: keys.secret_key()?.display_secret().to_string(),
+        prikey: keys.secret_key().display_secret().to_string(),
     };
     Ok(result)
 }
 
 pub fn import_key(sender_keys: String) -> anyhow::Result<Secp256k1Account> {
     let keys: Keys = nostr::Keys::parse(&sender_keys)?;
-    let secret_key = keys.secret_key()?;
+    let secret_key = keys.secret_key();
     let public_key = keys.public_key();
 
     let result = Secp256k1Account {
@@ -119,14 +119,14 @@ pub fn import_from_phrase(
 ) -> anyhow::Result<Secp256k1Account> {
     let keys: Keys = Keys::from_mnemonic_with_account(&phrase, password.as_ref(), account)?;
     let public_key = keys.public_key();
-    let secret_key = keys.secret_key()?;
+    let secret_key = keys.secret_key();
     let (signing_key, verifying_key) =
         generate_curve25519_keypair(phrase.clone(), password.clone(), account)?;
 
     let result = Secp256k1Account {
         mnemonic: Some(phrase.to_string()),
         pubkey: public_key.to_string(),
-        prikey: keys.secret_key()?.display_secret().to_string(),
+        prikey: keys.secret_key().display_secret().to_string(),
         pubkey_bech32: public_key.to_bech32()?,
         prikey_bech32: secret_key.to_bech32()?,
         curve25519_sk_hex: Some(hex::encode(&signing_key)),
@@ -158,7 +158,7 @@ pub fn get_hex_pubkey_by_bech32(bech32: String) -> String {
     if !bech32.starts_with("npub") {
         return bech32;
     }
-    let public_key = PublicKey::from_bech32(bech32).expect("bech32 to public key error");
+    let public_key = PublicKey::from_bech32(&bech32).expect("bech32 to public key error");
     let result = public_key.to_string();
     result
 }
@@ -177,7 +177,7 @@ pub fn get_bech32_prikey_by_hex(hex: String) -> String {
     if hex.starts_with("nsec") {
         return hex;
     }
-    let key = SecretKey::from_hex(hex).expect("hex to secret key error");
+    let key = SecretKey::from_hex(&hex).expect("hex to secret key error");
     key.to_bech32().expect("prikey key to bech32 error")
 }
 
@@ -208,19 +208,19 @@ pub fn get_hex_prikey_by_bech32(bech32: String) -> String {
     if !bech32.starts_with("nsec") {
         return bech32;
     }
-    let key = SecretKey::from_bech32(bech32).expect("bech32 to secret key error");
+    let key = SecretKey::from_bech32(&bech32).expect("bech32 to secret key error");
     let result = key.display_secret().to_string();
     result
 }
 
 #[frb(sync)]
 pub fn get_hex_pubkey_by_prikey(prikey: String) -> anyhow::Result<String> {
-    let keys: Keys = nostr::Keys::parse(prikey)?;
+    let keys: Keys = nostr::Keys::parse(&prikey)?;
     let public_key = keys.public_key();
     Ok(public_key.to_string())
 }
 
-pub fn create_gift_json(
+pub async fn create_gift_json(
     kind: u16,
     sender_keys: String,
     receiver_pubkey: String,
@@ -237,13 +237,16 @@ pub fn create_gift_json(
     let mut ts = rumor.created_at;
 
     // rumor -> 13
-    let seal: Event = EventBuilder::seal(&sender_keys, &receiver, rumor)?.to_event(&sender_keys)?;
+    let seal: Event = EventBuilder::seal(&sender_keys, &receiver, rumor)
+        .await?
+        .sign(&sender_keys)
+        .await?;
 
     //  13-> 1059
     // EventBuilder::gift_wrap_from_seal(&receiver, &seal, expiration_timestamp.map(Into::into))?;
     let keys: Keys = Keys::generate();
     let content: String = nostr::nips::nip44::encrypt(
-        keys.secret_key()?,
+        keys.secret_key(),
         &receiver,
         seal.as_json(),
         Default::default(),
@@ -259,9 +262,11 @@ pub fn create_gift_json(
         ts = Timestamp::tweaked(nostr::nips::nip59::RANGE_RANDOM_TIMESTAMP_TWEAK);
     }
 
-    let gift = EventBuilder::new(Kind::GiftWrap, content, tags)
+    let gift = EventBuilder::new(Kind::GiftWrap, content)
+        .tags(tags)
         .custom_created_at(ts)
-        .to_event(&keys)?;
+        .sign(&keys)
+        .await?;
 
     let json = gift.as_json();
     Ok(json)
@@ -277,38 +282,22 @@ fn create_unsigned_event(
 ) -> anyhow::Result<UnsignedEvent> {
     let mut tags = vec![Tag::public_key(*receiver)];
     if let Some(reply) = reply {
-        let e = EventId::from_hex(reply)?;
+        let e = EventId::from_hex(&reply)?;
         tags.push(e.into())
     }
 
-    let event = EventBuilder::new(kind.into(), content, tags);
+    let event = EventBuilder::new(kind.into(), content).tags(tags);
 
-    let mut this = event.to_unsigned_event(sender_keys.public_key());
+    let mut this = event.build(sender_keys.public_key());
     // UnsignedEvent's compute_id not public
     this.id = Some(EventId::new(
         &this.pubkey,
         &this.created_at,
         &this.kind,
-        &this.tags,
+        &this.tags.as_slice(),
         &this.content,
     ));
     Ok(this)
-}
-
-#[frb(ignore)]
-fn create_gift(
-    sender_keys: &Keys,
-    receiver: &PublicKey,
-    rumor: UnsignedEvent,
-    expiration_timestamp: Option<u64>,
-) -> anyhow::Result<Event> {
-    let event = EventBuilder::gift_wrap(
-        sender_keys,
-        receiver,
-        rumor,
-        expiration_timestamp.map(Into::into),
-    )?;
-    Ok(event)
 }
 
 pub fn decrypt_gift(
@@ -319,13 +308,13 @@ pub fn decrypt_gift(
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
     let receiver = get_xonly_pubkey(receiver)?;
 
-    let seal_json = nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
+    let seal_json = nostr::nips::nip44::decrypt(alice_keys.secret_key(), &receiver, &content)?;
     let seal = nostr::Event::from_json(&seal_json)?;
     seal.verify()?;
     let receiver = seal.pubkey;
     //fix bug with amber app signEvent
     let content = seal.content.replace(" ", "+");
-    let rumor_json = nostr::nips::nip44::decrypt(alice_keys.secret_key()?, &receiver, &content)?;
+    let rumor_json = nostr::nips::nip44::decrypt(alice_keys.secret_key(), &receiver, &content)?;
     let rumor = UnsignedEvent::from_json(&rumor_json)?;
 
     // Clients MUST verify if pubkey of the kind:13 is the same pubkey on the kind:14
@@ -334,13 +323,17 @@ pub fn decrypt_gift(
         "the public key of seal isn't equal the rumor's"
     );
 
-    let tags = rumor.tags.iter().map(|t| t.as_vec().to_owned()).collect();
+    let tags = rumor
+        .tags
+        .iter()
+        .map(|t| t.clone().to_vec().to_owned())
+        .collect();
     let ne: NostrEvent = NostrEvent {
         tags,
         id: rumor.id.as_ref().map(|s| s.to_string()).unwrap_or_default(),
         content: rumor.content,
         created_at: rumor.created_at.as_u64(),
-        kind: rumor.kind.as_u64(),
+        kind: rumor.kind.as_u16(),
         sig: String::new(),
         pubkey: rumor.pubkey.to_string(),
     };
@@ -348,7 +341,7 @@ pub fn decrypt_gift(
 }
 
 // encrypt message and return event string
-pub fn get_encrypt_event(
+pub async fn get_encrypt_event(
     sender_keys: String,
     receiver_pubkey: String,
     content: String,
@@ -359,22 +352,27 @@ pub fn get_encrypt_event(
     let mut _reply = None;
 
     if let Some(reply) = reply {
-        _reply = Some(EventId::from_hex(reply)?);
+        _reply = Some(EventId::from_hex(&reply)?);
     }
+    let encrypted = nip04::encrypt(alice_keys.secret_key(), &pubkey, content)?;
 
-    let alice_encrypted_msg =
-        EventBuilder::encrypted_direct_msg(&alice_keys, pubkey, content, _reply)?
-            .to_event(&alice_keys)?;
+    let mut tags: Vec<Tag> = vec![];
+    tags.push(Tag::public_key(pubkey));
+
+    let alice_encrypted_msg = EventBuilder::new(Kind::from_u16(4), encrypted)
+        .tags(tags)
+        .sign(&alice_keys)
+        .await?;
     Ok(alice_encrypted_msg.as_json())
 }
 
 // generate event, but do not encrypt content
-pub fn get_unencrypt_event(
+pub async fn get_unencrypt_event(
     sender_keys: String,
     receiver_pubkeys: Vec<String>,
     content: String,
-    reply: Option<String>,
     kind: u16,
+    reply: Option<String>,
 ) -> anyhow::Result<String> {
     let mut tags: Vec<Tag> = vec![];
     for p in receiver_pubkeys {
@@ -383,11 +381,14 @@ pub fn get_unencrypt_event(
     }
 
     if let Some(reply) = reply {
-        tags.push(Tag::event(EventId::from_hex(reply)?));
+        tags.push(Tag::event(EventId::from_hex(&reply)?));
     }
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
 
-    let event = EventBuilder::new(Kind::from(kind), content, tags).to_event(&alice_keys)?;
+    let event = EventBuilder::new(Kind::from(kind), content)
+        .tags(tags)
+        .sign(&alice_keys)
+        .await?;
     Ok(event.as_json())
 }
 
@@ -399,7 +400,7 @@ pub fn encrypt(
 ) -> anyhow::Result<String> {
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
     let pubkey = get_xonly_pubkey(receiver_pubkey)?;
-    let result = nip04::encrypt(alice_keys.secret_key()?, &pubkey, content)?;
+    let result = nip04::encrypt(alice_keys.secret_key(), &pubkey, content)?;
     Ok(result)
 }
 
@@ -411,7 +412,7 @@ pub fn encrypt_nip44(
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
     let pubkey = get_xonly_pubkey(receiver_pubkey)?;
     let result = nip44::encrypt(
-        alice_keys.secret_key()?,
+        alice_keys.secret_key(),
         &pubkey,
         content,
         nip44::Version::V2,
@@ -426,7 +427,7 @@ pub fn decrypt(
 ) -> anyhow::Result<String> {
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
     let pubkey = get_xonly_pubkey(receiver_pubkey)?;
-    let result = nip04::decrypt(alice_keys.secret_key()?, &pubkey, content)?;
+    let result = nip04::decrypt(alice_keys.secret_key(), &pubkey, content)?;
     Ok(result)
 }
 
@@ -437,19 +438,11 @@ pub fn decrypt_nip44(
 ) -> anyhow::Result<String> {
     let alice_keys: Keys = nostr::Keys::parse(&secret_key)?;
     let pubkey = get_xonly_pubkey(public_key)?;
-    let result = nip44::decrypt(alice_keys.secret_key()?, &pubkey, content)?;
+    let result = nip44::decrypt(alice_keys.secret_key(), &pubkey, content)?;
     Ok(result)
 }
 
-pub fn set_metadata(sender_keys: String, content: String) -> anyhow::Result<String> {
-    let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
-    let tags = [];
-    let event = EventBuilder::new(nostr::Kind::Metadata, content, tags);
-    let result = event.to_event(&alice_keys)?.as_json();
-    Ok(result)
-}
-
-pub fn sign_event(
+pub async fn sign_event(
     sender_keys: String,
     content: String,
     created_at: u64,
@@ -461,11 +454,12 @@ pub fn sign_event(
         .map(|t| nostr::Tag::parse(&t).unwrap())
         .collect();
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
-    let event = EventBuilder::new(nostr::Kind::from(kind), content, tags);
+    let event = EventBuilder::new(nostr::Kind::from(kind), content).tags(tags);
     let event_result = event
         .clone()
         .custom_created_at(Timestamp::from(created_at))
-        .to_event(&alice_keys)?;
+        .sign(&alice_keys)
+        .await?;
     let result = event_result.as_json();
     Ok(result.to_string())
 }
@@ -476,7 +470,8 @@ pub fn decrypt_event(sender_keys: String, json: String) -> anyhow::Result<String
         .tags
         .first()
         .ok_or_else(|| format_err!("empty tags"))?
-        .as_vec();
+        .clone()
+        .to_vec();
 
     let decrypted_string = decrypt(
         sender_keys,
@@ -490,13 +485,17 @@ pub fn verify_event(json: String) -> anyhow::Result<NostrEvent> {
     let event = nostr::Event::from_json(json)?;
     event.verify()?;
 
-    let tags = event.tags.iter().map(|t| t.as_vec().to_owned()).collect();
+    let tags = event
+        .tags
+        .iter()
+        .map(|t| t.clone().to_vec().to_owned())
+        .collect();
     let ne: NostrEvent = NostrEvent {
         tags,
         id: event.id.to_string(),
         content: event.content.clone(),
         created_at: event.created_at.as_u64(),
-        kind: event.kind.as_u64(),
+        kind: event.kind.as_u16(),
         sig: serde_json::to_string(&event.sig)?,
         pubkey: event.pubkey.to_string(),
     };
@@ -508,68 +507,38 @@ fn get_xonly_pubkey(pubkey: String) -> anyhow::Result<PublicKey> {
     Ok(bob_pubkey)
 }
 
-// sign schnorr
-pub fn sign_schnorr(sender_keys: String, content: String) -> anyhow::Result<String> {
-    let sk: Keys = nostr::Keys::parse(sender_keys)?;
-    let secp = Secp256k1::new();
-    let message = Message::from(sha256::Hash::hash(content.as_bytes()));
-    let sig: SchnorrSignature = secp.sign_schnorr(&message, &sk.key_pair(&secp)?);
-    Ok(sig.to_string())
-}
-
-// type Aes128Cbc = Cbc<Aes128, Pkcs7>;
-// use aes::Aes128;
-// use base64::engine::general_purpose;
-// use base64::{self, Engine};
-
-// use block_modes::block_padding::Pkcs7;
-// use block_modes::{BlockMode, Cbc};
-// pub fn aes_encrypt(content: &str, key: &str, iv: &str) -> String {
-//     let cipher = Aes128Cbc::new_from_slices(key.as_bytes(), iv.as_bytes()).unwrap();
-//     let cipher_text = cipher.encrypt_vec(content.as_bytes());
-//     general_purpose::STANDARD.encode(&cipher_text)
+// // sign schnorr
+// pub fn sign_schnorr(sender_keys: String, content: String) -> anyhow::Result<String> {
+//     let sk: Keys = nostr::Keys::parse(sender_keys)?;
+//     let secp = Secp256k1::new();
+//     let message = Message::from(sha256::Hash::hash(content.as_bytes()));
+//     let sig: SchnorrSignature = secp.sign_schnorr(&message, &sk.key_pair(&secp)?);
+//     Ok(sig.to_string())
 // }
 
-// pub fn aes_decrypt(cipher_text: &str, key: &str, iv: &str) -> String {
-//     let cipher_text = general_purpose::STANDARD.decode(cipher_text).unwrap();
-//     let cipher = Aes128Cbc::new_from_slices(key.as_bytes(), iv.as_bytes()).unwrap();
-//     let decrypted_text = cipher.decrypt_vec(&cipher_text).unwrap();
-//     String::from_utf8(decrypted_text).unwrap()
+// // verify sign
+// pub fn verify_schnorr(
+//     pubkey: String,
+//     sig: String,
+//     content: String,
+//     hash: bool,
+// ) -> anyhow::Result<bool> {
+//     let pk = get_xonly_pubkey(pubkey)?;
+//     let sig = sig.parse()?;
+
+//     let secp = Secp256k1::new();
+
+//     let message = if hash {
+//         Message::from_hashed_data::<sha256::Hash>(content.as_bytes())
+//     } else {
+//         let message = hex::decode(&content)?;
+//         Message::from_slice(message.as_ref())?
+//     };
+
+//     // println!("{:?}", secp.verify_schnorr(&sig, &message, &pk));
+//     let _result: () = secp.verify_schnorr(&sig, &message, &pk)?;
+//     Ok(true)
 // }
-
-// pub fn aes_encrypt_bytes(content: Vec<u8>, key: &str, iv: &str) -> Vec<u8> {
-//     let cipher = Aes128Cbc::new_from_slices(key.as_bytes(), iv.as_bytes()).unwrap();
-//     cipher.encrypt_vec(content.as_slice())
-// }
-
-// pub fn aes_decrypt_bytes(cipher_text: Vec<u8>, key: &str, iv: &str) -> Vec<u8> {
-//     let cipher = Aes128Cbc::new_from_slices(key.as_bytes(), iv.as_bytes()).unwrap();
-//     cipher.decrypt_vec(&cipher_text).unwrap()
-// }
-
-// verify sign
-pub fn verify_schnorr(
-    pubkey: String,
-    sig: String,
-    content: String,
-    hash: bool,
-) -> anyhow::Result<bool> {
-    let pk = get_xonly_pubkey(pubkey)?;
-    let sig = sig.parse()?;
-
-    let secp = Secp256k1::new();
-
-    let message = if hash {
-        Message::from_hashed_data::<sha256::Hash>(content.as_bytes())
-    } else {
-        let message = hex::decode(&content)?;
-        Message::from_slice(message.as_ref())?
-    };
-
-    // println!("{:?}", secp.verify_schnorr(&sig, &message, &pk));
-    let _result: () = secp.verify_schnorr(&sig, &message, &pk)?;
-    Ok(true)
-}
 
 pub fn generate_curve25519_keypair(
     mnemonic_words: String,
@@ -633,7 +602,7 @@ pub fn generate_seed_from_ratchetkey_pair(seed_key: String) -> Result<String, an
 
     let secret_hash = sha256::Hash::hash(&secrets).to_string();
     let secret_hash_64 = &secret_hash[0..64];
-    let secp = Secp256k1::new();
+    let secp = nostr::secp256k1::Secp256k1::new();
     let secret_key =
         nostr::secp256k1::SecretKey::from_slice(hex::decode(secret_hash_64)?.as_slice())?;
     let public_key = PB256::from_secret_key(&secp, &secret_key);
@@ -663,7 +632,7 @@ pub fn generate_seed_from_key(seed_key: Vec<u8>) -> Result<String, anyhow::Error
 
     let secret_hash = sha256::Hash::hash(&secrets).to_string();
     let secret_hash_64 = &secret_hash[0..64];
-    let secp = Secp256k1::new();
+    let secp = nostr::secp256k1::Secp256k1::new();
     let secret_key =
         nostr::secp256k1::SecretKey::from_slice(hex::decode(secret_hash_64)?.as_slice())?;
     let public_key = PB256::from_secret_key(&secp, &secret_key);

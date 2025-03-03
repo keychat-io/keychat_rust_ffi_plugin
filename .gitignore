@@ -35,3 +35,4 @@ rust/api-mls/
 target/
 **.sqlite
 **.sqlite-wal
+.cargo/config.toml

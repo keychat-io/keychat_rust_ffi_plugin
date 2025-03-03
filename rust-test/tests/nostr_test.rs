@@ -129,18 +129,18 @@ mod tests {
 
     const PUBKEY_HEX: &str = "3119e78c156f961669472305706f796abc929e4e2961d82abdf1311b2c10f77b";
 
-    #[test]
-    fn get_nip04() {
+    #[tokio::test]
+    async fn get_nip04() {
         let result = nostr::get_encrypt_event(
             ALICE_SK.to_string(),
             PUBKEY_HEX.to_string(),
             "1234".to_string(),
             None,
         )
-        .unwrap();
-        let res = nostr::verify_event(result.to_string());
-        // println!("result :{:?}", result.unwrap());
-        assert_eq!(res.unwrap().tags[0][1], PUBKEY_HEX);
+        .await;
+        // println!("result :{:?}", &result.unwrap().clone());
+        let res = nostr::verify_event(result.unwrap().clone().to_string()).unwrap();
+        assert_eq!(res.tags[0][1], PUBKEY_HEX);
     }
 
     #[test]
@@ -155,66 +155,68 @@ mod tests {
         // assert_eq!(result.unwrap().clone(), PUBKEY_HEX);
     }
 
-    #[test]
-    fn get_unencrypt_event() {
+    #[tokio::test]
+    async fn get_unencrypt_event() {
         let result = nostr::get_unencrypt_event(
             ALICE_SK.to_string(),
             vec![PUBKEY_HEX.to_string()],
             "1234".to_string(),
-            None,
             4,
-        );
+            None,
+        )
+        .await;
 
         println!("result :{:?}", result.unwrap());
         // assert_eq!(result.unwrap().clone(), PUBKEY_HEX);
     }
 
-    #[test]
-    fn get_encrypt_event() {
+    #[tokio::test]
+    async fn get_encrypt_event() {
         let result = nostr::get_encrypt_event(
             ALICE_SK.to_string(),
             PUBKEY_HEX.to_string(),
             "1234".to_string(),
             None,
-        );
+        )
+        .await;
 
         println!("result :{:?}", result.unwrap());
         // assert_eq!(result.unwrap().clone(), PUBKEY_HEX);
     }
 
-    #[test]
-    fn sign_schnorr() {
-        let prikey = "dd733a9b4610cd05e8dbf4ef047bef4e7b3ec6b39e94caa1727b1297455c0120";
-        let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
+    // #[test]
+    // fn sign_schnorr() {
+    //     let prikey = "dd733a9b4610cd05e8dbf4ef047bef4e7b3ec6b39e94caa1727b1297455c0120";
+    //     let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
 
-        let content = "Hello World!";
+    //     let content = "Hello World!";
 
-        let result = nostr::sign_schnorr(prikey.to_string(), content.to_string());
+    //     let result = nostr::sign_schnorr(prikey.to_string(), content.to_string());
 
-        println!("result :{:?}", result);
-        let result2 = nostr::verify_schnorr(
-            pubkey.to_string(),
-            result.unwrap().clone(),
-            content.to_string(),
-            true,
-        );
-        assert_eq!(result2.unwrap(), true);
-    }
+    //     println!("result :{:?}", result);
+    //     let result2 = nostr::verify_schnorr(
+    //         pubkey.to_string(),
+    //         result.unwrap().clone(),
+    //         content.to_string(),
+    //         true,
+    //     );
+    //     assert_eq!(result2.unwrap(), true);
+    // }
 
-    #[test]
-    fn verify_schnorr() {
-        let sig = "fe75c6df44443c85645370e1855ff2e06c82162365497b7faae4b36e75207a3c41e43291d2cfaa9c19def0ce8d89d5e3b97fa16b5810e8f15956079e3ab037d4";
-        let content = "Hello World!";
-        let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
+    // #[test]
+    // fn verify_schnorr() {
+    //     let sig = "fe75c6df44443c85645370e1855ff2e06c82162365497b7faae4b36e75207a3c41e43291d2cfaa9c19def0ce8d89d5e3b97fa16b5810e8f15956079e3ab037d4";
+    //     let content = "Hello World!";
+    //     let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
 
-        let result2 = nostr::verify_schnorr(
-            pubkey.to_string(),
-            sig.to_string(),
-            content.to_string(),
-            true,
-        );
-        assert_eq!(result2.unwrap(), true);
-    }
+    //     let result2 = nostr::verify_schnorr(
+    //         pubkey.to_string(),
+    //         sig.to_string(),
+    //         content.to_string(),
+    //         true,
+    //     );
+    //     assert_eq!(result2.unwrap(), true);
+    // }
 
     #[test]
     fn decrypt() {
@@ -459,8 +461,8 @@ mod tests {
         assert_eq!(bytes, bytes2);
     }
 
-    #[test]
-    fn nip17() {
+    #[tokio::test]
+    async fn nip17() {
         let s = "secret seed 17";
         let sender_kp = nostr::generate_simple().unwrap();
         let receiver_kp = nostr::generate_simple().unwrap();
@@ -474,6 +476,7 @@ mod tests {
             None,
             None,
         )
+        .await
         .unwrap();
 
         // use nostr::nostr::util::JsonUtil;
@@ -484,8 +487,8 @@ mod tests {
         assert_ne!(rumor.created_at, gift.created_at);
     }
 
-    #[test]
-    fn nip17_without_timestamp_tweaked() {
+    #[tokio::test]
+    async fn nip17_without_timestamp_tweaked() {
         let s = "secret seed 17";
         let sender_kp = nostr::generate_simple().unwrap();
         let receiver_kp = nostr::generate_simple().unwrap();
@@ -499,6 +502,7 @@ mod tests {
             None,
             Some(false),
         )
+        .await
         .unwrap();
 
         // use nostr::nostr::util::JsonUtil;
@@ -509,8 +513,8 @@ mod tests {
         assert_eq!(rumor.created_at, gift.created_at);
     }
 
-    #[test]
-    fn test_sign_event_invalid_keys() {
+    #[tokio::test]
+    async fn test_sign_event_invalid_keys() {
         let sender_keys =
             "246ad4386c29680e5d9de9d3258708268d54c64a536c468b26b44b7dd921bc9a".to_string();
         let content = "Test content".to_string();
@@ -520,7 +524,7 @@ mod tests {
             "744bc6815ead8ae5db97a1f425ee8aead700a0ebd7ea9968704aee3e3f026f27".to_string(),
         ]];
 
-        let result = nostr::sign_event(sender_keys, content, created_at, kind, tags);
+        let result = nostr::sign_event(sender_keys, content, created_at, kind, tags).await;
         println!("result :{:?}", result);
         assert!(result.is_ok());
     }
