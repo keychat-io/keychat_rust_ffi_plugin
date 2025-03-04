@@ -6,7 +6,7 @@
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `create_gift`, `create_unsigned_event`, `get_xonly_pubkey`
+// These functions are ignored because they are not marked as `pub`: `create_unsigned_event`, `get_xonly_pubkey`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`
 
 Future<Secp256k1Account> generateSecp256K1() => RustLib.instance.api.crateApiNostrGenerateSecp256K1();
@@ -74,10 +74,14 @@ Future<String> getUnencryptEvent(
         {required String senderKeys,
         required List<String> receiverPubkeys,
         required String content,
-        String? reply,
-        required int kind}) =>
+        required int kind,
+        List<List<String>>? additionalTags}) =>
     RustLib.instance.api.crateApiNostrGetUnencryptEvent(
-        senderKeys: senderKeys, receiverPubkeys: receiverPubkeys, content: content, reply: reply, kind: kind);
+        senderKeys: senderKeys,
+        receiverPubkeys: receiverPubkeys,
+        content: content,
+        kind: kind,
+        additionalTags: additionalTags);
 
 Future<String> encrypt({required String senderKeys, required String receiverPubkey, required String content}) =>
     RustLib.instance.api.crateApiNostrEncrypt(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
@@ -91,9 +95,6 @@ Future<String> decrypt({required String senderKeys, required String receiverPubk
 
 Future<String> decryptNip44({required String secretKey, required String publicKey, required String content}) =>
     RustLib.instance.api.crateApiNostrDecryptNip44(secretKey: secretKey, publicKey: publicKey, content: content);
-
-Future<String> setMetadata({required String senderKeys, required String content}) =>
-    RustLib.instance.api.crateApiNostrSetMetadata(senderKeys: senderKeys, content: content);
 
 Future<String> signEvent(
         {required String senderKeys,
@@ -109,8 +110,8 @@ Future<String> decryptEvent({required String senderKeys, required String json}) 
 
 Future<NostrEvent> verifyEvent({required String json}) => RustLib.instance.api.crateApiNostrVerifyEvent(json: json);
 
-Future<String> signSchnorr({required String senderKeys, required String content}) =>
-    RustLib.instance.api.crateApiNostrSignSchnorr(senderKeys: senderKeys, content: content);
+Future<String> signSchnorr({required String privateKey, required String content}) =>
+    RustLib.instance.api.crateApiNostrSignSchnorr(privateKey: privateKey, content: content);
 
 Future<bool> verifySchnorr(
         {required String pubkey, required String sig, required String content, required bool hash}) =>
@@ -149,7 +150,7 @@ class NostrEvent {
   final BigInt createdAt;
 
   /// Kind
-  final BigInt kind;
+  final int kind;
 
   /// Vector of [`Tag`]
   final List<List<String>> tags;

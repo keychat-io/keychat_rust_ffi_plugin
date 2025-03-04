@@ -184,39 +184,39 @@ mod tests {
         // assert_eq!(result.unwrap().clone(), PUBKEY_HEX);
     }
 
-    // #[test]
-    // fn sign_schnorr() {
-    //     let prikey = "dd733a9b4610cd05e8dbf4ef047bef4e7b3ec6b39e94caa1727b1297455c0120";
-    //     let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
+    #[test]
+    fn sign_schnorr() {
+        let prikey = "dd733a9b4610cd05e8dbf4ef047bef4e7b3ec6b39e94caa1727b1297455c0120";
+        let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
 
-    //     let content = "Hello World!";
+        let content = "Hello World!";
 
-    //     let result = nostr::sign_schnorr(prikey.to_string(), content.to_string());
+        let result = nostr::sign_schnorr(prikey.to_string(), content.to_string());
 
-    //     println!("result :{:?}", result);
-    //     let result2 = nostr::verify_schnorr(
-    //         pubkey.to_string(),
-    //         result.unwrap().clone(),
-    //         content.to_string(),
-    //         true,
-    //     );
-    //     assert_eq!(result2.unwrap(), true);
-    // }
+        println!("result :{:?}", result);
+        let result2 = nostr::verify_schnorr(
+            pubkey.to_string(),
+            result.unwrap().clone(),
+            content.to_string(),
+            true,
+        );
+        assert_eq!(result2.unwrap(), true);
+    }
 
-    // #[test]
-    // fn verify_schnorr() {
-    //     let sig = "fe75c6df44443c85645370e1855ff2e06c82162365497b7faae4b36e75207a3c41e43291d2cfaa9c19def0ce8d89d5e3b97fa16b5810e8f15956079e3ab037d4";
-    //     let content = "Hello World!";
-    //     let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
+    #[test]
+    fn verify_schnorr() {
+        let sig = "fe75c6df44443c85645370e1855ff2e06c82162365497b7faae4b36e75207a3c41e43291d2cfaa9c19def0ce8d89d5e3b97fa16b5810e8f15956079e3ab037d4";
+        let content = "Hello World!";
+        let pubkey: &str = "327cc50855cb14db66d9dcd4c797e7341fd5139333760d61a15222aa02677d94";
 
-    //     let result2 = nostr::verify_schnorr(
-    //         pubkey.to_string(),
-    //         sig.to_string(),
-    //         content.to_string(),
-    //         true,
-    //     );
-    //     assert_eq!(result2.unwrap(), true);
-    // }
+        let result2 = nostr::verify_schnorr(
+            pubkey.to_string(),
+            sig.to_string(),
+            content.to_string(),
+            true,
+        );
+        assert_eq!(result2.unwrap(), true);
+    }
 
     #[test]
     fn decrypt() {

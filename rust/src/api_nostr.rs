@@ -8,8 +8,7 @@ use nostr::nips::nip04;
 use nostr::nips::nip06::FromMnemonic;
 use nostr::nips::nip19::{FromBech32, ToBech32};
 use nostr::nips::nip44;
-use nostr::secp256k1::schnorr::Signature as SchnorrSignature;
-use nostr::secp256k1::Message;
+use nostr::nips::nip46;
 use nostr::secp256k1::PublicKey as PB256;
 use nostr::types::Timestamp;
 use nostr::{
@@ -17,6 +16,7 @@ use nostr::{
 };
 use serde::Serialize;
 use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Secp256k1Account {
@@ -372,17 +372,23 @@ pub async fn get_unencrypt_event(
     receiver_pubkeys: Vec<String>,
     content: String,
     kind: u16,
-    reply: Option<String>,
+    additional_tags: Option<Vec<Vec<String>>>,
 ) -> anyhow::Result<String> {
     let mut tags: Vec<Tag> = vec![];
+
+    // Add pubkey tags
     for p in receiver_pubkeys {
         let pubkey = get_xonly_pubkey(p)?;
         tags.push(Tag::public_key(pubkey));
     }
 
-    if let Some(reply) = reply {
-        tags.push(Tag::event(EventId::from_hex(&reply)?));
+    // Add additional tags if provided
+    if let Some(additional_tags) = additional_tags {
+        for tag_data in additional_tags {
+            tags.push(nostr::Tag::parse(&tag_data)?);
+        }
     }
+
     let alice_keys: Keys = nostr::Keys::parse(&sender_keys)?;
 
     let event = EventBuilder::new(Kind::from(kind), content)
@@ -506,39 +512,37 @@ fn get_xonly_pubkey(pubkey: String) -> anyhow::Result<PublicKey> {
     let bob_pubkey: PublicKey = pubkey.parse()?;
     Ok(bob_pubkey)
 }
+// Sign a message using Schnorr signature
+pub fn sign_schnorr(private_key: String, content: String) -> anyhow::Result<String> {
+    let secp = Secp256k1::new();
+    let message = bitcoin::secp256k1::Message::from_hashed_data::<sha256::Hash>(content.as_bytes());
+    let keypair = bitcoin::secp256k1::KeyPair::from_seckey_str(&secp, &private_key)?;
+    let signature = secp.sign_schnorr(&message, &keypair);
+    Ok(signature.to_string())
+}
+// verify sign
+pub fn verify_schnorr(
+    pubkey: String,
+    sig: String,
+    content: String,
+    hash: bool,
+) -> anyhow::Result<bool> {
+    let pk = &bitcoin::secp256k1::XOnlyPublicKey::from_str(&pubkey)?;
+    let sig = sig.parse()?;
 
-// // sign schnorr
-// pub fn sign_schnorr(sender_keys: String, content: String) -> anyhow::Result<String> {
-//     let sk: Keys = nostr::Keys::parse(sender_keys)?;
-//     let secp = Secp256k1::new();
-//     let message = Message::from(sha256::Hash::hash(content.as_bytes()));
-//     let sig: SchnorrSignature = secp.sign_schnorr(&message, &sk.key_pair(&secp)?);
-//     Ok(sig.to_string())
-// }
+    let secp = Secp256k1::new();
 
-// // verify sign
-// pub fn verify_schnorr(
-//     pubkey: String,
-//     sig: String,
-//     content: String,
-//     hash: bool,
-// ) -> anyhow::Result<bool> {
-//     let pk = get_xonly_pubkey(pubkey)?;
-//     let sig = sig.parse()?;
+    let message = if hash {
+        bitcoin::secp256k1::Message::from_hashed_data::<sha256::Hash>(content.as_bytes())
+    } else {
+        let message = hex::decode(&content)?;
+        bitcoin::secp256k1::Message::from_slice(message.as_ref())?
+    };
 
-//     let secp = Secp256k1::new();
-
-//     let message = if hash {
-//         Message::from_hashed_data::<sha256::Hash>(content.as_bytes())
-//     } else {
-//         let message = hex::decode(&content)?;
-//         Message::from_slice(message.as_ref())?
-//     };
-
-//     // println!("{:?}", secp.verify_schnorr(&sig, &message, &pk));
-//     let _result: () = secp.verify_schnorr(&sig, &message, &pk)?;
-//     Ok(true)
-// }
+    // println!("{:?}", secp.verify_schnorr(&sig, &message, &pk));
+    let _result: () = secp.verify_schnorr(&sig, &message, &pk)?;
+    Ok(true)
+}
 
 pub fn generate_curve25519_keypair(
     mnemonic_words: String,
