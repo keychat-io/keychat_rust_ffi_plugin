@@ -9,32 +9,42 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These functions are ignored because they are not marked as `pub`: `create_unsigned_event`, `get_xonly_pubkey`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`
 
-Future<Secp256k1Account> generateSecp256K1() => RustLib.instance.api.crateApiNostrGenerateSecp256K1();
+Future<Secp256k1Account> generateSecp256K1() =>
+    RustLib.instance.api.crateApiNostrGenerateSecp256K1();
 
 Future<Secp256k1Account> generateFromMnemonic({String? password}) =>
     RustLib.instance.api.crateApiNostrGenerateFromMnemonic(password: password);
 
-Future<Secp256k1SimpleAccount> generateSimple() => RustLib.instance.api.crateApiNostrGenerateSimple();
+Future<Secp256k1SimpleAccount> generateSimple() =>
+    RustLib.instance.api.crateApiNostrGenerateSimple();
 
 Future<Secp256k1Account> importKey({required String senderKeys}) =>
     RustLib.instance.api.crateApiNostrImportKey(senderKeys: senderKeys);
 
-Future<Secp256k1Account> importFromPhrase({required String phrase, String? password, int? account}) =>
-    RustLib.instance.api.crateApiNostrImportFromPhrase(phrase: phrase, password: password, account: account);
+Future<Secp256k1Account> importFromPhrase(
+        {required String phrase, String? password, int? account}) =>
+    RustLib.instance.api.crateApiNostrImportFromPhrase(
+        phrase: phrase, password: password, account: account);
 
 Future<List<Secp256k1Account>> importFromPhraseWith(
-        {required String phrase, String? password, required int offset, required int count}) =>
-    RustLib.instance.api
-        .crateApiNostrImportFromPhraseWith(phrase: phrase, password: password, offset: offset, count: count);
+        {required String phrase,
+        String? password,
+        required int offset,
+        required int count}) =>
+    RustLib.instance.api.crateApiNostrImportFromPhraseWith(
+        phrase: phrase, password: password, offset: offset, count: count);
 
 String getHexPubkeyByBech32({required String bech32}) =>
     RustLib.instance.api.crateApiNostrGetHexPubkeyByBech32(bech32: bech32);
 
-String getBech32PubkeyByHex({required String hex}) => RustLib.instance.api.crateApiNostrGetBech32PubkeyByHex(hex: hex);
+String getBech32PubkeyByHex({required String hex}) =>
+    RustLib.instance.api.crateApiNostrGetBech32PubkeyByHex(hex: hex);
 
-String getBech32PrikeyByHex({required String hex}) => RustLib.instance.api.crateApiNostrGetBech32PrikeyByHex(hex: hex);
+String getBech32PrikeyByHex({required String hex}) =>
+    RustLib.instance.api.crateApiNostrGetBech32PrikeyByHex(hex: hex);
 
-String decodeBech32({required String content}) => RustLib.instance.api.crateApiNostrDecodeBech32(content: content);
+String decodeBech32({required String content}) =>
+    RustLib.instance.api.crateApiNostrDecodeBech32(content: content);
 
 String encodeBech32({required String hrp, required String data}) =>
     RustLib.instance.api.crateApiNostrEncodeBech32(hrp: hrp, data: data);
@@ -62,13 +72,23 @@ Future<String> createGiftJson(
         expirationTimestamp: expirationTimestamp,
         timestampTweaked: timestampTweaked);
 
-Future<NostrEvent> decryptGift({required String senderKeys, required String receiver, required String content}) =>
-    RustLib.instance.api.crateApiNostrDecryptGift(senderKeys: senderKeys, receiver: receiver, content: content);
+Future<NostrEvent> decryptGift(
+        {required String senderKeys,
+        required String receiver,
+        required String content}) =>
+    RustLib.instance.api.crateApiNostrDecryptGift(
+        senderKeys: senderKeys, receiver: receiver, content: content);
 
 Future<String> getEncryptEvent(
-        {required String senderKeys, required String receiverPubkey, required String content, String? reply}) =>
+        {required String senderKeys,
+        required String receiverPubkey,
+        required String content,
+        String? reply}) =>
     RustLib.instance.api.crateApiNostrGetEncryptEvent(
-        senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content, reply: reply);
+        senderKeys: senderKeys,
+        receiverPubkey: receiverPubkey,
+        content: content,
+        reply: reply);
 
 Future<String> getUnencryptEvent(
         {required String senderKeys,
@@ -83,18 +103,39 @@ Future<String> getUnencryptEvent(
         kind: kind,
         additionalTags: additionalTags);
 
-Future<String> encrypt({required String senderKeys, required String receiverPubkey, required String content}) =>
-    RustLib.instance.api.crateApiNostrEncrypt(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
+Future<String> encrypt(
+        {required String senderKeys,
+        required String receiverPubkey,
+        required String content}) =>
+    RustLib.instance.api.crateApiNostrEncrypt(
+        senderKeys: senderKeys,
+        receiverPubkey: receiverPubkey,
+        content: content);
 
-Future<String> encryptNip44({required String senderKeys, required String receiverPubkey, required String content}) =>
-    RustLib.instance.api
-        .crateApiNostrEncryptNip44(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
+Future<String> encryptNip44(
+        {required String senderKeys,
+        required String receiverPubkey,
+        required String content}) =>
+    RustLib.instance.api.crateApiNostrEncryptNip44(
+        senderKeys: senderKeys,
+        receiverPubkey: receiverPubkey,
+        content: content);
 
-Future<String> decrypt({required String senderKeys, required String receiverPubkey, required String content}) =>
-    RustLib.instance.api.crateApiNostrDecrypt(senderKeys: senderKeys, receiverPubkey: receiverPubkey, content: content);
+Future<String> decrypt(
+        {required String senderKeys,
+        required String receiverPubkey,
+        required String content}) =>
+    RustLib.instance.api.crateApiNostrDecrypt(
+        senderKeys: senderKeys,
+        receiverPubkey: receiverPubkey,
+        content: content);
 
-Future<String> decryptNip44({required String secretKey, required String publicKey, required String content}) =>
-    RustLib.instance.api.crateApiNostrDecryptNip44(secretKey: secretKey, publicKey: publicKey, content: content);
+Future<String> decryptNip44(
+        {required String secretKey,
+        required String publicKey,
+        required String content}) =>
+    RustLib.instance.api.crateApiNostrDecryptNip44(
+        secretKey: secretKey, publicKey: publicKey, content: content);
 
 Future<String> signEvent(
         {required String senderKeys,
@@ -102,42 +143,74 @@ Future<String> signEvent(
         required BigInt createdAt,
         required int kind,
         required List<List<String>> tags}) =>
+    RustLib.instance.api.crateApiNostrSignEvent(
+        senderKeys: senderKeys,
+        content: content,
+        createdAt: createdAt,
+        kind: kind,
+        tags: tags);
+
+Future<String> decryptEvent(
+        {required String senderKeys, required String json}) =>
     RustLib.instance.api
-        .crateApiNostrSignEvent(senderKeys: senderKeys, content: content, createdAt: createdAt, kind: kind, tags: tags);
+        .crateApiNostrDecryptEvent(senderKeys: senderKeys, json: json);
 
-Future<String> decryptEvent({required String senderKeys, required String json}) =>
-    RustLib.instance.api.crateApiNostrDecryptEvent(senderKeys: senderKeys, json: json);
+Future<NostrEvent> verifyEvent({required String json}) =>
+    RustLib.instance.api.crateApiNostrVerifyEvent(json: json);
 
-Future<NostrEvent> verifyEvent({required String json}) => RustLib.instance.api.crateApiNostrVerifyEvent(json: json);
-
-Future<String> signSchnorr({required String privateKey, required String content}) =>
-    RustLib.instance.api.crateApiNostrSignSchnorr(privateKey: privateKey, content: content);
+Future<String> signSchnorr(
+        {required String privateKey, required String content}) =>
+    RustLib.instance.api
+        .crateApiNostrSignSchnorr(privateKey: privateKey, content: content);
 
 Future<bool> verifySchnorr(
-        {required String pubkey, required String sig, required String content, required bool hash}) =>
-    RustLib.instance.api.crateApiNostrVerifySchnorr(pubkey: pubkey, sig: sig, content: content, hash: hash);
+        {required String pubkey,
+        required String sig,
+        required String content,
+        required bool hash}) =>
+    RustLib.instance.api.crateApiNostrVerifySchnorr(
+        pubkey: pubkey, sig: sig, content: content, hash: hash);
 
-Future<(Uint8List, Uint8List)> generateCurve25519Keypair({required String mnemonicWords, String? password, int? pos}) =>
+Future<(Uint8List, Uint8List)> generateCurve25519Keypair(
+        {required String mnemonicWords, String? password, int? pos}) =>
+    RustLib.instance.api.crateApiNostrGenerateCurve25519Keypair(
+        mnemonicWords: mnemonicWords, password: password, pos: pos);
+
+Future<String> curve25519Sign(
+        {required List<int> secretKey, required List<int> message}) =>
     RustLib.instance.api
-        .crateApiNostrGenerateCurve25519Keypair(mnemonicWords: mnemonicWords, password: password, pos: pos);
-
-Future<String> curve25519Sign({required List<int> secretKey, required List<int> message}) =>
-    RustLib.instance.api.crateApiNostrCurve25519Sign(secretKey: secretKey, message: message);
+        .crateApiNostrCurve25519Sign(secretKey: secretKey, message: message);
 
 Future<String> curve25519GetPubkey({required String prikey}) =>
     RustLib.instance.api.crateApiNostrCurve25519GetPubkey(prikey: prikey);
 
-Future<bool> curve25519Verify({required List<int> publicKey, required List<int> message, required String sig}) =>
-    RustLib.instance.api.crateApiNostrCurve25519Verify(publicKey: publicKey, message: message, sig: sig);
+Future<bool> curve25519Verify(
+        {required List<int> publicKey,
+        required List<int> message,
+        required String sig}) =>
+    RustLib.instance.api.crateApiNostrCurve25519Verify(
+        publicKey: publicKey, message: message, sig: sig);
 
 Future<String> generateSeedFromRatchetkeyPair({required String seedKey}) =>
-    RustLib.instance.api.crateApiNostrGenerateSeedFromRatchetkeyPair(seedKey: seedKey);
+    RustLib.instance.api
+        .crateApiNostrGenerateSeedFromRatchetkeyPair(seedKey: seedKey);
 
 Future<String> generateMessageKeyHash({required String seedKey}) =>
     RustLib.instance.api.crateApiNostrGenerateMessageKeyHash(seedKey: seedKey);
 
 Future<String> generateSeedFromKey({required List<int> seedKey}) =>
     RustLib.instance.api.crateApiNostrGenerateSeedFromKey(seedKey: seedKey);
+
+Future<String> nip47EncodeUri(
+        {required String pubkey,
+        required String relay,
+        required String secret,
+        String? lud16}) =>
+    RustLib.instance.api.crateApiNostrNip47EncodeUri(
+        pubkey: pubkey, relay: relay, secret: secret, lud16: lud16);
+
+Future<String> nip47ParseRequest({required String request}) =>
+    RustLib.instance.api.crateApiNostrNip47ParseRequest(request: request);
 
 class NostrEvent {
   /// Id

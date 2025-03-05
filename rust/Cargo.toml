@@ -41,5 +41,5 @@ kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc", package
 bip39 = {version = "2.0", features = ["rand"]}
 bitcoin = "0.30"
 ed25519-dalek = {version = "2.1.1", features = ["digest"]}
-nostr = { version = "0.39.0", default-features = false, features = ["std", "nip04", "nip06", "nip44", "nip46", "nip59"] }
+nostr = { version = "0.39.0", default-features = false, features = ["std", "nip04", "nip06", "nip44", "nip47", "nip59"] }
 bincode = "1.3.3" 

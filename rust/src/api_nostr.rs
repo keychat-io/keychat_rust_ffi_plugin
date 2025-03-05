@@ -8,7 +8,7 @@ use nostr::nips::nip04;
 use nostr::nips::nip06::FromMnemonic;
 use nostr::nips::nip19::{FromBech32, ToBech32};
 use nostr::nips::nip44;
-use nostr::nips::nip46;
+use nostr::nips::nip47::NostrWalletConnectURI;
 use nostr::secp256k1::PublicKey as PB256;
 use nostr::types::Timestamp;
 use nostr::{
@@ -644,3 +644,84 @@ pub fn generate_seed_from_key(seed_key: Vec<u8>) -> Result<String, anyhow::Error
     let result = hex::encode(x_public_key);
     Ok(result)
 }
+
+pub fn nip47_encode_uri(
+    pubkey: String,
+    relay: String,
+    secret: String,
+    lud16: Option<String>,
+) -> Result<String, anyhow::Error> {
+    let pubkey = PublicKey::from_str(&pubkey)?;
+    let relay_url = nostr::RelayUrl::parse(&relay)?;
+    let secret = SecretKey::from_str(&secret)?;
+    let uri = NostrWalletConnectURI::new(pubkey, relay_url, secret, lud16);
+    Ok(uri.to_string())
+}
+
+// pub fn nip47_serialize_request() {
+//     use nostr::nips::nip47::*;
+//     let request = Request {
+//       method: Method::PayInvoice,
+//       params: RequestParams::PayInvoice(PayInvoiceRequest { id: None, invoice: "lnbc210n1pj99rx0pp5ehevgz9nf7d97h05fgkdeqxzytm6yuxd7048axru03fpzxxvzt7shp5gv7ef0s26pw5gy5dpwvsh6qgc8se8x2lmz2ev90l9vjqzcns6u6scqzzsxqyz5vqsp".to_string(), amount: None }),
+//   };
+
+//     assert_eq!(Request::from_json(request.as_json()).unwrap(), request);
+
+//     assert_eq!(request.as_json(), "{\"method\":\"pay_invoice\",\"params\":{\"invoice\":\"lnbc210n1pj99rx0pp5ehevgz9nf7d97h05fgkdeqxzytm6yuxd7048axru03fpzxxvzt7shp5gv7ef0s26pw5gy5dpwvsh6qgc8se8x2lmz2ev90l9vjqzcns6u6scqzzsxqyz5vqsp\"}}");
+// }
+
+pub fn nip47_parse_request(request: String) -> Result<String, anyhow::Error> {
+    // let request = "{\"params\":{\"invoice\":\"lnbc210n1pj99rx0pp5ehevgz9nf7d97h05fgkdeqxzytm6yuxd7048axru03fpzxxvzt7shp5gv7ef0s26pw5gy5dpwvsh6qgc8se8x2lmz2ev90l9vjqzcns6u6scqzzsxqyz5vqsp5rdjyt9jr2avv2runy330766avkweqp30ndnyt9x6dp5juzn7q0nq9qyyssq2mykpgu04q0hlga228kx9v95meaqzk8a9cnvya305l4c353u3h04azuh9hsmd503x6jlzjrsqzark5dxx30s46vuatwzjhzmkt3j4tgqu35rms\"},\"method\":\"pay_invoice\"}";
+    use nostr::nips::nip47::*;
+    let request = Request::from_json(request).unwrap();
+
+    assert_eq!(request.method, Method::PayInvoice);
+
+    if let RequestParams::PayInvoice(pay) = request.params {
+        Ok(pay.invoice)
+    } else {
+        panic!("Invalid request params")
+    }
+}
+
+// fn test_parse_list_transactions_result() {
+//     let json = r#"{
+//       "result_type": "list_transactions",
+//       "result": {
+//           "transactions": [
+//               {
+//                  "type": "incoming",
+//                  "invoice": "abcd",
+//                  "description": "string",
+//                  "payment_hash": "",
+//                  "amount": 123,
+//                  "fees_paid": 1,
+//                  "created_at": 123456,
+//                  "expires_at": 1234567
+//              }
+//           ]
+//       }
+//   }"#;
+//     let result = Response::from_json(json).unwrap();
+//     assert_eq!(result.result_type, Method::ListTransactions);
+//     assert!(result.error.is_none());
+//     assert_eq!(
+//         result.result,
+//         Some(ResponseResult::ListTransactions(vec![
+//             LookupInvoiceResponse {
+//                 transaction_type: Some(TransactionType::Incoming),
+//                 invoice: Some(String::from("abcd")),
+//                 description: Some(String::from("string")),
+//                 amount: 123,
+//                 fees_paid: 1,
+//                 created_at: Timestamp::from(123456),
+//                 expires_at: Some(Timestamp::from(1234567)),
+//                 description_hash: None,
+//                 payment_hash: String::new(),
+//                 metadata: None,
+//                 settled_at: None,
+//                 preimage: None
+//             }
+//         ]))
+//     )
+// }

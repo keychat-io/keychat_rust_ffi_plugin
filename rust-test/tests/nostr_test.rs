@@ -125,9 +125,8 @@ mod tests {
         assert_eq!(result, PUBKEY_HEX);
     }
     const ALICE_SK: &str = "6b911fd37cdf5c81d4c0adb1ab7fa822ed253ab0ad9aa18d77257c88b29b718e";
-    // const BOB_SK: &str = "b0a1938dedb4eedb6eb5ea79a7288531123a53cbb6f86a68e59eefd92648b97c";
-
     const PUBKEY_HEX: &str = "3119e78c156f961669472305706f796abc929e4e2961d82abdf1311b2c10f77b";
+    // const BOB_SK: &str = "b0a1938dedb4eedb6eb5ea79a7288531123a53cbb6f86a68e59eefd92648b97c";
 
     #[tokio::test]
     async fn get_nip04() {
@@ -341,8 +340,10 @@ mod tests {
 
     #[test]
     fn get_hex_pubkey_by_prikey() {
-        let prikey_hex: &str = "f342982efe443c41b56020ad590bfa4f10c43e42540247b40dccc3343128d602";
-        let pubkey_hex: &str = "29350dfb9315432584b1333ef13e7c06458bdd61994522333877eb15dfdf80f8";
+        // let prikey_hex: &str = "f342982efe443c41b56020ad590bfa4f10c43e42540247b40dccc3343128d602";
+        // let pubkey_hex: &str = "29350dfb9315432584b1333ef13e7c06458bdd61994522333877eb15dfdf80f8";
+        let prikey_hex: &str = "71a8c14c1407c113601079c4302dab36460f0ccd0ad506f1f2dc73b5100e4f3c";
+        let pubkey_hex: &str = "b889ff5b1513b641e2a139f661a661364979c5beee91842f8f0ef42ab558e9d4";
         let res = nostr::get_hex_pubkey_by_prikey(prikey_hex.to_string()).unwrap();
         print!("res :{:?}", res);
         assert_eq!(&res, pubkey_hex);
@@ -527,5 +528,25 @@ mod tests {
         let result = nostr::sign_event(sender_keys, content, created_at, kind, tags).await;
         println!("result :{:?}", result);
         assert!(result.is_ok());
+    }
+
+    // nip47
+    #[test]
+    fn test_nip47_encode_uri() -> anyhow::Result<()> {
+        let pubkey = "3119e78c156f961669472305706f796abc929e4e2961d82abdf1311b2c10f77b";
+        let relay = "wss://relay.damus.io";
+        let secret = "6b911fd37cdf5c81d4c0adb1ab7fa822ed253ab0ad9aa18d77257c88b29b718e";
+        let lud16 = None;
+
+        let uri = nostr::nip47_encode_uri(
+            pubkey.to_string(),
+            relay.to_string(),
+            secret.to_string(),
+            lud16,
+        )?;
+        print!("{}", uri);
+        assert!(uri.starts_with("nostr+walletconnect://"));
+        assert!(uri.contains(pubkey));
+        Ok(())
     }
 }
