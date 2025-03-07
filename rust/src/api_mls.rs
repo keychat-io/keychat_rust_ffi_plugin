@@ -1,5 +1,4 @@
 use anyhow::Result;
-use bincode;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -10,6 +9,10 @@ pub use kc::identity::Identity;
 use kc::openmls_rust_persistent_crypto::JsonCodec;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 pub use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
+use openmls::prelude::tls_codec::Deserialize;
+use openmls::prelude::ContentType;
+use openmls::prelude::MlsMessageBodyIn;
+use openmls::prelude::MlsMessageIn;
 pub use openmls_sqlite_storage::{Connection, SqliteStorageProvider};
 pub use openmls_traits::OpenMlsProvider;
 
@@ -126,6 +129,7 @@ pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
         let key_package = user.create_key_package()?;
         user.update(nostr_id, true).await?;
         let serialized: Vec<u8> = bincode::serialize(&key_package)?;
+        // let serialized = key_package.tls_serialize_detached()?;
         Ok(serialized)
     });
     result
@@ -164,6 +168,56 @@ pub fn get_group_config(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     result
 }
 
+pub fn get_group_extension(
+    nostr_id: String,
+    group_id: String,
+) -> Result<(Vec<u8>, Vec<u8>, Vec<Vec<u8>>, Vec<Vec<u8>>)> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[get_group_config]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[get_group_config]> key_pair do not init.");
+            return Err(format_err!("<fn[get_group_config]> nostr_id do not init."));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[get_group_config]> Can not get store from user."))?;
+        let extension = user.get_group_extension(group_id.clone())?;
+        Ok((
+            extension.name,
+            extension.description,
+            extension.admin_pubkeys,
+            extension.relays,
+        ))
+    });
+    result
+}
+
+pub fn get_group_members(nostr_id: String, group_id: String) -> Result<Vec<String>> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[get_group_members]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[get_group_members]> key_pair do not init.");
+            return Err(format_err!("<fn[get_group_members]> nostr_id do not init."));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[get_group_members]> Can not get store from user."))?;
+        let members = user.get_group_members(group_id.clone())?;
+        Ok(members)
+    });
+    result
+}
+
 /*
    Group IDs SHOULD be constructed in such a way that
    there is an overwhelmingly low probability of honest group creators generating the same group ID,
@@ -196,6 +250,39 @@ pub fn create_mls_group(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     result
 }
 
+pub fn create_group(
+    nostr_id: String,
+    group_id: String,
+    description: String,
+    admin_pubkeys_hex: Vec<String>,
+    group_relays: Vec<String>,
+) -> Result<Vec<u8>> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[create_mls_group]> key_pair do not init.");
+            return Err(format_err!("<fn[create_mls_group]> nostr_id do not init."));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store from user."))?;
+        let group_config = user.create_group(
+            group_id.clone(),
+            description,
+            admin_pubkeys_hex,
+            group_relays,
+        )?;
+        user.update(nostr_id, false).await?;
+        Ok(group_config)
+    });
+    result
+}
+
 // add several friends every time
 pub fn add_members(
     nostr_id: String,
@@ -220,6 +307,52 @@ pub fn add_members(
         Ok((queued_msg, welcome))
     });
     result
+}
+
+/**
+* PrivateMessage
+    ContentType::Application = 1
+    ContentType::Proposal = 2
+    ContentType::Commit = 3
+* Welcome = 4
+* GroupInfo = 5
+* KeyPackage = 6  Not use
+* PublicMessage = 0
+*/
+pub fn parse_mls_msg_type(data: Vec<u8>) -> Result<u8> {
+    let queued_msg = MlsMessageIn::tls_deserialize_exact(&data)?;
+    match queued_msg.extract() {
+        MlsMessageBodyIn::PrivateMessage(private_msg) => {
+            println!("Received a private message");
+            match private_msg.content_type() {
+                ContentType::Application => {
+                    return Ok(1);
+                }
+                ContentType::Proposal => {
+                    return Ok(2);
+                }
+                ContentType::Commit => {
+                    return Ok(3);
+                }
+            }
+        }
+        MlsMessageBodyIn::Welcome(_welcome_msg) => {
+            println!("Received a welcome message");
+            return Ok(4);
+        }
+        MlsMessageBodyIn::GroupInfo(_group_info) => {
+            println!("Received a group_info message");
+            return Ok(5);
+        }
+        MlsMessageBodyIn::KeyPackage(_key_package) => {
+            println!("Received a key_package message");
+            return Ok(6);
+        }
+        _ => {
+            println!("Received a public message, ignore.");
+            return Ok(0);
+        }
+    }
 }
 
 pub fn self_commit(nostr_id: String, group_id: String) -> Result<()> {

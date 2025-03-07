@@ -2,14 +2,16 @@ use anyhow::Result;
 use bincode;
 use kc::user::MlsUser;
 
+use kc::group_context_extension::NostrGroupDataExtension;
 pub use kc::identity::Identity;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 use kc::user::Group;
 pub use openmls::group::{GroupId, Member, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
 use openmls::key_packages::KeyPackage;
-use openmls::prelude::tls_codec::Deserialize;
+use openmls::prelude::tls_codec::{Deserialize, Serialize};
 use openmls::prelude::{
-    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, StagedWelcome,
+    BasicCredential, Extension, Extensions, LeafNodeIndex, LeafNodeParameters, MlsMessageIn,
+    ProcessedMessageContent, StagedWelcome, UnknownExtension,
 };
 pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
@@ -91,6 +93,20 @@ impl User {
         Ok(group_config_vec)
     }
 
+    pub(crate) fn get_group_extension(&self, group_id: String) -> Result<NostrGroupDataExtension> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        let extension = NostrGroupDataExtension::from_group(&group.mls_group)?;
+        Ok(extension)
+    }
+
     pub(crate) fn create_key_package(&mut self) -> Result<KeyPackage> {
         let mut identity = self
             .mls_user
@@ -111,6 +127,77 @@ impl User {
             .identity
             .read()
             .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let mls_group = MlsGroup::new_with_group_id(
+            &self.mls_user.provider,
+            &identity.signer,
+            &group_create_config,
+            GroupId::from_slice(group_id.as_bytes()),
+            identity.credential_with_key.clone(),
+        )?;
+        let group = Group {
+            mls_group: mls_group.clone(),
+        };
+        {
+            let groups = self
+                .mls_user
+                .groups
+                .read()
+                .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+
+            if groups.contains_key(&group_id) {
+                panic!("Group '{}' existed already", group_id);
+            }
+        }
+
+        self.mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?
+            .insert(group_id.clone(), group);
+        self.mls_user.group_list.insert(group_id);
+
+        let group_config = group_create_config.join_config();
+        let group_config_vec = bincode::serialize(&group_config)?;
+        Ok(group_config_vec)
+    }
+
+    pub(crate) fn create_group(
+        &mut self,
+        group_id: String,
+        description: String,
+        admin_pubkeys_hex: Vec<String>,
+        group_relays: Vec<String>,
+    ) -> Result<Vec<u8>> {
+        let group_data = NostrGroupDataExtension::new(
+            group_id.clone(),
+            description,
+            admin_pubkeys_hex,
+            group_relays,
+        );
+        let serialized_group_data = group_data
+            .tls_serialize_detached()
+            .expect("Failed to serialize group data");
+
+        let extensions = vec![Extension::Unknown(
+            group_data.extension_type(),
+            UnknownExtension(serialized_group_data),
+        )];
+
+        let group_create_config = MlsGroupCreateConfig::builder()
+            .use_ratchet_tree_extension(true)
+            .with_group_context_extensions(
+                Extensions::from_vec(extensions)
+                    .expect("Couldn't convert extensions vec to Object"),
+            )
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?
+            .build();
+
+        let identity = self
+            .mls_user
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+
         let mls_group = MlsGroup::new_with_group_id(
             &self.mls_user.provider,
             &identity.signer,
@@ -179,6 +266,31 @@ impl User {
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         let serialized_welcome: Vec<u8> = welcome.to_bytes()?;
         Ok((serialized_queued_msg, serialized_welcome))
+    }
+
+    pub(crate) fn get_group_members(&self, group_id: String) -> Result<Vec<String>> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+
+        let mut members = group.mls_group.members();
+        members.try_fold(Vec::new(), |mut vec, member| {
+            let pubkey = String::from_utf8(
+                BasicCredential::try_from(member.credential)
+                    .map_err(|e| anyhow::anyhow!(e.to_string()))?
+                    .identity()
+                    .to_vec(),
+            )
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            vec.push(pubkey);
+            Ok(vec)
+        })
     }
 
     pub(crate) fn self_commit(&mut self, group_id: String) -> Result<()> {

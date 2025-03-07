@@ -578,8 +578,19 @@ fn test_basic() -> Result<()> {
     let d_pk = create_key_package(d.to_string())?;
     let e_pk = create_key_package(e.to_string())?;
 
+    let description: String = "".to_string();
+    let admin_pubkeys_hex: Vec<String> = ["abc".to_string()].to_vec();
+    let group_relays: Vec<String> = ["wss://relay.keychat.io".to_string()].to_vec();
+
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    // let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_group(
+        a.to_string(),
+        group_id.to_string(),
+        description,
+        admin_pubkeys_hex,
+        group_relays,
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -593,6 +604,18 @@ fn test_basic() -> Result<()> {
         welcome.1,
         group_join_config.clone(),
     )?;
+
+    let members = get_group_members(a.to_string(), group_id.to_string())?;
+    println!("group members of a is {:?}", members);
+
+    let extension = get_group_extension(a.to_string(), group_id.to_string())?;
+    println!("group extension of a is {:?}", extension);
+
+    let members = get_group_members(b.to_string(), group_id.to_string())?;
+    println!("group members of b is {:?}", members);
+
+    let extension = get_group_extension(b.to_string(), group_id.to_string())?;
+    println!("group extension of b is {:?}", extension);
 
     // A send msg to B
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
