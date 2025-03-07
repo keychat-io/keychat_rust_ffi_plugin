@@ -549,4 +549,49 @@ mod tests {
         assert!(uri.contains(pubkey));
         Ok(())
     }
+
+    #[test]
+    fn test_sha256_hash() {
+        // Test with empty string
+        let empty_result = nostr::sha256_hash("".to_string());
+        assert_eq!(
+            empty_result,
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+
+        // Test with a regular string
+        let hello_result = nostr::sha256_hash("hello".to_string());
+        assert_eq!(
+            hello_result,
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+        );
+
+        // Test with a longer string
+        let longer_text = "The quick brown fox jumps over the lazy dog";
+        let longer_result = nostr::sha256_hash(longer_text.to_string());
+        assert_eq!(
+            longer_result,
+            "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"
+        );
+
+        println!("SHA-256 hash tests passed");
+    }
+
+    #[test]
+    fn test_sha1_hash() {
+        // Test with empty string
+        let empty_result = nostr::sha1_hash("".to_string());
+        assert_eq!(empty_result, "da39a3ee5e6b4b0d3255bfef95601890afd80709");
+
+        // Test with a regular string
+        let hello_result = nostr::sha1_hash("hello".to_string());
+        assert_eq!(hello_result, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d");
+
+        // Test with a longer string
+        let longer_text = "The quick brown fox jumps over the lazy dog";
+        let longer_result = nostr::sha1_hash(longer_text.to_string());
+        assert_eq!(longer_result, "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
+
+        println!("SHA-1 hash tests passed");
+    }
 }

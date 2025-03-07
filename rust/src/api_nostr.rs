@@ -15,6 +15,7 @@ use nostr::{
     Event, EventBuilder, EventId, JsonUtil, Keys, Kind, PublicKey, SecretKey, Tag, UnsignedEvent,
 };
 use serde::Serialize;
+use sha1::{Digest, Sha1};
 use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
 use std::str::FromStr;
 
@@ -684,44 +685,22 @@ pub fn nip47_parse_request(request: String) -> Result<String, anyhow::Error> {
     }
 }
 
-// fn test_parse_list_transactions_result() {
-//     let json = r#"{
-//       "result_type": "list_transactions",
-//       "result": {
-//           "transactions": [
-//               {
-//                  "type": "incoming",
-//                  "invoice": "abcd",
-//                  "description": "string",
-//                  "payment_hash": "",
-//                  "amount": 123,
-//                  "fees_paid": 1,
-//                  "created_at": 123456,
-//                  "expires_at": 1234567
-//              }
-//           ]
-//       }
-//   }"#;
-//     let result = Response::from_json(json).unwrap();
-//     assert_eq!(result.result_type, Method::ListTransactions);
-//     assert!(result.error.is_none());
-//     assert_eq!(
-//         result.result,
-//         Some(ResponseResult::ListTransactions(vec![
-//             LookupInvoiceResponse {
-//                 transaction_type: Some(TransactionType::Incoming),
-//                 invoice: Some(String::from("abcd")),
-//                 description: Some(String::from("string")),
-//                 amount: 123,
-//                 fees_paid: 1,
-//                 created_at: Timestamp::from(123456),
-//                 expires_at: Some(Timestamp::from(1234567)),
-//                 description_hash: None,
-//                 payment_hash: String::new(),
-//                 metadata: None,
-//                 settled_at: None,
-//                 preimage: None
-//             }
-//         ]))
-//     )
-// }
+pub fn sha256_hash(data: String) -> String {
+    // Use the bitcoin secp256k1 sha256 implementation
+    let hash = sha256::Hash::hash(data.as_bytes());
+    // Convert the hash to a hex string
+    hash.to_string()
+}
+
+pub fn sha256_hash_bytes(data: Vec<u8>) -> String {
+    let hash = sha256::Hash::hash(&data);
+    // Convert the hash to a hex string
+    hash.to_string()
+}
+
+pub fn sha1_hash(data: String) -> String {
+    let mut hasher = Sha1::new();
+    hasher.update(data.as_bytes());
+    let result = hasher.finalize();
+    hex::encode(result)
+}
