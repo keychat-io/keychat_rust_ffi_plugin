@@ -125,22 +125,21 @@ mod tests {
         assert_eq!(result, PUBKEY_HEX);
     }
     const ALICE_SK: &str = "6b911fd37cdf5c81d4c0adb1ab7fa822ed253ab0ad9aa18d77257c88b29b718e";
+    const PUBKEY_HEX: &str = "3119e78c156f961669472305706f796abc929e4e2961d82abdf1311b2c10f77b";
     // const BOB_SK: &str = "b0a1938dedb4eedb6eb5ea79a7288531123a53cbb6f86a68e59eefd92648b97c";
 
-    const PUBKEY_HEX: &str = "3119e78c156f961669472305706f796abc929e4e2961d82abdf1311b2c10f77b";
-
-    #[test]
-    fn get_nip04() {
+    #[tokio::test]
+    async fn get_nip04() {
         let result = nostr::get_encrypt_event(
             ALICE_SK.to_string(),
             PUBKEY_HEX.to_string(),
             "1234".to_string(),
             None,
         )
-        .unwrap();
-        let res = nostr::verify_event(result.to_string());
-        // println!("result :{:?}", result.unwrap());
-        assert_eq!(res.unwrap().tags[0][1], PUBKEY_HEX);
+        .await;
+        // println!("result :{:?}", &result.unwrap().clone());
+        let res = nostr::verify_event(result.unwrap().clone().to_string()).unwrap();
+        assert_eq!(res.tags[0][1], PUBKEY_HEX);
     }
 
     #[test]
@@ -155,28 +154,30 @@ mod tests {
         // assert_eq!(result.unwrap().clone(), PUBKEY_HEX);
     }
 
-    #[test]
-    fn get_unencrypt_event() {
+    #[tokio::test]
+    async fn get_unencrypt_event() {
         let result = nostr::get_unencrypt_event(
             ALICE_SK.to_string(),
             vec![PUBKEY_HEX.to_string()],
             "1234".to_string(),
-            None,
             4,
-        );
+            None,
+        )
+        .await;
 
         println!("result :{:?}", result.unwrap());
         // assert_eq!(result.unwrap().clone(), PUBKEY_HEX);
     }
 
-    #[test]
-    fn get_encrypt_event() {
+    #[tokio::test]
+    async fn get_encrypt_event() {
         let result = nostr::get_encrypt_event(
             ALICE_SK.to_string(),
             PUBKEY_HEX.to_string(),
             "1234".to_string(),
             None,
-        );
+        )
+        .await;
 
         println!("result :{:?}", result.unwrap());
         // assert_eq!(result.unwrap().clone(), PUBKEY_HEX);
@@ -339,8 +340,10 @@ mod tests {
 
     #[test]
     fn get_hex_pubkey_by_prikey() {
-        let prikey_hex: &str = "f342982efe443c41b56020ad590bfa4f10c43e42540247b40dccc3343128d602";
-        let pubkey_hex: &str = "29350dfb9315432584b1333ef13e7c06458bdd61994522333877eb15dfdf80f8";
+        // let prikey_hex: &str = "f342982efe443c41b56020ad590bfa4f10c43e42540247b40dccc3343128d602";
+        // let pubkey_hex: &str = "29350dfb9315432584b1333ef13e7c06458bdd61994522333877eb15dfdf80f8";
+        let prikey_hex: &str = "71a8c14c1407c113601079c4302dab36460f0ccd0ad506f1f2dc73b5100e4f3c";
+        let pubkey_hex: &str = "b889ff5b1513b641e2a139f661a661364979c5beee91842f8f0ef42ab558e9d4";
         let res = nostr::get_hex_pubkey_by_prikey(prikey_hex.to_string()).unwrap();
         print!("res :{:?}", res);
         assert_eq!(&res, pubkey_hex);
@@ -459,8 +462,8 @@ mod tests {
         assert_eq!(bytes, bytes2);
     }
 
-    #[test]
-    fn nip17() {
+    #[tokio::test]
+    async fn nip17() {
         let s = "secret seed 17";
         let sender_kp = nostr::generate_simple().unwrap();
         let receiver_kp = nostr::generate_simple().unwrap();
@@ -474,6 +477,7 @@ mod tests {
             None,
             None,
         )
+        .await
         .unwrap();
 
         // use nostr::nostr::util::JsonUtil;
@@ -484,8 +488,8 @@ mod tests {
         assert_ne!(rumor.created_at, gift.created_at);
     }
 
-    #[test]
-    fn nip17_without_timestamp_tweaked() {
+    #[tokio::test]
+    async fn nip17_without_timestamp_tweaked() {
         let s = "secret seed 17";
         let sender_kp = nostr::generate_simple().unwrap();
         let receiver_kp = nostr::generate_simple().unwrap();
@@ -499,6 +503,7 @@ mod tests {
             None,
             Some(false),
         )
+        .await
         .unwrap();
 
         // use nostr::nostr::util::JsonUtil;
@@ -509,8 +514,8 @@ mod tests {
         assert_eq!(rumor.created_at, gift.created_at);
     }
 
-    #[test]
-    fn test_sign_event_invalid_keys() {
+    #[tokio::test]
+    async fn test_sign_event_invalid_keys() {
         let sender_keys =
             "246ad4386c29680e5d9de9d3258708268d54c64a536c468b26b44b7dd921bc9a".to_string();
         let content = "Test content".to_string();
@@ -520,8 +525,73 @@ mod tests {
             "744bc6815ead8ae5db97a1f425ee8aead700a0ebd7ea9968704aee3e3f026f27".to_string(),
         ]];
 
-        let result = nostr::sign_event(sender_keys, content, created_at, kind, tags);
+        let result = nostr::sign_event(sender_keys, content, created_at, kind, tags).await;
         println!("result :{:?}", result);
         assert!(result.is_ok());
+    }
+
+    // nip47
+    #[test]
+    fn test_nip47_encode_uri() -> anyhow::Result<()> {
+        let pubkey = "3119e78c156f961669472305706f796abc929e4e2961d82abdf1311b2c10f77b";
+        let relay = "wss://relay.damus.io";
+        let secret = "6b911fd37cdf5c81d4c0adb1ab7fa822ed253ab0ad9aa18d77257c88b29b718e";
+        let lud16 = None;
+
+        let uri = nostr::nip47_encode_uri(
+            pubkey.to_string(),
+            relay.to_string(),
+            secret.to_string(),
+            lud16,
+        )?;
+        print!("{}", uri);
+        assert!(uri.starts_with("nostr+walletconnect://"));
+        assert!(uri.contains(pubkey));
+        Ok(())
+    }
+
+    #[test]
+    fn test_sha256_hash() {
+        // Test with empty string
+        let empty_result = nostr::sha256_hash("".to_string());
+        assert_eq!(
+            empty_result,
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+
+        // Test with a regular string
+        let hello_result = nostr::sha256_hash("hello".to_string());
+        assert_eq!(
+            hello_result,
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+        );
+
+        // Test with a longer string
+        let longer_text = "The quick brown fox jumps over the lazy dog";
+        let longer_result = nostr::sha256_hash(longer_text.to_string());
+        assert_eq!(
+            longer_result,
+            "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"
+        );
+
+        println!("SHA-256 hash tests passed");
+    }
+
+    #[test]
+    fn test_sha1_hash() {
+        // Test with empty string
+        let empty_result = nostr::sha1_hash("".to_string());
+        assert_eq!(empty_result, "da39a3ee5e6b4b0d3255bfef95601890afd80709");
+
+        // Test with a regular string
+        let hello_result = nostr::sha1_hash("hello".to_string());
+        assert_eq!(hello_result, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d");
+
+        // Test with a longer string
+        let longer_text = "The quick brown fox jumps over the lazy dog";
+        let longer_result = nostr::sha1_hash(longer_text.to_string());
+        assert_eq!(longer_result, "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
+
+        println!("SHA-1 hash tests passed");
     }
 }
