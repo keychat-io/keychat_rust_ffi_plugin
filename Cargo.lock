@@ -475,6 +475,7 @@ checksum = "9ac0150caa2ae65ca5bd83f25c7de183dea78d4d366469f148435e2acfbad0da"
 [[package]]
 name = "cashu-wallet"
 version = "0.2.0"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=250310#3281458f560dae0b797c58cf5b5711bc4feeb1ad"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -501,6 +502,7 @@ dependencies = [
 [[package]]
 name = "cashu-wallet-sqlite"
 version = "0.1.0"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=250310#3281458f560dae0b797c58cf5b5711bc4feeb1ad"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -538,7 +540,7 @@ dependencies = [
 [[package]]
 name = "cdk"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/cdk?branch=public-000300#3f6089a45b334aaed5615317e790265e5ee4da0d"
+source = "git+https://github.com/keychat-io/cdk?branch=public-000301#f875c73c57cadf7c6ce38d4b34a4a574c8110833"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1822,6 +1824,7 @@ dependencies = [
 [[package]]
 name = "kc"
 version = "0.1.0"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "anyhow",
  "base64 0.13.1",
@@ -2235,6 +2238,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "openmls"
 version = "0.6.1"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "backtrace",
  "itertools 0.14.0",
@@ -2257,6 +2261,7 @@ dependencies = [
 [[package]]
 name = "openmls_basic_credential"
 version = "0.3.0"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "ed25519-dalek",
  "openmls_traits",
@@ -2269,6 +2274,7 @@ dependencies = [
 [[package]]
 name = "openmls_memory_storage"
 version = "0.3.0"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "hex",
  "log",
@@ -2281,6 +2287,7 @@ dependencies = [
 [[package]]
 name = "openmls_rust_crypto"
 version = "0.3.0"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "aes-gcm",
  "chacha20poly1305",
@@ -2305,6 +2312,7 @@ dependencies = [
 [[package]]
 name = "openmls_sqlite_storage"
 version = "0.1.0"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "log",
  "openmls_traits",
@@ -2318,6 +2326,7 @@ dependencies = [
 [[package]]
 name = "openmls_test"
 version = "0.1.0"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "ansi_term",
  "openmls_rust_crypto",
@@ -2332,6 +2341,7 @@ dependencies = [
 [[package]]
 name = "openmls_traits"
 version = "0.3.0"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#85b7b95bef684ed17a9e24a5ade08a0bcc25e130"
 dependencies = [
  "serde",
  "tls_codec",
@@ -3331,6 +3341,7 @@ dependencies = [
 [[package]]
 name = "signal-store"
 version = "0.1.0"
+source = "git+https://github.com/keychat-io/signal-storage.git?rev=7ea7392#7ea7392156a914ef26a838d97ef785a0a964f9b4"
 dependencies = [
  "anyhow",
  "async-trait",

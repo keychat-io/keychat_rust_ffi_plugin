@@ -168,6 +168,7 @@ pub fn get_group_config(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     result
 }
 
+// return  group name, description, admin_pubkeys and relays info
 pub fn get_group_extension(
     nostr_id: String,
     group_id: String,
@@ -197,6 +198,7 @@ pub fn get_group_extension(
     result
 }
 
+// return vec<String> of group members
 pub fn get_group_members(nostr_id: String, group_id: String) -> Result<Vec<String>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -228,29 +230,30 @@ pub fn get_group_members(nostr_id: String, group_id: String) -> Result<Vec<Strin
 */
 
 // when create group, then return the group join config
-pub fn create_mls_group(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-    let rt = RUNTIME.as_ref();
-    let result = rt.block_on(async {
-        let mut store = STORE.lock().await;
-        let store = store
-            .as_mut()
-            .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store err."))?;
-        if !store.user.contains_key(&nostr_id) {
-            error!("<fn[create_mls_group]> key_pair do not init.");
-            return Err(format_err!("<fn[create_mls_group]> nostr_id do not init."));
-        }
-        let user = store
-            .user
-            .get_mut(&nostr_id)
-            .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store from user."))?;
-        let group_config = user.create_mls_group(group_id.clone())?;
-        user.update(nostr_id, false).await?;
-        Ok(group_config)
-    });
-    result
-}
+// pub fn create_mls_group(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
+//     let rt = RUNTIME.as_ref();
+//     let result = rt.block_on(async {
+//         let mut store = STORE.lock().await;
+//         let store = store
+//             .as_mut()
+//             .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store err."))?;
+//         if !store.user.contains_key(&nostr_id) {
+//             error!("<fn[create_mls_group]> key_pair do not init.");
+//             return Err(format_err!("<fn[create_mls_group]> nostr_id do not init."));
+//         }
+//         let user = store
+//             .user
+//             .get_mut(&nostr_id)
+//             .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store from user."))?;
+//         let group_config = user.create_mls_group(group_id.clone())?;
+//         user.update(nostr_id, false).await?;
+//         Ok(group_config)
+//     });
+//     result
+// }
 
-pub fn create_group(
+// note: admin_pubkeys_hex is a vec, but only one admin in Keychat
+pub fn create_mls_group(
     nostr_id: String,
     group_id: String,
     description: String,

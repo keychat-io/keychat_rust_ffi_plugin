@@ -183,6 +183,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (Uint8List, Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  (Uint8List, Uint8List, List<Uint8List>, List<Uint8List>)
+      dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict_list_list_prim_u_8_strict_list_list_prim_u_8_strict(
+          dynamic raw);
+
+  @protected
   (Uint8List, Uint8List?) dco_decode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(dynamic raw);
 
   @protected
@@ -414,6 +419,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   (Uint8List, Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  (Uint8List, Uint8List, List<Uint8List>, List<Uint8List>)
+      sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict_list_list_prim_u_8_strict_list_list_prim_u_8_strict(
+          SseDeserializer deserializer);
 
   @protected
   (Uint8List, Uint8List?) sse_decode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -654,6 +664,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_record_list_prim_u_8_strict_list_prim_u_8_strict(
       (Uint8List, Uint8List) self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_record_list_prim_u_8_strict_list_prim_u_8_strict_list_list_prim_u_8_strict_list_list_prim_u_8_strict(
+      (Uint8List, Uint8List, List<Uint8List>, List<Uint8List>) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(

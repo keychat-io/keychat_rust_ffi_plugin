@@ -23,9 +23,9 @@ serde_json = "1.0.96"
 thiserror = "1.0.40"
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
 
-signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "bd60898"}
-cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250206"}
-cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250206"}
+signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "7ea7392"}
+cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250310"}
+cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250310"}
 
 openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls"}
 openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_traits"}
