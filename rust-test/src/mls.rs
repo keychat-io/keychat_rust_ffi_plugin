@@ -23,7 +23,13 @@ fn test_diff_db1() -> Result<()> {
     init_mls_db(db_mls_base.to_string(), a.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
     println!("The group_join_config is: {:?}", group_join_config);
 
     let b_pk = [
@@ -179,7 +185,13 @@ fn test_secret_key() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -327,7 +339,13 @@ fn test_remove_then_add_group() -> Result<()> {
     init_mls_db(db_mls_base.to_string(), c.to_string())?;
     init_mls_db(db_mls_base.to_string(), d.to_string())?;
 
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     let b_pk = create_key_package(b.to_string())?;
     let b_pk2 = create_key_package(b.to_string())?;
@@ -431,7 +449,13 @@ fn test_diff_groups() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk.clone()].to_vec())?;
@@ -458,7 +482,13 @@ fn test_diff_groups() -> Result<()> {
 
     // create second group use the same keypackage
     // c create group
-    let group_join_config2 = create_mls_group(c.to_string(), group_id2.to_string())?;
+    let group_join_config2 = create_mls_group(
+        c.to_string(),
+        group_id2.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // C add B
     let welcome2 = add_members(
@@ -516,7 +546,13 @@ fn test_self_decrypt() -> Result<()> {
     let b_pk = create_key_package(b.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -583,8 +619,7 @@ fn test_basic() -> Result<()> {
     let group_relays: Vec<String> = ["wss://relay.keychat.io".to_string()].to_vec();
 
     // a create group
-    // let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
-    let group_join_config = create_group(
+    let group_join_config = create_mls_group(
         a.to_string(),
         group_id.to_string(),
         description,
@@ -977,7 +1012,13 @@ fn test_normal() -> Result<()> {
     let g_pk = create_key_package(g.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B F
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
@@ -1626,7 +1667,13 @@ fn test_basic2() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -1751,7 +1798,13 @@ fn test_replay_delay() -> Result<()> {
     let f_pk = create_key_package(f.to_string())?;
     let g_pk = create_key_package(g.to_string())?;
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B F, but F not reply right now
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
