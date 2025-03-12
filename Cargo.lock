@@ -91,9 +91,9 @@ dependencies = [
 
 [[package]]
 name = "allo-isolate"
-version = "0.1.26"
+version = "0.1.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f67642eb6773fb42a95dd3b348c305ee18dee6642274c6b412d67e985e3befc"
+checksum = "449e356a4864c017286dbbec0e12767ea07efba29e3b7d984194c2a7ff3c4550"
 dependencies = [
  "anyhow",
  "atomic",
@@ -1967,7 +1967,7 @@ dependencies = [
 [[package]]
 name = "kc"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "anyhow",
  "base64 0.13.1",
@@ -2030,9 +2030,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.170"
+version = "0.2.171"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "875b3680cb2f8f71bdcf9a30f38d48282f5d3c95cbf9b3fa57269bb5d5c06828"
+checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
 
 [[package]]
 name = "libm"
@@ -2386,7 +2386,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "openmls"
 version = "0.6.1"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "backtrace",
  "itertools 0.14.0",
@@ -2409,7 +2409,7 @@ dependencies = [
 [[package]]
 name = "openmls_basic_credential"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "ed25519-dalek",
  "openmls_traits",
@@ -2422,7 +2422,7 @@ dependencies = [
 [[package]]
 name = "openmls_memory_storage"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "hex",
  "log",
@@ -2435,7 +2435,7 @@ dependencies = [
 [[package]]
 name = "openmls_rust_crypto"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "aes-gcm",
  "chacha20poly1305",
@@ -2460,7 +2460,7 @@ dependencies = [
 [[package]]
 name = "openmls_sqlite_storage"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "log",
  "openmls_traits",
@@ -2474,7 +2474,7 @@ dependencies = [
 [[package]]
 name = "openmls_test"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "ansi_term",
  "openmls_rust_crypto",
@@ -2489,7 +2489,7 @@ dependencies = [
 [[package]]
 name = "openmls_traits"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#322e532c56476a6ced2fb5c7cddc657aa09a432c"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#ed9747e4d19e61537560833d0a6704b0d61b673a"
 dependencies = [
  "serde",
  "tls_codec",
@@ -2847,9 +2847,9 @@ checksum = "a1d01941d82fa2ab50be1e79e6714289dd7cde78eba4c074bc5a4374f650dfe0"
 
 [[package]]
 name = "quote"
-version = "1.0.39"
+version = "1.0.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1f1914ce909e1658d9907913b4b91947430c7d9be598b15a1912935b8c04801"
+checksum = "1885c039570dc00dcb4ff087a89e185fd56bae234ddc7f056a945bf36467248d"
 dependencies = [
  "proc-macro2",
 ]
@@ -3059,9 +3059,9 @@ dependencies = [
 
 [[package]]
 name = "ring"
-version = "0.17.13"
+version = "0.17.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70ac5d832aa16abd7d1def883a8545280c20a60f523a370aa3a9617c2b8550ee"
+checksum = "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7"
 dependencies = [
  "cc",
  "cfg-if",

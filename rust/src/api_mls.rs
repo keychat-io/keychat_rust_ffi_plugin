@@ -10,6 +10,7 @@ use kc::openmls_rust_persistent_crypto::JsonCodec;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 pub use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
 use openmls::prelude::tls_codec::Deserialize;
+use openmls::prelude::tls_codec::Serialize;
 use openmls::prelude::ContentType;
 use openmls::prelude::MlsMessageBodyIn;
 use openmls::prelude::MlsMessageIn;
@@ -128,9 +129,31 @@ pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
             .ok_or_else(|| format_err!("<fn[create_key_package]> Can not get store from user."))?;
         let key_package = user.create_key_package()?;
         user.update(nostr_id, true).await?;
-        let serialized: Vec<u8> = bincode::serialize(&key_package)?;
-        // let serialized = key_package.tls_serialize_detached()?;
+        // let serialized: Vec<u8> = bincode::serialize(&key_package)?;
+        let serialized = key_package.tls_serialize_detached()?;
         Ok(serialized)
+    });
+    result
+}
+
+pub fn delete_key_package(nostr_id: String, key_package: Vec<u8>) -> Result<()> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[create_key_package]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[create_key_package]> key_pair do not init.");
+            return Err(format_err!(
+                "<fn[create_key_package]> nostr_id do not init."
+            ));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[create_key_package]> Can not get store from user."))?;
+        user.delete_key_package(key_package)
     });
     result
 }
@@ -230,28 +253,6 @@ pub fn get_group_members(nostr_id: String, group_id: String) -> Result<Vec<Strin
 */
 
 // when create group, then return the group join config
-// pub fn create_mls_group(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
-//     let rt = RUNTIME.as_ref();
-//     let result = rt.block_on(async {
-//         let mut store = STORE.lock().await;
-//         let store = store
-//             .as_mut()
-//             .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store err."))?;
-//         if !store.user.contains_key(&nostr_id) {
-//             error!("<fn[create_mls_group]> key_pair do not init.");
-//             return Err(format_err!("<fn[create_mls_group]> nostr_id do not init."));
-//         }
-//         let user = store
-//             .user
-//             .get_mut(&nostr_id)
-//             .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store from user."))?;
-//         let group_config = user.create_mls_group(group_id.clone())?;
-//         user.update(nostr_id, false).await?;
-//         Ok(group_config)
-//     });
-//     result
-// }
-
 // note: admin_pubkeys_hex is a vec, but only one admin in Keychat
 pub fn create_mls_group(
     nostr_id: String,
@@ -274,7 +275,7 @@ pub fn create_mls_group(
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[create_mls_group]> Can not get store from user."))?;
-        let group_config = user.create_group(
+        let group_config = user.create_mls_group(
             group_id.clone(),
             description,
             admin_pubkeys_hex,

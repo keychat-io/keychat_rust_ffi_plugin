@@ -10,8 +10,8 @@ pub use openmls::group::{GroupId, Member, MlsGroup, MlsGroupCreateConfig, MlsGro
 use openmls::key_packages::KeyPackage;
 use openmls::prelude::tls_codec::{Deserialize, Serialize};
 use openmls::prelude::{
-    BasicCredential, Extension, Extensions, LeafNodeIndex, LeafNodeParameters, MlsMessageIn,
-    ProcessedMessageContent, StagedWelcome, UnknownExtension,
+    BasicCredential, Extension, Extensions, KeyPackageIn, LeafNodeIndex, LeafNodeParameters,
+    MlsMessageIn, ProcessedMessageContent, ProtocolVersion, StagedWelcome, UnknownExtension,
 };
 pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
@@ -117,51 +117,17 @@ impl User {
         Ok(key_package)
     }
 
-    // return group join config
-    pub(crate) fn create_mls_group(&mut self, group_id: String) -> Result<Vec<u8>> {
-        let group_create_config = MlsGroupCreateConfig::builder()
-            .use_ratchet_tree_extension(true)
-            .build();
-        let identity = self
+    pub(crate) fn delete_key_package(&mut self, key_package: Vec<u8>) -> Result<()> {
+        let kp: KeyPackage = self.parse_key_package(key_package)?;
+        let mut identity = self
             .mls_user
             .identity
-            .read()
-            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
-        let mls_group = MlsGroup::new_with_group_id(
-            &self.mls_user.provider,
-            &identity.signer,
-            &group_create_config,
-            GroupId::from_slice(group_id.as_bytes()),
-            identity.credential_with_key.clone(),
-        )?;
-        let group = Group {
-            mls_group: mls_group.clone(),
-        };
-        {
-            let groups = self
-                .mls_user
-                .groups
-                .read()
-                .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
-
-            if groups.contains_key(&group_id) {
-                panic!("Group '{}' existed already", group_id);
-            }
-        }
-
-        self.mls_user
-            .groups
             .write()
-            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?
-            .insert(group_id.clone(), group);
-        self.mls_user.group_list.insert(group_id);
-
-        let group_config = group_create_config.join_config();
-        let group_config_vec = bincode::serialize(&group_config)?;
-        Ok(group_config_vec)
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        identity.delete_key_package_from_storage(kp, &self.mls_user.provider)
     }
 
-    pub(crate) fn create_group(
+    pub(crate) fn create_mls_group(
         &mut self,
         group_id: String,
         description: String,
@@ -232,6 +198,18 @@ impl User {
         Ok(group_config_vec)
     }
 
+    pub(crate) fn parse_key_package(&self, key_package_bytes: Vec<u8>) -> Result<KeyPackage> {
+        let key_package_in = KeyPackageIn::tls_deserialize(&mut key_package_bytes.as_slice())
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        // Validate the signature, ciphersuite, and extensions of the key package
+        let key_package = key_package_in
+            .validate(self.mls_user.provider.crypto(), ProtocolVersion::Mls10)
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        Ok(key_package)
+    }
+
     pub(crate) fn add_members(
         &mut self,
         group_id: String,
@@ -239,7 +217,8 @@ impl User {
     ) -> Result<(Vec<u8>, Vec<u8>)> {
         let mut kps: Vec<KeyPackage> = Vec::new();
         for kp in key_packages {
-            let kp: KeyPackage = bincode::deserialize(&kp)?;
+            // let kp: KeyPackage = bincode::deserialize(&kp)?;
+            let kp: KeyPackage = self.parse_key_package(kp)?;
             kps.push(kp);
         }
         let mut groups = self
