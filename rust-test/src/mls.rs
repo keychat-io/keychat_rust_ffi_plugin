@@ -609,10 +609,16 @@ fn test_basic() -> Result<()> {
 
     let b0_pk = create_key_package(b.to_string())?;
     let b_pk = create_key_package(b.to_string())?;
+
+    // test delete keypackage 
+    // let _ = delete_key_package( b.to_string(), b0_pk);
+
     let c_pk = create_key_package(c.to_string())?;
     let d0_pk = create_key_package(d.to_string())?;
     let d_pk = create_key_package(d.to_string())?;
     let e_pk = create_key_package(e.to_string())?;
+
+    
 
     let description: String = "".to_string();
     let admin_pubkeys_hex: Vec<String> = ["abc".to_string()].to_vec();

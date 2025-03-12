@@ -153,7 +153,8 @@ pub fn delete_key_package(nostr_id: String, key_package: Vec<u8>) -> Result<()> 
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[create_key_package]> Can not get store from user."))?;
-        user.delete_key_package(key_package)
+        user.delete_key_package(key_package)?;
+        user.update(nostr_id, true).await
     });
     result
 }
