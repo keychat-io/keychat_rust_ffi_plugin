@@ -3084,7 +3084,6 @@ fn wire__crate__api_mls__join_mls_group_impl(
             let api_nostr_id = <String>::sse_decode(&mut deserializer);
             let api_group_id = <String>::sse_decode(&mut deserializer);
             let api_welcome = <Vec<u8>>::sse_decode(&mut deserializer);
-            let api_group_join_config = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
@@ -3093,7 +3092,6 @@ fn wire__crate__api_mls__join_mls_group_impl(
                             api_nostr_id,
                             api_group_id,
                             api_welcome,
-                            api_group_join_config,
                         )?;
                         Ok(output_ok)
                     })(),

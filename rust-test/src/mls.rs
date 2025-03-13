@@ -136,12 +136,7 @@ fn test_diff_db2() -> Result<()> {
     .to_vec();
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome,
-        group_join_config,
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome)?;
     let msg = [
         0, 1, 0, 2, 2, 71, 49, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 28, 231, 68, 57, 222, 238, 153, 36,
         202, 193, 244, 141, 146, 123, 207, 174, 216, 253, 62, 44, 89, 18, 85, 255, 179, 37, 190, 6,
@@ -199,12 +194,7 @@ fn test_secret_key() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg to B
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -282,20 +272,10 @@ fn test_exist_group() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // F join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // G join in the group
-    join_mls_group(
-        g.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(g.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // D commit
     let _ = others_commit_normal(d.to_string(), group_id.to_string(), welcome.0.clone())?;
@@ -361,20 +341,10 @@ fn test_remove_then_add_group() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // C join in the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome.1.clone())?;
     println!(
         "a_mls_group export secret {:?}",
         get_export_secret(a.to_string(), group_id.to_string()).unwrap()
@@ -409,12 +379,7 @@ fn test_remove_then_add_group() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome2.1.clone())?;
     println!(
         "a_mls_group export secret {:?}",
         get_export_secret(a.to_string(), group_id.to_string()).unwrap()
@@ -463,12 +428,7 @@ fn test_diff_groups() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg
     let msg = send_msg(
@@ -499,12 +459,7 @@ fn test_diff_groups() -> Result<()> {
     // A commit
     self_commit(c.to_string(), group_id2.to_string())?;
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id2.to_string(),
-        welcome2.1,
-        group_join_config2.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id2.to_string(), welcome2.1)?;
     println!("join_mls_group");
 
     // C send msg
@@ -560,12 +515,7 @@ fn test_self_decrypt() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -637,12 +587,7 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     let members = get_group_members(a.to_string(), group_id.to_string())?;
     println!("group members of a is {:?}", members);
@@ -697,12 +642,7 @@ fn test_basic() -> Result<()> {
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1)?;
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0)?;
 
@@ -760,12 +700,7 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.1)?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
@@ -851,12 +786,7 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.1)?;
 
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
@@ -1030,20 +960,10 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // f join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // A send msg to B F
     let msg = send_msg(
@@ -1109,20 +1029,10 @@ fn test_normal() -> Result<()> {
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // g join the group
-    join_mls_group(
-        g.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(g.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0.clone())?;
@@ -1208,12 +1118,7 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.1)?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
@@ -1386,12 +1291,7 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.1)?;
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
     // D commit
@@ -1685,12 +1585,7 @@ fn test_basic2() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg to B
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -1742,12 +1637,7 @@ fn test_basic2() -> Result<()> {
     println!("B send msg to A ,the result is {:?}", text3);
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1)?;
 
     // B commit add
     self_commit(b.to_string(), group_id.to_string())?;
@@ -1816,19 +1706,14 @@ fn test_replay_delay() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // // f join in the group
     // join_mls_group(
     //     f.to_string(),
     //     group_id.to_string(),
     //     welcome.1.clone(),
-    //     group_join_config.clone(),
+    //
     // )?;
 
     println!(
@@ -1849,28 +1734,13 @@ fn test_replay_delay() -> Result<()> {
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // g join the group
-    join_mls_group(
-        g.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(g.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // f join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0.clone())?;
@@ -1907,12 +1777,7 @@ fn test_replay_delay() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.1)?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
@@ -2009,12 +1874,7 @@ fn test_replay_delay() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.1)?;
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
     // D commit

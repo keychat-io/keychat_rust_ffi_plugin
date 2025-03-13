@@ -302,13 +302,7 @@ impl User {
         Ok(())
     }
 
-    pub(crate) fn join_mls_group(
-        &mut self,
-        group_id: String,
-        welcome: Vec<u8>,
-        _group_join_config: Vec<u8>,
-    ) -> Result<()> {
-        // let group_join_config: MlsGroupJoinConfig = bincode::deserialize(&group_join_config)?;
+    pub(crate) fn join_mls_group(&mut self, group_id: String, welcome: Vec<u8>) -> Result<()> {
         let mls_group_config = MlsGroupJoinConfig::builder()
             .use_ratchet_tree_extension(true)
             .build();

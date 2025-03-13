@@ -285,11 +285,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiSignalInitSignalDb({required String dbPath});
 
-  Future<void> crateApiMlsJoinMlsGroup(
-      {required String nostrId,
-      required String groupId,
-      required List<int> welcome,
-      required List<int> groupJoinConfig});
+  Future<void> crateApiMlsJoinMlsGroup({required String nostrId, required String groupId, required List<int> welcome});
 
   Future<Transaction> crateApiCashuMelt({required String invoice, required String activeMint, BigInt? amount});
 
@@ -2390,18 +2386,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiMlsJoinMlsGroup(
-      {required String nostrId,
-      required String groupId,
-      required List<int> welcome,
-      required List<int> groupJoinConfig}) {
+  Future<void> crateApiMlsJoinMlsGroup({required String nostrId, required String groupId, required List<int> welcome}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(nostrId, serializer);
         sse_encode_String(groupId, serializer);
         sse_encode_list_prim_u_8_loose(welcome, serializer);
-        sse_encode_list_prim_u_8_loose(groupJoinConfig, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
       },
       codec: SseCodec(
@@ -2409,14 +2400,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsJoinMlsGroupConstMeta,
-      argValues: [nostrId, groupId, welcome, groupJoinConfig],
+      argValues: [nostrId, groupId, welcome],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiMlsJoinMlsGroupConstMeta => const TaskConstMeta(
         debugName: "join_mls_group",
-        argNames: ["nostrId", "groupId", "welcome", "groupJoinConfig"],
+        argNames: ["nostrId", "groupId", "welcome"],
       );
 
   @override

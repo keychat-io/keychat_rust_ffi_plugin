@@ -66,13 +66,8 @@ Future<int> parseMlsMsgType({required List<int> data}) => RustLib.instance.api.c
 Future<void> selfCommit({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsSelfCommit(nostrId: nostrId, groupId: groupId);
 
-Future<void> joinMlsGroup(
-        {required String nostrId,
-        required String groupId,
-        required List<int> welcome,
-        required List<int> groupJoinConfig}) =>
-    RustLib.instance.api.crateApiMlsJoinMlsGroup(
-        nostrId: nostrId, groupId: groupId, welcome: welcome, groupJoinConfig: groupJoinConfig);
+Future<void> joinMlsGroup({required String nostrId, required String groupId, required List<int> welcome}) =>
+    RustLib.instance.api.crateApiMlsJoinMlsGroup(nostrId: nostrId, groupId: groupId, welcome: welcome);
 
 Future<void> deleteGroup({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsDeleteGroup(nostrId: nostrId, groupId: groupId);

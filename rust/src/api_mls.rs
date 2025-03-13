@@ -382,12 +382,7 @@ pub fn self_commit(nostr_id: String, group_id: String) -> Result<()> {
 }
 
 // others join the group
-pub fn join_mls_group(
-    nostr_id: String,
-    group_id: String,
-    welcome: Vec<u8>,
-    group_join_config: Vec<u8>,
-) -> Result<()> {
+pub fn join_mls_group(nostr_id: String, group_id: String, welcome: Vec<u8>) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -402,7 +397,7 @@ pub fn join_mls_group(
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[join_mls_group]> Can not get store from user."))?;
-        user.join_mls_group(group_id, welcome, group_join_config)?;
+        user.join_mls_group(group_id, welcome)?;
         user.update(nostr_id, false).await?;
         Ok(())
     });
