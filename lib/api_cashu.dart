@@ -7,134 +7,155 @@ import 'api_cashu/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-
-            // These functions are ignored because they are not marked as `pub`: `load_mints_from_database_background`, `new`, `try_load_mints`
+// These functions are ignored because they are not marked as `pub`: `load_mints_from_database_background`, `new`, `try_load_mints`
 // These types are ignored because they are not used by any `pub` functions: `STATE`, `State`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `__send`, `get_mnemonic_info`, `prepare_one_proofs`
 // These functions are ignored (category: IgnoreBecauseOwnerTyShouldIgnore): `get_wallet`, `lock`
 
-
-            Future<void> initDb({required String dbpath , String? words , required bool dev }) => RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words, dev: dev);
+Future<void> initDb({required String dbpath, String? words, required bool dev}) =>
+    RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words, dev: dev);
 
 Future<bool> closeDb() => RustLib.instance.api.crateApiCashuCloseDb();
 
-Future<List<Mint>> initCashu({required int prepareSatsOnceTime }) => RustLib.instance.api.crateApiCashuInitCashu(prepareSatsOnceTime: prepareSatsOnceTime);
+Future<List<Mint>> initCashu({required int prepareSatsOnceTime}) =>
+    RustLib.instance.api.crateApiCashuInitCashu(prepareSatsOnceTime: prepareSatsOnceTime);
 
-Future<bool> setMnemonic({String? words }) => RustLib.instance.api.crateApiCashuSetMnemonic(words: words);
+Future<bool> setMnemonic({String? words}) => RustLib.instance.api.crateApiCashuSetMnemonic(words: words);
 
 Future<List<Mint>> getMints() => RustLib.instance.api.crateApiCashuGetMints();
 
-Future<bool> addMint({required String url }) => RustLib.instance.api.crateApiCashuAddMint(url: url);
+Future<bool> addMint({required String url}) => RustLib.instance.api.crateApiCashuAddMint(url: url);
 
-Future<String?> removeMint({required String url }) => RustLib.instance.api.crateApiCashuRemoveMint(url: url);
+Future<String?> removeMint({required String url}) => RustLib.instance.api.crateApiCashuRemoveMint(url: url);
 
 Future<String> getBalances() => RustLib.instance.api.crateApiCashuGetBalances();
 
-Future<List<Transaction>> receiveToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuReceiveToken(encodedToken: encodedToken);
+Future<List<Transaction>> receiveToken({required String encodedToken}) =>
+    RustLib.instance.api.crateApiCashuReceiveToken(encodedToken: encodedToken);
 
-Future<Transaction> sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
+Future<Transaction> sendStamp({required BigInt amount, required List<String> mints, String? info}) =>
+    RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
 
-Future<Transaction> send({required BigInt amount , required String activeMint , String? info }) => RustLib.instance.api.crateApiCashuSend(amount: amount, activeMint: activeMint, info: info);
+Future<Transaction> send({required BigInt amount, required String activeMint, String? info}) =>
+    RustLib.instance.api.crateApiCashuSend(amount: amount, activeMint: activeMint, info: info);
 
-Future<Transaction> requestMint({required BigInt amount , required String activeMint }) => RustLib.instance.api.crateApiCashuRequestMint(amount: amount, activeMint: activeMint);
+Future<Transaction> requestMint({required BigInt amount, required String activeMint}) =>
+    RustLib.instance.api.crateApiCashuRequestMint(amount: amount, activeMint: activeMint);
 
-Future<Transaction> mintToken({required BigInt amount , required String hash , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, hash: hash, activeMint: activeMint);
+Future<Transaction> mintToken({required BigInt amount, required String hash, required String activeMint}) =>
+    RustLib.instance.api.crateApiCashuMintToken(amount: amount, hash: hash, activeMint: activeMint);
 
-Future<Transaction> melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
+Future<Transaction> melt({required String invoice, required String activeMint, BigInt? amount}) =>
+    RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
 
 Future<List<Transaction>> getTransactions() => RustLib.instance.api.crateApiCashuGetTransactions();
 
-Future<List<Transaction>> getTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetTransactionsWithOffset(offset: offset, limit: limit);
+Future<List<Transaction>> getTransactionsWithOffset({required BigInt offset, required BigInt limit}) =>
+    RustLib.instance.api.crateApiCashuGetTransactionsWithOffset(offset: offset, limit: limit);
 
-Future<List<CashuTransaction>> getCashuTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
+Future<List<CashuTransaction>> getCashuTransactionsWithOffset({required BigInt offset, required BigInt limit}) =>
+    RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
 
-Future<List<LNTransaction>> getLnTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetLnTransactionsWithOffset(offset: offset, limit: limit);
+Future<List<LNTransaction>> getLnTransactionsWithOffset({required BigInt offset, required BigInt limit}) =>
+    RustLib.instance.api.crateApiCashuGetLnTransactionsWithOffset(offset: offset, limit: limit);
 
 Future<List<Transaction>> getPendingTransactions() => RustLib.instance.api.crateApiCashuGetPendingTransactions();
 
 Future<List<LNTransaction>> getLnPendingTransactions() => RustLib.instance.api.crateApiCashuGetLnPendingTransactions();
 
-Future<List<CashuTransaction>> getCashuPendingTransactions() => RustLib.instance.api.crateApiCashuGetCashuPendingTransactions();
+Future<List<CashuTransaction>> getCashuPendingTransactions() =>
+    RustLib.instance.api.crateApiCashuGetCashuPendingTransactions();
 
 /// remove transaction.time() <= unix_timestamp_ms_le and kind is the status
-Future<BigInt> removeTransactions({required BigInt unixTimestampMsLe , required TransactionStatus kind }) => RustLib.instance.api.crateApiCashuRemoveTransactions(unixTimestampMsLe: unixTimestampMsLe, kind: kind);
+Future<BigInt> removeTransactions({required BigInt unixTimestampMsLe, required TransactionStatus kind}) =>
+    RustLib.instance.api.crateApiCashuRemoveTransactions(unixTimestampMsLe: unixTimestampMsLe, kind: kind);
 
 Future<BigInt> getPendingTransactionsCount() => RustLib.instance.api.crateApiCashuGetPendingTransactionsCount();
 
-Future<(BigInt,BigInt)> checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
+Future<(BigInt, BigInt)> checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
-Future<Transaction> checkTransaction({required String id }) => RustLib.instance.api.crateApiCashuCheckTransaction(id: id);
+Future<Transaction> checkTransaction({required String id}) =>
+    RustLib.instance.api.crateApiCashuCheckTransaction(id: id);
 
 /// (spents, pendings, all)
-Future<(BigInt,BigInt,BigInt)> checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
+Future<(BigInt, BigInt, BigInt)> checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 
-Future<TokenInfo> decodeToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuDecodeToken(encodedToken: encodedToken);
+Future<TokenInfo> decodeToken({required String encodedToken}) =>
+    RustLib.instance.api.crateApiCashuDecodeToken(encodedToken: encodedToken);
 
 /// sleepms_after_check_a_batch for (code: 429): {"detail":"Rate limit exceeded."}
-Future<(BigInt,BigInt)> restore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch }) => RustLib.instance.api.crateApiCashuRestore(mint: mint, words: words, sleepmsAfterCheckABatch: sleepmsAfterCheckABatch);
+Future<(BigInt, BigInt)> restore({required String mint, String? words, required BigInt sleepmsAfterCheckABatch}) =>
+    RustLib.instance.api
+        .crateApiCashuRestore(mint: mint, words: words, sleepmsAfterCheckABatch: sleepmsAfterCheckABatch);
 
-Future<InvoiceInfo> decodeInvoice({required String encodedInvoice }) => RustLib.instance.api.crateApiCashuDecodeInvoice(encodedInvoice: encodedInvoice);
+Future<InvoiceInfo> decodeInvoice({required String encodedInvoice}) =>
+    RustLib.instance.api.crateApiCashuDecodeInvoice(encodedInvoice: encodedInvoice);
 
-            class InvoiceInfo  {
-                final BigInt amount;
-final BigInt expiryTs;
-final String hash;
-final String? memo;
-final String? mint;
-final InvoiceStatus status;
+class InvoiceInfo {
+  final BigInt amount;
+  final BigInt expiryTs;
+  final String hash;
+  final String? memo;
+  final String? mint;
+  final InvoiceStatus status;
 
-                const InvoiceInfo({required this.amount ,required this.expiryTs ,required this.hash ,this.memo ,this.mint ,required this.status ,});
+  const InvoiceInfo({
+    required this.amount,
+    required this.expiryTs,
+    required this.hash,
+    this.memo,
+    this.mint,
+    required this.status,
+  });
 
-                
-                
+  @override
+  int get hashCode =>
+      amount.hashCode ^ expiryTs.hashCode ^ hash.hashCode ^ memo.hashCode ^ mint.hashCode ^ status.hashCode;
 
-                
-        @override
-        int get hashCode => amount.hashCode^expiryTs.hashCode^hash.hashCode^memo.hashCode^mint.hashCode^status.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is InvoiceInfo &&
-                runtimeType == other.runtimeType
-                && amount == other.amount&& expiryTs == other.expiryTs&& hash == other.hash&& memo == other.memo&& mint == other.mint&& status == other.status;
-        
-            }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InvoiceInfo &&
+          runtimeType == other.runtimeType &&
+          amount == other.amount &&
+          expiryTs == other.expiryTs &&
+          hash == other.hash &&
+          memo == other.memo &&
+          mint == other.mint &&
+          status == other.status;
+}
 
 enum InvoiceStatus {
-                    paid,
-unpaid,
-expired,
-                    ;
-                    
-                }
+  paid,
+  unpaid,
+  expired,
+  ;
+}
 
-class TokenInfo  {
-                final String mint;
-final BigInt amount;
-final String? unit;
-final String? memo;
+class TokenInfo {
+  final String mint;
+  final BigInt amount;
+  final String? unit;
+  final String? memo;
 
-                const TokenInfo({required this.mint ,required this.amount ,this.unit ,this.memo ,});
+  const TokenInfo({
+    required this.mint,
+    required this.amount,
+    this.unit,
+    this.memo,
+  });
 
-                
-                
+  @override
+  int get hashCode => mint.hashCode ^ amount.hashCode ^ unit.hashCode ^ memo.hashCode;
 
-                
-        @override
-        int get hashCode => mint.hashCode^amount.hashCode^unit.hashCode^memo.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is TokenInfo &&
-                runtimeType == other.runtimeType
-                && mint == other.mint&& amount == other.amount&& unit == other.unit&& memo == other.memo;
-        
-            }
-            
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TokenInfo &&
+          runtimeType == other.runtimeType &&
+          mint == other.mint &&
+          amount == other.amount &&
+          unit == other.unit &&
+          memo == other.memo;
+}

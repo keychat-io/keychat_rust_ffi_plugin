@@ -226,15 +226,15 @@ pub async fn create_gift_json(
     sender_keys: String,
     receiver_pubkey: String,
     content: String,
-    reply: Option<String>,
     expiration_timestamp: Option<u64>,
     timestamp_tweaked: Option<bool>,
+    additional_tags: Option<Vec<Vec<String>>>,
 ) -> anyhow::Result<String> {
     let sender_keys: Keys = nostr::Keys::parse(&sender_keys)?;
     let receiver = get_xonly_pubkey(receiver_pubkey)?;
 
     // get unsigned
-    let rumor = create_unsigned_event(kind, &sender_keys, &receiver, content, reply)?;
+    let rumor = create_unsigned_event(kind, &sender_keys, &receiver, content, additional_tags)?;
     let mut ts = rumor.created_at;
 
     // rumor -> 13
@@ -273,20 +273,22 @@ pub async fn create_gift_json(
     Ok(json)
 }
 
-#[frb(ignore)]
 fn create_unsigned_event(
     kind: u16,
     sender_keys: &Keys,
     receiver: &PublicKey,
     content: String,
-    reply: Option<String>,
+    additional_tags: Option<Vec<Vec<String>>>,
 ) -> anyhow::Result<UnsignedEvent> {
     let mut tags = vec![Tag::public_key(*receiver)];
-    if let Some(reply) = reply {
-        let e = EventId::from_hex(&reply)?;
-        tags.push(e.into())
+    if let Some(additional_tags) = additional_tags {
+        for tag_data in additional_tags {
+            tags.push(nostr::Tag::custom(
+                nostr::TagKind::custom(tag_data[0].as_str()),
+                vec![tag_data[1].as_str()],
+            ));
+        }
     }
-
     let event = EventBuilder::new(kind.into(), content).tags(tags);
 
     let mut this = event.build(sender_keys.public_key());
@@ -383,10 +385,12 @@ pub async fn get_unencrypt_event(
         tags.push(Tag::public_key(pubkey));
     }
 
-    // Add additional tags if provided
     if let Some(additional_tags) = additional_tags {
         for tag_data in additional_tags {
-            tags.push(nostr::Tag::parse(&tag_data)?);
+            tags.push(nostr::Tag::custom(
+                nostr::TagKind::custom(tag_data[0].as_str()),
+                vec![tag_data[1].as_str()],
+            ));
         }
     }
 

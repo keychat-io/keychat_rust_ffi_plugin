@@ -161,7 +161,7 @@ mod tests {
             vec![PUBKEY_HEX.to_string()],
             "1234".to_string(),
             4,
-            None,
+            Some(vec![vec!["g".to_string(), "1234".to_string()]]),
         )
         .await;
 
@@ -501,7 +501,7 @@ mod tests {
             s.to_owned(),
             None,
             None,
-            Some(false),
+            None,
         )
         .await
         .unwrap();
