@@ -21,28 +21,53 @@ Future<Uint8List> getTreeHash({required String nostrId, required String groupId}
 Future<Uint8List> createKeyPackage({required String nostrId}) =>
     RustLib.instance.api.crateApiMlsCreateKeyPackage(nostrId: nostrId);
 
+Future<void> deleteKeyPackage({required String nostrId, required List<int> keyPackage}) =>
+    RustLib.instance.api.crateApiMlsDeleteKeyPackage(nostrId: nostrId, keyPackage: keyPackage);
+
 Future<Uint8List> createGroupConfig() => RustLib.instance.api.crateApiMlsCreateGroupConfig();
 
 Future<Uint8List> getGroupConfig({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetGroupConfig(nostrId: nostrId, groupId: groupId);
 
-Future<Uint8List> createMlsGroup({required String nostrId, required String groupId}) =>
-    RustLib.instance.api.crateApiMlsCreateMlsGroup(nostrId: nostrId, groupId: groupId);
+Future<(Uint8List, Uint8List, List<Uint8List>, List<Uint8List>)> getGroupExtension(
+        {required String nostrId, required String groupId}) =>
+    RustLib.instance.api.crateApiMlsGetGroupExtension(nostrId: nostrId, groupId: groupId);
+
+Future<List<String>> getGroupMembers({required String nostrId, required String groupId}) =>
+    RustLib.instance.api.crateApiMlsGetGroupMembers(nostrId: nostrId, groupId: groupId);
+
+Future<Uint8List> createMlsGroup(
+        {required String nostrId,
+        required String groupId,
+        required String description,
+        required List<String> adminPubkeysHex,
+        required List<String> groupRelays}) =>
+    RustLib.instance.api.crateApiMlsCreateMlsGroup(
+        nostrId: nostrId,
+        groupId: groupId,
+        description: description,
+        adminPubkeysHex: adminPubkeysHex,
+        groupRelays: groupRelays);
 
 Future<(Uint8List, Uint8List)> addMembers(
         {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
     RustLib.instance.api.crateApiMlsAddMembers(nostrId: nostrId, groupId: groupId, keyPackages: keyPackages);
 
+///* PrivateMessage
+///    ContentType::Application = 1
+///    ContentType::Proposal = 2
+///    ContentType::Commit = 3
+///* Welcome = 4
+///* GroupInfo = 5
+///* KeyPackage = 6  Not use
+///* PublicMessage = 0
+Future<int> parseMlsMsgType({required List<int> data}) => RustLib.instance.api.crateApiMlsParseMlsMsgType(data: data);
+
 Future<void> selfCommit({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsSelfCommit(nostrId: nostrId, groupId: groupId);
 
-Future<void> joinMlsGroup(
-        {required String nostrId,
-        required String groupId,
-        required List<int> welcome,
-        required List<int> groupJoinConfig}) =>
-    RustLib.instance.api.crateApiMlsJoinMlsGroup(
-        nostrId: nostrId, groupId: groupId, welcome: welcome, groupJoinConfig: groupJoinConfig);
+Future<void> joinMlsGroup({required String nostrId, required String groupId, required List<int> welcome}) =>
+    RustLib.instance.api.crateApiMlsJoinMlsGroup(nostrId: nostrId, groupId: groupId, welcome: welcome);
 
 Future<void> deleteGroup({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsDeleteGroup(nostrId: nostrId, groupId: groupId);

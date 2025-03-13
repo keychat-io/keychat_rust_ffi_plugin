@@ -2,8 +2,8 @@ use anyhow::Result;
 use rust::api_mls::*;
 
 fn main() {
-    // let _ = test_basic();
-    let _ = test_secret_key();
+    let _ = test_basic();
+    // let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
     // let _ = test_exist_group();
@@ -18,12 +18,18 @@ fn test_diff_db1() -> Result<()> {
     let group_id = "G1";
 
     let a = "A";
-    let db_path = "./mls-liteA.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
     println!("The group_join_config is: {:?}", group_join_config);
 
     let b_pk = [
@@ -67,9 +73,9 @@ fn test_diff_db2() -> Result<()> {
     let group_id = "G1";
 
     let b = "B";
-    let db_path = "./mls-liteB.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     println!("The b_pk is: {:?}", b_pk);
@@ -130,12 +136,7 @@ fn test_diff_db2() -> Result<()> {
     .to_vec();
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome,
-        group_join_config,
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome)?;
     let msg = [
         0, 1, 0, 2, 2, 71, 49, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 28, 231, 68, 57, 222, 238, 153, 36,
         202, 193, 244, 141, 146, 123, 207, 174, 216, 253, 62, 44, 89, 18, 85, 255, 179, 37, 190, 6,
@@ -164,13 +165,12 @@ fn test_secret_key() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
-
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b_pk = create_key_package(b.to_string())?;
@@ -180,7 +180,13 @@ fn test_secret_key() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -188,12 +194,7 @@ fn test_secret_key() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg to B
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -238,6 +239,7 @@ fn test_secret_key() -> Result<()> {
     );
     Ok(())
 }
+
 fn test_exist_group() -> Result<()> {
     println!("start -------------- start");
 
@@ -250,15 +252,14 @@ fn test_exist_group() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    // every user show init this
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), g.to_string())?;
 
     let group_join_config = get_group_config(a.to_string(), group_id.to_string())?;
 
@@ -271,20 +272,10 @@ fn test_exist_group() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // F join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // G join in the group
-    join_mls_group(
-        g.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(g.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // D commit
     let _ = others_commit_normal(d.to_string(), group_id.to_string(), welcome.0.clone())?;
@@ -322,14 +313,19 @@ fn test_remove_then_add_group() -> Result<()> {
     let c = "C";
     let d = "D";
 
-    let db_path = "./mls-lite.sqlite";
-    // every user show init this
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
 
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     let b_pk = create_key_package(b.to_string())?;
     let b_pk2 = create_key_package(b.to_string())?;
@@ -345,20 +341,10 @@ fn test_remove_then_add_group() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // C join in the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome.1.clone())?;
     println!(
         "a_mls_group export secret {:?}",
         get_export_secret(a.to_string(), group_id.to_string()).unwrap()
@@ -393,12 +379,7 @@ fn test_remove_then_add_group() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome2.1.clone())?;
     println!(
         "a_mls_group export secret {:?}",
         get_export_secret(a.to_string(), group_id.to_string()).unwrap()
@@ -419,13 +400,13 @@ fn test_diff_groups() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -433,7 +414,13 @@ fn test_diff_groups() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk.clone()].to_vec())?;
@@ -441,12 +428,7 @@ fn test_diff_groups() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg
     let msg = send_msg(
@@ -460,7 +442,13 @@ fn test_diff_groups() -> Result<()> {
 
     // create second group use the same keypackage
     // c create group
-    let group_join_config2 = create_mls_group(c.to_string(), group_id2.to_string())?;
+    let group_join_config2 = create_mls_group(
+        c.to_string(),
+        group_id2.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // C add B
     let welcome2 = add_members(
@@ -471,12 +459,7 @@ fn test_diff_groups() -> Result<()> {
     // A commit
     self_commit(c.to_string(), group_id2.to_string())?;
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id2.to_string(),
-        welcome2.1,
-        group_join_config2.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id2.to_string(), welcome2.1)?;
     println!("join_mls_group");
 
     // C send msg
@@ -504,13 +487,13 @@ fn test_self_decrypt() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b1_pk = create_key_package(b.to_string())?;
@@ -518,7 +501,13 @@ fn test_self_decrypt() -> Result<()> {
     let b_pk = create_key_package(b.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -526,12 +515,7 @@ fn test_self_decrypt() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -558,7 +542,7 @@ fn test_basic() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
     // let users = vec![a, b, c, d, e];
     // let base_db_path = "./mls-lite";
@@ -567,21 +551,35 @@ fn test_basic() -> Result<()> {
     //     init_mls_db(db_path.to_string(), user.to_string())?;
     // }
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b_pk = create_key_package(b.to_string())?;
+
+    // test delete keypackage
+    // let _ = delete_key_package( b.to_string(), b0_pk);
+
     let c_pk = create_key_package(c.to_string())?;
     let d0_pk = create_key_package(d.to_string())?;
     let d_pk = create_key_package(d.to_string())?;
     let e_pk = create_key_package(e.to_string())?;
 
+    let description: String = "".to_string();
+    let admin_pubkeys_hex: Vec<String> = ["abc".to_string()].to_vec();
+    let group_relays: Vec<String> = ["wss://relay.keychat.io".to_string()].to_vec();
+
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        description,
+        admin_pubkeys_hex,
+        group_relays,
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -589,12 +587,19 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
+
+    let members = get_group_members(a.to_string(), group_id.to_string())?;
+    println!("group members of a is {:?}", members);
+
+    let extension = get_group_extension(a.to_string(), group_id.to_string())?;
+    println!("group extension of a is {:?}", extension);
+
+    let members = get_group_members(b.to_string(), group_id.to_string())?;
+    println!("group members of b is {:?}", members);
+
+    let extension = get_group_extension(b.to_string(), group_id.to_string())?;
+    println!("group extension of b is {:?}", extension);
 
     // A send msg to B
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -637,12 +642,7 @@ fn test_basic() -> Result<()> {
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1)?;
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0)?;
 
@@ -700,12 +700,7 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.1)?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
@@ -791,12 +786,7 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.1)?;
 
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
@@ -938,14 +928,15 @@ fn test_normal() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), g.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -955,7 +946,13 @@ fn test_normal() -> Result<()> {
     let g_pk = create_key_package(g.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B F
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
@@ -963,20 +960,10 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // f join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // A send msg to B F
     let msg = send_msg(
@@ -1042,20 +1029,10 @@ fn test_normal() -> Result<()> {
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // g join the group
-    join_mls_group(
-        g.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(g.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0.clone())?;
@@ -1141,12 +1118,7 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.1)?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
@@ -1319,12 +1291,7 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.1)?;
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
     // D commit
@@ -1590,13 +1557,13 @@ fn test_basic2() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -1604,7 +1571,13 @@ fn test_basic2() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
@@ -1612,12 +1585,7 @@ fn test_basic2() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1)?;
 
     // A send msg to B
     let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -1669,12 +1637,7 @@ fn test_basic2() -> Result<()> {
     println!("B send msg to A ,the result is {:?}", text3);
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1)?;
 
     // B commit add
     self_commit(b.to_string(), group_id.to_string())?;
@@ -1712,14 +1675,15 @@ fn test_replay_delay() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), g.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -1728,7 +1692,13 @@ fn test_replay_delay() -> Result<()> {
     let f_pk = create_key_package(f.to_string())?;
     let g_pk = create_key_package(g.to_string())?;
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+    )?;
 
     // A add B F, but F not reply right now
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
@@ -1736,19 +1706,14 @@ fn test_replay_delay() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // // f join in the group
     // join_mls_group(
     //     f.to_string(),
     //     group_id.to_string(),
     //     welcome.1.clone(),
-    //     group_join_config.clone(),
+    //
     // )?;
 
     println!(
@@ -1769,28 +1734,13 @@ fn test_replay_delay() -> Result<()> {
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // g join the group
-    join_mls_group(
-        g.to_string(),
-        group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(g.to_string(), group_id.to_string(), welcome2.1.clone())?;
 
     // f join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.1.clone())?;
 
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0.clone())?;
@@ -1827,12 +1777,7 @@ fn test_replay_delay() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.1)?;
 
     // B commit
     let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
@@ -1929,12 +1874,7 @@ fn test_replay_delay() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.1)?;
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
     // D commit
