@@ -113,6 +113,7 @@ abstract class RustLibApi extends BaseApi {
   Future<Uint8List> crateApiMlsCreateMlsGroup(
       {required String nostrId,
       required String groupId,
+      required String groupName,
       required String description,
       required List<String> adminPubkeysHex,
       required List<String> groupRelays});
@@ -704,6 +705,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<Uint8List> crateApiMlsCreateMlsGroup(
       {required String nostrId,
       required String groupId,
+      required String groupName,
       required String description,
       required List<String> adminPubkeysHex,
       required List<String> groupRelays}) {
@@ -712,6 +714,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(nostrId, serializer);
         sse_encode_String(groupId, serializer);
+        sse_encode_String(groupName, serializer);
         sse_encode_String(description, serializer);
         sse_encode_list_String(adminPubkeysHex, serializer);
         sse_encode_list_String(groupRelays, serializer);
@@ -722,14 +725,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsCreateMlsGroupConstMeta,
-      argValues: [nostrId, groupId, description, adminPubkeysHex, groupRelays],
+      argValues: [nostrId, groupId, groupName, description, adminPubkeysHex, groupRelays],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiMlsCreateMlsGroupConstMeta => const TaskConstMeta(
         debugName: "create_mls_group",
-        argNames: ["nostrId", "groupId", "description", "adminPubkeysHex", "groupRelays"],
+        argNames: ["nostrId", "groupId", "groupName", "description", "adminPubkeysHex", "groupRelays"],
       );
 
   @override

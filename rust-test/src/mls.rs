@@ -27,6 +27,7 @@ fn test_diff_db1() -> Result<()> {
         a.to_string(),
         group_id.to_string(),
         "new group".to_string(),
+        "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
     )?;
@@ -184,6 +185,7 @@ fn test_secret_key() -> Result<()> {
         a.to_string(),
         group_id.to_string(),
         "new group".to_string(),
+        "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
     )?;
@@ -323,6 +325,7 @@ fn test_remove_then_add_group() -> Result<()> {
         a.to_string(),
         group_id.to_string(),
         "new group".to_string(),
+        "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
     )?;
@@ -418,6 +421,7 @@ fn test_diff_groups() -> Result<()> {
         a.to_string(),
         group_id.to_string(),
         "new group".to_string(),
+        "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
     )?;
@@ -445,6 +449,7 @@ fn test_diff_groups() -> Result<()> {
     let group_join_config2 = create_mls_group(
         c.to_string(),
         group_id2.to_string(),
+        "new group".to_string(),
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
@@ -504,6 +509,7 @@ fn test_self_decrypt() -> Result<()> {
     let group_join_config = create_mls_group(
         a.to_string(),
         group_id.to_string(),
+        "new group".to_string(),
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
@@ -575,6 +581,7 @@ fn test_basic() -> Result<()> {
     // a create group
     let group_join_config = create_mls_group(
         a.to_string(),
+        group_id.to_string(),
         group_id.to_string(),
         description,
         admin_pubkeys_hex,
@@ -948,6 +955,7 @@ fn test_normal() -> Result<()> {
     // a create group
     let group_join_config = create_mls_group(
         a.to_string(),
+        group_id.to_string(),
         group_id.to_string(),
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
@@ -1574,6 +1582,7 @@ fn test_basic2() -> Result<()> {
     let group_join_config = create_mls_group(
         a.to_string(),
         group_id.to_string(),
+        group_id.to_string(),
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
@@ -1695,6 +1704,7 @@ fn test_replay_delay() -> Result<()> {
     let group_join_config = create_mls_group(
         a.to_string(),
         group_id.to_string(),
+        "new group".to_string(),
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),

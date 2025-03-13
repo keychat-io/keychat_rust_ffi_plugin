@@ -258,6 +258,7 @@ pub fn get_group_members(nostr_id: String, group_id: String) -> Result<Vec<Strin
 pub fn create_mls_group(
     nostr_id: String,
     group_id: String,
+    group_name: String,
     description: String,
     admin_pubkeys_hex: Vec<String>,
     group_relays: Vec<String>,

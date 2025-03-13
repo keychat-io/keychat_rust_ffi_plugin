@@ -515,6 +515,7 @@ fn wire__crate__api_mls__create_mls_group_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_nostr_id = <String>::sse_decode(&mut deserializer);
             let api_group_id = <String>::sse_decode(&mut deserializer);
+            let api_group_name = <String>::sse_decode(&mut deserializer);
             let api_description = <String>::sse_decode(&mut deserializer);
             let api_admin_pubkeys_hex = <Vec<String>>::sse_decode(&mut deserializer);
             let api_group_relays = <Vec<String>>::sse_decode(&mut deserializer);
@@ -525,6 +526,7 @@ fn wire__crate__api_mls__create_mls_group_impl(
                         let output_ok = crate::api_mls::create_mls_group(
                             api_nostr_id,
                             api_group_id,
+                            api_group_name,
                             api_description,
                             api_admin_pubkeys_hex,
                             api_group_relays,

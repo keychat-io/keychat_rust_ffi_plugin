@@ -39,12 +39,14 @@ Future<List<String>> getGroupMembers({required String nostrId, required String g
 Future<Uint8List> createMlsGroup(
         {required String nostrId,
         required String groupId,
+        required String groupName,
         required String description,
         required List<String> adminPubkeysHex,
         required List<String> groupRelays}) =>
     RustLib.instance.api.crateApiMlsCreateMlsGroup(
         nostrId: nostrId,
         groupId: groupId,
+        groupName: groupName,
         description: description,
         adminPubkeysHex: adminPubkeysHex,
         groupRelays: groupRelays);
