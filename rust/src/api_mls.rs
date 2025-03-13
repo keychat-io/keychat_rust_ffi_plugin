@@ -279,6 +279,7 @@ pub fn create_mls_group(
         let group_config = user.create_mls_group(
             group_id.clone(),
             description,
+            group_name,
             admin_pubkeys_hex,
             group_relays,
         )?;
