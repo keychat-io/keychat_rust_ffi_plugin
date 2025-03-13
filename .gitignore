@@ -33,4 +33,6 @@ rust/api-mls/
 **.db-shm
 **.db
 target/
-**.sqlite*
+**.sqlite
+**.sqlite-wal
+.cargo/config.toml

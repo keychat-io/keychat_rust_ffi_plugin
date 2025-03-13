@@ -306,9 +306,12 @@ impl User {
         &mut self,
         group_id: String,
         welcome: Vec<u8>,
-        group_join_config: Vec<u8>,
+        _group_join_config: Vec<u8>,
     ) -> Result<()> {
-        let group_join_config: MlsGroupJoinConfig = bincode::deserialize(&group_join_config)?;
+        // let group_join_config: MlsGroupJoinConfig = bincode::deserialize(&group_join_config)?;
+        let mls_group_config = MlsGroupJoinConfig::builder()
+            .use_ratchet_tree_extension(true)
+            .build();
         let welcome = MlsMessageIn::tls_deserialize_exact(&welcome)?;
         let welcome = welcome.into_welcome().ok_or_else(|| {
             format_err!(
@@ -328,7 +331,7 @@ impl User {
         // }
         let bob_mls_group = StagedWelcome::new_from_welcome(
             &self.mls_user.provider,
-            &group_join_config,
+            &mls_group_config,
             welcome,
             None,
         )
