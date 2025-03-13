@@ -131,11 +131,12 @@ impl User {
         &mut self,
         group_id: String,
         description: String,
+        group_name: String,
         admin_pubkeys_hex: Vec<String>,
         group_relays: Vec<String>,
     ) -> Result<Vec<u8>> {
         let group_data = NostrGroupDataExtension::new(
-            group_id.clone(),
+            group_name.clone(),
             description,
             admin_pubkeys_hex,
             group_relays,
