@@ -280,7 +280,7 @@ fn create_unsigned_event(
     content: String,
     additional_tags: Option<Vec<Vec<String>>>,
 ) -> anyhow::Result<UnsignedEvent> {
-    let mut tags = vec![Tag::public_key(*receiver)];
+    let mut tags = vec![];
     if let Some(additional_tags) = additional_tags {
         for tag_data in additional_tags {
             tags.push(nostr::Tag::custom(
@@ -288,6 +288,8 @@ fn create_unsigned_event(
                 vec![tag_data[1].as_str()],
             ));
         }
+    } else {
+        tags.push(Tag::public_key(receiver.clone()));
     }
     let event = EventBuilder::new(kind.into(), content).tags(tags);
 
@@ -378,19 +380,17 @@ pub async fn get_unencrypt_event(
     additional_tags: Option<Vec<Vec<String>>>,
 ) -> anyhow::Result<String> {
     let mut tags: Vec<Tag> = vec![];
-
-    // Add pubkey tags
-    for p in receiver_pubkeys {
-        let pubkey = get_xonly_pubkey(p)?;
-        tags.push(Tag::public_key(pubkey));
-    }
-
     if let Some(additional_tags) = additional_tags {
         for tag_data in additional_tags {
             tags.push(nostr::Tag::custom(
                 nostr::TagKind::custom(tag_data[0].as_str()),
                 vec![tag_data[1].as_str()],
             ));
+        }
+    } else {
+        for p in receiver_pubkeys {
+            let pubkey = get_xonly_pubkey(p)?;
+            tags.push(Tag::public_key(pubkey));
         }
     }
 
