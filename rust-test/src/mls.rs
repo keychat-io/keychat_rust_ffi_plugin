@@ -1067,6 +1067,7 @@ fn test_extension() -> Result<()> {
     create_mls_group(
         a.to_string(),
         group_id.to_string(),
+        group_id.to_string(),
         description,
         admin_pubkeys_hex,
         group_relays,
