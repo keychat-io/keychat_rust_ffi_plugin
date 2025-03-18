@@ -102,9 +102,9 @@ abstract class RustLibApi extends BaseApi {
       required String senderKeys,
       required String receiverPubkey,
       required String content,
-      String? reply,
       BigInt? expirationTimestamp,
-      bool? timestampTweaked});
+      bool? timestampTweaked,
+      List<List<String>>? additionalTags});
 
   Future<Uint8List> crateApiMlsCreateGroupConfig();
 
@@ -113,6 +113,7 @@ abstract class RustLibApi extends BaseApi {
   Future<Uint8List> crateApiMlsCreateMlsGroup(
       {required String nostrId,
       required String groupId,
+      required String groupName,
       required String description,
       required List<String> adminPubkeysHex,
       required List<String> groupRelays});
@@ -624,9 +625,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       required String senderKeys,
       required String receiverPubkey,
       required String content,
-      String? reply,
       BigInt? expirationTimestamp,
-      bool? timestampTweaked}) {
+      bool? timestampTweaked,
+      List<List<String>>? additionalTags}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -634,9 +635,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(senderKeys, serializer);
         sse_encode_String(receiverPubkey, serializer);
         sse_encode_String(content, serializer);
-        sse_encode_opt_String(reply, serializer);
         sse_encode_opt_box_autoadd_u_64(expirationTimestamp, serializer);
         sse_encode_opt_box_autoadd_bool(timestampTweaked, serializer);
+        sse_encode_opt_list_list_String(additionalTags, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10, port: port_);
       },
       codec: SseCodec(
@@ -644,7 +645,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiNostrCreateGiftJsonConstMeta,
-      argValues: [kind, senderKeys, receiverPubkey, content, reply, expirationTimestamp, timestampTweaked],
+      argValues: [kind, senderKeys, receiverPubkey, content, expirationTimestamp, timestampTweaked, additionalTags],
       apiImpl: this,
     ));
   }
@@ -656,9 +657,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           "senderKeys",
           "receiverPubkey",
           "content",
-          "reply",
           "expirationTimestamp",
-          "timestampTweaked"
+          "timestampTweaked",
+          "additionalTags"
         ],
       );
 
@@ -711,6 +712,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<Uint8List> crateApiMlsCreateMlsGroup(
       {required String nostrId,
       required String groupId,
+      required String groupName,
       required String description,
       required List<String> adminPubkeysHex,
       required List<String> groupRelays}) {
@@ -719,6 +721,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(nostrId, serializer);
         sse_encode_String(groupId, serializer);
+        sse_encode_String(groupName, serializer);
         sse_encode_String(description, serializer);
         sse_encode_list_String(adminPubkeysHex, serializer);
         sse_encode_list_String(groupRelays, serializer);
@@ -729,14 +732,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsCreateMlsGroupConstMeta,
-      argValues: [nostrId, groupId, description, adminPubkeysHex, groupRelays],
+      argValues: [nostrId, groupId, groupName, description, adminPubkeysHex, groupRelays],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiMlsCreateMlsGroupConstMeta => const TaskConstMeta(
         debugName: "create_mls_group",
-        argNames: ["nostrId", "groupId", "description", "adminPubkeysHex", "groupRelays"],
+        argNames: ["nostrId", "groupId", "groupName", "description", "adminPubkeysHex", "groupRelays"],
       );
 
   @override

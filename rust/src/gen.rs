@@ -397,9 +397,9 @@ fn wire__crate__api_nostr__create_gift_json_impl(
             let api_sender_keys = <String>::sse_decode(&mut deserializer);
             let api_receiver_pubkey = <String>::sse_decode(&mut deserializer);
             let api_content = <String>::sse_decode(&mut deserializer);
-            let api_reply = <Option<String>>::sse_decode(&mut deserializer);
             let api_expiration_timestamp = <Option<u64>>::sse_decode(&mut deserializer);
             let api_timestamp_tweaked = <Option<bool>>::sse_decode(&mut deserializer);
+            let api_additional_tags = <Option<Vec<Vec<String>>>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
@@ -409,9 +409,9 @@ fn wire__crate__api_nostr__create_gift_json_impl(
                             api_sender_keys,
                             api_receiver_pubkey,
                             api_content,
-                            api_reply,
                             api_expiration_timestamp,
                             api_timestamp_tweaked,
+                            api_additional_tags,
                         )
                         .await?;
                         Ok(output_ok)
@@ -515,6 +515,7 @@ fn wire__crate__api_mls__create_mls_group_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_nostr_id = <String>::sse_decode(&mut deserializer);
             let api_group_id = <String>::sse_decode(&mut deserializer);
+            let api_group_name = <String>::sse_decode(&mut deserializer);
             let api_description = <String>::sse_decode(&mut deserializer);
             let api_admin_pubkeys_hex = <Vec<String>>::sse_decode(&mut deserializer);
             let api_group_relays = <Vec<String>>::sse_decode(&mut deserializer);
@@ -525,6 +526,7 @@ fn wire__crate__api_mls__create_mls_group_impl(
                         let output_ok = crate::api_mls::create_mls_group(
                             api_nostr_id,
                             api_group_id,
+                            api_group_name,
                             api_description,
                             api_admin_pubkeys_hex,
                             api_group_relays,
