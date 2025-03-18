@@ -29,9 +29,14 @@ Future<Uint8List> createGroupConfig() => RustLib.instance.api.crateApiMlsCreateG
 Future<Uint8List> getGroupConfig({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetGroupConfig(nostrId: nostrId, groupId: groupId);
 
-Future<(Uint8List, Uint8List, List<Uint8List>, List<Uint8List>)> getGroupExtension(
-        {required String nostrId, required String groupId}) =>
+Future<Map<String, List<Uint8List>>> getMemberExtension({required String nostrId, required String groupId}) =>
+    RustLib.instance.api.crateApiMlsGetMemberExtension(nostrId: nostrId, groupId: groupId);
+
+Future<String> getGroupExtension({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetGroupExtension(nostrId: nostrId, groupId: groupId);
+
+Future<String> parseWelcomeMessage({required String nostrId, required List<int> welcome}) =>
+    RustLib.instance.api.crateApiMlsParseWelcomeMessage(nostrId: nostrId, welcome: welcome);
 
 Future<List<String>> getGroupMembers({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetGroupMembers(nostrId: nostrId, groupId: groupId);
@@ -49,8 +54,7 @@ Future<Uint8List> createMlsGroup(
         adminPubkeysHex: adminPubkeysHex,
         groupRelays: groupRelays);
 
-Future<(Uint8List, Uint8List)> addMembers(
-        {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
+Future<String> addMembers({required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
     RustLib.instance.api.crateApiMlsAddMembers(nostrId: nostrId, groupId: groupId, keyPackages: keyPackages);
 
 ///* PrivateMessage
@@ -75,11 +79,10 @@ Future<void> deleteGroup({required String nostrId, required String groupId}) =>
 Future<void> othersCommitNormal({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersCommitNormal(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
-Future<(Uint8List, Uint8List?)> sendMsg({required String nostrId, required String groupId, required String msg}) =>
+Future<String> sendMsg({required String nostrId, required String groupId, required String msg}) =>
     RustLib.instance.api.crateApiMlsSendMsg(nostrId: nostrId, groupId: groupId, msg: msg);
 
-Future<(String, String, Uint8List?)> decryptMsg(
-        {required String nostrId, required String groupId, required List<int> msg}) =>
+Future<String> decryptMsg({required String nostrId, required String groupId, required List<int> msg}) =>
     RustLib.instance.api.crateApiMlsDecryptMsg(nostrId: nostrId, groupId: groupId, msg: msg);
 
 Future<Uint8List> getLeadNodeIndex(
@@ -97,8 +100,8 @@ Future<void> othersCommitRemoveMember(
 Future<Uint8List> selfLeave({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsSelfLeave(nostrId: nostrId, groupId: groupId);
 
-Future<Uint8List> selfUpdate({required String nostrId, required String groupId}) =>
-    RustLib.instance.api.crateApiMlsSelfUpdate(nostrId: nostrId, groupId: groupId);
+Future<Uint8List> selfUpdate({required String nostrId, required String groupId, required List<int> extensions}) =>
+    RustLib.instance.api.crateApiMlsSelfUpdate(nostrId: nostrId, groupId: groupId, extensions: extensions);
 
 Future<void> othersProposalLeave({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersProposalLeave(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
@@ -112,3 +115,9 @@ Future<Uint8List> adminProposalLeave({required String nostrId, required String g
 Future<void> normalMemberCommitLeave(
         {required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsNormalMemberCommitLeave(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
+
+Future<bool> isAdmin({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
+    RustLib.instance.api.crateApiMlsIsAdmin(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
+
+Future<String> getSender({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
+    RustLib.instance.api.crateApiMlsGetSender(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);

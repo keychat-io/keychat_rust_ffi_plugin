@@ -27,6 +27,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException dco_decode_AnyhowException(dynamic raw);
 
   @protected
+  Map<String, List<Uint8List>> dco_decode_Map_String_list_list_prim_u_8_strict(dynamic raw);
+
+  @protected
   String dco_decode_String(dynamic raw);
 
   @protected
@@ -123,6 +126,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<(String, List<Uint8List>)> dco_decode_list_record_string_list_list_prim_u_8_strict(dynamic raw);
+
+  @protected
   List<Secp256k1Account> dco_decode_list_secp_256_k_1_account(dynamic raw);
 
   @protected
@@ -186,14 +192,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (Uint8List, Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
-  (Uint8List, Uint8List, List<Uint8List>, List<Uint8List>)
-      dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict_list_list_prim_u_8_strict_list_list_prim_u_8_strict(
-          dynamic raw);
-
-  @protected
-  (Uint8List, Uint8List?) dco_decode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(dynamic raw);
-
-  @protected
   (Uint8List, String?, String, List<String>?) dco_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
       dynamic raw);
 
@@ -201,7 +199,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (Uint8List, String, List<String>?) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
 
   @protected
-  (String, String, Uint8List?) dco_decode_record_string_string_opt_list_prim_u_8_strict(dynamic raw);
+  (String, List<Uint8List>) dco_decode_record_string_list_list_prim_u_8_strict(dynamic raw);
 
   @protected
   (String, int) dco_decode_record_string_u_32(dynamic raw);
@@ -266,6 +264,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
+
+  @protected
+  Map<String, List<Uint8List>> sse_decode_Map_String_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   String sse_decode_String(SseDeserializer deserializer);
@@ -364,6 +365,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<(String, List<Uint8List>)> sse_decode_list_record_string_list_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
   List<Secp256k1Account> sse_decode_list_secp_256_k_1_account(SseDeserializer deserializer);
 
   @protected
@@ -427,14 +431,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (Uint8List, Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
-  (Uint8List, Uint8List, List<Uint8List>, List<Uint8List>)
-      sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict_list_list_prim_u_8_strict_list_list_prim_u_8_strict(
-          SseDeserializer deserializer);
-
-  @protected
-  (Uint8List, Uint8List?) sse_decode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(SseDeserializer deserializer);
-
-  @protected
   (Uint8List, String?, String, List<String>?) sse_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
       SseDeserializer deserializer);
 
@@ -443,7 +439,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
-  (String, String, Uint8List?) sse_decode_record_string_string_opt_list_prim_u_8_strict(SseDeserializer deserializer);
+  (String, List<Uint8List>) sse_decode_record_string_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   (String, int) sse_decode_record_string_u_32(SseDeserializer deserializer);
@@ -513,6 +509,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_AnyhowException(AnyhowException self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_Map_String_list_list_prim_u_8_strict(Map<String, List<Uint8List>> self, SseSerializer serializer);
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
@@ -611,6 +610,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_list_prim_u_8_strict(Uint8List self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_record_string_list_list_prim_u_8_strict(
+      List<(String, List<Uint8List>)> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_secp_256_k_1_account(List<Secp256k1Account> self, SseSerializer serializer);
 
   @protected
@@ -675,14 +678,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       (Uint8List, Uint8List) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_list_prim_u_8_strict_list_prim_u_8_strict_list_list_prim_u_8_strict_list_list_prim_u_8_strict(
-      (Uint8List, Uint8List, List<Uint8List>, List<Uint8List>) self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_record_list_prim_u_8_strict_opt_list_prim_u_8_strict(
-      (Uint8List, Uint8List?) self, SseSerializer serializer);
-
-  @protected
   void sse_encode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
       (Uint8List, String?, String, List<String>?) self, SseSerializer serializer);
 
@@ -691,8 +686,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       (Uint8List, String, List<String>?) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_string_string_opt_list_prim_u_8_strict(
-      (String, String, Uint8List?) self, SseSerializer serializer);
+  void sse_encode_record_string_list_list_prim_u_8_strict((String, List<Uint8List>) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_string_u_32((String, int) self, SseSerializer serializer);

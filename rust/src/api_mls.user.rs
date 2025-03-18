@@ -3,15 +3,15 @@ use bincode;
 use kc::user::MlsUser;
 
 use kc::group_context_extension::NostrGroupDataExtension;
-pub use kc::identity::Identity;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 use kc::user::Group;
 pub use openmls::group::{GroupId, Member, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
 use openmls::key_packages::KeyPackage;
 use openmls::prelude::tls_codec::{Deserialize, Serialize};
 use openmls::prelude::{
-    BasicCredential, Extension, Extensions, KeyPackageIn, LeafNodeIndex, LeafNodeParameters,
-    MlsMessageIn, ProcessedMessageContent, ProtocolVersion, StagedWelcome, UnknownExtension,
+    BasicCredential, Capabilities, Extension, Extensions, KeyPackageIn, LeafNode, LeafNodeIndex,
+    LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, ProtocolVersion, StagedWelcome,
+    UnknownExtension,
 };
 pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
@@ -78,6 +78,24 @@ impl User {
         Ok(tree_hash)
     }
 
+    pub(crate) fn get_member_extension(&self, group_id: String) -> Result<Vec<LeafNode>> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        let leaf_nodes = group
+            .mls_group
+            .leaf_nodes()
+            .cloned()
+            .collect::<Vec<LeafNode>>();
+        Ok(leaf_nodes)
+    }
+
     pub(crate) fn get_group_config(&self, group_id: String) -> Result<Vec<u8>> {
         let mut groups = self
             .mls_user
@@ -113,7 +131,9 @@ impl User {
             .identity
             .write()
             .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
-        let key_package = identity.add_key_package(CIPHERSUITE, &self.mls_user.provider);
+        let capabilities: Capabilities = identity.create_capabilities()?;
+        let key_package =
+            identity.add_key_package(CIPHERSUITE, &self.mls_user.provider, capabilities);
         Ok(key_package)
     }
 
@@ -134,6 +154,12 @@ impl User {
         admin_pubkeys_hex: Vec<String>,
         group_relays: Vec<String>,
     ) -> Result<Vec<u8>> {
+        let identity = self
+            .mls_user
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+
         let group_data = NostrGroupDataExtension::new(
             group_id.clone(),
             description,
@@ -148,8 +174,9 @@ impl User {
             group_data.extension_type(),
             UnknownExtension(serialized_group_data),
         )];
-
+        let capabilities: Capabilities = identity.create_capabilities()?;
         let group_create_config = MlsGroupCreateConfig::builder()
+            .capabilities(capabilities)
             .use_ratchet_tree_extension(true)
             .with_group_context_extensions(
                 Extensions::from_vec(extensions)
@@ -157,12 +184,6 @@ impl User {
             )
             .map_err(|e| anyhow::anyhow!(e.to_string()))?
             .build();
-
-        let identity = self
-            .mls_user
-            .identity
-            .read()
-            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
 
         let mls_group = MlsGroup::new_with_group_id(
             &self.mls_user.provider,
@@ -302,7 +323,10 @@ impl User {
         Ok(())
     }
 
-    pub(crate) fn join_mls_group(&mut self, group_id: String, welcome: Vec<u8>) -> Result<()> {
+    pub(crate) fn parse_welcome_message(
+        &self,
+        welcome: Vec<u8>,
+    ) -> Result<(StagedWelcome, NostrGroupDataExtension)> {
         let mls_group_config = MlsGroupJoinConfig::builder()
             .use_ratchet_tree_extension(true)
             .build();
@@ -312,18 +336,7 @@ impl User {
                 "<mls api fn[join_mls_group]> expected the message to be a welcome message."
             )
         })?;
-        // // used key_package need to delete
-        // let mut ident = self
-        //     .identity
-        //     .write()
-        //     .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
-        // for secret in welcome.secrets().iter() {
-        //     let key_package_hash = &secret.new_member();
-        //     if ident.kp.contains_key(key_package_hash.as_slice()) {
-        //         ident.kp.remove(key_package_hash.as_slice());
-        //     }
-        // }
-        let bob_mls_group = StagedWelcome::new_from_welcome(
+        let staged_welcome = StagedWelcome::new_from_welcome(
             &self.mls_user.provider,
             &mls_group_config,
             welcome,
@@ -334,14 +347,27 @@ impl User {
                 "<mls api fn[join_mls_group]> Error creating StagedWelcome from Welcome {}.",
                 e
             )
-        })?
-        .into_group(&self.mls_user.provider)
-        .map_err(|e| {
-            format_err!(
-                "<mls api fn[join_mls_group]> Error creating group from StagedWelcome {}.",
-                e
-            )
         })?;
+
+        let nostr_group_data =
+            NostrGroupDataExtension::from_group_context(staged_welcome.group_context())
+                .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        Ok((staged_welcome, nostr_group_data))
+    }
+
+    pub(crate) fn join_mls_group(&mut self, group_id: String, welcome: Vec<u8>) -> Result<()> {
+        let (staged_welcome, _) = self.parse_welcome_message(welcome)?;
+
+        let bob_mls_group = staged_welcome
+            .into_group(&self.mls_user.provider)
+            .map_err(|e| {
+                format_err!(
+                    "<mls api fn[join_mls_group]> Error creating group from StagedWelcome {}.",
+                    e
+                )
+            })?;
+
         let group = Group {
             mls_group: bob_mls_group.clone(),
         };
@@ -747,8 +773,11 @@ impl User {
         Ok(())
     }
 
-    // only admin excute it, update the tree info
-    pub(crate) fn self_update(&mut self, group_id: String) -> Result<Vec<u8>> {
+    // self can update it own info, like name description and so on.
+    pub(crate) fn self_update(&mut self, group_id: String, extensions: Vec<u8>) -> Result<Vec<u8>> {
+        const UNKNOWN_EXTENSION_TYPE: u16 = 0xF233;
+        let extension = Extension::Unknown(UNKNOWN_EXTENSION_TYPE, UnknownExtension(extensions));
+        let leaf_extensions = Extensions::single(extension.clone());
         let mut groups = self
             .mls_user
             .groups
@@ -766,12 +795,40 @@ impl User {
         let commit_message_bundle = group.mls_group.self_update(
             &self.mls_user.provider,
             &identity.signer,
-            LeafNodeParameters::default(),
+            // LeafNodeParameters::default(),
+            LeafNodeParameters::builder()
+                .with_extensions(leaf_extensions)
+                .build(),
         )?;
-        // split this for method self_commit
-        // group.mls_group.merge_pending_commit(&self.provider)?;
         let queued_msg = commit_message_bundle.commit();
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
         Ok(serialized_queued_msg)
+    }
+
+    pub(crate) fn get_sender(&self, group_id: String, queued_msg: Vec<u8>) -> Result<Vec<u8>> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        let msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
+        let processed_message = group
+            .mls_group
+            .process_message(
+                &self.mls_user.provider,
+                msg.into_protocol_message()
+                    .ok_or_else(|| format_err!("Unexpected message type"))?,
+            )
+            .map_err(|e| format_err!("<mls api fn[get_sender]> Error decrypt message {}.", e))?;
+        let sender = processed_message
+            .0
+            .credential()
+            .serialized_content()
+            .to_vec();
+        Ok(sender)
     }
 }
