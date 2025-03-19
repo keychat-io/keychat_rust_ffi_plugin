@@ -83,7 +83,7 @@ fn test_diff_db1() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
 
     println!("A send msg to B ,the result is {:?}", msg);
     Ok(())
@@ -170,7 +170,7 @@ fn test_diff_db2() -> Result<()> {
     ]
     .to_vec();
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg)?;
 
     println!("A send msg to B ,the result is {:?}", text);
     Ok(())
@@ -216,17 +216,14 @@ fn test_secret_key() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
-
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
     println!("{:?}", msg);
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
     // println!("A send msg to B ,the result is {:?}", text);
     println!("{:?}", text);
 
@@ -237,11 +234,10 @@ fn test_secret_key() -> Result<()> {
     // println!("B send msg to A ,the result is {:?}", text2);
 
     // A send msg to B
-    let msg3 = send_msg(a.to_string(), group_id.to_string(), "hello, B2".to_string())?;
+    let msg3 = create_message(a.to_string(), group_id.to_string(), "hello, B2".to_string())?;
     println!("{:?}", msg3);
-    let msg3: EncryptMsg = serde_json::from_str(&msg3)?;
     // B decrypt A's msg
-    let text3 = decrypt_msg(b.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
+    let text3 = decrypt_message(b.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
     // println!("A send msg to B2 ,the result is {:?}", text3);
     println!("{:?}", text3);
 
@@ -298,8 +294,6 @@ fn test_exist_group() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
-
     // F join in the group
     join_mls_group(f.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
@@ -321,22 +315,21 @@ fn test_exist_group() -> Result<()> {
     )?;
 
     // A send msg to G
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, G".to_string())?;
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, G".to_string())?;
     // F decrypt A's msg
-    let text = decrypt_msg(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to F ,the result is {:?}", text);
 
     // E decrypt A's msg
-    let text = decrypt_msg(e.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(e.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to E ,the result is {:?}", text);
 
     // G decrypt A's msg
-    let text = decrypt_msg(g.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(g.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to G ,the result is {:?}", text);
 
     // D decrypt A's msg
-    let text = decrypt_msg(d.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(d.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to D ,the result is {:?}", text);
 
     Ok(())
@@ -379,8 +372,6 @@ fn test_remove_then_add_group() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
-
     // B join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
@@ -418,8 +409,6 @@ fn test_remove_then_add_group() -> Result<()> {
     )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-
-    let welcome2: WelcomeMessage = serde_json::from_str(&welcome2)?;
 
     // B join in the group
     join_mls_group(
@@ -475,20 +464,18 @@ fn test_diff_groups() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg
-    let msg = send_msg(
+    let msg = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, A to B".to_string(),
     )?;
 
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
     println!("A send msg to B ,the result is {:?}", text);
 
     // create second group use the same keypackage
@@ -511,21 +498,19 @@ fn test_diff_groups() -> Result<()> {
     // A commit
     self_commit(c.to_string(), group_id2.to_string())?;
 
-    let welcome2: WelcomeMessage = serde_json::from_str(&welcome2)?;
     // b join in the group
     join_mls_group(b.to_string(), group_id2.to_string(), welcome2.welcome)?;
     println!("join_mls_group");
 
     // C send msg
-    let msg = send_msg(
+    let msg = create_message(
         c.to_string(),
         group_id2.to_string(),
         "hello, C to B".to_string(),
     )?;
 
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id2.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(b.to_string(), group_id2.to_string(), msg.encrypt_msg)?;
     println!("C send msg to B ,the result is {:?}", text);
 
     Ok(())
@@ -571,16 +556,13 @@ fn test_self_decrypt() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
-
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to B ,the result is {:?}", text);
     // A can not decrypt self msg
     // // A decrypt A's msg
@@ -646,8 +628,6 @@ fn test_basic() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
-
     let welcome = welcome.welcome;
 
     let extension = parse_welcome_message(b.to_string(), welcome.clone())?;
@@ -669,20 +649,18 @@ fn test_basic() -> Result<()> {
     println!("group extension of b is {:?}", extension);
 
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
 
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
 
     println!("A send msg to B ,the result is {:?}", text);
 
     // B send msg to A
-    let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
 
-    let msg2: EncryptMsg = serde_json::from_str(&msg2)?;
     // A decrypt B's msg
-    let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
+    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     println!(
@@ -712,23 +690,20 @@ fn test_basic() -> Result<()> {
     // B commit
     self_commit(b.to_string(), group_id.to_string())?;
 
-    let welcome2: WelcomeMessage = serde_json::from_str(&welcome2)?;
-
     // c join the group
     join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
 
     // B send msg
-    let msg3 = send_msg(
+    let msg3 = create_message(
         b.to_string(),
         group_id.to_string(),
         "hello, A, C".to_string(),
     )?;
 
-    let msg3: EncryptMsg = serde_json::from_str(&msg3)?;
     // C decrypt B's msg
-    let text3 = decrypt_msg(
+    let text3 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
@@ -736,7 +711,7 @@ fn test_basic() -> Result<()> {
     println!("B send msg to C ,the result is {:?}", text3);
 
     // A decrypt B's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
@@ -782,8 +757,6 @@ fn test_basic() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome3: WelcomeMessage = serde_json::from_str(&welcome3)?;
-
     // d join the group
     join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
 
@@ -802,30 +775,28 @@ fn test_basic() -> Result<()> {
     )?;
 
     // A send msg
-    let msg4 = send_msg(
+    let msg4 = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, ABC".to_string(),
     )?;
 
-    let msg4: EncryptMsg = serde_json::from_str(&msg4)?;
-
     // B decrypt A's msg
-    let text5 = decrypt_msg(
+    let text5 = decrypt_message(
         b.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
     )?;
     println!("A send msg to B ,the result is {:?}", text5);
     // C decrypt A's msg
-    let text6 = decrypt_msg(
+    let text6 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
     )?;
     println!("A send msg to C ,the result is {:?}", text6);
     // D decrypt B's msg
-    let text7 = decrypt_msg(
+    let text7 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
@@ -891,8 +862,6 @@ fn test_basic() -> Result<()> {
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-
-    let welcome4: WelcomeMessage = serde_json::from_str(&welcome4)?;
 
     // E join the group
     join_mls_group(e.to_string(), group_id.to_string(), welcome4.welcome)?;
@@ -1078,8 +1047,6 @@ fn test_extension() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
-
     // let extension = parse_welcome_message(b.to_string(), welcome.clone())?;
     // println!("b parse welcome message {:?}", extension);
 
@@ -1105,8 +1072,6 @@ fn test_extension() -> Result<()> {
     // B commit
     self_commit(b.to_string(), group_id.to_string())?;
 
-    let welcome2: WelcomeMessage = serde_json::from_str(&welcome2)?;
-
     // c join the group
     join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
     // A commit
@@ -1118,8 +1083,6 @@ fn test_extension() -> Result<()> {
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-
-    let welcome3: WelcomeMessage = serde_json::from_str(&welcome3)?;
 
     // d join the group
     join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
@@ -1240,28 +1203,13 @@ fn test_extension() -> Result<()> {
     println!("C commit");
 
     // B send msg
-    let msg3 = send_msg(
+    let msg3 = create_message(
         b.to_string(),
         group_id.to_string(),
         "hello, A, C".to_string(),
     )?;
-    let msg3: EncryptMsg = serde_json::from_str(&msg3)?;
-
-    let sender = get_sender(
-        c.to_string(),
-        group_id.to_string(),
-        msg3.encrypt_msg.clone(),
-    )?;
-    println!("sender is {:?}", sender);
-
-    let sender = is_admin(
-        c.to_string(),
-        group_id.to_string(),
-        msg3.encrypt_msg.clone(),
-    )?;
-    println!("is admin is {:?}", sender);
     // C decrypt B's msg
-    let text3 = decrypt_msg(
+    let text3 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
@@ -1269,7 +1217,7 @@ fn test_extension() -> Result<()> {
     println!("B send msg to C ,the result is {:?}", text3);
 
     // A decrypt B's msg
-    let text4 = decrypt_msg(a.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
+    let text4 = decrypt_message(a.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
     println!("B send msg to A ,the result is {:?}", text4);
 
     println!("--------------");
@@ -1350,7 +1298,7 @@ fn test_normal() -> Result<()> {
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
+
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
@@ -1358,33 +1306,31 @@ fn test_normal() -> Result<()> {
     join_mls_group(f.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // A send msg to B F
-    let msg = send_msg(
+    let msg = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, B F".to_string(),
     )?;
 
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to B ,the result is {:?}", text);
     // F decrypt A's msg
-    let text = decrypt_msg(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to F ,the result is {:?}", text);
 
     // B send msg to A
-    let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
-    let msg2: EncryptMsg = serde_json::from_str(&msg2)?;
+    let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+
     // A decrypt B's msg
-    let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
+    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     // F send msg to A
-    let msg2_1 = send_msg(f.to_string(), group_id.to_string(), "hello, F".to_string())?;
-    let msg2_1: EncryptMsg = serde_json::from_str(&msg2_1)?;
+    let msg2_1 = create_message(f.to_string(), group_id.to_string(), "hello, F".to_string())?;
 
     // A decrypt F's msg
-    let text2_1 = decrypt_msg(a.to_string(), group_id.to_string(), msg2_1.encrypt_msg)?;
+    let text2_1 = decrypt_message(a.to_string(), group_id.to_string(), msg2_1.encrypt_msg)?;
     println!("F send msg to A ,the result is {:?}", text2_1);
 
     println!(
@@ -1422,7 +1368,6 @@ fn test_normal() -> Result<()> {
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
     // B commit
     self_commit(b.to_string(), group_id.to_string())?;
-    let welcome2: WelcomeMessage = serde_json::from_str(&welcome2)?;
     // c join the group
     join_mls_group(
         c.to_string(),
@@ -1451,36 +1396,35 @@ fn test_normal() -> Result<()> {
     )?;
 
     // B send msg
-    let msg3 = send_msg(
+    let msg3 = create_message(
         b.to_string(),
         group_id.to_string(),
         "hello, A, C, F, G".to_string(),
     )?;
 
-    let msg3: EncryptMsg = serde_json::from_str(&msg3)?;
     // A decrypt B's msg
-    let text3 = decrypt_msg(
+    let text3 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
     )?;
     println!("B send msg to A ,the result is {:?}", text3);
     // C decrypt B's msg
-    let text3 = decrypt_msg(
+    let text3 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
     )?;
     println!("B send msg to C ,the result is {:?}", text3);
     // F decrypt B's msg
-    let text3 = decrypt_msg(
+    let text3 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
     )?;
     println!("B send msg to F ,the result is {:?}", text3);
     // G decrypt B's msg
-    let text3 = decrypt_msg(
+    let text3 = decrypt_message(
         g.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
@@ -1546,8 +1490,6 @@ fn test_normal() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome3: WelcomeMessage = serde_json::from_str(&welcome3)?;
-
     // d join the group
     join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
 
@@ -1577,44 +1519,42 @@ fn test_normal() -> Result<()> {
     )?;
 
     // A send msg
-    let msg4 = send_msg(
+    let msg4 = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, ABCDFG".to_string(),
     )?;
 
-    let msg4: EncryptMsg = serde_json::from_str(&msg4)?;
-
     // B decrypt A's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         b.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
     )?;
     println!("A send msg to B ,the result is {:?}", text4);
     // C decrypt A's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
     )?;
     println!("A send msg to C ,the result is {:?}", text4);
     // D decrypt B's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
     )?;
     println!("A send msg to D ,the result is {:?}", text4);
     // F decrypt B's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
     )?;
     println!("A send msg to F ,the result is {:?}", text4);
     // G decrypt B's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         g.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
@@ -1758,8 +1698,6 @@ fn test_normal() -> Result<()> {
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-
-    let welcome4: WelcomeMessage = serde_json::from_str(&welcome4)?;
 
     // E join the group
     join_mls_group(e.to_string(), group_id.to_string(), welcome4.welcome)?;
@@ -1992,35 +1930,34 @@ fn test_normal() -> Result<()> {
     );
 
     // A send msg
-    let msg5 = send_msg(
+    let msg5 = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, DEFG".to_string(),
     )?;
-    let msg5: EncryptMsg = serde_json::from_str(&msg5)?;
     // D decrypt A's msg
-    let text5 = decrypt_msg(
+    let text5 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
         msg5.encrypt_msg.clone(),
     )?;
     println!("A send msg to D, the result is {:?}", text5);
     // E decrypt A's msg
-    let text5 = decrypt_msg(
+    let text5 = decrypt_message(
         e.to_string(),
         group_id.to_string(),
         msg5.encrypt_msg.clone(),
     )?;
     println!("A send msg to E, the result is {:?}", text5);
     // F decrypt A's msg
-    let text5 = decrypt_msg(
+    let text5 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
         msg5.encrypt_msg.clone(),
     )?;
     println!("A send msg to F, the result is {:?}", text5);
     // G decrypt A's msg
-    let text5 = decrypt_msg(
+    let text5 = decrypt_message(
         g.to_string(),
         group_id.to_string(),
         msg5.encrypt_msg.clone(),
@@ -2028,36 +1965,35 @@ fn test_normal() -> Result<()> {
     println!("A send msg to G, the result is {:?}", text5);
 
     // G send msg
-    let msg6 = send_msg(
+    let msg6 = create_message(
         g.to_string(),
         group_id.to_string(),
         "hello, ADE".to_string(),
     )?;
 
-    let msg6: EncryptMsg = serde_json::from_str(&msg6)?;
     // D decrypt G's msg
-    let text6 = decrypt_msg(
+    let text6 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
         msg6.encrypt_msg.clone(),
     )?;
     println!("G send msg to D, the result is {:?}", text6);
     // E decrypt G's msg
-    let text6 = decrypt_msg(
+    let text6 = decrypt_message(
         e.to_string(),
         group_id.to_string(),
         msg6.encrypt_msg.clone(),
     )?;
     println!("G send msg to E, the result is {:?}", text6);
     // F decrypt G's msg
-    let text6 = decrypt_msg(
+    let text6 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
         msg6.encrypt_msg.clone(),
     )?;
     println!("G send msg to F, the result is {:?}", text6);
     // A decrypt G's msg
-    let text6 = decrypt_msg(
+    let text6 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
         msg6.encrypt_msg.clone(),
@@ -2107,25 +2043,21 @@ fn test_basic2() -> Result<()> {
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
-
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
 
-    let msg: EncryptMsg = serde_json::from_str(&msg)?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
 
     println!("A send msg to B ,the result is {:?}", text);
 
     // B send msg to A
-    let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
-    let msg2: EncryptMsg = serde_json::from_str(&msg2)?;
+    let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
     // A decrypt B's msg
-    let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
+    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     println!(
@@ -2152,17 +2084,15 @@ fn test_basic2() -> Result<()> {
 
     // B add C
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk].to_vec())?;
-    let welcome2: WelcomeMessage = serde_json::from_str(&welcome2)?;
     // B send msg
-    let msg3 = send_msg(
+    let msg3 = create_message(
         b.to_string(),
         group_id.to_string(),
         "notice A, you need to update, C will join in.".to_string(),
     )?;
 
-    let msg3: EncryptMsg = serde_json::from_str(&msg3)?;
     // A decrypt B's msg
-    let text3 = decrypt_msg(
+    let text3 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
         msg3.encrypt_msg.clone(),
@@ -2178,15 +2108,14 @@ fn test_basic2() -> Result<()> {
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
 
     // B send msg
-    let msg4 = send_msg(
+    let msg4 = create_message(
         b.to_string(),
         group_id.to_string(),
         "hello, A, C.".to_string(),
     )?;
 
-    let msg4: EncryptMsg = serde_json::from_str(&msg4)?;
     // C decrypt B's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
@@ -2194,7 +2123,7 @@ fn test_basic2() -> Result<()> {
     println!("B send msg to C ,the result is {:?}", text4);
 
     // A decrypt B's msg
-    let text4 = decrypt_msg(
+    let text4 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
         msg4.encrypt_msg.clone(),
@@ -2247,7 +2176,6 @@ fn test_replay_delay() -> Result<()> {
     let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-    let welcome: WelcomeMessage = serde_json::from_str(&welcome)?;
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
@@ -2273,7 +2201,6 @@ fn test_replay_delay() -> Result<()> {
 
     // B add C and G
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
-    let welcome2: WelcomeMessage = serde_json::from_str(&welcome2)?;
     // A commit
     self_commit(b.to_string(), group_id.to_string())?;
 
@@ -2331,7 +2258,6 @@ fn test_replay_delay() -> Result<()> {
     let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-    let welcome3: WelcomeMessage = serde_json::from_str(&welcome3)?;
 
     // d join the group
     join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
@@ -2449,7 +2375,6 @@ fn test_replay_delay() -> Result<()> {
     let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-    let welcome4: WelcomeMessage = serde_json::from_str(&welcome4)?;
 
     // E join the group
     join_mls_group(e.to_string(), group_id.to_string(), welcome4.welcome)?;

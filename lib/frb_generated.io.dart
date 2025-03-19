@@ -6,6 +6,7 @@
 import 'api_cashu.dart';
 import 'api_cashu/types.dart';
 import 'api_mls.dart';
+import 'api_mls/types.dart';
 import 'api_nostr.dart';
 import 'api_signal.dart';
 import 'dart:async';
@@ -31,6 +32,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   String dco_decode_String(dynamic raw);
+
+  @protected
+  AddMembersResult dco_decode_add_members_result(dynamic raw);
 
   @protected
   bool dco_decode_bool(dynamic raw);
@@ -70,6 +74,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Contact dco_decode_contact(dynamic raw);
+
+  @protected
+  DecryptedMessage dco_decode_decrypted_message(dynamic raw);
+
+  @protected
+  GroupExtensionResult dco_decode_group_extension_result(dynamic raw);
 
   @protected
   int dco_decode_i_32(dynamic raw);
@@ -136,6 +146,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   LNTransaction dco_decode_ln_transaction(dynamic raw);
+
+  @protected
+  MessageResult dco_decode_message_result(dynamic raw);
 
   @protected
   Mint dco_decode_mint(dynamic raw);
@@ -272,6 +285,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  AddMembersResult sse_decode_add_members_result(SseDeserializer deserializer);
+
+  @protected
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
@@ -309,6 +325,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Contact sse_decode_contact(SseDeserializer deserializer);
+
+  @protected
+  DecryptedMessage sse_decode_decrypted_message(SseDeserializer deserializer);
+
+  @protected
+  GroupExtensionResult sse_decode_group_extension_result(SseDeserializer deserializer);
 
   @protected
   int sse_decode_i_32(SseDeserializer deserializer);
@@ -375,6 +397,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   LNTransaction sse_decode_ln_transaction(SseDeserializer deserializer);
+
+  @protected
+  MessageResult sse_decode_message_result(SseDeserializer deserializer);
 
   @protected
   Mint sse_decode_mint(SseDeserializer deserializer);
@@ -517,6 +542,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_add_members_result(AddMembersResult self, SseSerializer serializer);
+
+  @protected
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
@@ -554,6 +582,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_contact(Contact self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_decrypted_message(DecryptedMessage self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_group_extension_result(GroupExtensionResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
@@ -621,6 +655,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_ln_transaction(LNTransaction self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_message_result(MessageResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_mint(Mint self, SseSerializer serializer);

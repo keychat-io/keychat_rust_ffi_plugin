@@ -3,6 +3,7 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import 'api_mls/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
@@ -32,7 +33,7 @@ Future<Uint8List> getGroupConfig({required String nostrId, required String group
 Future<Map<String, List<Uint8List>>> getMemberExtension({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetMemberExtension(nostrId: nostrId, groupId: groupId);
 
-Future<String> getGroupExtension({required String nostrId, required String groupId}) =>
+Future<GroupExtensionResult> getGroupExtension({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetGroupExtension(nostrId: nostrId, groupId: groupId);
 
 Future<String> parseWelcomeMessage({required String nostrId, required List<int> welcome}) =>
@@ -56,7 +57,8 @@ Future<Uint8List> createMlsGroup(
         adminPubkeysHex: adminPubkeysHex,
         groupRelays: groupRelays);
 
-Future<String> addMembers({required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
+Future<AddMembersResult> addMembers(
+        {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
     RustLib.instance.api.crateApiMlsAddMembers(nostrId: nostrId, groupId: groupId, keyPackages: keyPackages);
 
 ///* PrivateMessage
@@ -81,11 +83,11 @@ Future<void> deleteGroup({required String nostrId, required String groupId}) =>
 Future<void> othersCommitNormal({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersCommitNormal(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
-Future<String> sendMsg({required String nostrId, required String groupId, required String msg}) =>
-    RustLib.instance.api.crateApiMlsSendMsg(nostrId: nostrId, groupId: groupId, msg: msg);
+Future<MessageResult> createMessage({required String nostrId, required String groupId, required String msg}) =>
+    RustLib.instance.api.crateApiMlsCreateMessage(nostrId: nostrId, groupId: groupId, msg: msg);
 
-Future<String> decryptMsg({required String nostrId, required String groupId, required List<int> msg}) =>
-    RustLib.instance.api.crateApiMlsDecryptMsg(nostrId: nostrId, groupId: groupId, msg: msg);
+Future<DecryptedMessage> decryptMessage({required String nostrId, required String groupId, required List<int> msg}) =>
+    RustLib.instance.api.crateApiMlsDecryptMessage(nostrId: nostrId, groupId: groupId, msg: msg);
 
 Future<Uint8List> getLeadNodeIndex(
         {required String nostrIdAdmin, required String nostrIdCommon, required String groupId}) =>

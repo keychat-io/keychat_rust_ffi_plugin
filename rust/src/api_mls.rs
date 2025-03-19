@@ -21,6 +21,10 @@ pub use openmls_traits::OpenMlsProvider;
 pub mod user;
 pub use user::*;
 
+#[path = "api_mls.types.rs"]
+pub mod types;
+pub use types::*;
+
 // must be ignore, otherwise will be error when rust to dart
 #[frb(ignore)]
 pub struct MlsStore {
@@ -238,7 +242,7 @@ pub fn get_member_extension(
 }
 
 // return  group name, description, admin_pubkeys and relays info in json format
-pub fn get_group_extension(nostr_id: String, group_id: String) -> Result<String> {
+pub fn get_group_extension(nostr_id: String, group_id: String) -> Result<GroupExtensionResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -256,13 +260,13 @@ pub fn get_group_extension(nostr_id: String, group_id: String) -> Result<String>
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[get_group_extension]> Can not get store from user."))?;
         let extension = user.get_group_extension(group_id.clone())?;
-        let output = json!({
-                "name": extension.name,
-                "description": extension.description,
-                "admin_pubkeys": extension.admin_pubkeys,
-                "relays": extension.relays,
-        });
-        serde_json::to_string(&output).map_err(|e| format_err!("get_group_extension failed: {}", e))
+        let output = GroupExtensionResult {
+            name: extension.name,
+            description: extension.description,
+            admin_pubkeys: extension.admin_pubkeys,
+            relays: extension.relays,
+        };
+        Ok(output)
     });
     result
 }
@@ -370,7 +374,7 @@ pub fn add_members(
     nostr_id: String,
     group_id: String,
     key_packages: Vec<Vec<u8>>,
-) -> Result<String> {
+) -> Result<AddMembersResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -386,12 +390,11 @@ pub fn add_members(
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[add_members]> Can not get store from user."))?;
         let (queued_msg, welcome) = user.add_members(group_id, key_packages)?;
-        let output = json!({
-            "queued_msg": queued_msg,
-            "welcome": welcome,
-        });
-        serde_json::to_string(&output)
-            .map_err(|e| format_err!("add_members failed: {}", e))
+        let output = AddMembersResult {
+            queued_msg,
+            welcome,
+        };
+        Ok(output)
     });
     result
 }
@@ -525,7 +528,7 @@ pub fn others_commit_normal(nostr_id: String, group_id: String, queued_msg: Vec<
 }
 
 // return json format with Vec<u8>, Option<Vec<u8>>
-pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<String> {
+pub fn create_message(nostr_id: String, group_id: String, msg: String) -> Result<MessageResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -541,17 +544,21 @@ pub fn send_msg(nostr_id: String, group_id: String, msg: String) -> Result<Strin
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[send_msg]> Can not get store from user."))?;
         let (encrypt_msg, ratchet_key) = user.send_msg(group_id, msg)?;
-        let output = json!({
-            "encrypt_msg": encrypt_msg,
-            "ratchet_key": ratchet_key,
-        });
-        serde_json::to_string(&output).map_err(|e| format_err!("send_msg failed: {}", e))
+        let output = MessageResult {
+            encrypt_msg,
+            ratchet_key,
+        };
+        Ok(output)
     });
     result
 }
 
 // return json format with Vec<u8>, String, Option<Vec<u8>>
-pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<String> {
+pub fn decrypt_message(
+    nostr_id: String,
+    group_id: String,
+    msg: Vec<u8>,
+) -> Result<DecryptedMessage> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -567,12 +574,12 @@ pub fn decrypt_msg(nostr_id: String, group_id: String, msg: Vec<u8>) -> Result<S
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[decrypt_msg]> Can not get store from user."))?;
         let (decrypt_msg, sender, ratchet_key) = user.decrypt_msg(group_id, msg)?;
-        let output = json!({
-            "decrypt_msg": decrypt_msg,
-            "sender": sender,
-            "ratchet_key": ratchet_key,
-        });
-        serde_json::to_string(&output).map_err(|e| format_err!("decrypt_msg failed: {}", e))
+        let output = DecryptedMessage {
+            decrypt_msg,
+            sender,
+            ratchet_key,
+        };
+        Ok(output)
     });
     result
 }
