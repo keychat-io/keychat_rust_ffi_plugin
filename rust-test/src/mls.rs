@@ -1149,10 +1149,10 @@ fn test_extension() -> Result<()> {
     let leaf_nodes_extension = get_member_extension(a.to_string(), group_id.to_string())?;
     println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
 
-    // let sender = get_sender(c.to_string(), group_id.to_string(), queued_msg.clone())?;
-    // println!("sender is {:?}", sender);
+    let sender = get_sender(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("sender is {:?}", sender);
 
-    let sender = is_admin(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let sender = is_admin(b.to_string(), group_id.to_string(), queued_msg.clone())?;
     println!("is admin is {:?}", sender);
 
     // // B commit
@@ -1176,6 +1176,11 @@ fn test_extension() -> Result<()> {
     let leaf_nodes_extension = get_member_extension(b.to_string(), group_id.to_string())?;
     println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
 
+    let sender = get_sender(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("sender is {:?}", sender);
+
+    let sender = is_admin(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("is admin is {:?}", sender);
     // // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
     println!("A commit");
@@ -1196,6 +1201,12 @@ fn test_extension() -> Result<()> {
 
     let leaf_nodes_extension = get_member_extension(c.to_string(), group_id.to_string())?;
     println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
+
+    let sender = get_sender(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("sender is {:?}", sender);
+
+    let sender = is_admin(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("is admin is {:?}", sender);
 
     // A commit
     let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
@@ -1235,6 +1246,20 @@ fn test_extension() -> Result<()> {
         "hello, A, C".to_string(),
     )?;
     let msg3: EncryptMsg = serde_json::from_str(&msg3)?;
+
+    let sender = get_sender(
+        c.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
+    println!("sender is {:?}", sender);
+
+    let sender = is_admin(
+        c.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
+    println!("is admin is {:?}", sender);
     // C decrypt B's msg
     let text3 = decrypt_msg(
         c.to_string(),

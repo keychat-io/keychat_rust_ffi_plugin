@@ -249,7 +249,8 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiSignalGetPrekeyApi({required KeychatIdentityKeyPair keyPair, required int prekeyId});
 
-  Future<String> crateApiMlsGetSender({required String nostrId, required String groupId, required List<int> queuedMsg});
+  Future<String?> crateApiMlsGetSender(
+      {required String nostrId, required String groupId, required List<int> queuedMsg});
 
   Future<KeychatSignalSession?> crateApiSignalGetSession(
       {required KeychatIdentityKeyPair keyPair, required String address, required String deviceId});
@@ -2046,7 +2047,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiMlsGetSender(
+  Future<String?> crateApiMlsGetSender(
       {required String nostrId, required String groupId, required List<int> queuedMsg}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -2057,7 +2058,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
+        decodeSuccessData: sse_decode_opt_String,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsGetSenderConstMeta,

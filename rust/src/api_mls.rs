@@ -391,7 +391,7 @@ pub fn add_members(
             "welcome": welcome,
         });
         serde_json::to_string(&output)
-            .map_err(|e| format_err!("parse_welcome_message failed: {}", e))
+            .map_err(|e| format_err!("add_members failed: {}", e))
     });
     result
 }
@@ -805,9 +805,12 @@ pub fn is_admin(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Resu
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[is_admin]> Can not get store from user."))?;
 
-        let sender = user.get_sender(group_id.clone(), queued_msg)?;
+        let sender = user
+            .get_sender(group_id.clone(), queued_msg)?
+            .ok_or_else(|| anyhow::anyhow!("Sender not found for group_id: {}", group_id))?;
+        let sender_bytes = sender.as_bytes().to_vec();
         let group_extension = user.get_group_extension(group_id)?;
-        if group_extension.admin_pubkeys.contains(&sender) {
+        if group_extension.admin_pubkeys.contains(&sender_bytes) {
             return Ok(true);
         }
         Ok(false)
@@ -816,25 +819,27 @@ pub fn is_admin(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Resu
 }
 
 // can not parse self msg, and only be parse once, so if parse then decrypt will be failed
-pub fn get_sender(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Result<String> {
+pub fn get_sender(
+    nostr_id: String,
+    group_id: String,
+    queued_msg: Vec<u8>,
+) -> Result<Option<String>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
-            .ok_or_else(|| format_err!("<fn[is_admin]> Can not get store err."))?;
+            .ok_or_else(|| format_err!("<fn[get_sender]> Can not get store err."))?;
         if !store.user.contains_key(&nostr_id) {
-            error!("<fn[is_admin]> nostr_id do not init.");
-            return Err(format_err!("<fn[is_admin]> nostr_id do not init."));
+            error!("<fn[get_sender]> nostr_id do not init.");
+            return Err(format_err!("<fn[get_sender]> nostr_id do not init."));
         }
         let user = store
             .user
             .get_mut(&nostr_id)
-            .ok_or_else(|| format_err!("<fn[is_admin]> Can not get store from user."))?;
+            .ok_or_else(|| format_err!("<fn[get_sender]> Can not get store from user."))?;
 
-        let sender = user.get_sender(group_id, queued_msg)?;
-        String::from_utf8(sender)
-            .map_err(|e| format_err!("Failed to convert sender to UTF-8 string: {}", e))
+        user.get_sender(group_id, queued_msg)
     });
     result
 }

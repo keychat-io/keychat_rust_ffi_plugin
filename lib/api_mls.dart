@@ -121,5 +121,5 @@ Future<void> normalMemberCommitLeave(
 Future<bool> isAdmin({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsIsAdmin(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
-Future<String> getSender({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
+Future<String?> getSender({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsGetSender(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);

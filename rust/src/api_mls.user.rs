@@ -806,7 +806,11 @@ impl User {
         Ok(serialized_queued_msg)
     }
 
-    pub(crate) fn get_sender(&self, group_id: String, queued_msg: Vec<u8>) -> Result<Vec<u8>> {
+    pub(crate) fn get_sender(
+        &self,
+        group_id: String,
+        queued_msg: Vec<u8>,
+    ) -> Result<Option<String>> {
         let mut groups = self
             .mls_user
             .groups
@@ -817,19 +821,23 @@ impl User {
             _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
         };
         let msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
-        let processed_message = group
+        let leaf_node_index = group
             .mls_group
-            .process_message(
+            .sender_leaf_node_index(
                 &self.mls_user.provider,
                 msg.into_protocol_message()
                     .ok_or_else(|| format_err!("Unexpected message type"))?,
             )
             .map_err(|e| format_err!("<mls api fn[get_sender]> Error decrypt message {}.", e))?;
-        let sender = processed_message
-            .0
-            .credential()
-            .serialized_content()
-            .to_vec();
-        Ok(sender)
+
+        let members = group.mls_group.members().collect::<Vec<Member>>();
+        for member in members {
+            let credential = member.credential.serialized_content();
+            if leaf_node_index == member.index {
+                let sender = String::from_utf8(credential.to_vec())?;
+                return Ok(Some(sender));
+            }
+        }
+        Ok(None)
     }
 }
