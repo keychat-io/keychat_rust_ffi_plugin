@@ -34,3 +34,13 @@ pub enum CommitTypeResult {
     Remove,
     GroupContextExtensions,
 }
+pub enum MessageInType {
+    Application,
+    Proposal,
+    Commit,
+    Welcome,
+    GroupInfo,
+    KeyPackage,
+    PublicMessage,
+    Custom,
+}

@@ -398,41 +398,31 @@ pub fn add_members(
     result
 }
 
-/**
-* PrivateMessage
-    ContentType::Application = 1
-    ContentType::Proposal = 2
-    ContentType::Commit = 3
-* Welcome = 4
-* GroupInfo = 5
-* KeyPackage = 6  Not use
-* PublicMessage = 0
-*/
-pub fn parse_mls_msg_type(data: Vec<u8>) -> Result<u8> {
+pub fn parse_mls_msg_type(data: Vec<u8>) -> Result<MessageInType> {
     let queued_msg = MlsMessageIn::tls_deserialize_exact(&data)?;
     match queued_msg.extract() {
         MlsMessageBodyIn::PrivateMessage(private_msg) => match private_msg.content_type() {
             ContentType::Application => {
-                return Ok(1);
+                return Ok(MessageInType::Application);
             }
             ContentType::Proposal => {
-                return Ok(2);
+                return Ok(MessageInType::Proposal);
             }
             ContentType::Commit => {
-                return Ok(3);
+                return Ok(MessageInType::Commit);
             }
         },
         MlsMessageBodyIn::Welcome(_welcome_msg) => {
-            return Ok(4);
+            return Ok(MessageInType::Welcome);
         }
         MlsMessageBodyIn::GroupInfo(_group_info) => {
-            return Ok(5);
+            return Ok(MessageInType::GroupInfo);
         }
         MlsMessageBodyIn::KeyPackage(_key_package) => {
-            return Ok(6);
+            return Ok(MessageInType::KeyPackage);
         }
         _ => {
-            return Ok(0);
+            return Ok(MessageInType::Custom);
         }
     }
 }
