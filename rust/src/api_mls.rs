@@ -1,4 +1,5 @@
 use anyhow::Result;
+use flutter_rust_bridge::frb;
 use lazy_static::lazy_static;
 use serde_json::json;
 use std::collections::HashMap;
@@ -25,9 +26,7 @@ pub use user::*;
 pub mod types;
 pub use types::*;
 
-// must be ignore, otherwise will be error when rust to dart
-#[frb(ignore)]
-pub struct MlsStore {
+struct MlsStore {
     pub user: HashMap<String, User>,
 }
 

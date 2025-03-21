@@ -11,7 +11,7 @@ a specialized package that includes native code directly invoked with Dart FFI.
 ## Commands
 ```
 rustup update stable
-cargo install flutter_rust_bridge_codegen@2.7.0
+cargo install flutter_rust_bridge_codegen@2.9.0
 
 rustc --print target-list
 cd rust

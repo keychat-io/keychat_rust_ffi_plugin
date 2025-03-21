@@ -41,3 +41,6 @@ ed25519-dalek = {version = "2.1.1", features = ["digest"]}
 nostr = { version = "0.39.0", default-features = false, features = ["std", "nip04", "nip06", "nip44", "nip47", "nip59"] }
 bincode = "1.3.3" 
 sha1 = "0.10.6"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

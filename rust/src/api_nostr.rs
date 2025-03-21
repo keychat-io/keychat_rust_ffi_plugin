@@ -2,8 +2,10 @@ pub use bip39;
 use bitcoin::bech32;
 pub use nostr;
 
+use anyhow::{ensure, format_err};
 use bitcoin::secp256k1::hashes::{sha256, Hash};
 use bitcoin::secp256k1::Secp256k1;
+use flutter_rust_bridge::frb;
 use nostr::nips::nip04;
 use nostr::nips::nip06::FromMnemonic;
 use nostr::nips::nip19::{FromBech32, ToBech32};
@@ -14,7 +16,7 @@ use nostr::types::Timestamp;
 use nostr::{
     Event, EventBuilder, EventId, JsonUtil, Keys, Kind, PublicKey, SecretKey, Tag, UnsignedEvent,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sha1::{Digest, Sha1};
 use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
 use std::str::FromStr;
