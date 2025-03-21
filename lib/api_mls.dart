@@ -80,7 +80,7 @@ Future<void> joinMlsGroup({required String nostrId, required String groupId, req
 Future<void> deleteGroup({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsDeleteGroup(nostrId: nostrId, groupId: groupId);
 
-Future<void> othersCommitNormal({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
+Future<String?> othersCommitNormal({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersCommitNormal(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
 Future<MessageResult> createMessage({required String nostrId, required String groupId, required String msg}) =>
@@ -103,6 +103,21 @@ Future<void> othersCommitRemoveMember(
 
 Future<Uint8List> selfLeave({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsSelfLeave(nostrId: nostrId, groupId: groupId);
+
+Future<Uint8List> updateGroupContextExtensions(
+        {required String nostrId,
+        required String groupId,
+        String? groupName,
+        String? description,
+        List<String>? adminPubkeysHex,
+        List<String>? groupRelays}) =>
+    RustLib.instance.api.crateApiMlsUpdateGroupContextExtensions(
+        nostrId: nostrId,
+        groupId: groupId,
+        groupName: groupName,
+        description: description,
+        adminPubkeysHex: adminPubkeysHex,
+        groupRelays: groupRelays);
 
 Future<Uint8List> selfUpdate({required String nostrId, required String groupId, required List<int> extensions}) =>
     RustLib.instance.api.crateApiMlsSelfUpdate(nostrId: nostrId, groupId: groupId, extensions: extensions);

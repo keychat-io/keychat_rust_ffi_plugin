@@ -68,7 +68,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.7.0';
 
   @override
-  int get rustContentHash => 282040270;
+  int get rustContentHash => 1862509370;
 
   static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
     stem: 'keychat_rust_ffi_plugin',
@@ -312,7 +312,7 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiMlsNormalMemberCommitLeave(
       {required String nostrId, required String groupId, required List<int> queuedMsg});
 
-  Future<void> crateApiMlsOthersCommitNormal(
+  Future<String?> crateApiMlsOthersCommitNormal(
       {required String nostrId, required String groupId, required List<int> queuedMsg});
 
   Future<void> crateApiMlsOthersCommitRemoveMember(
@@ -397,6 +397,14 @@ abstract class RustLibApi extends BaseApi {
       required String address,
       required String deviceId,
       required String aliceAddr});
+
+  Future<Uint8List> crateApiMlsUpdateGroupContextExtensions(
+      {required String nostrId,
+      required String groupId,
+      String? groupName,
+      String? description,
+      List<String>? adminPubkeysHex,
+      List<String>? groupRelays});
 
   Future<NostrEvent> crateApiNostrVerifyEvent({required String json});
 
@@ -2652,7 +2660,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiMlsOthersCommitNormal(
+  Future<String?> crateApiMlsOthersCommitNormal(
       {required String nostrId, required String groupId, required List<int> queuedMsg}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -2663,7 +2671,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
+        decodeSuccessData: sse_decode_opt_String,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsOthersCommitNormalConstMeta,
@@ -3412,12 +3420,46 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<Uint8List> crateApiMlsUpdateGroupContextExtensions(
+      {required String nostrId,
+      required String groupId,
+      String? groupName,
+      String? description,
+      List<String>? adminPubkeysHex,
+      List<String>? groupRelays}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(nostrId, serializer);
+        sse_encode_String(groupId, serializer);
+        sse_encode_opt_String(groupName, serializer);
+        sse_encode_opt_String(description, serializer);
+        sse_encode_opt_list_String(adminPubkeysHex, serializer);
+        sse_encode_opt_list_String(groupRelays, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiMlsUpdateGroupContextExtensionsConstMeta,
+      argValues: [nostrId, groupId, groupName, description, adminPubkeysHex, groupRelays],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiMlsUpdateGroupContextExtensionsConstMeta => const TaskConstMeta(
+        debugName: "update_group_context_extensions",
+        argNames: ["nostrId", "groupId", "groupName", "description", "adminPubkeysHex", "groupRelays"],
+      );
+
+  @override
   Future<NostrEvent> crateApiNostrVerifyEvent({required String json}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(json, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_nostr_event,
@@ -3444,7 +3486,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(sig, serializer);
         sse_encode_String(content, serializer);
         sse_encode_bool(hash, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
+        pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,

@@ -609,7 +609,7 @@ fn test_basic() -> Result<()> {
     let d_pk = create_key_package(d.to_string())?;
     let e_pk = create_key_package(e.to_string())?;
 
-    let description: String = "".to_string();
+    let description: String = "123456".to_string();
     let admin_pubkeys_hex: Vec<String> = ["abc".to_string()].to_vec();
     let group_relays: Vec<String> = ["wss://relay.keychat.io".to_string()].to_vec();
 
@@ -630,8 +630,8 @@ fn test_basic() -> Result<()> {
 
     let welcome = welcome.welcome;
 
-    let extension = parse_welcome_message(b.to_string(), welcome.clone())?;
-    println!("b parse welcome message {:?}", extension);
+    // let extension = parse_welcome_message(b.to_string(), welcome.clone())?;
+    // println!("b parse welcome message {:?}", extension);
 
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.clone())?;
@@ -1038,8 +1038,8 @@ fn test_extension() -> Result<()> {
         group_id.to_string(),
         group_id.to_string(),
         description,
-        admin_pubkeys_hex,
-        group_relays,
+        admin_pubkeys_hex.clone(),
+        group_relays.clone(),
     )?;
 
     // A add B
@@ -1201,6 +1201,41 @@ fn test_extension() -> Result<()> {
     // C commit
     let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
     println!("C commit");
+
+    println!("A update_group_context_extensions");
+    let update_description: String = "update group test".to_string();
+    let update_result = update_group_context_extensions(
+        a.to_string(),
+        group_id.to_string(),
+        Some("test test".to_string()),
+        Some(update_description),
+        None,
+        None,
+    )?;
+
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    let a_extension = get_group_extension(a.to_string(), group_id.to_string())?;
+    println!("a_extension is {:?}", a_extension);
+
+    // D commit
+    let _ = others_commit_normal(d.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("D commit");
+    // B commit
+    let _ = others_commit_normal(b.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("B commit");
+    // C commit
+    let _ = others_commit_normal(c.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("C commit");
+
+    let b_extension = get_group_extension(b.to_string(), group_id.to_string())?;
+    println!("b_extension is {:?}", b_extension);
+
+    let c_extension = get_group_extension(c.to_string(), group_id.to_string())?;
+    println!("c_extension is {:?}", c_extension);
+
+    let d_extension = get_group_extension(d.to_string(), group_id.to_string())?;
+    println!("d_extension is {:?}", d_extension);
 
     // B send msg
     let msg3 = create_message(

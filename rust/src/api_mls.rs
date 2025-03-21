@@ -505,7 +505,12 @@ pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
 }
 
 // only group is not null, and other members should execute this
-pub fn others_commit_normal(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Result<()> {
+// return value is Some("Add"), Some("Remove"), Some("GroupContextExtensions") or None (mean update)
+pub fn others_commit_normal(
+    nostr_id: String,
+    group_id: String,
+    queued_msg: Vec<u8>,
+) -> Result<Option<String>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -521,8 +526,8 @@ pub fn others_commit_normal(nostr_id: String, group_id: String, queued_msg: Vec<
         let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
             format_err!("<fn[others_commit_normal]> Can not get store from user.")
         })?;
-        user.others_commit_normal(group_id, queued_msg)?;
-        Ok(())
+        let proposal_type = user.others_commit_normal(group_id, queued_msg)?;
+        Ok(proposal_type)
     });
     result
 }
@@ -677,6 +682,40 @@ pub fn self_leave(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[self_leave]> Can not get store from user."))?;
         Ok(user.self_leave(group_id)?)
+    });
+    result
+}
+
+pub fn update_group_context_extensions(
+    nostr_id: String,
+    group_id: String,
+    group_name: Option<String>,
+    description: Option<String>,
+    admin_pubkeys_hex: Option<Vec<String>>,
+    group_relays: Option<Vec<String>>,
+) -> Result<Vec<u8>> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<fn[update_group_context_extensions]> Can not get store err.")
+        })?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[update_group_context_extensions]> nostr_id do not init.");
+            return Err(format_err!(
+                "<fn[update_group_context_extensions]> nostr_id do not init."
+            ));
+        }
+        let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
+            format_err!("<fn[update_group_context_extensions]> Can not get store from user.")
+        })?;
+        Ok(user.update_group_context_extensions(
+            group_id,
+            group_name,
+            description,
+            admin_pubkeys_hex,
+            group_relays,
+        )?)
     });
     result
 }

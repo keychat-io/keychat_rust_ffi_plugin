@@ -9,9 +9,9 @@ pub use openmls::group::{GroupId, Member, MlsGroup, MlsGroupCreateConfig, MlsGro
 use openmls::key_packages::KeyPackage;
 use openmls::prelude::tls_codec::{Deserialize, Serialize};
 use openmls::prelude::{
-    BasicCredential, Capabilities, Extension, Extensions, KeyPackageIn, LeafNode, LeafNodeIndex,
-    LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, ProtocolVersion, StagedWelcome,
-    UnknownExtension,
+    BasicCredential, Capabilities, Extension, ExtensionType, Extensions, KeyPackageIn, LeafNode,
+    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, ProtocolVersion,
+    RequiredCapabilitiesExtension, StagedWelcome, UnknownExtension,
 };
 pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
@@ -19,6 +19,8 @@ pub use openmls_traits::OpenMlsProvider;
 
 pub(crate) const CIPHERSUITE: Ciphersuite =
     Ciphersuite::MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519;
+
+pub(crate) const UNKNOWN_EXTENSION_TYPE: u16 = 0xF233;
 
 // must be add ignore, otherwise will be error when rust to dart
 #[frb(ignore)]
@@ -167,14 +169,19 @@ impl User {
             admin_pubkeys_hex,
             group_relays,
         );
-        let serialized_group_data = group_data
-            .tls_serialize_detached()
-            .expect("Failed to serialize group data");
+        let serialized_group_data = group_data.tls_serialize_detached()?;
 
-        let extensions = vec![Extension::Unknown(
-            group_data.extension_type(),
-            UnknownExtension(serialized_group_data),
-        )];
+        let required_extension_types = &[ExtensionType::Unknown(UNKNOWN_EXTENSION_TYPE)];
+        let required_capabilities = Extension::RequiredCapabilities(
+            RequiredCapabilitiesExtension::new(required_extension_types, &[], &[]),
+        );
+        let extensions = vec![
+            Extension::Unknown(
+                UNKNOWN_EXTENSION_TYPE,
+                UnknownExtension(serialized_group_data),
+            ),
+            required_capabilities,
+        ];
         let capabilities: Capabilities = identity.create_capabilities()?;
         let group_create_config = MlsGroupCreateConfig::builder()
             .capabilities(capabilities)
@@ -398,7 +405,7 @@ impl User {
         &mut self,
         group_id: String,
         queued_msg: Vec<u8>,
-    ) -> Result<()> {
+    ) -> Result<Option<String>> {
         let mut groups = self
             .mls_user
             .groups
@@ -419,15 +426,22 @@ impl User {
         if let ProcessedMessageContent::StagedCommitMessage(staged_commit) =
             alice_processed_message.0.into_content()
         {
+            let proposals: Vec<&openmls::group::QueuedProposal> =
+                staged_commit.queued_proposals().collect();
+            let proposal_type = if proposals.len() > 0 {
+                Some(format!("{:?}", proposals[0].proposal().proposal_type()))
+            } else {
+                None
+            };
             group
                 .mls_group
                 .merge_staged_commit(&self.mls_user.provider, *staged_commit)?;
+            return Ok(proposal_type);
         } else {
-            Err(anyhow::anyhow!(
+            return Err(anyhow::anyhow!(
                 "<mls api fn[others_commit_normal]> Expected a StagedCommit."
             ))?;
         }
-        Ok(())
     }
 
     pub(crate) fn send_msg(
@@ -774,9 +788,71 @@ impl User {
         Ok(())
     }
 
+    pub(crate) fn update_group_context_extensions(
+        &mut self,
+        group_id: String,
+        group_name: Option<String>,
+        description: Option<String>,
+        admin_pubkeys_hex: Option<Vec<String>>,
+        group_relays: Option<Vec<String>>,
+    ) -> Result<Vec<u8>> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        let identity = self
+            .mls_user
+            .identity
+            .read()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+
+        let mut group_data = NostrGroupDataExtension::from_group(&group.mls_group)?;
+
+        if let Some(name) = group_name {
+            group_data.set_name(name);
+        }
+        if let Some(description) = description {
+            group_data.set_description(description);
+        }
+        if let Some(admin_pubkeys_hex) = admin_pubkeys_hex {
+            group_data.set_admin_pubkeys(admin_pubkeys_hex);
+        }
+        if let Some(relays) = group_relays {
+            group_data.set_relays(relays);
+        }
+
+        let serialized_group_data = group_data
+            .tls_serialize_detached()
+            .expect("Failed to serialize group data");
+
+        let required_extension_types = &[ExtensionType::Unknown(UNKNOWN_EXTENSION_TYPE)];
+        let required_capabilities = Extension::RequiredCapabilities(
+            RequiredCapabilitiesExtension::new(required_extension_types, &[], &[]),
+        );
+        let extensions = vec![
+            Extension::Unknown(
+                UNKNOWN_EXTENSION_TYPE,
+                UnknownExtension(serialized_group_data),
+            ),
+            required_capabilities,
+        ];
+        let update_result = group.mls_group.update_group_context_extensions(
+            &self.mls_user.provider,
+            Extensions::from_vec(extensions).expect("Couldn't convert extensions vec to Object"),
+            &identity.signer,
+        )?;
+        let queued_msg = update_result.0;
+        let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        Ok(serialized_queued_msg)
+    }
+
     // self can update it own info, like name description and so on.
     pub(crate) fn self_update(&mut self, group_id: String, extensions: Vec<u8>) -> Result<Vec<u8>> {
-        const UNKNOWN_EXTENSION_TYPE: u16 = 0xF233;
         let extension = Extension::Unknown(UNKNOWN_EXTENSION_TYPE, UnknownExtension(extensions));
         let leaf_extensions = Extensions::single(extension.clone());
         let mut groups = self
