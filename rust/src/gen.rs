@@ -4863,6 +4863,20 @@ impl SseDecode for crate::api_cashu::types::CashuTransaction {
     }
 }
 
+impl SseDecode for crate::api_mls::types::CommitTypeResult {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api_mls::types::CommitTypeResult::Add,
+            1 => crate::api_mls::types::CommitTypeResult::Update,
+            2 => crate::api_mls::types::CommitTypeResult::Remove,
+            3 => crate::api_mls::types::CommitTypeResult::GroupContextExtensions,
+            _ => unreachable!("Invalid variant for CommitTypeResult: {}", inner),
+        };
+    }
+}
+
 impl SseDecode for crate::api_cashu::types::Contact {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -5994,6 +6008,29 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::Cashu
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api_mls::types::CommitTypeResult {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Add => 0.into_dart(),
+            Self::Update => 1.into_dart(),
+            Self::Remove => 2.into_dart(),
+            Self::GroupContextExtensions => 3.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api_mls::types::CommitTypeResult
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api_mls::types::CommitTypeResult>
+    for crate::api_mls::types::CommitTypeResult
+{
+    fn into_into_dart(self) -> crate::api_mls::types::CommitTypeResult {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Contact> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -6588,6 +6625,24 @@ impl SseEncode for crate::api_cashu::types::CashuTransaction {
         <String>::sse_encode(self.mint, serializer);
         <String>::sse_encode(self.token, serializer);
         <Option<String>>::sse_encode(self.unit, serializer);
+    }
+}
+
+impl SseEncode for crate::api_mls::types::CommitTypeResult {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api_mls::types::CommitTypeResult::Add => 0,
+                crate::api_mls::types::CommitTypeResult::Update => 1,
+                crate::api_mls::types::CommitTypeResult::Remove => 2,
+                crate::api_mls::types::CommitTypeResult::GroupContextExtensions => 3,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
     }
 }
 

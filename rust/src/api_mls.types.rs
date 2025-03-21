@@ -26,3 +26,11 @@ pub struct GroupExtensionResult {
     pub admin_pubkeys: Vec<Vec<u8>>,
     pub relays: Vec<Vec<u8>>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum CommitTypeResult {
+    Add,
+    Update,
+    Remove,
+    GroupContextExtensions,
+}

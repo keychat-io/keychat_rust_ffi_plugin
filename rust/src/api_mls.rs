@@ -509,7 +509,7 @@ pub fn others_commit_normal(
     nostr_id: String,
     group_id: String,
     queued_msg: Vec<u8>,
-) -> Result<Option<String>> {
+) -> Result<CommitTypeResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;

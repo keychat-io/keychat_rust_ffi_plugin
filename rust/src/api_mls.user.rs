@@ -2,6 +2,7 @@ use anyhow::Result;
 use bincode;
 use kc::user::MlsUser;
 
+use crate::api_mls::CommitTypeResult;
 use kc::group_context_extension::NostrGroupDataExtension;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 use kc::user::Group;
@@ -10,8 +11,8 @@ use openmls::key_packages::KeyPackage;
 use openmls::prelude::tls_codec::{Deserialize, Serialize};
 use openmls::prelude::{
     BasicCredential, Capabilities, Extension, ExtensionType, Extensions, KeyPackageIn, LeafNode,
-    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, ProtocolVersion,
-    RequiredCapabilitiesExtension, StagedWelcome, UnknownExtension,
+    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, ProposalType,
+    ProtocolVersion, RequiredCapabilitiesExtension, StagedWelcome, UnknownExtension,
 };
 pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
@@ -405,7 +406,7 @@ impl User {
         &mut self,
         group_id: String,
         queued_msg: Vec<u8>,
-    ) -> Result<Option<String>> {
+    ) -> Result<CommitTypeResult> {
         let mut groups = self
             .mls_user
             .groups
@@ -426,17 +427,25 @@ impl User {
         if let ProcessedMessageContent::StagedCommitMessage(staged_commit) =
             alice_processed_message.0.into_content()
         {
+            let mut commit_type_result = CommitTypeResult::Update;
             let proposals: Vec<&openmls::group::QueuedProposal> =
                 staged_commit.queued_proposals().collect();
-            let proposal_type = if proposals.len() > 0 {
-                Some(format!("{:?}", proposals[0].proposal().proposal_type()))
-            } else {
-                None
-            };
+
+            if proposals.len() > 0 {
+                let proposal_type = proposals[0].proposal().proposal_type();
+                commit_type_result = match proposal_type {
+                    ProposalType::Add => CommitTypeResult::Add,
+                    ProposalType::Remove => CommitTypeResult::Remove,
+                    ProposalType::GroupContextExtensions => CommitTypeResult::GroupContextExtensions,
+                    _ => return Err(anyhow::anyhow!("Unknown proposal type")),
+                };
+            }
+            
             group
                 .mls_group
                 .merge_staged_commit(&self.mls_user.provider, *staged_commit)?;
-            return Ok(proposal_type);
+            return Ok(commit_type_result);
+
         } else {
             return Err(anyhow::anyhow!(
                 "<mls api fn[others_commit_normal]> Expected a StagedCommit."

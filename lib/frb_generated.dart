@@ -312,7 +312,7 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiMlsNormalMemberCommitLeave(
       {required String nostrId, required String groupId, required List<int> queuedMsg});
 
-  Future<String?> crateApiMlsOthersCommitNormal(
+  Future<CommitTypeResult> crateApiMlsOthersCommitNormal(
       {required String nostrId, required String groupId, required List<int> queuedMsg});
 
   Future<void> crateApiMlsOthersCommitRemoveMember(
@@ -2660,7 +2660,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String?> crateApiMlsOthersCommitNormal(
+  Future<CommitTypeResult> crateApiMlsOthersCommitNormal(
       {required String nostrId, required String groupId, required List<int> queuedMsg}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -2671,7 +2671,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_opt_String,
+        decodeSuccessData: sse_decode_commit_type_result,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsOthersCommitNormalConstMeta,
@@ -3618,6 +3618,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  CommitTypeResult dco_decode_commit_type_result(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return CommitTypeResult.values[raw as int];
+  }
+
+  @protected
   Contact dco_decode_contact(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -4374,6 +4380,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         mint: var_mint,
         token: var_token,
         unit: var_unit);
+  }
+
+  @protected
+  CommitTypeResult sse_decode_commit_type_result(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return CommitTypeResult.values[inner];
   }
 
   @protected
@@ -5187,6 +5200,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.mint, serializer);
     sse_encode_String(self.token, serializer);
     sse_encode_opt_String(self.unit, serializer);
+  }
+
+  @protected
+  void sse_encode_commit_type_result(CommitTypeResult self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
   }
 
   @protected

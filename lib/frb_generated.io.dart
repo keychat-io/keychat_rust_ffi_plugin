@@ -73,6 +73,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CashuTransaction dco_decode_cashu_transaction(dynamic raw);
 
   @protected
+  CommitTypeResult dco_decode_commit_type_result(dynamic raw);
+
+  @protected
   Contact dco_decode_contact(dynamic raw);
 
   @protected
@@ -322,6 +325,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   CashuTransaction sse_decode_cashu_transaction(SseDeserializer deserializer);
+
+  @protected
+  CommitTypeResult sse_decode_commit_type_result(SseDeserializer deserializer);
 
   @protected
   Contact sse_decode_contact(SseDeserializer deserializer);
@@ -579,6 +585,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_cashu_transaction(CashuTransaction self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_commit_type_result(CommitTypeResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_contact(Contact self, SseSerializer serializer);
