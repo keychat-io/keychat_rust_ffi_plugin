@@ -1034,6 +1034,7 @@ fn test_extension() -> Result<()> {
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
     let d_pk = create_key_package(d.to_string())?;
+    let e_pk = create_key_package(e.to_string())?;
 
     let description: String = "this a group test".to_string();
     let admin_pubkeys_hex: Vec<String> = ["A".to_string()].to_vec();
@@ -1073,15 +1074,17 @@ fn test_extension() -> Result<()> {
     let extension = get_group_extension(b.to_string(), group_id.to_string())?;
     println!("group extension of b is {:?}", extension);
 
-    println!("--B add C --------------");
+    println!("--B add C E--------------");
 
-    // B add C
-    let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk].to_vec())?;
+    // B add C E 
+    let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, e_pk].to_vec())?;
     // B commit
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
     join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
+    // // e join the group
+    // join_mls_group(e.to_string(), group_id.to_string(), welcome2.welcome)?;
     // A commit
     let a_commit = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
     println!("a_commit is {:?}", a_commit);

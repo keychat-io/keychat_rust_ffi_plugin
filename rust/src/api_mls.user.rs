@@ -451,6 +451,16 @@ impl User {
                 match proposal_type {
                     ProposalType::Add => {
                         commit_type_result = CommitTypeResult::Add;
+                        for proposal in proposals {
+                            if let Proposal::Add(add) = proposal.proposal() {
+                                let added = add.key_package().leaf_node().credential();
+                                let added_str =
+                                    String::from_utf8(added.serialized_content().to_vec())?;
+                                operated_members.push(added_str);
+                            } else {
+                                continue;
+                            }
+                        }
                     }
                     ProposalType::Remove => {
                         commit_type_result = CommitTypeResult::Remove;
