@@ -51,6 +51,7 @@ fn test_diff_db1() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
     println!("The group_join_config is: {:?}", group_join_config);
 
@@ -209,6 +210,7 @@ fn test_secret_key() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     // A add B
@@ -357,6 +359,7 @@ fn test_remove_then_add_group() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     let b_pk = create_key_package(b.to_string())?;
@@ -457,6 +460,7 @@ fn test_diff_groups() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     // A add B
@@ -487,6 +491,7 @@ fn test_diff_groups() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     // C add B
@@ -549,6 +554,7 @@ fn test_self_decrypt() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     // A add B
@@ -621,6 +627,7 @@ fn test_basic() -> Result<()> {
         description,
         admin_pubkeys_hex,
         group_relays,
+        "alive".to_string(),
     )?;
 
     // A add B
@@ -1040,6 +1047,7 @@ fn test_extension() -> Result<()> {
         description,
         admin_pubkeys_hex.clone(),
         group_relays.clone(),
+        "alive".to_string(),
     )?;
 
     // A add B
@@ -1075,7 +1083,8 @@ fn test_extension() -> Result<()> {
     // c join the group
     join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
+    let a_commit = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
+    println!("a_commit is {:?}", a_commit);
 
     println!("--A add D --------------");
 
@@ -1088,18 +1097,20 @@ fn test_extension() -> Result<()> {
     join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
 
     // B commit
-    let _ = others_commit_normal(
+    let b_commit = others_commit_normal(
         b.to_string(),
         group_id.to_string(),
         welcome3.queued_msg.clone(),
     )?;
+    println!("b_commit is {:?}", b_commit);
 
     // C commit
-    let _ = others_commit_normal(
+    let c_commit = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
         welcome3.queued_msg.clone(),
     )?;
+    println!("c_commit is {:?}", c_commit);
 
     println!("--A UPDATE --------------");
 
@@ -1119,14 +1130,14 @@ fn test_extension() -> Result<()> {
     println!("is admin is {:?}", sender);
 
     // // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("B commit");
+    let b_commit = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("B commit is {:?}", b_commit);
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("C commit");
+    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("C commit is {:?}", c_commit);
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("D commit");
+    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("D commit is {:?}", d_commit);
 
     println!("--B UPDATE --------------");
 
@@ -1145,14 +1156,14 @@ fn test_extension() -> Result<()> {
     let sender = is_admin(a.to_string(), group_id.to_string(), queued_msg.clone())?;
     println!("is admin is {:?}", sender);
     // // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("A commit");
+    let a_commit = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("A commit is {:?}", a_commit);
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("C commit");
+    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("C commit is {:?}", c_commit);
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("D commit");
+    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("D commit is {:?}", d_commit);
 
     println!("--C UPDATE --------------");
 
@@ -1204,6 +1215,7 @@ fn test_extension() -> Result<()> {
 
     println!("A update_group_context_extensions");
     let update_description: String = "update group test".to_string();
+    let update_state: String = "dissolve".to_string();
     let update_result = update_group_context_extensions(
         a.to_string(),
         group_id.to_string(),
@@ -1211,6 +1223,7 @@ fn test_extension() -> Result<()> {
         Some(update_description),
         None,
         None,
+        Some(update_state),
     )?;
 
     self_commit(a.to_string(), group_id.to_string())?;
@@ -1218,15 +1231,18 @@ fn test_extension() -> Result<()> {
     let a_extension = get_group_extension(a.to_string(), group_id.to_string())?;
     println!("a_extension is {:?}", a_extension);
 
-    // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), update_result.clone())?;
-    println!("D commit");
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), update_result.clone())?;
-    println!("B commit");
+    let b_commit =
+        others_commit_normal(b.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("B commit is {:?}", b_commit);
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), update_result.clone())?;
-    println!("C commit");
+    let c_commit =
+        others_commit_normal(c.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("C commit is {:?}", c_commit);
+    // D commit
+    let d_commit =
+        others_commit_normal(d.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("D commit is {:?}", d_commit);
 
     let b_extension = get_group_extension(b.to_string(), group_id.to_string())?;
     println!("b_extension is {:?}", b_extension);
@@ -1287,6 +1303,32 @@ fn test_extension() -> Result<()> {
         get_tree_hash(c.to_string(), group_id.to_string()).unwrap()
     );
 
+    println!("--A remove B C --------------");
+
+    let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
+    let c_leaf_node = get_lead_node_index(a.to_string(), c.to_string(), group_id.to_string())?;
+
+    // A remove B C
+    let queued_msg = remove_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_leaf_node, c_leaf_node].to_vec(),
+    )?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // B commit
+    let b_commit = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("B commit is {:?}", b_commit);
+
+    // C commit
+    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("c commit is {:?}", c_commit);
+
+    // D commit
+    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("d commit is {:?}", d_commit);
+
     println!("end --------------end");
     Ok(())
 }
@@ -1327,6 +1369,7 @@ fn test_normal() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     // A add B F
@@ -2071,6 +2114,7 @@ fn test_basic2() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     // A add B
@@ -2205,6 +2249,7 @@ fn test_replay_delay() -> Result<()> {
         "new group".to_string(),
         ["admin".to_string()].to_vec(),
         ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
     )?;
 
     // A add B F, but F not reply right now

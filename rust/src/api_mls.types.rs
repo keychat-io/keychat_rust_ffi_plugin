@@ -25,6 +25,7 @@ pub struct GroupExtensionResult {
     pub description: Vec<u8>,
     pub admin_pubkeys: Vec<Vec<u8>>,
     pub relays: Vec<Vec<u8>>,
+    pub status: Vec<u8>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,6 +35,14 @@ pub enum CommitTypeResult {
     Remove,
     GroupContextExtensions,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CommitResult {
+    pub sender: String,
+    pub commit_type: CommitTypeResult,
+    pub operated_members: Option<Vec<String>>,
+}
+
 pub enum MessageInType {
     Application,
     Proposal,

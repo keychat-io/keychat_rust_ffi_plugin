@@ -264,6 +264,7 @@ pub fn get_group_extension(nostr_id: String, group_id: String) -> Result<GroupEx
             description: extension.description,
             admin_pubkeys: extension.admin_pubkeys,
             relays: extension.relays,
+            status: extension.status,
         };
         Ok(output)
     });
@@ -340,6 +341,7 @@ pub fn create_mls_group(
     description: String,
     admin_pubkeys_hex: Vec<String>,
     group_relays: Vec<String>,
+    status: String,
 ) -> Result<Vec<u8>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -361,6 +363,7 @@ pub fn create_mls_group(
             group_name,
             admin_pubkeys_hex,
             group_relays,
+            status,
         )?;
         user.update(nostr_id, false).await?;
         Ok(group_config)
@@ -499,7 +502,7 @@ pub fn others_commit_normal(
     nostr_id: String,
     group_id: String,
     queued_msg: Vec<u8>,
-) -> Result<CommitTypeResult> {
+) -> Result<CommitResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -682,6 +685,7 @@ pub fn update_group_context_extensions(
     description: Option<String>,
     admin_pubkeys_hex: Option<Vec<String>>,
     group_relays: Option<Vec<String>>,
+    status: Option<String>,
 ) -> Result<Vec<u8>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -704,6 +708,7 @@ pub fn update_group_context_extensions(
             description,
             admin_pubkeys_hex,
             group_relays,
+            status,
         )?)
     });
     result

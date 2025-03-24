@@ -11,12 +11,14 @@ use openmls::key_packages::KeyPackage;
 use openmls::prelude::tls_codec::{Deserialize, Serialize};
 use openmls::prelude::{
     BasicCredential, Capabilities, Extension, ExtensionType, Extensions, KeyPackageIn, LeafNode,
-    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, ProposalType,
-    ProtocolVersion, RequiredCapabilitiesExtension, StagedWelcome, UnknownExtension,
+    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, Proposal,
+    ProposalType, ProtocolVersion, RequiredCapabilitiesExtension, StagedWelcome, UnknownExtension,
 };
 pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
 pub use openmls_traits::OpenMlsProvider;
+
+use super::CommitResult;
 
 pub(crate) const CIPHERSUITE: Ciphersuite =
     Ciphersuite::MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519;
@@ -157,6 +159,7 @@ impl User {
         group_name: String,
         admin_pubkeys_hex: Vec<String>,
         group_relays: Vec<String>,
+        status: String,
     ) -> Result<Vec<u8>> {
         let identity = self
             .mls_user
@@ -169,6 +172,7 @@ impl User {
             description,
             admin_pubkeys_hex,
             group_relays,
+            status,
         );
         let serialized_group_data = group_data.tls_serialize_detached()?;
 
@@ -406,7 +410,7 @@ impl User {
         &mut self,
         group_id: String,
         queued_msg: Vec<u8>,
-    ) -> Result<CommitTypeResult> {
+    ) -> Result<CommitResult> {
         let mut groups = self
             .mls_user
             .groups
@@ -423,29 +427,66 @@ impl User {
                 format_err!("<mls api fn[others_commit_normal]> Unexpected message type")
             })?,
         )?;
+        // get who proposal this commit
+        let sender = String::from_utf8(
+            alice_processed_message
+                .0
+                .credential()
+                .serialized_content()
+                .to_vec(),
+        )?;
 
         if let ProcessedMessageContent::StagedCommitMessage(staged_commit) =
             alice_processed_message.0.into_content()
         {
             let mut commit_type_result = CommitTypeResult::Update;
+            let mut operated_members: Vec<String> = Vec::new();
+
             let proposals: Vec<&openmls::group::QueuedProposal> =
                 staged_commit.queued_proposals().collect();
 
+            // if update get a null proposals!
             if proposals.len() > 0 {
                 let proposal_type = proposals[0].proposal().proposal_type();
-                commit_type_result = match proposal_type {
-                    ProposalType::Add => CommitTypeResult::Add,
-                    ProposalType::Remove => CommitTypeResult::Remove,
-                    ProposalType::GroupContextExtensions => CommitTypeResult::GroupContextExtensions,
-                    _ => return Err(anyhow::anyhow!("Unknown proposal type")),
-                };
+                match proposal_type {
+                    ProposalType::Add => {
+                        commit_type_result = CommitTypeResult::Add;
+                    }
+                    ProposalType::Remove => {
+                        commit_type_result = CommitTypeResult::Remove;
+                        let members = group.mls_group.members().collect::<Vec<Member>>();
+                        for proposal in proposals {
+                            if let Proposal::Remove(removed) = proposal.proposal() {
+                                let remove_member = self.leaf_node_index_to_string(
+                                    removed.removed(),
+                                    members.clone(),
+                                )?;
+                                if let Some(member) = remove_member {
+                                    operated_members.push(member);
+                                }
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                    ProposalType::GroupContextExtensions => {
+                        commit_type_result = CommitTypeResult::GroupContextExtensions;
+                    }
+                    _ => {
+                        return Err(anyhow::anyhow!("Unknown proposal type"));
+                    }
+                }
             }
-            
+
             group
                 .mls_group
                 .merge_staged_commit(&self.mls_user.provider, *staged_commit)?;
-            return Ok(commit_type_result);
-
+            let comit_result = CommitResult {
+                sender,
+                commit_type: commit_type_result,
+                operated_members: Some(operated_members),
+            };
+            return Ok(comit_result);
         } else {
             return Err(anyhow::anyhow!(
                 "<mls api fn[others_commit_normal]> Expected a StagedCommit."
@@ -804,6 +845,7 @@ impl User {
         description: Option<String>,
         admin_pubkeys_hex: Option<Vec<String>>,
         group_relays: Option<Vec<String>>,
+        status: Option<String>,
     ) -> Result<Vec<u8>> {
         let mut groups = self
             .mls_user
@@ -833,6 +875,9 @@ impl User {
         }
         if let Some(relays) = group_relays {
             group_data.set_relays(relays);
+        }
+        if let Some(status) = status {
+            group_data.set_status(status);
         }
 
         let serialized_group_data = group_data
@@ -916,6 +961,22 @@ impl User {
             .map_err(|e| format_err!("<mls api fn[get_sender]> Error decrypt message {}.", e))?;
 
         let members = group.mls_group.members().collect::<Vec<Member>>();
+        // for member in members {
+        //     let credential = member.credential.serialized_content();
+        //     if leaf_node_index == member.index {
+        //         let sender = String::from_utf8(credential.to_vec())?;
+        //         return Ok(Some(sender));
+        //     }
+        // }
+        // Ok(None)
+        self.leaf_node_index_to_string(leaf_node_index, members)
+    }
+
+    pub(crate) fn leaf_node_index_to_string(
+        &self,
+        leaf_node_index: LeafNodeIndex,
+        members: Vec<Member>,
+    ) -> Result<Option<String>> {
         for member in members {
             let credential = member.credential.serialized_content();
             if leaf_node_index == member.index {
