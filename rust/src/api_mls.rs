@@ -1,5 +1,4 @@
 use anyhow::Result;
-use flutter_rust_bridge::frb;
 use lazy_static::lazy_static;
 use serde_json::json;
 use std::collections::HashMap;
@@ -272,6 +271,7 @@ pub fn get_group_extension(nostr_id: String, group_id: String) -> Result<GroupEx
 }
 
 // return  group name, description, admin_pubkeys and relays info in json format
+// this api do not use temp
 pub fn parse_welcome_message(nostr_id: String, welcome: Vec<u8>) -> Result<String> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -468,6 +468,9 @@ pub fn join_mls_group(nostr_id: String, group_id: String, welcome: Vec<u8>) -> R
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[join_mls_group]> Can not get store from user."))?;
         user.join_mls_group(group_id, welcome)?;
+        // first update identity, because of delete keypackage
+        user.update(nostr_id.clone(), true).await?;
+        // then update group list, because of join a new group
         user.update(nostr_id, false).await?;
         Ok(())
     });

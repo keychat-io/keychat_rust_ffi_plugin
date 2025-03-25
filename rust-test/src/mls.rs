@@ -22,8 +22,8 @@ struct DecryptMsg {
 }
 
 fn main() {
-    // let _ = test_basic();
-    let _ = test_extension();
+    let _ = test_basic();
+    // let _ = test_extension();
     // let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
@@ -230,7 +230,7 @@ fn test_secret_key() -> Result<()> {
     println!("{:?}", text);
 
     // B send msg to A
-    // let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    // let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
     // A decrypt B's msg
     // let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.0)?;
     // println!("B send msg to A ,the result is {:?}", text2);
@@ -577,7 +577,7 @@ fn test_self_decrypt() -> Result<()> {
     Ok(())
 }
 
-// create add send_msg decrypt_msg remove leave
+// create add create_message decrypt_msg remove leave
 fn test_basic() -> Result<()> {
     println!("start -------------- start");
 
@@ -913,13 +913,13 @@ fn test_basic() -> Result<()> {
     let queued_msg = self_leave(c.to_string(), group_id.to_string())?;
 
     // when C proposal that can not send msg again.
-    // // C send msg
-    // let msg5 = send_msg(
+    // C send msg
+    // let msg5 = create_message(
     //     c.to_string(),
     //     group_id.to_string(),
     //     "C hello, ADE".to_string(),
     // )?;
-    //
+    
     // // A decrypt C's msg
     // let text5 = decrypt_msg(a.to_string(), group_id.to_string(), msg5.0.clone())?;
     // println!("C send msg to A ,the result is {:?}", text5);
@@ -940,7 +940,7 @@ fn test_basic() -> Result<()> {
 
     // when A proposal that can not send msg again.
     // A send msg
-    // let msg5 = send_msg(
+    // let msg5 = create_message(
     //     a.to_string(),
     //     group_id.to_string(),
     //     "A hello, DCE".to_string(),
@@ -1010,7 +1010,7 @@ fn test_basic() -> Result<()> {
     Ok(())
 }
 
-// create add send_msg decrypt_msg remove leave
+// create add create_message decrypt_msg remove leave
 fn test_extension() -> Result<()> {
     println!("start -------------- start");
 

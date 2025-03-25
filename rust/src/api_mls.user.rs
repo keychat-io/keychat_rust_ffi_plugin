@@ -346,9 +346,23 @@ impl User {
         let welcome = MlsMessageIn::tls_deserialize_exact(&welcome)?;
         let welcome = welcome.into_welcome().ok_or_else(|| {
             format_err!(
-                "<mls api fn[join_mls_group]> expected the message to be a welcome message."
+                "<mls api fn[parse_welcome_message]> expected the message to be a welcome message."
             )
         })?;
+         // used key_package need to delete
+        let mut identity = self
+            .mls_user
+            .identity
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+
+        for secret in welcome.secrets().iter() {
+            let key_package_hash = &secret.new_member();
+            if identity.kp.contains_key(key_package_hash.as_slice()) {
+                identity.kp.remove(key_package_hash.as_slice());
+            }
+        }
+
         let staged_welcome = StagedWelcome::new_from_welcome(
             &self.mls_user.provider,
             &mls_group_config,
@@ -357,7 +371,7 @@ impl User {
         )
         .map_err(|e| {
             format_err!(
-                "<mls api fn[join_mls_group]> Error creating StagedWelcome from Welcome {}.",
+                "<mls api fn[parse_welcome_message]> Error creating StagedWelcome from Welcome {}.",
                 e
             )
         })?;
