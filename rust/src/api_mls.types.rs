@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageResult {
-    pub encrypt_msg: Vec<u8>,
+    pub encrypt_msg: String,
     pub ratchet_key: Option<Vec<u8>>,
 }
 
@@ -15,7 +15,7 @@ pub struct DecryptedMessage {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AddMembersResult {
-    pub queued_msg: Vec<u8>,
+    pub queued_msg: String,
     pub welcome: Vec<u8>,
 }
 

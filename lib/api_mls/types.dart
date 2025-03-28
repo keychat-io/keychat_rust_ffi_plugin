@@ -9,7 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
 class AddMembersResult {
-  final Uint8List queuedMsg;
+  final String queuedMsg;
   final Uint8List welcome;
 
   const AddMembersResult({
@@ -128,7 +128,7 @@ enum MessageInType {
 }
 
 class MessageResult {
-  final Uint8List encryptMsg;
+  final String encryptMsg;
   final Uint8List? ratchetKey;
 
   const MessageResult({

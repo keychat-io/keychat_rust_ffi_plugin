@@ -6,19 +6,22 @@ use crate::api_mls::CommitTypeResult;
 use kc::group_context_extension::NostrGroupDataExtension;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 use kc::user::Group;
+use nostr::nips::nip44;
+use nostr::Keys;
 pub use openmls::group::{GroupId, Member, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
 use openmls::key_packages::KeyPackage;
 use openmls::prelude::tls_codec::{Deserialize, Serialize};
 use openmls::prelude::{
-    BasicCredential, Capabilities, Extension, ExtensionType, Extensions, KeyPackageIn, LeafNode,
-    LeafNodeIndex, LeafNodeParameters, MlsMessageIn, ProcessedMessageContent, Proposal,
-    ProposalType, ProtocolVersion, RequiredCapabilitiesExtension, StagedWelcome, UnknownExtension,
+    BasicCredential, Capabilities, ContentType, Extension, ExtensionType, Extensions, KeyPackageIn,
+    LeafNode, LeafNodeIndex, LeafNodeParameters, MlsMessageBodyIn, MlsMessageIn,
+    ProcessedMessageContent, Proposal, ProposalType, ProtocolVersion,
+    RequiredCapabilitiesExtension, StagedWelcome, UnknownExtension,
 };
 pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
 pub use openmls_traits::OpenMlsProvider;
 
-use super::CommitResult;
+use super::{CommitResult, MessageInType};
 
 pub(crate) const CIPHERSUITE: Ciphersuite =
     Ciphersuite::MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519;
@@ -65,7 +68,7 @@ impl User {
         let export_secret =
             group
                 .mls_group
-                .export_secret(&self.mls_user.provider, "keychat", b"keychat", 32)?;
+                .export_secret(&self.mls_user.provider, "nostr", b"nostr", 32)?;
         Ok(export_secret)
     }
 
@@ -128,6 +131,51 @@ impl User {
         };
         let extension = NostrGroupDataExtension::from_group(&group.mls_group)?;
         Ok(extension)
+    }
+
+    pub(crate) fn parse_mls_msg_type(
+        &self,
+        group_id: String,
+        data: Vec<u8>,
+    ) -> Result<MessageInType> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        // first decrypt with nip44
+        let decrypted_content = self.decrypt_nip44(group.mls_group.clone(), data)?;
+
+        let queued_msg = MlsMessageIn::tls_deserialize_exact(&decrypted_content)?;
+        match queued_msg.extract() {
+            MlsMessageBodyIn::PrivateMessage(private_msg) => match private_msg.content_type() {
+                ContentType::Application => {
+                    return Ok(MessageInType::Application);
+                }
+                ContentType::Proposal => {
+                    return Ok(MessageInType::Proposal);
+                }
+                ContentType::Commit => {
+                    return Ok(MessageInType::Commit);
+                }
+            },
+            MlsMessageBodyIn::Welcome(_welcome_msg) => {
+                return Ok(MessageInType::Welcome);
+            }
+            MlsMessageBodyIn::GroupInfo(_group_info) => {
+                return Ok(MessageInType::GroupInfo);
+            }
+            MlsMessageBodyIn::KeyPackage(_key_package) => {
+                return Ok(MessageInType::KeyPackage);
+            }
+            _ => {
+                return Ok(MessageInType::Custom);
+            }
+        }
     }
 
     pub(crate) fn create_key_package(&mut self) -> Result<KeyPackage> {
@@ -248,7 +296,7 @@ impl User {
         &mut self,
         group_id: String,
         key_packages: Vec<Vec<u8>>,
-    ) -> Result<(Vec<u8>, Vec<u8>)> {
+    ) -> Result<(String, Vec<u8>)> {
         let mut kps: Vec<KeyPackage> = Vec::new();
         for kp in key_packages {
             // let kp: KeyPackage = bincode::deserialize(&kp)?;
@@ -277,8 +325,10 @@ impl User {
         // split this for method self_commit
         // mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
+        let encrypted_content =
+            self.encrypt_nip44(group.mls_group.clone(), serialized_queued_msg)?;
         let serialized_welcome: Vec<u8> = welcome.to_bytes()?;
-        Ok((serialized_queued_msg, serialized_welcome))
+        Ok((encrypted_content, serialized_welcome))
     }
 
     pub(crate) fn get_group_members(&self, group_id: String) -> Result<Vec<String>> {
@@ -322,17 +372,32 @@ impl User {
         Ok(())
     }
 
-    pub(crate) fn delete_group(&mut self, group_id: String) -> Result<()> {
+    pub(crate) fn delete_group_in_user(&mut self, group_id: String) -> Result<()> {
         let mut groups = self
             .mls_user
             .groups
             .write()
             .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
-
         if groups.contains_key(&group_id) {
+            // delete in user
             groups.remove(&group_id);
             self.mls_user.group_list.remove(&group_id);
         }
+        Ok(())
+    }
+
+    pub(crate) fn delete_group_in_mls(&mut self, group_id: String) -> Result<()> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+        // delete in MLSGroup
+        group.mls_group.delete(&self.mls_user.provider.storage)?;
         Ok(())
     }
 
@@ -349,8 +414,8 @@ impl User {
                 "<mls api fn[parse_welcome_message]> expected the message to be a welcome message."
             )
         })?;
-         // used key_package need to delete
-        let mut identity = self
+        // used key_package need to delete
+        let identity = self
             .mls_user
             .identity
             .write()
@@ -359,7 +424,8 @@ impl User {
         for secret in welcome.secrets().iter() {
             let key_package_hash = &secret.new_member();
             if identity.kp.contains_key(key_package_hash.as_slice()) {
-                identity.kp.remove(key_package_hash.as_slice());
+                // will delete in late
+                // identity.kp.remove(key_package_hash.as_slice());
             }
         }
 
@@ -434,7 +500,10 @@ impl User {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
         };
-        let queued_msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
+        // first decrypt with nip44
+        let decrypted_content = self.decrypt_nip44(group.mls_group.clone(), queued_msg)?;
+
+        let queued_msg = MlsMessageIn::tls_deserialize_exact(&decrypted_content)?;
         let alice_processed_message = group.mls_group.process_message(
             &self.mls_user.provider,
             queued_msg.into_protocol_message().ok_or_else(|| {
@@ -518,11 +587,42 @@ impl User {
         }
     }
 
-    pub(crate) fn send_msg(
+    pub(crate) fn encrypt_nip44(&self, group: MlsGroup, serialized_msg: Vec<u8>) -> Result<String> {
+        let export_secret = group.export_secret(&self.mls_user.provider, "nostr", b"nostr", 32)?;
+        let export_secret_hex = hex::encode(&export_secret);
+        let export_nostr_keys = Keys::parse(&export_secret_hex)?;
+        // Encrypt using export secret key
+        let encrypted_content = nip44::encrypt(
+            export_nostr_keys.secret_key(),
+            &export_nostr_keys.public_key(),
+            &serialized_msg,
+            nip44::Version::V2,
+        )?;
+        Ok(encrypted_content)
+    }
+
+    pub(crate) fn decrypt_nip44(
+        &self,
+        group: MlsGroup,
+        serialized_msg: Vec<u8>,
+    ) -> Result<Vec<u8>> {
+        let export_secret = group.export_secret(&self.mls_user.provider, "nostr", b"nostr", 32)?;
+        let export_secret_hex = hex::encode(&export_secret);
+        let export_nostr_keys = Keys::parse(&export_secret_hex)?;
+        // Decrypt using export secret key
+        let decrypted_content = nip44::decrypt_to_bytes(
+            export_nostr_keys.secret_key(),
+            &export_nostr_keys.public_key(),
+            &serialized_msg,
+        )?;
+        Ok(decrypted_content)
+    }
+
+    pub(crate) fn create_message(
         &mut self,
         group_id: String,
         msg: String,
-    ) -> Result<(Vec<u8>, Option<Vec<u8>>)> {
+    ) -> Result<(String, Option<Vec<u8>>)> {
         let mut groups = self
             .mls_user
             .groups
@@ -540,14 +640,13 @@ impl User {
         let msg_out = group
             .mls_group
             .create_message(&self.mls_user.provider, &identity.signer, msg.as_bytes())
-            .map_err(|e| format_err!("<mls api fn[send_msg]> Error send message {}.", e))?;
-        let serialized_msg_out: Vec<u8> = msg_out.0.to_bytes()?;
-        // let export_secret =
-        //     group
-        //         .mls_group
-        //         .export_secret(&self.provider, "keychat", b"keychat", 32)?;
+            .map_err(|e| format_err!("<mls api fn[create_message]> Error send message {}.", e))?;
+        let serialized_msg: Vec<u8> = msg_out.0.to_bytes()?;
+        // first encrypt with nip44
+        let encrypted_content = self.encrypt_nip44(group.mls_group.clone(), serialized_msg)?;
+
         let ratchet_key = msg_out.1;
-        Ok((serialized_msg_out, ratchet_key))
+        Ok((encrypted_content, ratchet_key))
     }
 
     pub(crate) fn decrypt_msg(
@@ -564,7 +663,10 @@ impl User {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
         };
-        let msg = MlsMessageIn::tls_deserialize_exact(&msg)?;
+        // first decrypt with nip44
+        let decrypted_content = self.decrypt_nip44(group.mls_group.clone(), msg)?;
+
+        let msg = MlsMessageIn::tls_deserialize_exact(&decrypted_content)?;
         let processed_message = group
             .mls_group
             .process_message(
@@ -636,7 +738,7 @@ impl User {
         &mut self,
         group_id: String,
         members: Vec<Vec<u8>>,
-    ) -> Result<Vec<u8>> {
+    ) -> Result<String> {
         let mut groups = self
             .mls_user
             .groups
@@ -665,7 +767,9 @@ impl User {
         // split this for method self_commit
         // group.mls_group.merge_pending_commit(&self.provider)?;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
-        Ok(serialized_queued_msg)
+        let encrypted_content =
+            self.encrypt_nip44(group.mls_group.clone(), serialized_queued_msg)?;
+        Ok(encrypted_content)
     }
 
     pub(crate) fn others_commit_remove_member(
@@ -870,7 +974,7 @@ impl User {
         admin_pubkeys_hex: Option<Vec<String>>,
         group_relays: Option<Vec<String>>,
         status: Option<String>,
-    ) -> Result<Vec<u8>> {
+    ) -> Result<String> {
         let mut groups = self
             .mls_user
             .groups
@@ -926,11 +1030,14 @@ impl User {
         )?;
         let queued_msg = update_result.0;
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
-        Ok(serialized_queued_msg)
+        // first encrypt with nip44
+        let encrypted_content =
+            self.encrypt_nip44(group.mls_group.clone(), serialized_queued_msg)?;
+        Ok(encrypted_content)
     }
 
     // self can update it own info, like name description and so on.
-    pub(crate) fn self_update(&mut self, group_id: String, extensions: Vec<u8>) -> Result<Vec<u8>> {
+    pub(crate) fn self_update(&mut self, group_id: String, extensions: Vec<u8>) -> Result<String> {
         let extension = Extension::Unknown(UNKNOWN_EXTENSION_TYPE, UnknownExtension(extensions));
         let leaf_extensions = Extensions::single(extension.clone());
         let mut groups = self
@@ -957,7 +1064,10 @@ impl User {
         )?;
         let queued_msg = commit_message_bundle.commit();
         let serialized_queued_msg: Vec<u8> = queued_msg.to_bytes()?;
-        Ok(serialized_queued_msg)
+        // first encrypt with nip44
+        let encrypted_content =
+            self.encrypt_nip44(group.mls_group.clone(), serialized_queued_msg)?;
+        Ok(encrypted_content)
     }
 
     pub(crate) fn get_sender(
@@ -974,7 +1084,10 @@ impl User {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
         };
-        let msg = MlsMessageIn::tls_deserialize_exact(&queued_msg)?;
+        // first decrypt with nip44
+        let decrypted_content = self.decrypt_nip44(group.mls_group.clone(), queued_msg)?;
+
+        let msg = MlsMessageIn::tls_deserialize_exact(&decrypted_content)?;
         let leaf_node_index = group
             .mls_group
             .sender_leaf_node_index(

@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.9.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1862509370;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 808281187;
 
 // Section: executor
 
@@ -3488,47 +3488,6 @@ fn wire__crate__api_mls__others_commit_normal_impl(
         },
     )
 }
-fn wire__crate__api_mls__others_commit_remove_member_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "others_commit_remove_member",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_nostr_id = <String>::sse_decode(&mut deserializer);
-            let api_group_id = <String>::sse_decode(&mut deserializer);
-            let api_queued_msg = <Vec<u8>>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api_mls::others_commit_remove_member(
-                            api_nostr_id,
-                            api_group_id,
-                            api_queued_msg,
-                        )?;
-                        Ok(output_ok)
-                    })(),
-                )
-            }
-        },
-    )
-}
 fn wire__crate__api_mls__others_proposal_leave_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -3666,49 +3625,18 @@ fn wire__crate__api_mls__parse_mls_msg_type_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_nostr_id = <String>::sse_decode(&mut deserializer);
+            let api_group_id = <String>::sse_decode(&mut deserializer);
             let api_data = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_mls::parse_mls_msg_type(api_data)?;
-                        Ok(output_ok)
-                    })(),
-                )
-            }
-        },
-    )
-}
-fn wire__crate__api_mls__parse_welcome_message_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "parse_welcome_message",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_nostr_id = <String>::sse_decode(&mut deserializer);
-            let api_welcome = <Vec<u8>>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok =
-                            crate::api_mls::parse_welcome_message(api_nostr_id, api_welcome)?;
+                        let output_ok = crate::api_mls::parse_mls_msg_type(
+                            api_nostr_id,
+                            api_group_id,
+                            api_data,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4825,7 +4753,7 @@ impl SseDecode for String {
 impl SseDecode for crate::api_mls::types::AddMembersResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_queuedMsg = <Vec<u8>>::sse_decode(deserializer);
+        let mut var_queuedMsg = <String>::sse_decode(deserializer);
         let mut var_welcome = <Vec<u8>>::sse_decode(deserializer);
         return crate::api_mls::types::AddMembersResult {
             queued_msg: var_queuedMsg,
@@ -5246,7 +5174,7 @@ impl SseDecode for crate::api_mls::types::MessageInType {
 impl SseDecode for crate::api_mls::types::MessageResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_encryptMsg = <Vec<u8>>::sse_decode(deserializer);
+        let mut var_encryptMsg = <String>::sse_decode(deserializer);
         let mut var_ratchetKey = <Option<Vec<u8>>>::sse_decode(deserializer);
         return crate::api_mls::types::MessageResult {
             encrypt_msg: var_encryptMsg,
@@ -5909,69 +5837,62 @@ fn pde_ffi_dispatcher_primary_impl(
             wire__crate__api_mls__normal_member_commit_leave_impl(port, ptr, rust_vec_len, data_len)
         }
         92 => wire__crate__api_mls__others_commit_normal_impl(port, ptr, rust_vec_len, data_len),
-        93 => wire__crate__api_mls__others_commit_remove_member_impl(
+        93 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
+        94 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        94 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
-        95 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
+        95 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        96 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
+        96 => wire__crate__api_mls__parse_mls_msg_type_impl(port, ptr, rust_vec_len, data_len),
+        97 => wire__crate__api_signal__process_prekey_bundle_api_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        97 => wire__crate__api_mls__parse_mls_msg_type_impl(port, ptr, rust_vec_len, data_len),
-        98 => wire__crate__api_mls__parse_welcome_message_impl(port, ptr, rust_vec_len, data_len),
-        99 => wire__crate__api_signal__process_prekey_bundle_api_impl(
+        98 => wire__crate__api_cashu__receive_token_impl(port, ptr, rust_vec_len, data_len),
+        99 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
+        100 => wire__crate__api_cashu__remove_mint_impl(port, ptr, rust_vec_len, data_len),
+        101 => wire__crate__api_cashu__remove_transactions_impl(port, ptr, rust_vec_len, data_len),
+        102 => wire__crate__api_cashu__request_mint_impl(port, ptr, rust_vec_len, data_len),
+        103 => wire__crate__api_cashu__restore_impl(port, ptr, rust_vec_len, data_len),
+        104 => wire__crate__api_mls__self_commit_impl(port, ptr, rust_vec_len, data_len),
+        105 => wire__crate__api_mls__self_leave_impl(port, ptr, rust_vec_len, data_len),
+        106 => wire__crate__api_mls__self_update_impl(port, ptr, rust_vec_len, data_len),
+        107 => wire__crate__api_cashu__send_impl(port, ptr, rust_vec_len, data_len),
+        108 => wire__crate__api_cashu__send_stamp_impl(port, ptr, rust_vec_len, data_len),
+        109 => wire__crate__api_signal__session_contain_alice_addr_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        100 => wire__crate__api_cashu__receive_token_impl(port, ptr, rust_vec_len, data_len),
-        101 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
-        102 => wire__crate__api_cashu__remove_mint_impl(port, ptr, rust_vec_len, data_len),
-        103 => wire__crate__api_cashu__remove_transactions_impl(port, ptr, rust_vec_len, data_len),
-        104 => wire__crate__api_cashu__request_mint_impl(port, ptr, rust_vec_len, data_len),
-        105 => wire__crate__api_cashu__restore_impl(port, ptr, rust_vec_len, data_len),
-        106 => wire__crate__api_mls__self_commit_impl(port, ptr, rust_vec_len, data_len),
-        107 => wire__crate__api_mls__self_leave_impl(port, ptr, rust_vec_len, data_len),
-        108 => wire__crate__api_mls__self_update_impl(port, ptr, rust_vec_len, data_len),
-        109 => wire__crate__api_cashu__send_impl(port, ptr, rust_vec_len, data_len),
-        110 => wire__crate__api_cashu__send_stamp_impl(port, ptr, rust_vec_len, data_len),
-        111 => wire__crate__api_signal__session_contain_alice_addr_impl(
-            port,
-            ptr,
-            rust_vec_len,
-            data_len,
-        ),
-        112 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
-        113 => wire__crate__api_nostr__sha1_hash_impl(port, ptr, rust_vec_len, data_len),
-        114 => wire__crate__api_nostr__sha256_hash_impl(port, ptr, rust_vec_len, data_len),
-        115 => wire__crate__api_nostr__sha256_hash_bytes_impl(port, ptr, rust_vec_len, data_len),
-        116 => wire__crate__api_nostr__sign_event_impl(port, ptr, rust_vec_len, data_len),
-        117 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
-        118 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        119 => {
+        110 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
+        111 => wire__crate__api_nostr__sha1_hash_impl(port, ptr, rust_vec_len, data_len),
+        112 => wire__crate__api_nostr__sha256_hash_impl(port, ptr, rust_vec_len, data_len),
+        113 => wire__crate__api_nostr__sha256_hash_bytes_impl(port, ptr, rust_vec_len, data_len),
+        114 => wire__crate__api_nostr__sign_event_impl(port, ptr, rust_vec_len, data_len),
+        115 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        116 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        117 => {
             wire__crate__api_signal__store_signed_key_api_impl(port, ptr, rust_vec_len, data_len)
         }
-        120 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
-        121 => wire__crate__api_mls__update_group_context_extensions_impl(
+        118 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
+        119 => wire__crate__api_mls__update_group_context_extensions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        122 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
-        123 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        120 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
+        121 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -6690,7 +6611,7 @@ impl SseEncode for String {
 impl SseEncode for crate::api_mls::types::AddMembersResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<u8>>::sse_encode(self.queued_msg, serializer);
+        <String>::sse_encode(self.queued_msg, serializer);
         <Vec<u8>>::sse_encode(self.welcome, serializer);
     }
 }
@@ -7012,7 +6933,7 @@ impl SseEncode for crate::api_mls::types::MessageInType {
 impl SseEncode for crate::api_mls::types::MessageResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<u8>>::sse_encode(self.encrypt_msg, serializer);
+        <String>::sse_encode(self.encrypt_msg, serializer);
         <Option<Vec<u8>>>::sse_encode(self.ratchet_key, serializer);
     }
 }

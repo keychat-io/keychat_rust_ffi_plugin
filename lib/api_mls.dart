@@ -7,6 +7,7 @@ import 'api_mls/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+// These functions are ignored because they are not marked as `pub`: `others_commit_remove_member`, `parse_welcome_message`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `MlsStore`, `RUNTIME`, `STORE`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `deref`, `initialize`, `initialize`
 
@@ -36,9 +37,6 @@ Future<Map<String, List<Uint8List>>> getMemberExtension({required String nostrId
 Future<GroupExtensionResult> getGroupExtension({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetGroupExtension(nostrId: nostrId, groupId: groupId);
 
-Future<String> parseWelcomeMessage({required String nostrId, required List<int> welcome}) =>
-    RustLib.instance.api.crateApiMlsParseWelcomeMessage(nostrId: nostrId, welcome: welcome);
-
 Future<List<String>> getGroupMembers({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetGroupMembers(nostrId: nostrId, groupId: groupId);
 
@@ -63,8 +61,8 @@ Future<AddMembersResult> addMembers(
         {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
     RustLib.instance.api.crateApiMlsAddMembers(nostrId: nostrId, groupId: groupId, keyPackages: keyPackages);
 
-Future<MessageInType> parseMlsMsgType({required List<int> data}) =>
-    RustLib.instance.api.crateApiMlsParseMlsMsgType(data: data);
+Future<MessageInType> parseMlsMsgType({required String nostrId, required String groupId, required List<int> data}) =>
+    RustLib.instance.api.crateApiMlsParseMlsMsgType(nostrId: nostrId, groupId: groupId, data: data);
 
 Future<void> selfCommit({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsSelfCommit(nostrId: nostrId, groupId: groupId);
@@ -90,17 +88,13 @@ Future<Uint8List> getLeadNodeIndex(
     RustLib.instance.api
         .crateApiMlsGetLeadNodeIndex(nostrIdAdmin: nostrIdAdmin, nostrIdCommon: nostrIdCommon, groupId: groupId);
 
-Future<Uint8List> removeMembers({required String nostrId, required String groupId, required List<Uint8List> members}) =>
+Future<String> removeMembers({required String nostrId, required String groupId, required List<Uint8List> members}) =>
     RustLib.instance.api.crateApiMlsRemoveMembers(nostrId: nostrId, groupId: groupId, members: members);
-
-Future<void> othersCommitRemoveMember(
-        {required String nostrId, required String groupId, required List<int> queuedMsg}) =>
-    RustLib.instance.api.crateApiMlsOthersCommitRemoveMember(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
 Future<Uint8List> selfLeave({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsSelfLeave(nostrId: nostrId, groupId: groupId);
 
-Future<Uint8List> updateGroupContextExtensions(
+Future<String> updateGroupContextExtensions(
         {required String nostrId,
         required String groupId,
         String? groupName,
@@ -117,7 +111,7 @@ Future<Uint8List> updateGroupContextExtensions(
         groupRelays: groupRelays,
         status: status);
 
-Future<Uint8List> selfUpdate({required String nostrId, required String groupId, required List<int> extensions}) =>
+Future<String> selfUpdate({required String nostrId, required String groupId, required List<int> extensions}) =>
     RustLib.instance.api.crateApiMlsSelfUpdate(nostrId: nostrId, groupId: groupId, extensions: extensions);
 
 Future<void> othersProposalLeave({required String nostrId, required String groupId, required List<int> queuedMsg}) =>

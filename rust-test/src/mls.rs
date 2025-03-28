@@ -22,8 +22,8 @@ struct DecryptMsg {
 }
 
 fn main() {
-    let _ = test_basic();
-    // let _ = test_extension();
+    // let _ = test_basic();
+    let _ = test_extension();
     // let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
@@ -225,7 +225,11 @@ fn test_secret_key() -> Result<()> {
     let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
     println!("{:?}", msg);
     // B decrypt A's msg
-    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.as_bytes().to_vec(),
+    )?;
     // println!("A send msg to B ,the result is {:?}", text);
     println!("{:?}", text);
 
@@ -239,7 +243,11 @@ fn test_secret_key() -> Result<()> {
     let msg3 = create_message(a.to_string(), group_id.to_string(), "hello, B2".to_string())?;
     println!("{:?}", msg3);
     // B decrypt A's msg
-    let text3 = decrypt_message(b.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
+    let text3 = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.as_bytes().to_vec(),
+    )?;
     // println!("A send msg to B2 ,the result is {:?}", text3);
     println!("{:?}", text3);
 
@@ -306,32 +314,48 @@ fn test_exist_group() -> Result<()> {
     let _ = others_commit_normal(
         d.to_string(),
         group_id.to_string(),
-        welcome.queued_msg.clone(),
+        welcome.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     // E commit
     let _ = others_commit_normal(
         e.to_string(),
         group_id.to_string(),
-        welcome.queued_msg.clone(),
+        welcome.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     // A send msg to G
     let msg = create_message(a.to_string(), group_id.to_string(), "hello, G".to_string())?;
     // F decrypt A's msg
-    let text = decrypt_message(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(
+        f.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A send msg to F ,the result is {:?}", text);
 
     // E decrypt A's msg
-    let text = decrypt_message(e.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(
+        e.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A send msg to E ,the result is {:?}", text);
 
     // G decrypt A's msg
-    let text = decrypt_message(g.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(
+        g.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A send msg to G ,the result is {:?}", text);
 
     // D decrypt A's msg
-    let text = decrypt_message(d.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(
+        d.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A send msg to D ,the result is {:?}", text);
 
     Ok(())
@@ -392,11 +416,19 @@ fn test_remove_then_add_group() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     let _ = delete_group(b.to_string(), group_id.to_string())?;
 
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     println!(
         "a_mls_group export secret {:?}",
@@ -479,7 +511,11 @@ fn test_diff_groups() -> Result<()> {
     )?;
 
     // B decrypt A's msg
-    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.as_bytes().to_vec(),
+    )?;
     println!("A send msg to B ,the result is {:?}", text);
 
     // create second group use the same keypackage
@@ -515,7 +551,11 @@ fn test_diff_groups() -> Result<()> {
     )?;
 
     // B decrypt A's msg
-    let text = decrypt_message(b.to_string(), group_id2.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(
+        b.to_string(),
+        group_id2.to_string(),
+        msg.encrypt_msg.as_bytes().to_vec(),
+    )?;
     println!("C send msg to B ,the result is {:?}", text);
 
     Ok(())
@@ -568,7 +608,11 @@ fn test_self_decrypt() -> Result<()> {
     // A send msg
     let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
     // B decrypt A's msg
-    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A send msg to B ,the result is {:?}", text);
     // A can not decrypt self msg
     // // A decrypt A's msg
@@ -659,7 +703,11 @@ fn test_basic() -> Result<()> {
     let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
 
     // B decrypt A's msg
-    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.as_bytes().to_vec(),
+    )?;
 
     println!("A send msg to B ,the result is {:?}", text);
 
@@ -667,7 +715,11 @@ fn test_basic() -> Result<()> {
     let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
 
     // A decrypt B's msg
-    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
+    let text2 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg2.encrypt_msg.as_bytes().to_vec(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     println!(
@@ -700,7 +752,11 @@ fn test_basic() -> Result<()> {
     // c join the group
     join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
+    let _ = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        welcome2.queued_msg.as_bytes().to_vec(),
+    )?;
 
     // B send msg
     let msg3 = create_message(
@@ -713,7 +769,7 @@ fn test_basic() -> Result<()> {
     let text3 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to C ,the result is {:?}", text3);
 
@@ -721,7 +777,7 @@ fn test_basic() -> Result<()> {
     let text4 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to A ,the result is {:?}", text4);
 
@@ -771,14 +827,14 @@ fn test_basic() -> Result<()> {
     let _ = others_commit_normal(
         b.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     // C commit
     let _ = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     // A send msg
@@ -792,21 +848,21 @@ fn test_basic() -> Result<()> {
     let text5 = decrypt_message(
         b.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to B ,the result is {:?}", text5);
     // C decrypt A's msg
     let text6 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to C ,the result is {:?}", text6);
     // D decrypt B's msg
     let text7 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to D ,the result is {:?}", text7);
 
@@ -840,13 +896,25 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     println!("--A remove B --------------");
 
@@ -877,13 +945,13 @@ fn test_basic() -> Result<()> {
     let _ = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // D commit
     let _ = others_commit_normal(
         d.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     println!("--A add E --------------");
@@ -919,7 +987,7 @@ fn test_basic() -> Result<()> {
     //     group_id.to_string(),
     //     "C hello, ADE".to_string(),
     // )?;
-    
+
     // // A decrypt C's msg
     // let text5 = decrypt_msg(a.to_string(), group_id.to_string(), msg5.0.clone())?;
     // println!("C send msg to A ,the result is {:?}", text5);
@@ -987,9 +1055,17 @@ fn test_basic() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E commit
-    let _ = others_commit_normal(e.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        e.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     println!(
         "a_mls_group export secret {:?}",
@@ -1076,7 +1152,7 @@ fn test_extension() -> Result<()> {
 
     println!("--B add C E--------------");
 
-    // B add C E 
+    // B add C E
     let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, e_pk].to_vec())?;
     // B commit
     self_commit(b.to_string(), group_id.to_string())?;
@@ -1086,7 +1162,11 @@ fn test_extension() -> Result<()> {
     // // e join the group
     // join_mls_group(e.to_string(), group_id.to_string(), welcome2.welcome)?;
     // A commit
-    let a_commit = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
+    let a_commit = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        welcome2.queued_msg.as_bytes().to_vec(),
+    )?;
     println!("a_commit is {:?}", a_commit);
 
     println!("--A add D --------------");
@@ -1103,7 +1183,7 @@ fn test_extension() -> Result<()> {
     let b_commit = others_commit_normal(
         b.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     println!("b_commit is {:?}", b_commit);
 
@@ -1111,7 +1191,7 @@ fn test_extension() -> Result<()> {
     let c_commit = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     println!("c_commit is {:?}", c_commit);
 
@@ -1126,20 +1206,40 @@ fn test_extension() -> Result<()> {
     let leaf_nodes_extension = get_member_extension(a.to_string(), group_id.to_string())?;
     println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
 
-    let sender = get_sender(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let sender = get_sender(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("sender is {:?}", sender);
 
-    let sender = is_admin(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let sender = is_admin(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("is admin is {:?}", sender);
 
     // // B commit
-    let b_commit = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let b_commit = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("B commit is {:?}", b_commit);
     // C commit
-    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let c_commit = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("C commit is {:?}", c_commit);
     // D commit
-    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let d_commit = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("D commit is {:?}", d_commit);
 
     println!("--B UPDATE --------------");
@@ -1153,19 +1253,39 @@ fn test_extension() -> Result<()> {
     let leaf_nodes_extension = get_member_extension(b.to_string(), group_id.to_string())?;
     println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
 
-    let sender = get_sender(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let sender = get_sender(
+        a.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("sender is {:?}", sender);
 
-    let sender = is_admin(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let sender = is_admin(
+        a.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("is admin is {:?}", sender);
     // // A commit
-    let a_commit = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let a_commit = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A commit is {:?}", a_commit);
     // C commit
-    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let c_commit = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("C commit is {:?}", c_commit);
     // D commit
-    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let d_commit = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("D commit is {:?}", d_commit);
 
     println!("--C UPDATE --------------");
@@ -1179,20 +1299,40 @@ fn test_extension() -> Result<()> {
     let leaf_nodes_extension = get_member_extension(c.to_string(), group_id.to_string())?;
     println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
 
-    let sender = get_sender(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let sender = get_sender(
+        a.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("sender is {:?}", sender);
 
-    let sender = is_admin(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let sender = is_admin(
+        a.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("is admin is {:?}", sender);
 
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A commit");
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("B commit");
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("D commit");
 
     println!("--D UPDATE --------------");
@@ -1207,13 +1347,25 @@ fn test_extension() -> Result<()> {
     println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
 
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A commit");
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("B commit");
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("C commit");
 
     println!("A update_group_context_extensions");
@@ -1235,16 +1387,25 @@ fn test_extension() -> Result<()> {
     println!("a_extension is {:?}", a_extension);
 
     // B commit
-    let b_commit =
-        others_commit_normal(b.to_string(), group_id.to_string(), update_result.clone())?;
+    let b_commit = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        update_result.clone().as_bytes().to_vec(),
+    )?;
     println!("B commit is {:?}", b_commit);
     // C commit
-    let c_commit =
-        others_commit_normal(c.to_string(), group_id.to_string(), update_result.clone())?;
+    let c_commit = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        update_result.clone().as_bytes().to_vec(),
+    )?;
     println!("C commit is {:?}", c_commit);
     // D commit
-    let d_commit =
-        others_commit_normal(d.to_string(), group_id.to_string(), update_result.clone())?;
+    let d_commit = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        update_result.clone().as_bytes().to_vec(),
+    )?;
     println!("D commit is {:?}", d_commit);
 
     let b_extension = get_group_extension(b.to_string(), group_id.to_string())?;
@@ -1266,12 +1427,16 @@ fn test_extension() -> Result<()> {
     let text3 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to C ,the result is {:?}", text3);
 
     // A decrypt B's msg
-    let text4 = decrypt_message(a.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
+    let text4 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.as_bytes().to_vec(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text4);
 
     println!("--------------");
@@ -1321,16 +1486,31 @@ fn test_extension() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
-    let b_commit = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let b_commit = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("B commit is {:?}", b_commit);
 
     // C commit
-    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("c commit is {:?}", c_commit);
+    let c_commit = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
+    println!("C commit is {:?}", c_commit);
 
     // D commit
-    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
-    println!("d commit is {:?}", d_commit);
+    let d_commit = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
+    println!("D commit is {:?}", d_commit);
+
+    // delte group
+    delete_group(a.to_string(), group_id.to_string())?;
 
     println!("end --------------end");
     Ok(())
@@ -1394,24 +1574,40 @@ fn test_normal() -> Result<()> {
     )?;
 
     // B decrypt A's msg
-    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A send msg to B ,the result is {:?}", text);
     // F decrypt A's msg
-    let text = decrypt_message(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
+    let text = decrypt_message(
+        f.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.clone().as_bytes().to_vec(),
+    )?;
     println!("A send msg to F ,the result is {:?}", text);
 
     // B send msg to A
     let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
 
     // A decrypt B's msg
-    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
+    let text2 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg2.encrypt_msg.as_bytes().to_vec(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     // F send msg to A
     let msg2_1 = create_message(f.to_string(), group_id.to_string(), "hello, F".to_string())?;
 
     // A decrypt F's msg
-    let text2_1 = decrypt_message(a.to_string(), group_id.to_string(), msg2_1.encrypt_msg)?;
+    let text2_1 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg2_1.encrypt_msg.as_bytes().to_vec(),
+    )?;
     println!("F send msg to A ,the result is {:?}", text2_1);
 
     println!(
@@ -1467,13 +1663,13 @@ fn test_normal() -> Result<()> {
     let _ = others_commit_normal(
         a.to_string(),
         group_id.to_string(),
-        welcome2.queued_msg.clone(),
+        welcome2.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // F commit
     let _ = others_commit_normal(
         f.to_string(),
         group_id.to_string(),
-        welcome2.queued_msg.clone(),
+        welcome2.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     // B send msg
@@ -1487,28 +1683,28 @@ fn test_normal() -> Result<()> {
     let text3 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to A ,the result is {:?}", text3);
     // C decrypt B's msg
     let text3 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to C ,the result is {:?}", text3);
     // F decrypt B's msg
     let text3 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to F ,the result is {:?}", text3);
     // G decrypt B's msg
     let text3 = decrypt_message(
         g.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to G ,the result is {:?}", text3);
 
@@ -1578,25 +1774,25 @@ fn test_normal() -> Result<()> {
     let _ = others_commit_normal(
         b.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // C commit
     let _ = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // F commit
     let _ = others_commit_normal(
         f.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // G commit
     let _ = others_commit_normal(
         g.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     // A send msg
@@ -1610,35 +1806,35 @@ fn test_normal() -> Result<()> {
     let text4 = decrypt_message(
         b.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to B ,the result is {:?}", text4);
     // C decrypt A's msg
     let text4 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to C ,the result is {:?}", text4);
     // D decrypt B's msg
     let text4 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to D ,the result is {:?}", text4);
     // F decrypt B's msg
     let text4 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to F ,the result is {:?}", text4);
     // G decrypt B's msg
     let text4 = decrypt_message(
         g.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to G ,the result is {:?}", text4);
 
@@ -1714,15 +1910,35 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // F commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // G commit
-    let _ = others_commit_normal(g.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        g.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     println!(
         "a_mls_group export secret {:?}",
@@ -1786,25 +2002,25 @@ fn test_normal() -> Result<()> {
     let _ = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // D commit
     let _ = others_commit_normal(
         d.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // F commit
     let _ = others_commit_normal(
         f.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // G commit
     let _ = others_commit_normal(
         g.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     println!(
@@ -1952,13 +2168,29 @@ fn test_normal() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // E commit
-    let _ = others_commit_normal(e.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        e.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // F commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // G commit
-    let _ = others_commit_normal(g.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        g.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     println!(
         "a_mls_group export secret {:?}",
@@ -2020,28 +2252,28 @@ fn test_normal() -> Result<()> {
     let text5 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
-        msg5.encrypt_msg.clone(),
+        msg5.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to D, the result is {:?}", text5);
     // E decrypt A's msg
     let text5 = decrypt_message(
         e.to_string(),
         group_id.to_string(),
-        msg5.encrypt_msg.clone(),
+        msg5.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to E, the result is {:?}", text5);
     // F decrypt A's msg
     let text5 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
-        msg5.encrypt_msg.clone(),
+        msg5.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to F, the result is {:?}", text5);
     // G decrypt A's msg
     let text5 = decrypt_message(
         g.to_string(),
         group_id.to_string(),
-        msg5.encrypt_msg.clone(),
+        msg5.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("A send msg to G, the result is {:?}", text5);
 
@@ -2056,28 +2288,28 @@ fn test_normal() -> Result<()> {
     let text6 = decrypt_message(
         d.to_string(),
         group_id.to_string(),
-        msg6.encrypt_msg.clone(),
+        msg6.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("G send msg to D, the result is {:?}", text6);
     // E decrypt G's msg
     let text6 = decrypt_message(
         e.to_string(),
         group_id.to_string(),
-        msg6.encrypt_msg.clone(),
+        msg6.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("G send msg to E, the result is {:?}", text6);
     // F decrypt G's msg
     let text6 = decrypt_message(
         f.to_string(),
         group_id.to_string(),
-        msg6.encrypt_msg.clone(),
+        msg6.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("G send msg to F, the result is {:?}", text6);
     // A decrypt G's msg
     let text6 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
-        msg6.encrypt_msg.clone(),
+        msg6.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("G send msg to A, the result is {:?}", text6);
 
@@ -2132,14 +2364,22 @@ fn test_basic2() -> Result<()> {
     let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
 
     // B decrypt A's msg
-    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+    let text = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg.encrypt_msg.as_bytes().to_vec(),
+    )?;
 
     println!("A send msg to B ,the result is {:?}", text);
 
     // B send msg to A
     let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
     // A decrypt B's msg
-    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
+    let text2 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg2.encrypt_msg.as_bytes().to_vec(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     println!(
@@ -2177,7 +2417,7 @@ fn test_basic2() -> Result<()> {
     let text3 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
-        msg3.encrypt_msg.clone(),
+        msg3.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to A ,the result is {:?}", text3);
 
@@ -2187,7 +2427,11 @@ fn test_basic2() -> Result<()> {
     // B commit add
     self_commit(b.to_string(), group_id.to_string())?;
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
+    let _ = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        welcome2.queued_msg.as_bytes().to_vec(),
+    )?;
 
     // B send msg
     let msg4 = create_message(
@@ -2200,7 +2444,7 @@ fn test_basic2() -> Result<()> {
     let text4 = decrypt_message(
         c.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to C ,the result is {:?}", text4);
 
@@ -2208,7 +2452,7 @@ fn test_basic2() -> Result<()> {
     let text4 = decrypt_message(
         a.to_string(),
         group_id.to_string(),
-        msg4.encrypt_msg.clone(),
+        msg4.encrypt_msg.clone().as_bytes().to_vec(),
     )?;
     println!("B send msg to A ,the result is {:?}", text4);
 
@@ -2308,7 +2552,7 @@ fn test_replay_delay() -> Result<()> {
     let _ = others_commit_normal(
         a.to_string(),
         group_id.to_string(),
-        welcome2.queued_msg.clone(),
+        welcome2.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // // F commit
     // let _ = others_commit_normal(f.to_string(), group_id.to_string(), welcome2.0.clone())?;
@@ -2349,31 +2593,31 @@ fn test_replay_delay() -> Result<()> {
     let _ = others_commit_normal(
         b.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // C commit
     let _ = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // F commit, add some members, due to F reply dely, lead to F lack ont commit
     let _ = others_commit_normal(
         f.to_string(),
         group_id.to_string(),
-        welcome2.queued_msg.clone(),
+        welcome2.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // F commit
     let _ = others_commit_normal(
         f.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // G commit
     let _ = others_commit_normal(
         g.to_string(),
         group_id.to_string(),
-        welcome3.queued_msg.clone(),
+        welcome3.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     println!("--------------");
@@ -2423,15 +2667,35 @@ fn test_replay_delay() -> Result<()> {
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // F commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
     // G commit
-    let _ = others_commit_normal(g.to_string(), group_id.to_string(), queued_msg.clone())?;
+    let _ = others_commit_normal(
+        g.to_string(),
+        group_id.to_string(),
+        queued_msg.clone().as_bytes().to_vec(),
+    )?;
 
     println!(
         "a_mls_group export secret {:?}",
@@ -2465,19 +2729,19 @@ fn test_replay_delay() -> Result<()> {
     let _ = others_commit_normal(
         c.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // D commit
     let _ = others_commit_normal(
         d.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
     // G commit
     let _ = others_commit_normal(
         g.to_string(),
         group_id.to_string(),
-        welcome4.queued_msg.clone(),
+        welcome4.queued_msg.clone().as_bytes().to_vec(),
     )?;
 
     println!(

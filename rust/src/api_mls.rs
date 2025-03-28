@@ -10,10 +10,7 @@ pub use kc::identity::Identity;
 use kc::openmls_rust_persistent_crypto::JsonCodec;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 pub use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
-use openmls::prelude::{
-    tls_codec::{Deserialize, Serialize},
-    ContentType, Extension, MlsMessageBodyIn, MlsMessageIn,
-};
+use openmls::prelude::{tls_codec::Serialize, Extension};
 pub use openmls_sqlite_storage::{Connection, SqliteStorageProvider};
 pub use openmls_traits::OpenMlsProvider;
 
@@ -272,7 +269,7 @@ pub fn get_group_extension(nostr_id: String, group_id: String) -> Result<GroupEx
 
 // return  group name, description, admin_pubkeys and relays info in json format
 // this api do not use temp
-pub fn parse_welcome_message(nostr_id: String, welcome: Vec<u8>) -> Result<String> {
+pub(crate) fn parse_welcome_message(nostr_id: String, welcome: Vec<u8>) -> Result<String> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -401,33 +398,30 @@ pub fn add_members(
     result
 }
 
-pub fn parse_mls_msg_type(data: Vec<u8>) -> Result<MessageInType> {
-    let queued_msg = MlsMessageIn::tls_deserialize_exact(&data)?;
-    match queued_msg.extract() {
-        MlsMessageBodyIn::PrivateMessage(private_msg) => match private_msg.content_type() {
-            ContentType::Application => {
-                return Ok(MessageInType::Application);
-            }
-            ContentType::Proposal => {
-                return Ok(MessageInType::Proposal);
-            }
-            ContentType::Commit => {
-                return Ok(MessageInType::Commit);
-            }
-        },
-        MlsMessageBodyIn::Welcome(_welcome_msg) => {
-            return Ok(MessageInType::Welcome);
+pub fn parse_mls_msg_type(
+    nostr_id: String,
+    group_id: String,
+    data: Vec<u8>,
+) -> Result<MessageInType> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[parse_mls_msg_type]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[parse_mls_msg_type]> nostr_id do not init.");
+            return Err(format_err!(
+                "<fn[parse_mls_msg_type]> nostr_id do not init."
+            ));
         }
-        MlsMessageBodyIn::GroupInfo(_group_info) => {
-            return Ok(MessageInType::GroupInfo);
-        }
-        MlsMessageBodyIn::KeyPackage(_key_package) => {
-            return Ok(MessageInType::KeyPackage);
-        }
-        _ => {
-            return Ok(MessageInType::Custom);
-        }
-    }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[parse_mls_msg_type]> Can not get store from user."))?;
+        Ok(user.parse_mls_msg_type(group_id, data)?)
+    });
+    result
 }
 
 pub fn self_commit(nostr_id: String, group_id: String) -> Result<()> {
@@ -468,8 +462,9 @@ pub fn join_mls_group(nostr_id: String, group_id: String, welcome: Vec<u8>) -> R
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[join_mls_group]> Can not get store from user."))?;
         user.join_mls_group(group_id, welcome)?;
-        // first update identity, because of delete keypackage
-        user.update(nostr_id.clone(), true).await?;
+        // first update identity
+        // due to delete keypackage, will delete late
+        // user.update(nostr_id.clone(), true).await?;
         // then update group list, because of join a new group
         user.update(nostr_id, false).await?;
         Ok(())
@@ -492,7 +487,8 @@ pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[delete_group]> Can not get store from user."))?;
-        user.delete_group(group_id)?;
+        user.delete_group_in_mls(group_id.clone())?;
+        user.delete_group_in_user(group_id.clone())?;
         user.update(nostr_id, false).await?;
         Ok(())
     });
@@ -534,16 +530,16 @@ pub fn create_message(nostr_id: String, group_id: String, msg: String) -> Result
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
-            .ok_or_else(|| format_err!("<fn[send_msg]> Can not get store err."))?;
+            .ok_or_else(|| format_err!("<fn[create_message]> Can not get store err."))?;
         if !store.user.contains_key(&nostr_id) {
-            error!("<fn[send_msg]> nostr_id do not init.");
-            return Err(format_err!("<fn[send_msg]> nostr_id do not init."));
+            error!("<fn[create_message]> nostr_id do not init.");
+            return Err(format_err!("<fn[create_message]> nostr_id do not init."));
         }
         let user = store
             .user
             .get_mut(&nostr_id)
-            .ok_or_else(|| format_err!("<fn[send_msg]> Can not get store from user."))?;
-        let (encrypt_msg, ratchet_key) = user.send_msg(group_id, msg)?;
+            .ok_or_else(|| format_err!("<fn[create_message]> Can not get store from user."))?;
+        let (encrypt_msg, ratchet_key) = user.create_message(group_id, msg)?;
         let output = MessageResult {
             encrypt_msg,
             ratchet_key,
@@ -611,11 +607,7 @@ pub fn get_lead_node_index(
     result
 }
 
-pub fn remove_members(
-    nostr_id: String,
-    group_id: String,
-    members: Vec<Vec<u8>>,
-) -> Result<Vec<u8>> {
+pub fn remove_members(nostr_id: String, group_id: String, members: Vec<Vec<u8>>) -> Result<String> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -635,7 +627,7 @@ pub fn remove_members(
     result
 }
 
-pub fn others_commit_remove_member(
+pub(crate) fn others_commit_remove_member(
     nostr_id: String,
     group_id: String,
     queued_msg: Vec<u8>,
@@ -689,7 +681,7 @@ pub fn update_group_context_extensions(
     admin_pubkeys_hex: Option<Vec<String>>,
     group_relays: Option<Vec<String>>,
     status: Option<String>,
-) -> Result<Vec<u8>> {
+) -> Result<String> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -717,7 +709,7 @@ pub fn update_group_context_extensions(
     result
 }
 
-pub fn self_update(nostr_id: String, group_id: String, extensions: Vec<u8>) -> Result<Vec<u8>> {
+pub fn self_update(nostr_id: String, group_id: String, extensions: Vec<u8>) -> Result<String> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
