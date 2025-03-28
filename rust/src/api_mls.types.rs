@@ -1,6 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KeyPackageResult {
+    pub key_package: Vec<u8>,
+    pub mls_protocol_version: String,
+    pub ciphersuite: String,
+    pub extensions: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageResult {
     pub encrypt_msg: String,
     pub ratchet_key: Option<Vec<u8>>,

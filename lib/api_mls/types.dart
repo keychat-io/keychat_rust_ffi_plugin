@@ -6,7 +6,7 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
 class AddMembersResult {
   final String queuedMsg;
@@ -113,6 +113,33 @@ class GroupExtensionResult {
           adminPubkeys == other.adminPubkeys &&
           relays == other.relays &&
           status == other.status;
+}
+
+class KeyPackageResult {
+  final Uint8List keyPackage;
+  final String mlsProtocolVersion;
+  final String ciphersuite;
+  final String extensions;
+
+  const KeyPackageResult({
+    required this.keyPackage,
+    required this.mlsProtocolVersion,
+    required this.ciphersuite,
+    required this.extensions,
+  });
+
+  @override
+  int get hashCode => keyPackage.hashCode ^ mlsProtocolVersion.hashCode ^ ciphersuite.hashCode ^ extensions.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is KeyPackageResult &&
+          runtimeType == other.runtimeType &&
+          keyPackage == other.keyPackage &&
+          mlsProtocolVersion == other.mlsProtocolVersion &&
+          ciphersuite == other.ciphersuite &&
+          extensions == other.extensions;
 }
 
 enum MessageInType {

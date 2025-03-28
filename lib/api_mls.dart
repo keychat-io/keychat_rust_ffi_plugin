@@ -7,7 +7,7 @@ import 'api_mls/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `others_commit_remove_member`, `parse_welcome_message`
+// These functions are ignored because they are not marked as `pub`: `is_admin`, `others_commit_remove_member`, `parse_welcome_message`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `MlsStore`, `RUNTIME`, `STORE`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `deref`, `initialize`, `initialize`
 
@@ -20,7 +20,7 @@ Future<Uint8List> getExportSecret({required String nostrId, required String grou
 Future<Uint8List> getTreeHash({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetTreeHash(nostrId: nostrId, groupId: groupId);
 
-Future<Uint8List> createKeyPackage({required String nostrId}) =>
+Future<KeyPackageResult> createKeyPackage({required String nostrId}) =>
     RustLib.instance.api.crateApiMlsCreateKeyPackage(nostrId: nostrId);
 
 Future<void> deleteKeyPackage({required String nostrId, required List<int> keyPackage}) =>
@@ -61,7 +61,7 @@ Future<AddMembersResult> addMembers(
         {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
     RustLib.instance.api.crateApiMlsAddMembers(nostrId: nostrId, groupId: groupId, keyPackages: keyPackages);
 
-Future<MessageInType> parseMlsMsgType({required String nostrId, required String groupId, required List<int> data}) =>
+Future<MessageInType> parseMlsMsgType({required String nostrId, required String groupId, required String data}) =>
     RustLib.instance.api.crateApiMlsParseMlsMsgType(nostrId: nostrId, groupId: groupId, data: data);
 
 Future<void> selfCommit({required String nostrId, required String groupId}) =>
@@ -74,13 +74,13 @@ Future<void> deleteGroup({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsDeleteGroup(nostrId: nostrId, groupId: groupId);
 
 Future<CommitResult> othersCommitNormal(
-        {required String nostrId, required String groupId, required List<int> queuedMsg}) =>
+        {required String nostrId, required String groupId, required String queuedMsg}) =>
     RustLib.instance.api.crateApiMlsOthersCommitNormal(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
 Future<MessageResult> createMessage({required String nostrId, required String groupId, required String msg}) =>
     RustLib.instance.api.crateApiMlsCreateMessage(nostrId: nostrId, groupId: groupId, msg: msg);
 
-Future<DecryptedMessage> decryptMessage({required String nostrId, required String groupId, required List<int> msg}) =>
+Future<DecryptedMessage> decryptMessage({required String nostrId, required String groupId, required String msg}) =>
     RustLib.instance.api.crateApiMlsDecryptMessage(nostrId: nostrId, groupId: groupId, msg: msg);
 
 Future<Uint8List> getLeadNodeIndex(
@@ -127,8 +127,5 @@ Future<void> normalMemberCommitLeave(
         {required String nostrId, required String groupId, required List<int> queuedMsg}) =>
     RustLib.instance.api.crateApiMlsNormalMemberCommitLeave(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
 
-Future<bool> isAdmin({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
-    RustLib.instance.api.crateApiMlsIsAdmin(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);
-
-Future<String?> getSender({required String nostrId, required String groupId, required List<int> queuedMsg}) =>
+Future<String?> getSender({required String nostrId, required String groupId, required String queuedMsg}) =>
     RustLib.instance.api.crateApiMlsGetSender(nostrId: nostrId, groupId: groupId, queuedMsg: queuedMsg);

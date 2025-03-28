@@ -21,7 +21,7 @@ pub use openmls_sqlite_storage::SqliteStorageProvider;
 use openmls_traits::types::Ciphersuite;
 pub use openmls_traits::OpenMlsProvider;
 
-use super::{CommitResult, MessageInType};
+use super::{CommitResult, KeyPackageResult, MessageInType};
 
 pub(crate) const CIPHERSUITE: Ciphersuite =
     Ciphersuite::MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519;
@@ -136,7 +136,7 @@ impl User {
     pub(crate) fn parse_mls_msg_type(
         &self,
         group_id: String,
-        data: Vec<u8>,
+        data: String,
     ) -> Result<MessageInType> {
         let mut groups = self
             .mls_user
@@ -178,16 +178,25 @@ impl User {
         }
     }
 
-    pub(crate) fn create_key_package(&mut self) -> Result<KeyPackage> {
+    pub(crate) fn create_key_package(&mut self) -> Result<KeyPackageResult> {
         let mut identity = self
             .mls_user
             .identity
             .write()
             .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
         let capabilities: Capabilities = identity.create_capabilities()?;
+        let ciphersuite = identity.ciphersuite_value().to_string();
+        let extensions = identity.extensions_value();
         let key_package =
             identity.add_key_package(CIPHERSUITE, &self.mls_user.provider, capabilities);
-        Ok(key_package)
+        let key_package_serialized = key_package.tls_serialize_detached()?;
+        let result = KeyPackageResult {
+            key_package: key_package_serialized,
+            extensions,
+            ciphersuite,
+            mls_protocol_version: "1.0".to_string(),
+        };
+        Ok(result)
     }
 
     pub(crate) fn delete_key_package(&mut self, key_package: Vec<u8>) -> Result<()> {
@@ -489,7 +498,7 @@ impl User {
     pub(crate) fn others_commit_normal(
         &mut self,
         group_id: String,
-        queued_msg: Vec<u8>,
+        queued_msg: String,
     ) -> Result<CommitResult> {
         let mut groups = self
             .mls_user
@@ -601,14 +610,11 @@ impl User {
         Ok(encrypted_content)
     }
 
-    pub(crate) fn decrypt_nip44(
-        &self,
-        group: MlsGroup,
-        serialized_msg: Vec<u8>,
-    ) -> Result<Vec<u8>> {
+    pub(crate) fn decrypt_nip44(&self, group: MlsGroup, msg: String) -> Result<Vec<u8>> {
         let export_secret = group.export_secret(&self.mls_user.provider, "nostr", b"nostr", 32)?;
         let export_secret_hex = hex::encode(&export_secret);
         let export_nostr_keys = Keys::parse(&export_secret_hex)?;
+        let serialized_msg = msg.as_bytes().to_vec();
         // Decrypt using export secret key
         let decrypted_content = nip44::decrypt_to_bytes(
             export_nostr_keys.secret_key(),
@@ -652,7 +658,7 @@ impl User {
     pub(crate) fn decrypt_msg(
         &mut self,
         group_id: String,
-        msg: Vec<u8>,
+        msg: String,
     ) -> Result<(String, String, Option<Vec<u8>>)> {
         let mut groups = self
             .mls_user
@@ -1073,7 +1079,7 @@ impl User {
     pub(crate) fn get_sender(
         &self,
         group_id: String,
-        queued_msg: Vec<u8>,
+        queued_msg: String,
     ) -> Result<Option<String>> {
         let mut groups = self
             .mls_user

@@ -10,7 +10,7 @@ pub use kc::identity::Identity;
 use kc::openmls_rust_persistent_crypto::JsonCodec;
 pub use kc::openmls_rust_persistent_crypto::OpenMlsRustPersistentCrypto;
 pub use openmls::group::{GroupId, MlsGroup, MlsGroupCreateConfig, MlsGroupJoinConfig};
-use openmls::prelude::{tls_codec::Serialize, Extension};
+use openmls::prelude::Extension;
 pub use openmls_sqlite_storage::{Connection, SqliteStorageProvider};
 pub use openmls_traits::OpenMlsProvider;
 
@@ -109,7 +109,7 @@ pub fn get_tree_hash(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
 }
 
 // only join new group that need to create it
-pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
+pub fn create_key_package(nostr_id: String) -> Result<KeyPackageResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -128,9 +128,7 @@ pub fn create_key_package(nostr_id: String) -> Result<Vec<u8>> {
             .ok_or_else(|| format_err!("<fn[create_key_package]> Can not get store from user."))?;
         let key_package = user.create_key_package()?;
         user.update(nostr_id, true).await?;
-        // let serialized: Vec<u8> = bincode::serialize(&key_package)?;
-        let serialized = key_package.tls_serialize_detached()?;
-        Ok(serialized)
+        Ok(key_package)
     });
     result
 }
@@ -401,7 +399,7 @@ pub fn add_members(
 pub fn parse_mls_msg_type(
     nostr_id: String,
     group_id: String,
-    data: Vec<u8>,
+    data: String,
 ) -> Result<MessageInType> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -500,7 +498,7 @@ pub fn delete_group(nostr_id: String, group_id: String) -> Result<()> {
 pub fn others_commit_normal(
     nostr_id: String,
     group_id: String,
-    queued_msg: Vec<u8>,
+    queued_msg: String,
 ) -> Result<CommitResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -553,7 +551,7 @@ pub fn create_message(nostr_id: String, group_id: String, msg: String) -> Result
 pub fn decrypt_message(
     nostr_id: String,
     group_id: String,
-    msg: Vec<u8>,
+    msg: String,
 ) -> Result<DecryptedMessage> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -824,7 +822,7 @@ pub fn normal_member_commit_leave(
     result
 }
 
-pub fn is_admin(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Result<bool> {
+pub(crate) fn is_admin(nostr_id: String, group_id: String, queued_msg: String) -> Result<bool> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -857,7 +855,7 @@ pub fn is_admin(nostr_id: String, group_id: String, queued_msg: Vec<u8>) -> Resu
 pub fn get_sender(
     nostr_id: String,
     group_id: String,
-    queued_msg: Vec<u8>,
+    queued_msg: String,
 ) -> Result<Option<String>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {

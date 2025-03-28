@@ -100,6 +100,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   InvoiceStatus dco_decode_invoice_status(dynamic raw);
 
   @protected
+  KeyPackageResult dco_decode_key_package_result(dynamic raw);
+
+  @protected
   KeychatIdentityKey dco_decode_keychat_identity_key(dynamic raw);
 
   @protected
@@ -358,6 +361,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   InvoiceStatus sse_decode_invoice_status(SseDeserializer deserializer);
+
+  @protected
+  KeyPackageResult sse_decode_key_package_result(SseDeserializer deserializer);
 
   @protected
   KeychatIdentityKey sse_decode_keychat_identity_key(SseDeserializer deserializer);
@@ -625,6 +631,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_invoice_status(InvoiceStatus self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_key_package_result(KeyPackageResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_keychat_identity_key(KeychatIdentityKey self, SseSerializer serializer);
