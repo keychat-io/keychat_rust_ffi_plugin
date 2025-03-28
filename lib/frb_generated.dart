@@ -79,7 +79,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
 abstract class RustLibApi extends BaseApi {
   Future<AddMembersResult> crateApiMlsAddMembers(
-      {required String nostrId, required String groupId, required List<Uint8List> keyPackages});
+      {required String nostrId, required String groupId, required List<String> keyPackages});
 
   Future<bool> crateApiCashuAddMint({required String url});
 
@@ -161,7 +161,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<bool> crateApiSignalDeleteIdentity({required KeychatIdentityKeyPair keyPair, required String address});
 
-  Future<void> crateApiMlsDeleteKeyPackage({required String nostrId, required List<int> keyPackage});
+  Future<void> crateApiMlsDeleteKeyPackage({required String nostrId, required String keyPackage});
 
   Future<bool> crateApiSignalDeleteSession(
       {required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address});
@@ -417,13 +417,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<AddMembersResult> crateApiMlsAddMembers(
-      {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) {
+      {required String nostrId, required String groupId, required List<String> keyPackages}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(nostrId, serializer);
         sse_encode_String(groupId, serializer);
-        sse_encode_list_list_prim_u_8_strict(keyPackages, serializer);
+        sse_encode_list_String(keyPackages, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1, port: port_);
       },
       codec: SseCodec(
@@ -1128,12 +1128,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiMlsDeleteKeyPackage({required String nostrId, required List<int> keyPackage}) {
+  Future<void> crateApiMlsDeleteKeyPackage({required String nostrId, required String keyPackage}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(nostrId, serializer);
-        sse_encode_list_prim_u_8_loose(keyPackage, serializer);
+        sse_encode_String(keyPackage, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29, port: port_);
       },
       codec: SseCodec(
@@ -3637,7 +3637,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     final arr = raw as List<dynamic>;
     if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return KeyPackageResult(
-      keyPackage: dco_decode_list_prim_u_8_strict(arr[0]),
+      keyPackage: dco_decode_String(arr[0]),
       mlsProtocolVersion: dco_decode_String(arr[1]),
       ciphersuite: dco_decode_String(arr[2]),
       extensions: dco_decode_String(arr[3]),
@@ -4424,7 +4424,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   KeyPackageResult sse_decode_key_package_result(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_keyPackage = sse_decode_list_prim_u_8_strict(deserializer);
+    var var_keyPackage = sse_decode_String(deserializer);
     var var_mlsProtocolVersion = sse_decode_String(deserializer);
     var var_ciphersuite = sse_decode_String(deserializer);
     var var_extensions = sse_decode_String(deserializer);
@@ -5267,7 +5267,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_key_package_result(KeyPackageResult self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_list_prim_u_8_strict(self.keyPackage, serializer);
+    sse_encode_String(self.keyPackage, serializer);
     sse_encode_String(self.mlsProtocolVersion, serializer);
     sse_encode_String(self.ciphersuite, serializer);
     sse_encode_String(self.extensions, serializer);

@@ -23,7 +23,7 @@ Future<Uint8List> getTreeHash({required String nostrId, required String groupId}
 Future<KeyPackageResult> createKeyPackage({required String nostrId}) =>
     RustLib.instance.api.crateApiMlsCreateKeyPackage(nostrId: nostrId);
 
-Future<void> deleteKeyPackage({required String nostrId, required List<int> keyPackage}) =>
+Future<void> deleteKeyPackage({required String nostrId, required String keyPackage}) =>
     RustLib.instance.api.crateApiMlsDeleteKeyPackage(nostrId: nostrId, keyPackage: keyPackage);
 
 Future<Uint8List> createGroupConfig() => RustLib.instance.api.crateApiMlsCreateGroupConfig();
@@ -58,7 +58,7 @@ Future<Uint8List> createMlsGroup(
         status: status);
 
 Future<AddMembersResult> addMembers(
-        {required String nostrId, required String groupId, required List<Uint8List> keyPackages}) =>
+        {required String nostrId, required String groupId, required List<String> keyPackages}) =>
     RustLib.instance.api.crateApiMlsAddMembers(nostrId: nostrId, groupId: groupId, keyPackages: keyPackages);
 
 Future<MessageInType> parseMlsMsgType({required String nostrId, required String groupId, required String data}) =>

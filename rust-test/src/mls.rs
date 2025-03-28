@@ -79,7 +79,11 @@ fn test_diff_db1() -> Result<()> {
     .to_vec();
 
     // A add B
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [hex::encode(b_pk)].to_vec(),
+    )?;
     println!("The welcome is: {:?}", welcome);
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;

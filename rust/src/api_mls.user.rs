@@ -191,7 +191,7 @@ impl User {
             identity.add_key_package(CIPHERSUITE, &self.mls_user.provider, capabilities);
         let key_package_serialized = key_package.tls_serialize_detached()?;
         let result = KeyPackageResult {
-            key_package: key_package_serialized,
+            key_package: hex::encode(key_package_serialized),
             extensions,
             ciphersuite,
             mls_protocol_version: "1.0".to_string(),
@@ -199,7 +199,7 @@ impl User {
         Ok(result)
     }
 
-    pub(crate) fn delete_key_package(&mut self, key_package: Vec<u8>) -> Result<()> {
+    pub(crate) fn delete_key_package(&mut self, key_package: String) -> Result<()> {
         let kp: KeyPackage = self.parse_key_package(key_package)?;
         let mut identity = self
             .mls_user
@@ -289,7 +289,8 @@ impl User {
         Ok(group_config_vec)
     }
 
-    pub(crate) fn parse_key_package(&self, key_package_bytes: Vec<u8>) -> Result<KeyPackage> {
+    pub(crate) fn parse_key_package(&self, key_package_hex: String) -> Result<KeyPackage> {
+        let key_package_bytes = hex::decode(key_package_hex)?;
         let key_package_in = KeyPackageIn::tls_deserialize(&mut key_package_bytes.as_slice())
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
@@ -304,7 +305,7 @@ impl User {
     pub(crate) fn add_members(
         &mut self,
         group_id: String,
-        key_packages: Vec<Vec<u8>>,
+        key_packages: Vec<String>,
     ) -> Result<(String, Vec<u8>)> {
         let mut kps: Vec<KeyPackage> = Vec::new();
         for kp in key_packages {

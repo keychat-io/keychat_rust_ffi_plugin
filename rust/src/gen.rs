@@ -69,7 +69,7 @@ fn wire__crate__api_mls__add_members_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_nostr_id = <String>::sse_decode(&mut deserializer);
             let api_group_id = <String>::sse_decode(&mut deserializer);
-            let api_key_packages = <Vec<Vec<u8>>>::sse_decode(&mut deserializer);
+            let api_key_packages = <Vec<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
@@ -1134,7 +1134,7 @@ fn wire__crate__api_mls__delete_key_package_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_nostr_id = <String>::sse_decode(&mut deserializer);
-            let api_key_package = <Vec<u8>>::sse_decode(&mut deserializer);
+            let api_key_package = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
@@ -4880,7 +4880,7 @@ impl SseDecode for crate::api_cashu::InvoiceStatus {
 impl SseDecode for crate::api_mls::types::KeyPackageResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_keyPackage = <Vec<u8>>::sse_decode(deserializer);
+        let mut var_keyPackage = <String>::sse_decode(deserializer);
         let mut var_mlsProtocolVersion = <String>::sse_decode(deserializer);
         let mut var_ciphersuite = <String>::sse_decode(deserializer);
         let mut var_extensions = <String>::sse_decode(deserializer);
@@ -6739,7 +6739,7 @@ impl SseEncode for crate::api_cashu::InvoiceStatus {
 impl SseEncode for crate::api_mls::types::KeyPackageResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<u8>>::sse_encode(self.key_package, serializer);
+        <String>::sse_encode(self.key_package, serializer);
         <String>::sse_encode(self.mls_protocol_version, serializer);
         <String>::sse_encode(self.ciphersuite, serializer);
         <String>::sse_encode(self.extensions, serializer);

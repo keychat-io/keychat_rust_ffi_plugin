@@ -133,7 +133,7 @@ pub fn create_key_package(nostr_id: String) -> Result<KeyPackageResult> {
     result
 }
 
-pub fn delete_key_package(nostr_id: String, key_package: Vec<u8>) -> Result<()> {
+pub fn delete_key_package(nostr_id: String, key_package: String) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -370,7 +370,7 @@ pub fn create_mls_group(
 pub fn add_members(
     nostr_id: String,
     group_id: String,
-    key_packages: Vec<Vec<u8>>,
+    key_packages: Vec<String>,
 ) -> Result<AddMembersResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {

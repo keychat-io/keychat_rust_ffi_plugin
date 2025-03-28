@@ -116,7 +116,7 @@ class GroupExtensionResult {
 }
 
 class KeyPackageResult {
-  final Uint8List keyPackage;
+  final String keyPackage;
   final String mlsProtocolVersion;
   final String ciphersuite;
   final String extensions;

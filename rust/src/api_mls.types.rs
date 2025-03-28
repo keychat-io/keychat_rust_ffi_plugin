@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct KeyPackageResult {
-    pub key_package: Vec<u8>,
+    pub key_package: String,
     pub mls_protocol_version: String,
     pub ciphersuite: String,
     pub extensions: String,
