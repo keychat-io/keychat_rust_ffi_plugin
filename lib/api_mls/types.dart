@@ -64,16 +64,16 @@ enum CommitTypeResult {
 class DecryptedMessage {
   final String decryptMsg;
   final String sender;
-  final Uint8List? ratchetKey;
+  final String listenKey;
 
   const DecryptedMessage({
     required this.decryptMsg,
     required this.sender,
-    this.ratchetKey,
+    required this.listenKey,
   });
 
   @override
-  int get hashCode => decryptMsg.hashCode ^ sender.hashCode ^ ratchetKey.hashCode;
+  int get hashCode => decryptMsg.hashCode ^ sender.hashCode ^ listenKey.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -82,7 +82,7 @@ class DecryptedMessage {
           runtimeType == other.runtimeType &&
           decryptMsg == other.decryptMsg &&
           sender == other.sender &&
-          ratchetKey == other.ratchetKey;
+          listenKey == other.listenKey;
 }
 
 class GroupExtensionResult {
@@ -156,15 +156,15 @@ enum MessageInType {
 
 class MessageResult {
   final String encryptMsg;
-  final Uint8List? ratchetKey;
+  final String listenKey;
 
   const MessageResult({
     required this.encryptMsg,
-    this.ratchetKey,
+    required this.listenKey,
   });
 
   @override
-  int get hashCode => encryptMsg.hashCode ^ ratchetKey.hashCode;
+  int get hashCode => encryptMsg.hashCode ^ listenKey.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -172,5 +172,5 @@ class MessageResult {
       other is MessageResult &&
           runtimeType == other.runtimeType &&
           encryptMsg == other.encryptMsg &&
-          ratchetKey == other.ratchetKey;
+          listenKey == other.listenKey;
 }

@@ -11,14 +11,14 @@ pub struct KeyPackageResult {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageResult {
     pub encrypt_msg: String,
-    pub ratchet_key: Option<Vec<u8>>,
+    pub listen_key: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DecryptedMessage {
     pub decrypt_msg: String,
     pub sender: String,
-    pub ratchet_key: Option<Vec<u8>>,
+    pub listen_key: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

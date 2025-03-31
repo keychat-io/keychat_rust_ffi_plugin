@@ -253,12 +253,12 @@ fn test_secret_key() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -394,7 +394,7 @@ fn test_remove_then_add_group() -> Result<()> {
     join_mls_group(c.to_string(), group_id.to_string(), welcome.welcome.clone())?;
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
@@ -412,7 +412,7 @@ fn test_remove_then_add_group() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     // then A add B again
@@ -433,7 +433,7 @@ fn test_remove_then_add_group() -> Result<()> {
     )?;
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     Ok(())
@@ -696,12 +696,12 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -757,17 +757,17 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -846,22 +846,22 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
@@ -884,17 +884,17 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     // A add E
@@ -926,22 +926,22 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--C leave --------------");
@@ -971,7 +971,7 @@ fn test_basic() -> Result<()> {
     let queued_msg = admin_proposal_leave(a.to_string(), group_id.to_string())?;
     println!(
         "c self_leave a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     // when A proposal that can not send msg again.
@@ -997,22 +997,22 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     // println!(
     //     "c_mls_group export secret {:?}",
-    //     get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+    //     get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     // );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A UPDATE --------------");
@@ -1029,17 +1029,17 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("end --------------end");
@@ -1326,17 +1326,17 @@ fn test_extension() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1471,16 +1471,16 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1575,27 +1575,27 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1709,32 +1709,32 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1789,27 +1789,27 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1876,32 +1876,32 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1964,27 +1964,27 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -2029,27 +2029,27 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -2215,12 +2215,12 @@ fn test_basic2() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -2351,12 +2351,12 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--B add C G --------------");
@@ -2400,22 +2400,22 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A add D --------------");
@@ -2467,32 +2467,32 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A remove B F --------------");
@@ -2522,22 +2522,22 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A add E --------------");
@@ -2573,27 +2573,27 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--C leave --------------");
@@ -2622,22 +2622,22 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("end --------------end");

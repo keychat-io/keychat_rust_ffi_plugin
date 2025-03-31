@@ -66,7 +66,7 @@ pub fn init_mls_db(db_path: String, nostr_id: String) -> Result<()> {
     result
 }
 
-pub fn get_export_secret(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
+pub(crate) fn get_export_secret(nostr_id: String, group_id: String) -> Result<Vec<u8>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -83,6 +83,27 @@ pub fn get_export_secret(nostr_id: String, group_id: String) -> Result<Vec<u8>> 
             .ok_or_else(|| format_err!("<fn[get_export_secret]> Can not get store from user."))?;
         let export_secret = user.get_export_secret(group_id)?;
         Ok(export_secret)
+    });
+    result
+}
+
+pub fn get_listen_key_from_export_secret(nostr_id: String, group_id: String) -> Result<String> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[get_export_secret]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[get_export_secret]> nostr_id do not init.");
+            return Err(format_err!("<fn[get_export_secret]> nostr_id do not init."));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[get_export_secret]> Can not get store from user."))?;
+        let listen_key = user.get_listen_key_from_export_secret(group_id)?;
+        Ok(listen_key)
     });
     result
 }
@@ -537,10 +558,10 @@ pub fn create_message(nostr_id: String, group_id: String, msg: String) -> Result
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[create_message]> Can not get store from user."))?;
-        let (encrypt_msg, ratchet_key) = user.create_message(group_id, msg)?;
+        let (encrypt_msg, listen_key) = user.create_message(group_id, msg)?;
         let output = MessageResult {
             encrypt_msg,
-            ratchet_key,
+            listen_key,
         };
         Ok(output)
     });
@@ -567,11 +588,11 @@ pub fn decrypt_message(
             .user
             .get_mut(&nostr_id)
             .ok_or_else(|| format_err!("<fn[decrypt_msg]> Can not get store from user."))?;
-        let (decrypt_msg, sender, ratchet_key) = user.decrypt_msg(group_id, msg)?;
+        let (decrypt_msg, sender, listen_key) = user.decrypt_msg(group_id, msg)?;
         let output = DecryptedMessage {
             decrypt_msg,
             sender,
-            ratchet_key,
+            listen_key,
         };
         Ok(output)
     });

@@ -7,15 +7,15 @@ import 'api_mls/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `is_admin`, `others_commit_remove_member`, `parse_welcome_message`
+// These functions are ignored because they are not marked as `pub`: `get_export_secret`, `is_admin`, `others_commit_remove_member`, `parse_welcome_message`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `MlsStore`, `RUNTIME`, `STORE`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `deref`, `initialize`, `initialize`
 
 Future<void> initMlsDb({required String dbPath, required String nostrId}) =>
     RustLib.instance.api.crateApiMlsInitMlsDb(dbPath: dbPath, nostrId: nostrId);
 
-Future<Uint8List> getExportSecret({required String nostrId, required String groupId}) =>
-    RustLib.instance.api.crateApiMlsGetExportSecret(nostrId: nostrId, groupId: groupId);
+Future<String> getListenKeyFromExportSecret({required String nostrId, required String groupId}) =>
+    RustLib.instance.api.crateApiMlsGetListenKeyFromExportSecret(nostrId: nostrId, groupId: groupId);
 
 Future<Uint8List> getTreeHash({required String nostrId, required String groupId}) =>
     RustLib.instance.api.crateApiMlsGetTreeHash(nostrId: nostrId, groupId: groupId);
