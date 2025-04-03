@@ -1,9 +1,30 @@
 use anyhow::Result;
 use rust::api_mls::*;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+struct WelcomeMessage {
+    queued_msg: Vec<u8>,
+    welcome: Vec<u8>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct EncryptMsg {
+    encrypt_msg: Vec<u8>,
+    ratchet_key: Option<Vec<u8>>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct DecryptMsg {
+    decrypt_msg: Vec<u8>,
+    sender: String,
+    ratchet_key: Option<Vec<u8>>,
+}
 
 fn main() {
     // let _ = test_basic();
-    let _ = test_secret_key();
+    let _ = test_extension();
+    // let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
     // let _ = test_exist_group();
@@ -18,12 +39,20 @@ fn test_diff_db1() -> Result<()> {
     let group_id = "G1";
 
     let a = "A";
-    let db_path = "./mls-liteA.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
     println!("The group_join_config is: {:?}", group_join_config);
 
     let b_pk = [
@@ -50,12 +79,16 @@ fn test_diff_db1() -> Result<()> {
     .to_vec();
 
     // A add B
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [hex::encode(b_pk)].to_vec(),
+    )?;
     println!("The welcome is: {:?}", welcome);
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
 
     println!("A send msg to B ,the result is {:?}", msg);
     Ok(())
@@ -67,9 +100,9 @@ fn test_diff_db2() -> Result<()> {
     let group_id = "G1";
 
     let b = "B";
-    let db_path = "./mls-liteB.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     println!("The b_pk is: {:?}", b_pk);
@@ -130,12 +163,7 @@ fn test_diff_db2() -> Result<()> {
     .to_vec();
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome,
-        group_join_config,
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome)?;
     let msg = [
         0, 1, 0, 2, 2, 71, 49, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 28, 231, 68, 57, 222, 238, 153, 36,
         202, 193, 244, 141, 146, 123, 207, 174, 216, 253, 62, 44, 89, 18, 85, 255, 179, 37, 190, 6,
@@ -147,7 +175,7 @@ fn test_diff_db2() -> Result<()> {
     ]
     .to_vec();
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), String::from_utf8(msg)?)?;
 
     println!("A send msg to B ,the result is {:?}", text);
     Ok(())
@@ -164,13 +192,12 @@ fn test_secret_key() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
-
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b_pk = create_key_package(b.to_string())?;
@@ -180,51 +207,58 @@ fn test_secret_key() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     // A add B
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
-    println!("{:?}", msg.1.unwrap());
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    println!("{:?}", msg);
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
     // println!("A send msg to B ,the result is {:?}", text);
-    println!("{:?}", text.2.unwrap());
+    println!("{:?}", text);
 
     // B send msg to A
-    // let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    // let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
     // A decrypt B's msg
     // let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.0)?;
     // println!("B send msg to A ,the result is {:?}", text2);
 
     // A send msg to B
-    let msg3 = send_msg(a.to_string(), group_id.to_string(), "hello, B2".to_string())?;
-    println!("{:?}", msg3.1.unwrap());
+    let msg3 = create_message(a.to_string(), group_id.to_string(), "hello, B2".to_string())?;
+    println!("{:?}", msg3);
     // B decrypt A's msg
-    let text3 = decrypt_msg(b.to_string(), group_id.to_string(), msg3.0)?;
+    let text3 = decrypt_message(b.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
     // println!("A send msg to B2 ,the result is {:?}", text3);
-    println!("{:?}", text3.2.unwrap());
+    println!("{:?}", text3);
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -238,6 +272,7 @@ fn test_secret_key() -> Result<()> {
     );
     Ok(())
 }
+
 fn test_exist_group() -> Result<()> {
     println!("start -------------- start");
 
@@ -250,64 +285,65 @@ fn test_exist_group() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    // every user show init this
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), g.to_string())?;
 
-    let group_join_config = get_group_config(a.to_string(), group_id.to_string())?;
+    let _group_join_config = get_group_config(a.to_string(), group_id.to_string())?;
 
     let f_pk = create_key_package(f.to_string())?;
     let g_pk = create_key_package(g.to_string())?;
 
     // A add G
-    let welcome = add_members(a.to_string(), group_id.to_string(), [f_pk, g_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [f_pk.key_package, g_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // F join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // G join in the group
-    join_mls_group(
-        g.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(g.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), welcome.0.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        welcome.queued_msg.clone(),
+    )?;
 
     // E commit
-    let _ = others_commit_normal(e.to_string(), group_id.to_string(), welcome.0.clone())?;
+    let _ = others_commit_normal(
+        e.to_string(),
+        group_id.to_string(),
+        welcome.queued_msg.clone(),
+    )?;
 
     // A send msg to G
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, G".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, G".to_string())?;
     // F decrypt A's msg
-    let text = decrypt_msg(f.to_string(), group_id.to_string(), msg.0.clone())?;
+    let text = decrypt_message(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to F ,the result is {:?}", text);
 
     // E decrypt A's msg
-    let text = decrypt_msg(e.to_string(), group_id.to_string(), msg.0.clone())?;
+    let text = decrypt_message(e.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to E ,the result is {:?}", text);
 
     // G decrypt A's msg
-    let text = decrypt_msg(g.to_string(), group_id.to_string(), msg.0.clone())?;
+    let text = decrypt_message(g.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to G ,the result is {:?}", text);
 
     // D decrypt A's msg
-    let text = decrypt_msg(d.to_string(), group_id.to_string(), msg.0.clone())?;
+    let text = decrypt_message(d.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to D ,the result is {:?}", text);
 
     Ok(())
@@ -322,14 +358,21 @@ fn test_remove_then_add_group() -> Result<()> {
     let c = "C";
     let d = "D";
 
-    let db_path = "./mls-lite.sqlite";
-    // every user show init this
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
 
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     let b_pk = create_key_package(b.to_string())?;
     let b_pk2 = create_key_package(b.to_string())?;
@@ -339,29 +382,19 @@ fn test_remove_then_add_group() -> Result<()> {
     let welcome = add_members(
         a.to_string(),
         group_id.to_string(),
-        [b_pk.clone(), c_pk].to_vec(),
+        [b_pk.clone().key_package, c_pk.key_package].to_vec(),
     )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // B join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // C join in the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome.welcome.clone())?;
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
@@ -379,7 +412,7 @@ fn test_remove_then_add_group() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     // then A add B again
@@ -387,7 +420,7 @@ fn test_remove_then_add_group() -> Result<()> {
     let welcome2 = add_members(
         a.to_string(),
         group_id.to_string(),
-        [b_pk2.clone()].to_vec(),
+        [b_pk2.clone().key_package].to_vec(),
     )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
@@ -396,12 +429,11 @@ fn test_remove_then_add_group() -> Result<()> {
     join_mls_group(
         b.to_string(),
         group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
+        welcome2.welcome.clone(),
     )?;
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     Ok(())
@@ -419,13 +451,13 @@ fn test_diff_groups() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -433,60 +465,73 @@ fn test_diff_groups() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     // A add B
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk.clone()].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.clone().key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg
-    let msg = send_msg(
+    let msg = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, A to B".to_string(),
     )?;
+
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
     println!("A send msg to B ,the result is {:?}", text);
 
     // create second group use the same keypackage
     // c create group
-    let group_join_config2 = create_mls_group(c.to_string(), group_id2.to_string())?;
+    let group_join_config2 = create_mls_group(
+        c.to_string(),
+        group_id2.to_string(),
+        "new group".to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     // C add B
     let welcome2 = add_members(
         c.to_string(),
         group_id2.to_string(),
-        [b_pk.clone()].to_vec(),
+        [b_pk.clone().key_package].to_vec(),
     )?;
     // A commit
     self_commit(c.to_string(), group_id2.to_string())?;
+
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id2.to_string(),
-        welcome2.1,
-        group_join_config2.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id2.to_string(), welcome2.welcome)?;
     println!("join_mls_group");
 
     // C send msg
-    let msg = send_msg(
+    let msg = create_message(
         c.to_string(),
         group_id2.to_string(),
         "hello, C to B".to_string(),
     )?;
+
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id2.to_string(), msg.0)?;
+    let text = decrypt_message(b.to_string(), group_id2.to_string(), msg.encrypt_msg)?;
     println!("C send msg to B ,the result is {:?}", text);
 
     Ok(())
@@ -504,13 +549,13 @@ fn test_self_decrypt() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b1_pk = create_key_package(b.to_string())?;
@@ -518,26 +563,32 @@ fn test_self_decrypt() -> Result<()> {
     let b_pk = create_key_package(b.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     // A add B
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
-
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0.clone())?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to B ,the result is {:?}", text);
     // A can not decrypt self msg
     // // A decrypt A's msg
@@ -546,7 +597,7 @@ fn test_self_decrypt() -> Result<()> {
     Ok(())
 }
 
-// create add send_msg decrypt_msg remove leave
+// create add create_message decrypt_msg remove leave
 fn test_basic() -> Result<()> {
     println!("start -------------- start");
 
@@ -558,7 +609,7 @@ fn test_basic() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
     // let users = vec![a, b, c, d, e];
     // let base_db_path = "./mls-lite";
@@ -567,56 +618,90 @@ fn test_basic() -> Result<()> {
     //     init_mls_db(db_path.to_string(), user.to_string())?;
     // }
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b0_pk = create_key_package(b.to_string())?;
     let b_pk = create_key_package(b.to_string())?;
+
+    // test delete keypackage
+    // let _ = delete_key_package( b.to_string(), b0_pk);
+
     let c_pk = create_key_package(c.to_string())?;
     let d0_pk = create_key_package(d.to_string())?;
     let d_pk = create_key_package(d.to_string())?;
     let e_pk = create_key_package(e.to_string())?;
 
+    let description: String = "123456".to_string();
+    let admin_pubkeys_hex: Vec<String> = ["abc".to_string()].to_vec();
+    let group_relays: Vec<String> = ["wss://relay.keychat.io".to_string()].to_vec();
+
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        group_id.to_string(),
+        description,
+        admin_pubkeys_hex,
+        group_relays,
+        "alive".to_string(),
+    )?;
 
     // A add B
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
+    let welcome = welcome.welcome;
+
+    // let extension = parse_welcome_message(b.to_string(), welcome.clone())?;
+    // println!("b parse welcome message {:?}", extension);
+
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.clone())?;
+
+    let members = get_group_members(a.to_string(), group_id.to_string())?;
+    println!("group members of a is {:?}", members);
+
+    let extension = get_group_extension(a.to_string(), group_id.to_string())?;
+    println!("group extension of a is {:?}", extension);
+
+    let members = get_group_members(b.to_string(), group_id.to_string())?;
+    println!("group members of b is {:?}", members);
+
+    let extension = get_group_extension(b.to_string(), group_id.to_string())?;
+    println!("group extension of b is {:?}", extension);
 
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
 
     println!("A send msg to B ,the result is {:?}", text);
 
     // B send msg to A
-    let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+
     // A decrypt B's msg
-    let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.0)?;
+    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -632,49 +717,57 @@ fn test_basic() -> Result<()> {
     println!("--B add C --------------");
 
     // B add C
-    let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk].to_vec())?;
+    let welcome2 = add_members(
+        b.to_string(),
+        group_id.to_string(),
+        [c_pk.key_package].to_vec(),
+    )?;
     // B commit
     self_commit(b.to_string(), group_id.to_string())?;
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0)?;
+    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
 
     // B send msg
-    let msg3 = send_msg(
+    let msg3 = create_message(
         b.to_string(),
         group_id.to_string(),
         "hello, A, C".to_string(),
     )?;
+
     // C decrypt B's msg
-    let text3 = decrypt_msg(c.to_string(), group_id.to_string(), msg3.0.clone())?;
+    let text3 = decrypt_message(
+        c.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
     println!("B send msg to C ,the result is {:?}", text3);
 
     // A decrypt B's msg
-    let text4 = decrypt_msg(a.to_string(), group_id.to_string(), msg3.0.clone())?;
+    let text4 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text4);
 
     println!("--------------");
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -695,61 +788,80 @@ fn test_basic() -> Result<()> {
     println!("--A add D --------------");
 
     // A add D
-    let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
+    let welcome3 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [d_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
 
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
 
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
 
     // A send msg
-    let msg4 = send_msg(
+    let msg4 = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, ABC".to_string(),
     )?;
 
     // B decrypt A's msg
-    let text5 = decrypt_msg(b.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text5 = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to B ,the result is {:?}", text5);
     // C decrypt A's msg
-    let text6 = decrypt_msg(c.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text6 = decrypt_message(
+        c.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to C ,the result is {:?}", text6);
     // D decrypt B's msg
-    let text7 = decrypt_msg(d.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text7 = decrypt_message(
+        d.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to D ,the result is {:?}", text7);
 
     println!("--------------");
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
@@ -772,57 +884,64 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     // A add E
-    let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
+    let welcome4 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [e_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.welcome)?;
 
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
 
     println!("--A add E --------------");
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--C leave --------------");
@@ -830,13 +949,13 @@ fn test_basic() -> Result<()> {
     let queued_msg = self_leave(c.to_string(), group_id.to_string())?;
 
     // when C proposal that can not send msg again.
-    // // C send msg
-    // let msg5 = send_msg(
+    // C send msg
+    // let msg5 = create_message(
     //     c.to_string(),
     //     group_id.to_string(),
     //     "C hello, ADE".to_string(),
     // )?;
-    //
+
     // // A decrypt C's msg
     // let text5 = decrypt_msg(a.to_string(), group_id.to_string(), msg5.0.clone())?;
     // println!("C send msg to A ,the result is {:?}", text5);
@@ -852,12 +971,12 @@ fn test_basic() -> Result<()> {
     let queued_msg = admin_proposal_leave(a.to_string(), group_id.to_string())?;
     println!(
         "c self_leave a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     // when A proposal that can not send msg again.
     // A send msg
-    // let msg5 = send_msg(
+    // let msg5 = create_message(
     //     a.to_string(),
     //     group_id.to_string(),
     //     "A hello, DCE".to_string(),
@@ -878,28 +997,28 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     // println!(
     //     "c_mls_group export secret {:?}",
-    //     get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+    //     get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     // );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A UPDATE --------------");
 
     // admin update
-    let queued_msg = self_update(a.to_string(), group_id.to_string())?;
+    let queued_msg = self_update(a.to_string(), group_id.to_string(), "".as_bytes().to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
@@ -910,18 +1029,359 @@ fn test_basic() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
+
+    println!("end --------------end");
+    Ok(())
+}
+
+// create add create_message decrypt_msg remove leave
+fn test_extension() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+
+    let db_mls_base = "./mls-base.sqlite";
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+
+    // let a_pk = create_key_package(a.to_string())?;
+    let b_pk = create_key_package(b.to_string())?;
+    let c_pk = create_key_package(c.to_string())?;
+    let d_pk = create_key_package(d.to_string())?;
+    let e_pk = create_key_package(e.to_string())?;
+
+    let description: String = "this a group test".to_string();
+    let admin_pubkeys_hex: Vec<String> = ["A".to_string()].to_vec();
+    let group_relays: Vec<String> = ["wss://relay.keychat.io".to_string()].to_vec();
+
+    // a create group
+    create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        group_id.to_string(),
+        description,
+        admin_pubkeys_hex.clone(),
+        group_relays.clone(),
+        "alive".to_string(),
+    )?;
+
+    // A add B
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package].to_vec(),
+    )?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // let extension = parse_welcome_message(b.to_string(), welcome.clone())?;
+    // println!("b parse welcome message {:?}", extension);
+
+    // b join in the group
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
+
+    let members = get_group_members(a.to_string(), group_id.to_string())?;
+    println!("group members of a is {:?}", members);
+
+    let extension = get_group_extension(a.to_string(), group_id.to_string())?;
+    println!("group extension of a is {:?}", extension);
+
+    let members = get_group_members(b.to_string(), group_id.to_string())?;
+    println!("group members of b is {:?}", members);
+
+    let extension = get_group_extension(b.to_string(), group_id.to_string())?;
+    println!("group extension of b is {:?}", extension);
+
+    println!("--B add C E--------------");
+
+    // B add C E
+    let welcome2 = add_members(
+        b.to_string(),
+        group_id.to_string(),
+        [c_pk.key_package, e_pk.key_package].to_vec(),
+    )?;
+    // B commit
+    self_commit(b.to_string(), group_id.to_string())?;
+
+    // c join the group
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
+    // // e join the group
+    // join_mls_group(e.to_string(), group_id.to_string(), welcome2.welcome)?;
+    // A commit
+    let a_commit = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
+    println!("a_commit is {:?}", a_commit);
+
+    println!("--A add D --------------");
+
+    // A add D
+    let welcome3 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [d_pk.key_package].to_vec(),
+    )?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // d join the group
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
+
+    // B commit
+    let b_commit = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
+    println!("b_commit is {:?}", b_commit);
+
+    // C commit
+    let c_commit = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
+    println!("c_commit is {:?}", c_commit);
+
+    println!("--A UPDATE --------------");
+
+    let a_update_extension = "A update the extension".as_bytes().to_vec();
+    // A update
+    let queued_msg = self_update(a.to_string(), group_id.to_string(), a_update_extension)?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    let leaf_nodes_extension = get_member_extension(a.to_string(), group_id.to_string())?;
+    println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
+
+    let sender = get_sender(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("sender is {:?}", sender);
+
+    // let sender = is_admin(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("is admin is {:?}", sender);
+
+    // // B commit
+    let b_commit = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("B commit is {:?}", b_commit);
+    // C commit
+    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("C commit is {:?}", c_commit);
+    // D commit
+    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("D commit is {:?}", d_commit);
+
+    println!("--B UPDATE --------------");
+
+    let b_update_extension = "B update the extension".as_bytes().to_vec();
+    // admin update
+    let queued_msg = self_update(b.to_string(), group_id.to_string(), b_update_extension)?;
+    // B commit
+    self_commit(b.to_string(), group_id.to_string())?;
+
+    let leaf_nodes_extension = get_member_extension(b.to_string(), group_id.to_string())?;
+    println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
+
+    let sender = get_sender(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("sender is {:?}", sender);
+
+    // let sender = is_admin(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("is admin is {:?}", sender);
+    // // A commit
+    let a_commit = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("A commit is {:?}", a_commit);
+    // C commit
+    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("C commit is {:?}", c_commit);
+    // D commit
+    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("D commit is {:?}", d_commit);
+
+    println!("--C UPDATE --------------");
+
+    let c_update_extension = "C update the extension".as_bytes().to_vec();
+    // A update
+    let queued_msg = self_update(c.to_string(), group_id.to_string(), c_update_extension)?;
+    // A commit
+    self_commit(c.to_string(), group_id.to_string())?;
+
+    let leaf_nodes_extension = get_member_extension(c.to_string(), group_id.to_string())?;
+    println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
+
+    let sender = get_sender(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("sender is {:?}", sender);
+
+    // let sender = is_admin(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("is admin is {:?}", sender);
+
+    // A commit
+    let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("A commit");
+    // B commit
+    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("B commit");
+    // D commit
+    let _ = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("D commit");
+
+    println!("--D UPDATE --------------");
+
+    let d_update_extension = "D update the extension".as_bytes().to_vec();
+    // D update
+    let queued_msg = self_update(d.to_string(), group_id.to_string(), d_update_extension)?;
+    // D commit
+    self_commit(d.to_string(), group_id.to_string())?;
+
+    let leaf_nodes_extension = get_member_extension(d.to_string(), group_id.to_string())?;
+    println!("leaf_nodes_extension is {:?}", leaf_nodes_extension);
+
+    // A commit
+    let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("A commit");
+    // B commit
+    let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("B commit");
+    // C commit
+    let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("C commit");
+
+    println!("A update_group_context_extensions");
+    let update_description: String = "update group test".to_string();
+    let update_state: String = "dissolve".to_string();
+    let update_result = update_group_context_extensions(
+        a.to_string(),
+        group_id.to_string(),
+        Some("test test".to_string()),
+        Some(update_description),
+        None,
+        None,
+        Some(update_state),
+    )?;
+
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    let a_extension = get_group_extension(a.to_string(), group_id.to_string())?;
+    println!("a_extension is {:?}", a_extension);
+
+    // B commit
+    let b_commit =
+        others_commit_normal(b.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("B commit is {:?}", b_commit);
+    // C commit
+    let c_commit =
+        others_commit_normal(c.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("C commit is {:?}", c_commit);
+    // D commit
+    let d_commit =
+        others_commit_normal(d.to_string(), group_id.to_string(), update_result.clone())?;
+    println!("D commit is {:?}", d_commit);
+
+    let b_extension = get_group_extension(b.to_string(), group_id.to_string())?;
+    println!("b_extension is {:?}", b_extension);
+
+    let c_extension = get_group_extension(c.to_string(), group_id.to_string())?;
+    println!("c_extension is {:?}", c_extension);
+
+    let d_extension = get_group_extension(d.to_string(), group_id.to_string())?;
+    println!("d_extension is {:?}", d_extension);
+
+    // B send msg
+    let msg3 = create_message(
+        b.to_string(),
+        group_id.to_string(),
+        "hello, A, C".to_string(),
+    )?;
+    // C decrypt B's msg
+    let text3 = decrypt_message(
+        c.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
+    println!("B send msg to C ,the result is {:?}", text3);
+
+    // A decrypt B's msg
+    let text4 = decrypt_message(a.to_string(), group_id.to_string(), msg3.encrypt_msg)?;
+    println!("B send msg to A ,the result is {:?}", text4);
+
+    println!("--------------");
+
+    println!(
+        "a_mls_group export secret {:?}",
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group export secret {:?}",
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "c_mls_group export secret {:?}",
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "a_mls_group tree hash {:?}",
+        get_tree_hash(a.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "b_mls_group tree hash {:?}",
+        get_tree_hash(b.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!(
+        "c_mls_group tree hash {:?}",
+        get_tree_hash(c.to_string(), group_id.to_string()).unwrap()
+    );
+
+    println!("--A remove B C --------------");
+
+    let b_leaf_node = get_lead_node_index(a.to_string(), b.to_string(), group_id.to_string())?;
+    let c_leaf_node = get_lead_node_index(a.to_string(), c.to_string(), group_id.to_string())?;
+
+    // A remove B C
+    let queued_msg = remove_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_leaf_node, c_leaf_node].to_vec(),
+    )?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // B commit
+    let b_commit = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("B commit is {:?}", b_commit);
+
+    // C commit
+    let c_commit = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("C commit is {:?}", c_commit);
+
+    // D commit
+    let d_commit = others_commit_normal(d.to_string(), group_id.to_string(), queued_msg.clone())?;
+    println!("D commit is {:?}", d_commit);
+
+    // delte group
+    delete_group(a.to_string(), group_id.to_string())?;
 
     println!("end --------------end");
     Ok(())
@@ -938,14 +1398,15 @@ fn test_normal() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), g.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -955,68 +1416,71 @@ fn test_normal() -> Result<()> {
     let g_pk = create_key_package(g.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     // A add B F
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package, f_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // f join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // A send msg to B F
-    let msg = send_msg(
+    let msg = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, B F".to_string(),
     )?;
+
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0.clone())?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to B ,the result is {:?}", text);
     // F decrypt A's msg
-    let text = decrypt_msg(f.to_string(), group_id.to_string(), msg.0.clone())?;
+    let text = decrypt_message(f.to_string(), group_id.to_string(), msg.encrypt_msg.clone())?;
     println!("A send msg to F ,the result is {:?}", text);
 
     // B send msg to A
-    let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
 
     // A decrypt B's msg
-    let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.0)?;
+    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     // F send msg to A
-    let msg2_1 = send_msg(f.to_string(), group_id.to_string(), "hello, F".to_string())?;
+    let msg2_1 = create_message(f.to_string(), group_id.to_string(), "hello, F".to_string())?;
 
     // A decrypt F's msg
-    let text2_1 = decrypt_msg(a.to_string(), group_id.to_string(), msg2_1.0)?;
+    let text2_1 = decrypt_message(a.to_string(), group_id.to_string(), msg2_1.encrypt_msg)?;
     println!("F send msg to A ,the result is {:?}", text2_1);
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1037,75 +1501,101 @@ fn test_normal() -> Result<()> {
     println!("--B add C G --------------");
 
     // B add C and G
-    let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
+    let welcome2 = add_members(
+        b.to_string(),
+        group_id.to_string(),
+        [c_pk.key_package, g_pk.key_package].to_vec(),
+    )?;
     // B commit
     self_commit(b.to_string(), group_id.to_string())?;
-
     // c join the group
     join_mls_group(
         c.to_string(),
         group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
+        welcome2.welcome.clone(),
     )?;
 
     // g join the group
     join_mls_group(
         g.to_string(),
         group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
+        welcome2.welcome.clone(),
     )?;
 
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0.clone())?;
+    let _ = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        welcome2.queued_msg.clone(),
+    )?;
     // F commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), welcome2.0.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        welcome2.queued_msg.clone(),
+    )?;
 
     // B send msg
-    let msg3 = send_msg(
+    let msg3 = create_message(
         b.to_string(),
         group_id.to_string(),
         "hello, A, C, F, G".to_string(),
     )?;
+
     // A decrypt B's msg
-    let text3 = decrypt_msg(a.to_string(), group_id.to_string(), msg3.0.clone())?;
+    let text3 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text3);
     // C decrypt B's msg
-    let text3 = decrypt_msg(c.to_string(), group_id.to_string(), msg3.0.clone())?;
+    let text3 = decrypt_message(
+        c.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
     println!("B send msg to C ,the result is {:?}", text3);
     // F decrypt B's msg
-    let text3 = decrypt_msg(f.to_string(), group_id.to_string(), msg3.0.clone())?;
+    let text3 = decrypt_message(
+        f.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
     println!("B send msg to F ,the result is {:?}", text3);
     // G decrypt B's msg
-    let text3 = decrypt_msg(g.to_string(), group_id.to_string(), msg3.0.clone())?;
+    let text3 = decrypt_message(
+        g.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
     println!("B send msg to G ,the result is {:?}", text3);
 
     println!("--------------");
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1136,80 +1626,115 @@ fn test_normal() -> Result<()> {
     println!("--A add D --------------");
 
     // A add D
-    let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
+    let welcome3 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [d_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
 
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
     // F commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
     // G commit
-    let _ = others_commit_normal(g.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        g.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
 
     // A send msg
-    let msg4 = send_msg(
+    let msg4 = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, ABCDFG".to_string(),
     )?;
 
     // B decrypt A's msg
-    let text4 = decrypt_msg(b.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text4 = decrypt_message(
+        b.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to B ,the result is {:?}", text4);
     // C decrypt A's msg
-    let text4 = decrypt_msg(c.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text4 = decrypt_message(
+        c.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to C ,the result is {:?}", text4);
     // D decrypt B's msg
-    let text4 = decrypt_msg(d.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text4 = decrypt_message(
+        d.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to D ,the result is {:?}", text4);
     // F decrypt B's msg
-    let text4 = decrypt_msg(f.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text4 = decrypt_message(
+        f.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to F ,the result is {:?}", text4);
     // G decrypt B's msg
-    let text4 = decrypt_msg(g.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text4 = decrypt_message(
+        g.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("A send msg to G ,the result is {:?}", text4);
 
     println!("--------------");
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1264,27 +1789,27 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1314,54 +1839,69 @@ fn test_normal() -> Result<()> {
 
     println!("--A add E --------------");
     // A add E
-    let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
+    let welcome4 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [e_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.welcome)?;
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
     // F commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
     // G commit
-    let _ = others_commit_normal(g.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        g.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1424,27 +1964,27 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1474,7 +2014,7 @@ fn test_normal() -> Result<()> {
 
     println!("--A UPDATE --------------");
     // admin update
-    let queued_msg = self_update(a.to_string(), group_id.to_string())?;
+    let queued_msg = self_update(a.to_string(), group_id.to_string(), "".as_bytes().to_vec())?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
@@ -1489,27 +2029,27 @@ fn test_normal() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1538,41 +2078,74 @@ fn test_normal() -> Result<()> {
     );
 
     // A send msg
-    let msg5 = send_msg(
+    let msg5 = create_message(
         a.to_string(),
         group_id.to_string(),
         "hello, DEFG".to_string(),
     )?;
     // D decrypt A's msg
-    let text5 = decrypt_msg(d.to_string(), group_id.to_string(), msg5.0.clone())?;
+    let text5 = decrypt_message(
+        d.to_string(),
+        group_id.to_string(),
+        msg5.encrypt_msg.clone(),
+    )?;
     println!("A send msg to D, the result is {:?}", text5);
     // E decrypt A's msg
-    let text5 = decrypt_msg(e.to_string(), group_id.to_string(), msg5.0.clone())?;
+    let text5 = decrypt_message(
+        e.to_string(),
+        group_id.to_string(),
+        msg5.encrypt_msg.clone(),
+    )?;
     println!("A send msg to E, the result is {:?}", text5);
     // F decrypt A's msg
-    let text5 = decrypt_msg(f.to_string(), group_id.to_string(), msg5.0.clone())?;
+    let text5 = decrypt_message(
+        f.to_string(),
+        group_id.to_string(),
+        msg5.encrypt_msg.clone(),
+    )?;
     println!("A send msg to F, the result is {:?}", text5);
     // G decrypt A's msg
-    let text5 = decrypt_msg(g.to_string(), group_id.to_string(), msg5.0.clone())?;
+    let text5 = decrypt_message(
+        g.to_string(),
+        group_id.to_string(),
+        msg5.encrypt_msg.clone(),
+    )?;
     println!("A send msg to G, the result is {:?}", text5);
 
     // G send msg
-    let msg6 = send_msg(
+    let msg6 = create_message(
         g.to_string(),
         group_id.to_string(),
         "hello, ADE".to_string(),
     )?;
+
     // D decrypt G's msg
-    let text6 = decrypt_msg(d.to_string(), group_id.to_string(), msg6.0.clone())?;
+    let text6 = decrypt_message(
+        d.to_string(),
+        group_id.to_string(),
+        msg6.encrypt_msg.clone(),
+    )?;
     println!("G send msg to D, the result is {:?}", text6);
     // E decrypt G's msg
-    let text6 = decrypt_msg(e.to_string(), group_id.to_string(), msg6.0.clone())?;
+    let text6 = decrypt_message(
+        e.to_string(),
+        group_id.to_string(),
+        msg6.encrypt_msg.clone(),
+    )?;
     println!("G send msg to E, the result is {:?}", text6);
     // F decrypt G's msg
-    let text6 = decrypt_msg(f.to_string(), group_id.to_string(), msg6.0.clone())?;
+    let text6 = decrypt_message(
+        f.to_string(),
+        group_id.to_string(),
+        msg6.encrypt_msg.clone(),
+    )?;
     println!("G send msg to F, the result is {:?}", text6);
     // A decrypt G's msg
-    let text6 = decrypt_msg(a.to_string(), group_id.to_string(), msg6.0.clone())?;
+    let text6 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg6.encrypt_msg.clone(),
+    )?;
     println!("G send msg to A, the result is {:?}", text6);
 
     println!("end --------------end");
@@ -1590,13 +2163,13 @@ fn test_basic2() -> Result<()> {
     let d = "D";
     let e = "E";
 
-    let db_path = "./mls-lite.sqlite";
+    let db_mls_base = "./mls-base.sqlite";
 
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -1604,42 +2177,50 @@ fn test_basic2() -> Result<()> {
     let e_pk = create_key_package(e.to_string())?;
 
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     // A add B
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
 
     // A send msg to B
-    let msg = send_msg(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+    let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+
     // B decrypt A's msg
-    let text = decrypt_msg(b.to_string(), group_id.to_string(), msg.0)?;
+    let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
 
     println!("A send msg to B ,the result is {:?}", text);
 
     // B send msg to A
-    let msg2 = send_msg(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
+    let msg2 = create_message(b.to_string(), group_id.to_string(), "hello, A".to_string())?;
     // A decrypt B's msg
-    let text2 = decrypt_msg(a.to_string(), group_id.to_string(), msg2.0)?;
+    let text2 = decrypt_message(a.to_string(), group_id.to_string(), msg2.encrypt_msg)?;
     println!("B send msg to A ,the result is {:?}", text2);
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
@@ -1655,45 +2236,55 @@ fn test_basic2() -> Result<()> {
     println!("--B add C --------------");
 
     // B add C
-    let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk].to_vec())?;
-
+    let welcome2 = add_members(
+        b.to_string(),
+        group_id.to_string(),
+        [c_pk.key_package].to_vec(),
+    )?;
     // B send msg
-    let msg3 = send_msg(
+    let msg3 = create_message(
         b.to_string(),
         group_id.to_string(),
         "notice A, you need to update, C will join in.".to_string(),
     )?;
 
     // A decrypt B's msg
-    let text3 = decrypt_msg(a.to_string(), group_id.to_string(), msg3.0.clone())?;
+    let text3 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg3.encrypt_msg.clone(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text3);
 
     // c join the group
-    join_mls_group(
-        c.to_string(),
-        group_id.to_string(),
-        welcome2.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
 
     // B commit add
     self_commit(b.to_string(), group_id.to_string())?;
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0)?;
+    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
 
     // B send msg
-    let msg4 = send_msg(
+    let msg4 = create_message(
         b.to_string(),
         group_id.to_string(),
         "hello, A, C.".to_string(),
     )?;
 
     // C decrypt B's msg
-    let text4 = decrypt_msg(c.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text4 = decrypt_message(
+        c.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("B send msg to C ,the result is {:?}", text4);
 
     // A decrypt B's msg
-    let text4 = decrypt_msg(a.to_string(), group_id.to_string(), msg4.0.clone())?;
+    let text4 = decrypt_message(
+        a.to_string(),
+        group_id.to_string(),
+        msg4.encrypt_msg.clone(),
+    )?;
     println!("B send msg to A ,the result is {:?}", text4);
 
     println!("--------------");
@@ -1712,14 +2303,15 @@ fn test_replay_delay() -> Result<()> {
     let f = "F";
     let g = "G";
 
-    let db_path = "./mls-lite.sqlite";
-    init_mls_db(db_path.to_string(), a.to_string())?;
-    init_mls_db(db_path.to_string(), b.to_string())?;
-    init_mls_db(db_path.to_string(), c.to_string())?;
-    init_mls_db(db_path.to_string(), d.to_string())?;
-    init_mls_db(db_path.to_string(), e.to_string())?;
-    init_mls_db(db_path.to_string(), f.to_string())?;
-    init_mls_db(db_path.to_string(), g.to_string())?;
+    let db_mls_base = "./mls-base.sqlite";
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+    init_mls_db(db_mls_base.to_string(), f.to_string())?;
+    init_mls_db(db_mls_base.to_string(), g.to_string())?;
 
     let b_pk = create_key_package(b.to_string())?;
     let c_pk = create_key_package(c.to_string())?;
@@ -1728,43 +2320,53 @@ fn test_replay_delay() -> Result<()> {
     let f_pk = create_key_package(f.to_string())?;
     let g_pk = create_key_package(g.to_string())?;
     // a create group
-    let group_join_config = create_mls_group(a.to_string(), group_id.to_string())?;
+    let group_join_config = create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        "new group".to_string(),
+        "new group".to_string(),
+        ["admin".to_string()].to_vec(),
+        ["relay.keychat.io".to_string()].to_vec(),
+        "alive".to_string(),
+    )?;
 
     // A add B F, but F not reply right now
-    let welcome = add_members(a.to_string(), group_id.to_string(), [b_pk, f_pk].to_vec())?;
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package, f_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
-
     // b join in the group
-    join_mls_group(
-        b.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // // f join in the group
     // join_mls_group(
     //     f.to_string(),
     //     group_id.to_string(),
     //     welcome.1.clone(),
-    //     group_join_config.clone(),
+    //
     // )?;
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--B add C G --------------");
 
     // B add C and G
-    let welcome2 = add_members(b.to_string(), group_id.to_string(), [c_pk, g_pk].to_vec())?;
+    let welcome2 = add_members(
+        b.to_string(),
+        group_id.to_string(),
+        [c_pk.key_package, g_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(b.to_string(), group_id.to_string())?;
 
@@ -1772,28 +2374,25 @@ fn test_replay_delay() -> Result<()> {
     join_mls_group(
         c.to_string(),
         group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
+        welcome2.welcome.clone(),
     )?;
 
     // g join the group
     join_mls_group(
         g.to_string(),
         group_id.to_string(),
-        welcome2.1.clone(),
-        group_join_config.clone(),
+        welcome2.welcome.clone(),
     )?;
 
     // f join in the group
-    join_mls_group(
-        f.to_string(),
-        group_id.to_string(),
-        welcome.1.clone(),
-        group_join_config.clone(),
-    )?;
+    join_mls_group(f.to_string(), group_id.to_string(), welcome.welcome.clone())?;
 
     // A commit
-    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.0.clone())?;
+    let _ = others_commit_normal(
+        a.to_string(),
+        group_id.to_string(),
+        welcome2.queued_msg.clone(),
+    )?;
     // // F commit
     // let _ = others_commit_normal(f.to_string(), group_id.to_string(), welcome2.0.clone())?;
 
@@ -1801,80 +2400,99 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A add D --------------");
 
     // A add D
-    let welcome3 = add_members(a.to_string(), group_id.to_string(), [d_pk].to_vec())?;
+    let welcome3 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [d_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // d join the group
-    join_mls_group(
-        d.to_string(),
-        group_id.to_string(),
-        welcome3.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome)?;
 
     // B commit
-    let _ = others_commit_normal(b.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
     // F commit, add some members, due to F reply dely, lead to F lack ont commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), welcome2.0.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        welcome2.queued_msg.clone(),
+    )?;
     // F commit
-    let _ = others_commit_normal(f.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        f.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
     // G commit
-    let _ = others_commit_normal(g.to_string(), group_id.to_string(), welcome3.0.clone())?;
+    let _ = others_commit_normal(
+        g.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
 
     println!("--------------");
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "b_mls_group export secret {:?}",
-        get_export_secret(b.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(b.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "f_mls_group export secret {:?}",
-        get_export_secret(f.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(f.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A remove B F --------------");
@@ -1904,67 +2522,78 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--A add E --------------");
     // A add E
-    let welcome4 = add_members(a.to_string(), group_id.to_string(), [e_pk].to_vec())?;
+    let welcome4 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [e_pk.key_package].to_vec(),
+    )?;
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
 
     // E join the group
-    join_mls_group(
-        e.to_string(),
-        group_id.to_string(),
-        welcome4.1,
-        group_join_config.clone(),
-    )?;
+    join_mls_group(e.to_string(), group_id.to_string(), welcome4.welcome)?;
     // C commit
-    let _ = others_commit_normal(c.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
     // D commit
-    let _ = others_commit_normal(d.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
     // G commit
-    let _ = others_commit_normal(g.to_string(), group_id.to_string(), welcome4.0.clone())?;
+    let _ = others_commit_normal(
+        g.to_string(),
+        group_id.to_string(),
+        welcome4.queued_msg.clone(),
+    )?;
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "c_mls_group export secret {:?}",
-        get_export_secret(c.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(c.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("--C leave --------------");
@@ -1993,22 +2622,22 @@ fn test_replay_delay() -> Result<()> {
 
     println!(
         "a_mls_group export secret {:?}",
-        get_export_secret(a.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(a.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "d_mls_group export secret {:?}",
-        get_export_secret(d.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(d.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "e_mls_group export secret {:?}",
-        get_export_secret(e.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(e.to_string(), group_id.to_string()).unwrap()
     );
 
     println!(
         "g_mls_group export secret {:?}",
-        get_export_secret(g.to_string(), group_id.to_string()).unwrap()
+        get_listen_key_from_export_secret(g.to_string(), group_id.to_string()).unwrap()
     );
 
     println!("end --------------end");
