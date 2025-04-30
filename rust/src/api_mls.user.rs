@@ -232,6 +232,16 @@ impl User {
         identity.delete_key_package_from_storage(kp, &self.mls_user.provider)
     }
 
+    pub(crate) fn delete_key_packages_by_timestamp(&mut self, timestamp: u64) -> Result<()> {
+        let mut identity = self
+            .mls_user
+            .identity
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        // first checkout if there is any packages in db?
+        identity.delete_key_packages_by_timestamp(timestamp, &self.mls_user.provider)
+    }
+
     pub(crate) fn create_mls_group(
         &mut self,
         group_id: String,

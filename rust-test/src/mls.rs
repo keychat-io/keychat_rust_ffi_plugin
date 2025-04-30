@@ -1,6 +1,7 @@
 use anyhow::Result;
 use rust::api_mls::*;
 use serde::{Deserialize, Serialize};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct WelcomeMessage {
@@ -23,7 +24,8 @@ struct DecryptMsg {
 
 fn main() {
     // let _ = test_basic();
-    let _ = test_extension();
+    // let _ = test_extension();
+    let _ = test_del_kp();
     // let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
@@ -1043,6 +1045,42 @@ fn test_basic() -> Result<()> {
     );
 
     println!("end --------------end");
+    Ok(())
+}
+
+// test del keypackage by timestamp
+fn test_del_kp() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+
+    let db_mls_base = "./mls-base.sqlite";
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+
+    // let b_pk = create_key_package(b.to_string())?;
+    // let c_pk = create_key_package(c.to_string())?;
+    // let d_pk = create_key_package(d.to_string())?;
+    // let e_pk = create_key_package(e.to_string())?;
+
+    let now = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .expect("SystemTime before UNIX EPOCH!")
+                    .as_secs();
+
+    let _ = delete_key_packages_by_timestamp(b.to_string(), now)?;
+    // let b_pk = create_key_package(b.to_string())?;
+
     Ok(())
 }
 

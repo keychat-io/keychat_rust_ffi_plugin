@@ -27,10 +27,10 @@ signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = 
 cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250310"}
 cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250310"}
 
-openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls"}
-openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_traits"}
-openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_sqlite_storage"}
-kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "kc"}
+openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "del_kp", package = "openmls"}
+openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "del_kp", package = "openmls_traits"}
+openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "del_kp", package = "openmls_sqlite_storage"}
+kc = { git = "https://github.com/keychat-io/openmls.git", branch = "del_kp", package = "kc"}
 
 # aes = "0.7"
 # block-modes = "0.8"
