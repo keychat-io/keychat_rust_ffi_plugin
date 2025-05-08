@@ -887,7 +887,6 @@ pub fn restore(
         mnemonic = Some(Arc::new(mi))
     }
 
-    let state = State::lock()?;
     let w = state.get_wallet()?;
 
     let coins = state.rt.block_on(async {

@@ -1074,9 +1074,9 @@ fn test_del_kp() -> Result<()> {
     // let e_pk = create_key_package(e.to_string())?;
 
     let now = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .expect("SystemTime before UNIX EPOCH!")
-                    .as_secs();
+        .duration_since(UNIX_EPOCH)
+        .expect("SystemTime before UNIX EPOCH!")
+        .as_secs();
 
     let _ = delete_key_packages_by_timestamp(b.to_string(), now)?;
     // let b_pk = create_key_package(b.to_string())?;

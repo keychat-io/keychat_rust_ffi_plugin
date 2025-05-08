@@ -181,25 +181,23 @@ pub fn delete_key_packages_by_timestamp(nostr_id: String, timestamp: u64) -> Res
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
-        let store = store
-            .as_mut()
-            .ok_or_else(|| format_err!("<fn[delete_key_packages_by_timestamp]> Can not get store err."))?;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<fn[delete_key_packages_by_timestamp]> Can not get store err.")
+        })?;
         if !store.user.contains_key(&nostr_id) {
             error!("<fn[delete_key_packages_by_timestamp]> nostr_id do not init.");
             return Err(format_err!(
                 "<fn[delete_key_packages_by_timestamp]> nostr_id do not init."
             ));
         }
-        let user = store
-            .user
-            .get_mut(&nostr_id)
-            .ok_or_else(|| format_err!("<fn[delete_key_packages_by_timestamp]> Can not get store from user."))?;
+        let user = store.user.get_mut(&nostr_id).ok_or_else(|| {
+            format_err!("<fn[delete_key_packages_by_timestamp]> Can not get store from user.")
+        })?;
         user.delete_key_packages_by_timestamp(timestamp)?;
         user.update(nostr_id, true).await
     });
     result
 }
-
 
 pub fn create_group_config() -> Result<Vec<u8>> {
     let rt = RUNTIME.as_ref();

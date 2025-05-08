@@ -88,7 +88,7 @@ impl User {
         Ok(listen_key)
     }
 
-    pub(crate) fn keypair_from_export_secret(&self,  group: MlsGroup) -> Result<Keys> {
+    pub(crate) fn keypair_from_export_secret(&self, group: MlsGroup) -> Result<Keys> {
         let export_secret = group.export_secret(&self.mls_user.provider, "nostr", b"nostr", 32)?;
         let export_secret_hex = hex::encode(&export_secret);
         let keypair = Keys::parse(&export_secret_hex)?;
@@ -544,7 +544,8 @@ impl User {
             _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
         };
         // first decrypt with nip44
-        let (decrypted_content, _listen_key) = self.decrypt_nip44(group.mls_group.clone(), queued_msg)?;
+        let (decrypted_content, _listen_key) =
+            self.decrypt_nip44(group.mls_group.clone(), queued_msg)?;
 
         let queued_msg = MlsMessageIn::tls_deserialize_exact(&decrypted_content)?;
         let alice_processed_message = group.mls_group.process_message(
@@ -630,7 +631,11 @@ impl User {
         }
     }
 
-    pub(crate) fn encrypt_nip44(&self, group: MlsGroup, serialized_msg: Vec<u8>) -> Result<(String, String)> {
+    pub(crate) fn encrypt_nip44(
+        &self,
+        group: MlsGroup,
+        serialized_msg: Vec<u8>,
+    ) -> Result<(String, String)> {
         let keypairs = self.keypair_from_export_secret(group)?;
         let public_key = keypairs.public_key();
         let listen_key = hex::encode(public_key.xonly()?.serialize());
@@ -650,11 +655,8 @@ impl User {
         let listen_key = hex::encode(public_key.xonly()?.serialize());
         let serialized_msg = msg.as_bytes().to_vec();
         // Decrypt using export secret key
-        let decrypted_content = nip44::decrypt_to_bytes(
-            keypairs.secret_key(),
-            &public_key,
-            &serialized_msg,
-        )?;
+        let decrypted_content =
+            nip44::decrypt_to_bytes(keypairs.secret_key(), &public_key, &serialized_msg)?;
         Ok((decrypted_content, listen_key))
     }
 
@@ -683,7 +685,8 @@ impl User {
             .map_err(|e| format_err!("<mls api fn[create_message]> Error send message {}.", e))?;
         let serialized_msg: Vec<u8> = msg_out.0.to_bytes()?;
         // first encrypt with nip44
-        let (encrypted_content, listen_key) = self.encrypt_nip44(group.mls_group.clone(), serialized_msg)?;
+        let (encrypted_content, listen_key) =
+            self.encrypt_nip44(group.mls_group.clone(), serialized_msg)?;
 
         // let ratchet_key = msg_out.1;
         Ok((encrypted_content, listen_key))
@@ -1126,7 +1129,8 @@ impl User {
             _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
         };
         // first decrypt with nip44
-        let (decrypted_content, _listen_key) = self.decrypt_nip44(group.mls_group.clone(), queued_msg)?;
+        let (decrypted_content, _listen_key) =
+            self.decrypt_nip44(group.mls_group.clone(), queued_msg)?;
 
         let msg = MlsMessageIn::tls_deserialize_exact(&decrypted_content)?;
         let leaf_node_index = group
