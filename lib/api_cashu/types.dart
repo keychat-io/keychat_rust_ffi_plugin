@@ -19,6 +19,7 @@ class CashuTransaction {
   final String? info;
   final BigInt time;
   final BigInt amount;
+  final BigInt? fee;
   final String mint;
   final String token;
   final String? unit;
@@ -30,6 +31,7 @@ class CashuTransaction {
     this.info,
     required this.time,
     required this.amount,
+    this.fee,
     required this.mint,
     required this.token,
     this.unit,
@@ -43,6 +45,7 @@ class CashuTransaction {
       info.hashCode ^
       time.hashCode ^
       amount.hashCode ^
+      fee.hashCode ^
       mint.hashCode ^
       token.hashCode ^
       unit.hashCode;
@@ -58,6 +61,7 @@ class CashuTransaction {
           info == other.info &&
           time == other.time &&
           amount == other.amount &&
+          fee == other.fee &&
           mint == other.mint &&
           token == other.token &&
           unit == other.unit;

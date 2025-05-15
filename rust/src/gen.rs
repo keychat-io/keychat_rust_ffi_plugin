@@ -4611,6 +4611,7 @@ const _: fn() = || {
         let _: Option<String> = CashuTransaction.info;
         let _: u64 = CashuTransaction.time;
         let _: u64 = CashuTransaction.amount;
+        let _: Option<u64> = CashuTransaction.fee;
         let _: String = CashuTransaction.mint;
         let _: String = CashuTransaction.token;
         let _: Option<String> = CashuTransaction.unit;
@@ -4742,6 +4743,7 @@ impl SseDecode for crate::api_cashu::types::CashuTransaction {
         let mut var_info = <Option<String>>::sse_decode(deserializer);
         let mut var_time = <u64>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
+        let mut var_fee = <Option<u64>>::sse_decode(deserializer);
         let mut var_mint = <String>::sse_decode(deserializer);
         let mut var_token = <String>::sse_decode(deserializer);
         let mut var_unit = <Option<String>>::sse_decode(deserializer);
@@ -4752,6 +4754,7 @@ impl SseDecode for crate::api_cashu::types::CashuTransaction {
             info: var_info,
             time: var_time,
             amount: var_amount,
+            fee: var_fee,
             mint: var_mint,
             token: var_token,
             unit: var_unit,
@@ -5933,6 +5936,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Cashu
             self.0.info.into_into_dart().into_dart(),
             self.0.time.into_into_dart().into_dart(),
             self.0.amount.into_into_dart().into_dart(),
+            self.0.fee.into_into_dart().into_dart(),
             self.0.mint.into_into_dart().into_dart(),
             self.0.token.into_into_dart().into_dart(),
             self.0.unit.into_into_dart().into_dart(),
@@ -6639,6 +6643,7 @@ impl SseEncode for crate::api_cashu::types::CashuTransaction {
         <Option<String>>::sse_encode(self.info, serializer);
         <u64>::sse_encode(self.time, serializer);
         <u64>::sse_encode(self.amount, serializer);
+        <Option<u64>>::sse_encode(self.fee, serializer);
         <String>::sse_encode(self.mint, serializer);
         <String>::sse_encode(self.token, serializer);
         <Option<String>>::sse_encode(self.unit, serializer);

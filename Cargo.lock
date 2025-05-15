@@ -480,7 +480,6 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 [[package]]
 name = "cashu-wallet"
 version = "0.2.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=250310#3281458f560dae0b797c58cf5b5711bc4feeb1ad"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -507,7 +506,6 @@ dependencies = [
 [[package]]
 name = "cashu-wallet-sqlite"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?tag=250310#3281458f560dae0b797c58cf5b5711bc4feeb1ad"
 dependencies = [
  "anyhow",
  "async-trait",

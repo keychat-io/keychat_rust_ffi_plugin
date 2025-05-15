@@ -3529,7 +3529,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   CashuTransaction dco_decode_cashu_transaction(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 9) throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
     return CashuTransaction(
       id: dco_decode_String(arr[0]),
       status: dco_decode_transaction_status(arr[1]),
@@ -3537,9 +3537,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       info: dco_decode_opt_String(arr[3]),
       time: dco_decode_u_64(arr[4]),
       amount: dco_decode_u_64(arr[5]),
-      mint: dco_decode_String(arr[6]),
-      token: dco_decode_String(arr[7]),
-      unit: dco_decode_opt_String(arr[8]),
+      fee: dco_decode_opt_box_autoadd_u_64(arr[6]),
+      mint: dco_decode_String(arr[7]),
+      token: dco_decode_String(arr[8]),
+      unit: dco_decode_opt_String(arr[9]),
     );
   }
 
@@ -4325,6 +4326,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_info = sse_decode_opt_String(deserializer);
     var var_time = sse_decode_u_64(deserializer);
     var var_amount = sse_decode_u_64(deserializer);
+    var var_fee = sse_decode_opt_box_autoadd_u_64(deserializer);
     var var_mint = sse_decode_String(deserializer);
     var var_token = sse_decode_String(deserializer);
     var var_unit = sse_decode_opt_String(deserializer);
@@ -4335,6 +4337,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         info: var_info,
         time: var_time,
         amount: var_amount,
+        fee: var_fee,
         mint: var_mint,
         token: var_token,
         unit: var_unit);
@@ -5191,6 +5194,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.info, serializer);
     sse_encode_u_64(self.time, serializer);
     sse_encode_u_64(self.amount, serializer);
+    sse_encode_opt_box_autoadd_u_64(self.fee, serializer);
     sse_encode_String(self.mint, serializer);
     sse_encode_String(self.token, serializer);
     sse_encode_opt_String(self.unit, serializer);
