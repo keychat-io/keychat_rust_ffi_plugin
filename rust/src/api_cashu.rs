@@ -545,7 +545,7 @@ pub fn __send(
         }
 
         let pss = &ps[..=select];
-        let tokens = if pss.sum().to_u64() == amount + sum_fee_ppk{
+        let tokens = if pss.sum().to_u64() == amount{
             SplitProofsGeneric::new(pss.to_owned(), 0)
         } else {
             if wallet.is_none() {
