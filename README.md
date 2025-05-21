@@ -14,13 +14,18 @@ rustup update stable
 cargo install flutter_rust_bridge_codegen@2.9.0
 
 rustc --print target-list
-cd rust
+# iOS
+rustup target add aarch64-apple-ios
+
 cargo build --target aarch64-apple-ios --release --target-dir target
 
+# Android
+rustup target add aarch64-linux-android
+
 export android_tools=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin
-export CC_aarch64_linux_android=$android_tools/aarch64-linux-android27-clang                           
+export CC_aarch64_linux_android=$android_tools/aarch64-linux-android31-clang                           
 export AR_aarch64_linux_android=$android_tools/llvm-ar
-export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$android_tools/aarch64-linux-android27-clang
+export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$android_tools/aarch64-linux-android31-clang
 
 cargo build --target aarch64-linux-android --release --target-dir target 
 cargo build --target aarch64-apple-darwin --release --target-dir target 
