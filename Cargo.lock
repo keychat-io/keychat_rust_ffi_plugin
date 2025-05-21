@@ -480,7 +480,7 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 [[package]]
 name = "cashu-wallet"
 version = "0.2.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#a262374887bf461487bf41a8a05c432e046d594f"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#f285b7048d42c9859213317b1fb37dc75f2a931c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -507,7 +507,7 @@ dependencies = [
 [[package]]
 name = "cashu-wallet-sqlite"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#a262374887bf461487bf41a8a05c432e046d594f"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#f285b7048d42c9859213317b1fb37dc75f2a931c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -533,9 +533,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.22"
+version = "1.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32db95edf998450acc7881c932f94cd9b05c87b4b2599e8bab064753da4acfd1"
+checksum = "5f4ac86a9e5bc1e2b3449ab9d7d3a6a405e3d1bb28d7b9be8614f55846ae3766"
 dependencies = [
  "jobserver",
  "libc",
