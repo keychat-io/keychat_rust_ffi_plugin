@@ -341,6 +341,7 @@ sealed class Transaction with _$Transaction {
 enum TransactionDirection {
   in_,
   out,
+  split,
   ;
 }
 

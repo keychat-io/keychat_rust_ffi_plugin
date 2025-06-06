@@ -5589,6 +5589,7 @@ impl SseDecode for crate::api_cashu::types::TransactionDirection {
         return match inner {
             0 => crate::api_cashu::types::TransactionDirection::In,
             1 => crate::api_cashu::types::TransactionDirection::Out,
+            2 => crate::api_cashu::types::TransactionDirection::Split,
             _ => unreachable!("Invalid variant for TransactionDirection: {}", inner),
         };
     }
@@ -6559,6 +6560,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Trans
         match self.0 {
             crate::api_cashu::types::TransactionDirection::In => 0.into_dart(),
             crate::api_cashu::types::TransactionDirection::Out => 1.into_dart(),
+            crate::api_cashu::types::TransactionDirection::Split => 2.into_dart(),
             _ => unreachable!(),
         }
     }
@@ -7282,6 +7284,7 @@ impl SseEncode for crate::api_cashu::types::TransactionDirection {
             match self {
                 crate::api_cashu::types::TransactionDirection::In => 0,
                 crate::api_cashu::types::TransactionDirection::Out => 1,
+                crate::api_cashu::types::TransactionDirection::Split => 2,
                 _ => {
                     unimplemented!("");
                 }

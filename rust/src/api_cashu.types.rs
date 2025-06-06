@@ -24,6 +24,7 @@ pub enum _TransactionStatus {
 pub enum _TransactionDirection {
     In,
     Out,
+    Split,
 }
 
 #[frb(mirror(TransactionKind))]
