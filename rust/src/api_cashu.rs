@@ -545,6 +545,7 @@ pub fn __send(
         }
 
         let pss = &ps[..=select];
+        let mut need_swap = false;
         let tokens = if pss.sum().to_u64() == amount{
             SplitProofsGeneric::new(pss.to_owned(), 0)
         } else {
@@ -553,6 +554,7 @@ pub fn __send(
                     .await?;
                 wallet = Some(w.get_wallet(&mint_url)?);
             }
+            need_swap = true;
             wallet
                 .as_ref()
                 .unwrap()
@@ -580,7 +582,7 @@ pub fn __send(
             TransactionDirection::Out,
             amount,
             mint_url.as_str(),
-            Some(sum_fee_ppk),
+            if need_swap { Some(sum_fee_ppk) } else { None },
             &cashu_tokens,
             None,
             Some(CURRENCY_UNIT_SAT),
