@@ -24,6 +24,7 @@ pub enum _TransactionStatus {
 pub enum _TransactionDirection {
     In,
     Out,
+    Split,
 }
 
 #[frb(mirror(TransactionKind))]
@@ -55,6 +56,7 @@ pub struct _CashuTransaction {
     pub info: Option<String>,
     pub time: u64,
     pub amount: u64,
+    pub fee: Option<u64>,
     pub mint: String,
     pub token: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]

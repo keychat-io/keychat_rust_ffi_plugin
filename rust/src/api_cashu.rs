@@ -398,6 +398,74 @@ pub async fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transact
     Ok(txs)
 }
 
+pub async fn receive_tokens(encoded_tokens: Vec<String>) -> anyhow::Result<Vec<Transaction>> {
+    let mut state = State::lock().await;
+    try_load_mints(&mut state, false).await.ok();
+    let w = state.get_wallet()?;
+
+    let mut all_tokens = Vec::new();
+    let mut mint_url: Option<cashu_wallet::Url> = None;
+    let mut unit = None;
+
+    for token_str in encoded_tokens {
+        let tokens: cashu_wallet::wallet::Token = token_str
+            .parse()
+            .map_err(|e| format_err!(format!("cashu tokens decode: {}", e)))?;
+        let tokens = tokens.into_v3()?;
+
+        if mint_url.is_none() {
+            mint_url = tokens.token.iter().map(|t| t.mint.clone()).next();
+            unit = tokens.unit;
+        }
+
+        all_tokens.extend(tokens.token.clone());
+    }
+
+    let proofs = all_tokens
+        .into_iter()
+        .flat_map(|t| t.proofs)
+        .collect::<Vec<_>>();
+
+    let mint_url = mint_url.ok_or_else(|| format_err!("no mint url"))?;
+
+    let states = w.get_wallet(&mint_url)?.check_proofs(&proofs).await?.states;
+
+    let unspents = states
+        .iter()
+        .enumerate()
+        .filter(|p| p.1.state == cashu_wallet::cashu::nuts::State::Unspent)
+        .map(|p| p.0)
+        .collect::<Vec<_>>();
+
+    let proofs_unspent = proofs
+        .iter()
+        .enumerate()
+        .filter(|(idx, _)| unspents.contains(idx))
+        .map(|ip| ip.1)
+        .cloned()
+        .collect();
+
+    let token =
+        cashu_wallet::wallet::TokenV3Generic::new(mint_url, proofs_unspent, None::<String>, unit)?;
+
+    let fut = async move {
+        for t in &token.token {
+            if !w.contains(&t.mint)? {
+                w.add_mint_with_units(t.mint.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                    .await?;
+            }
+        }
+
+        let mut txs = vec![];
+        w.receive_tokens_full_limit_unit(&token.into(), &mut txs, &[CURRENCY_UNIT_SAT])
+            .await
+            .map(|_| txs)
+    };
+    let txs = fut.await?;
+
+    Ok(txs)
+}
+
 #[frb(ignore)]
 pub async fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     let u: cashu_wallet::Url = mint.parse()?;
@@ -506,8 +574,15 @@ pub async fn __send(
             .get_proofs_limit_unit(&mint_url, CURRENCY_UNIT_SAT)
             .await?;
         let psv = ps.sum().to_u64();
-        let mut select =
-            cashu_wallet::select_send_proofs::<cashu_wallet_sqlite::StoreError>(amount, &mut ps)?;
+        let mut keysetinfo = wallet
+            .as_ref()
+            .map(|w| w.keysetinfo.clone())
+            .unwrap_or_default();
+
+        let (mut select, mut sum_fee_ppk) = cashu_wallet::select_send_proofs_with_fee::<
+            cashu_wallet_sqlite::StoreError,
+            // >(&wallet.as_ref().unwrap().keysetinfo, amount, &mut ps)?;
+        >(&keysetinfo, amount, &mut ps)?;
         if amount == 1 && sats > 1 && (&ps[..=select]).sum().to_u64() > 1 {
             let change = std::cmp::min(psv, sats.into());
 
@@ -516,6 +591,10 @@ pub async fn __send(
                     .await?;
                 wallet = Some(w.get_wallet(&mint_url)?);
             }
+            keysetinfo = wallet
+                .as_ref()
+                .map(|w| w.keysetinfo.clone())
+                .unwrap_or_default();
 
             let coins = w
                 .prepare_one_proofs(&mint_url, change, Some(CURRENCY_UNIT_SAT))
@@ -527,12 +606,13 @@ pub async fn __send(
                 .store()
                 .get_proofs_limit_unit(&mint_url, CURRENCY_UNIT_SAT)
                 .await?;
-            select = cashu_wallet::select_send_proofs::<cashu_wallet_sqlite::StoreError>(
-                amount, &mut ps,
-            )?;
+            (select, sum_fee_ppk) = cashu_wallet::select_send_proofs_with_fee::<
+                cashu_wallet_sqlite::StoreError,
+            >(&keysetinfo, amount, &mut ps)?;
         }
 
         let pss = &ps[..=select];
+        let mut need_swap = false;
         let tokens = if pss.sum().to_u64() == amount {
             SplitProofsGeneric::new(pss.to_owned(), 0)
         } else {
@@ -541,10 +621,17 @@ pub async fn __send(
                     .await?;
                 wallet = Some(w.get_wallet(&mint_url)?);
             }
+            need_swap = true;
             wallet
                 .as_ref()
                 .unwrap()
-                .send(amount.into(), pss, Some(CURRENCY_UNIT_SAT), w.store())
+                .send(
+                    amount.into(),
+                    sum_fee_ppk.into(),
+                    pss,
+                    Some(CURRENCY_UNIT_SAT),
+                    w.store(),
+                )
                 .await?
         };
 
@@ -568,6 +655,7 @@ pub async fn __send(
             TransactionDirection::Out,
             amount,
             mint_url.as_str(),
+            if need_swap { Some(sum_fee_ppk) } else { None },
             &cashu_tokens,
             None,
             Some(CURRENCY_UNIT_SAT),
