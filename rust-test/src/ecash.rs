@@ -2,7 +2,7 @@
 extern crate tracing;
 
 use anyhow::bail;
-use rust::api_cashu::{self as api, cashu_wallet::wallet::MnemonicInfo};
+use rust::api_cashu_new::{self as api, MnemonicInfo};
 
 use api::*;
 
@@ -207,81 +207,81 @@ fn main() {
 //     // info!("get_transactions_with_offset: {:?}", api::get_transactions_with_offset(0, 0));
 // }
 
-fn get_txs(page_limit: usize) {
-    let mut txs = vec![];
-    let mut pendings = vec![];
+// fn get_txs(page_limit: usize) {
+//     let mut txs = vec![];
+//     let mut pendings = vec![];
 
-    if page_limit > 0 {
-        let limit = page_limit;
-        let mut offset = 0;
-        loop {
-            info!("offset {}, limit {}", offset, limit);
-            match api::get_transactions_with_offset(offset, limit) {
-                Err(e) => return info!("get_transactions_with_offset failed: {:?}", e),
-                Ok(t) => {
-                    info!(
-                        "get_transactions_with_offset({}, {}) ok.len: {:?}",
-                        offset,
-                        limit,
-                        t.len()
-                    );
+//     if page_limit > 0 {
+//         let limit = page_limit;
+//         let mut offset = 0;
+//         loop {
+//             info!("offset {}, limit {}", offset, limit);
+//             match api::get_transactions_with_offset(offset, limit) {
+//                 Err(e) => return info!("get_transactions_with_offset failed: {:?}", e),
+//                 Ok(t) => {
+//                     info!(
+//                         "get_transactions_with_offset({}, {}) ok.len: {:?}",
+//                         offset,
+//                         limit,
+//                         t.len()
+//                     );
 
-                    let got = t.len();
-                    txs.extend(t);
+//                     let got = t.len();
+//                     txs.extend(t);
 
-                    if got < limit {
-                        break;
-                    }
-                    offset += got;
-                }
-            }
-        }
-    } else {
-        match api::get_transactions() {
-            Err(e) => return info!("get_all_transactions failed: {:?}", e),
-            Ok(mut t) => {
-                t.sort_by_key(|a| a.time());
+//                     if got < limit {
+//                         break;
+//                     }
+//                     offset += got;
+//                 }
+//             }
+//         }
+//     } else {
+//         match api::get_transactions() {
+//             Err(e) => return info!("get_all_transactions failed: {:?}", e),
+//             Ok(mut t) => {
+//                 t.sort_by_key(|a| a.time());
 
-                info!("get_all_transactions ok.len: {:?}", t.len());
-                txs = t;
-            }
-        }
-    }
+//                 info!("get_all_transactions ok.len: {:?}", t.len());
+//                 txs = t;
+//             }
+//         }
+//     }
 
-    for (idx, tx) in txs.into_iter().enumerate() {
-        let dt = timestamp_millis_to_dt(tx.time() as _).unwrap();
-        println!(
-            "{:>2} {} {}: {:>3} {:>7} {} {}",
-            idx,
-            tx.time(),
-            dt,
-            tx.direction().as_ref(),
-            tx.status().as_ref(),
-            tx.amount(),
-            tx.id()
-        );
+//     for (idx, tx) in txs.into_iter().enumerate() {
+//         let dt = timestamp_millis_to_dt(tx.time() as _).unwrap();
+//         println!(
+//             "{:>2} {} {}: {:>3} {:>7} {} {}",
+//             idx,
+//             tx.time(),
+//             dt,
+//             tx.direction().as_ref(),
+//             tx.status().as_ref(),
+//             tx.amount(),
+//             tx.id()
+//         );
 
-        if tx.is_pending() {
-            pendings.push(tx.content().to_owned());
-        }
-    }
+//         if tx.is_pending() {
+//             pendings.push(tx.content().to_owned());
+//         }
+//     }
 
-    for (i, tx) in pendings.into_iter().enumerate() {
-        println!("{:>2}: {}", i, tx)
-    }
-}
+//     for (i, tx) in pendings.into_iter().enumerate() {
+//         println!("{:>2}: {}", i, tx)
+//     }
+// }
 
-fn timestamp_millis_to_dt(ts: i64) -> anyhow::Result<String> {
-    use chrono::LocalResult;
-    use chrono::TimeZone;
+// fn timestamp_millis_to_dt(ts: i64) -> anyhow::Result<String> {
+//     use chrono::LocalResult;
+//     use chrono::TimeZone;
 
-    let dt = chrono::Local::now().offset().clone();
-    let dt = match dt.timestamp_millis_opt(ts) {
-        LocalResult::Single(dt) => dt,
-        e => {
-            bail!("Incorrect timestamp_millis: {:?}", e)
-        }
-    };
+//     let dt = chrono::Local::now().offset().clone();
+//     let dt = match dt.timestamp_millis_opt(ts) {
+//         LocalResult::Single(dt) => dt,
+//         e => {
+//             bail!("Incorrect timestamp_millis: {:?}", e)
+//         }
+//     };
 
-    Ok(dt.to_string())
-}
+//     Ok(dt.to_string())
+// }
