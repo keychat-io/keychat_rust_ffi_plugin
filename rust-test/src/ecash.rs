@@ -4,26 +4,53 @@ extern crate tracing;
 use anyhow::bail;
 use rust::api_cashu_new::{self as api, MnemonicInfo};
 
-use api::*;
-
-const DB_PATH: &str = "rustest.db";
+const DB_PATH: &str = "rustest-new.db";
 const MINT_URL: &str = "https://8333.space:3338/";
 const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
-    let migen_words = MnemonicInfo::generate_words(12).unwrap();
+    // let migen_words = MnemonicInfo::generate_words(12).unwrap();
+    let migen_words = "mushroom venture grab fatigue excite solve onion include minute joy trade anxiety";
+    println!("migen_words is {:?}", migen_words);
 
     let r1 = api::init_db(DB_PATH.to_string(), Some(migen_words.to_owned()), false);
-    info!("init_db {}: {:?}", DB_PATH, r1);
+    println!("init_db {}: {:?}", DB_PATH, r1);
 
-    let _r2 = api::init_cashu(32);
-    let encoded_token_8338: &str = "
-    cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhCGFzeEAwZTA0NWYzZjRjZDY3ZWNlNDcyYTM0ZjJjOWYzODljMTlmY2NjNWY5NzEzMzY3Nzg4NmIwZTA5NDZmYTFkMDQyYWNYIQOU_Y7FHmOAXINPW4AmwGQ07hZ9-AcL7rDtCp_iyuCAs2Fko2FlWCBx_pE41VXLU5445IlneDMCVOk5-Gr3S7Z10XDUSU7lomFzWCBcqHU9tKGS-BKdIWbWScrB0R4Ff4caY96iSEcviupC-mFyWCBsChqz1nwyJ1YLzNYvWJANwNyFNrPa8DDqbEr4JO33DqRhYQJhc3hAOGYxYTJmOWYyMDdkNDU0YzI4OTY3NjE3YzUwYTcyMjIxNWQ4Zjg3NmNjYTY2NzI4N2Y2OTkyZjMwYjZjN2U5NGFjWCEDUmct9nolmJ0fcSJ9995513qa2sV3mlK6VRhddxrTwMBhZKNhZVgg5dIjHJCuFye97zVpagG5aKpaypADIK7xkKjDlgxQ7dRhc1ggYSJcunjG3ECL7BOSqO5L4D-hfo1od94T3R1SzwjAMgZhclgguoeIZ3vHYzsnXmQCTvejXEMxD6DUimGQeQeJWwM0cNc-WbJVbC_9kYzZUHiBQj6VtLLTjKT6GFko2FlWCDTi92qog-b05IHVfWdRj6pBfRNcCKgLAcq7HzhenNRdmFzWCDfN1m9KVrVslmmLHAAxxg6HgEwhk9ecPkIXs029ZmdOGFyWCBy6EHafPw7hNZ7IYosOsp91vdHLucSODhSIuzLe4oUdqRhYQJhc3hAYTFmMjNmMTdiNzZlNjJkM2U3MTlmZmVjNTM0NWVlNzllYzExOGQ3ZTgzYjJkODM3MjhjYzVhNjU0MTliMjJlNmFjWCECSvj_wpaMyyB_e4Xk5w4xs4ekEW7xNeygRl1xr2zq7hphZKNhZVggwvhhZyT8UnlPZhFtpOuTyTwU3_2FYx6QJohdq3PzoIBhc1gglSSV-QAyN2zftL7QZutcubTLFSaM5cU0GE6OASdzreRhclggxQQrITja2YTUj1DZU1rBdxLj1f2An1fEu8sSBSkH7RCkYWECYXN4QGNhMTcxNDUzYjlhM2Y2NzM3NmYxMDcyYTBmZmU2ZGJmMmNmNTc5MjBiM2EzYzc0NGQ4MGYzNTlkMjNlYzdkZmRhY1ghAmkGlUujfErQLzC-9B7g-epclM9u4Ztlt-1TeEcDk_QUYWSjYWVYIFiWJy2YzO0FN4ZToXvX5RDBZhP4jZundh3aNN7zzsNkYXNYINg9LkzWKBsBGQg9f7CszLpEqeivDcfqiTiR4LEHu-FgYXJYIGSc-ovNetnigHeR7QMprgUmqxvwVc44Aao7BUMLwiCspGFhAmFzeEBlZmQxOWRiMzdiMDBhYTlmN2Y4ZjU5MzYwODliOTMwMWJiNDRlMWFkMDJkNTU2ODliYjllMjFkMzlkMmI0NjRiYWNYIQNdkcPsboZph-8dFR9_rSKaptpBhTw0F0053FeJItKQymFko2FlWCBFj-I-cycT-a_kzJAAT7fYcqoe-3l8I1-fep1l1Aj_oGFzWCDBxTNyhQZjGiayEADiYEsP2WxA82f8jReH5FGIo-bJWGFyWCDd7F6JtMrjMDgipSKp0e-lf1icUsV7GX61RlKcRhZ92qRhYQJhc3hAZjFmNjNkZDE4ZDE0YjZkODRlMDZkOWMzMzg4M2ViYzllNmI3Njc4ZGVhYTM4MDgyOTBhNDQzNGI5YmZiYjM1NGFjWCEDzX687ZVHQBg47GzqHHPq865f0Cguc0fVPPA21P5GyyhhZKNhZVggcBs3BJF4Oo7i1IUc9SjVyXc5Q-N247W4cXmtbgTfKP5hc1ggtgMBXavn8gX1K2SpzASmmkY3s4-qsT1tRHqdY6W6xLxhclgg6trDvxVs4QS-78bSObKI_Z7Jbs6x4XnmdPfOkVy0afc
-    ".trim();
-    let _r6 = api::receive_token(encoded_token_8338.to_string());
+    // let mi = api::get_mnemonic_info();
+    // println!("get_mnemonic_info is {:?}", mi);
 
-    let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
-    println!("try_get_wallet: {:?}", try_get_wallet);
+    // let init_cashu = api::init_cashu(32);
+    // println!("init_cashu is {:?}", init_cashu);
+
+
+    // test for receive token
+    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhCGFzeEA0NGRhMTA3MmM2OGViY2ZkZDAzYWZjYTA1OWViZWQzYjQyMjAzYmE0MDA2MjJlYTY5Yjk2YWY2ODlhOWU5NzZjYWNYIQPgSOpxiWUBIYU4UVUAquyj87KBGNY1H0PCkJjEXRejBmFko2FlWCDC-Rj15xDzX_OfS_ZahtIDOjPjGl2i_wZ_M6qgSj7ZPWFzWCBILouHLy5WmF8-ueS-vkBWDK-TXXk2YEJ89Ks7zASEvGFyWCCVgJXcAD06inJehFyrx9bDcmP-lX6fnQS3wk8kMph8l6RhYQJhc3hAOWQwNzg2YmJmMzYzZWE5OTVjMTdkYjgyYWEyOTE0ODA3NmUzODBkZWE0MWE0ODJiMDBlNzBmZTIxNWMwNDk0ZWFjWCEDgPlDnEg44VTPYTdRuErA_TQWeDi0pcyUHMs33h7yGHRhZKNhZVggTVQwNX4stoXAd48oToi9YE9_bWnKuO6Gc5usshA5mIlhc1ggd7fSpnxgqsBiHSU-2hegFA4S2y1k9T96-7ebEzlfo7dhclgg1rVKstfUCd53wsxUgHsGpig5sUMquRlTWOqckOrIWAQ".trim();
+    // let r6 = api::receive_token(encoded_token_8338.to_string());
+    // println!("receive token is {:?}", r6);
+
+    // test fot get balances
+    let r7 = api::get_balances();
+    println!("get_balances {:?}", r7);
+
+    // test for get mints
+    let mints = api::get_mints();
+    println!("get_mints is {:?}", mints);
+
+    // test for send token
+    // let send = api::send(2, MINT_URL.to_string(), None);
+    // println!("send token is {:?}", send);
+
+    // test for request mint
+    // let request_mint = api::request_mint(2,MINT_URL.to_string());
+    // println!("request_mint is {:?}", request_mint);
+    // lnbc20n1p58vdq6pp5w46w0ve9rq40skwzlvk08774mtm44xymnrc3w5znymuj62zj6cssdqqcqzpuxqrwzqsp5hy7ltttz0fwgu8mpgnvn9re0638vye4ug97dr6zyxeppzukh784s9qxpqysgqxz8zzps2fyefmx8d9mq92m8xej9dy7s6kpg0x0lnxtlct30ml65rlkhwdw80ugefmeyl2jr484x4l255rc9f8nxche0lnnf6nhjwxucp4yq5my
+
+    // test for check quote
+    // let amounts = api::check_all_mint_quotes();
+    // println!("check_all_mint_quotes {:?}", amounts);
+
+    // let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
+    // println!("try_get_wallet: {:?}", try_get_wallet);
    
 }
 

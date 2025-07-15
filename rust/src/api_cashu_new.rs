@@ -62,6 +62,7 @@ impl State {
     pub fn get_wallet(&self) -> anyhow::Result<&MultiMintWallet> {
         if self.wallet.is_none() {
             let err: anyhow::Error = format_err!("Wallet not init");
+            println!("get_wallet none");
             return Err(err.into());
         }
 
@@ -85,6 +86,9 @@ lazy_static! {
 pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
 
+    let _ = set_mnemonic(words.clone());
+    // let _ = add_mint("https://8333.space:3338/".to_string());
+
     let mut seed = None;
     if let Some(s) = words {
         let mi = MnemonicInfo::with_words(&s)?;
@@ -100,6 +104,9 @@ pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Res
         let mut wallets: Vec<Wallet> = Vec::new();
 
         let mints = localstore.get_mints().await?;
+        if mints.is_empty() {
+            
+        }
 
         for (mint_url, mint_info) in mints {
             let units = if let Some(mint_info) = mint_info {
@@ -132,6 +139,7 @@ pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Res
                 wallets.push(wallet);
             }
         }
+        // println!("wallets is {:?}", wallets);
         let multi_mint_wallet = MultiMintWallet::new(localstore, Arc::new(seed.unwrap()), wallets);
 
         Ok(multi_mint_wallet)
@@ -343,7 +351,7 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     Ok(a)
 }
 
-pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyhow::Result<()> {
+pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyhow::Result<String> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -469,7 +477,7 @@ pub fn validate_mint_number(mint_number: usize, mint_count: usize) -> anyhow::Re
 }
 
 use cdk::wallet::SendOptions;
-pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::Result<()> {
+pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::Result<String> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -499,15 +507,15 @@ pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::
             .await;
         wallet.send(prepared_send.unwrap(), None).await
     };
-    let _token = state.rt.block_on(fut)?;
-    Ok(())
+    let token = state.rt.block_on(fut)?;
+    Ok(token.to_v3_string())
 }
 
 use cdk::amount::SplitTarget;
 use cdk::nuts::nut00::ProofsMethods;
 use cdk::nuts::{MintQuoteState, NotificationPayload};
 use cdk::wallet::WalletSubscription;
-pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<()> {
+pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -518,32 +526,49 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<()> {
 
     let w = state.get_wallet()?;
 
-    let _tx = state.rt.block_on(async {
+    let tx = state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
         let quote = wallet.mint_quote(Amount::from(amount), None).await?;
-        let mut subscription = wallet
-            .subscribe(WalletSubscription::Bolt11MintQuoteState(vec![quote
-                .id
-                .clone()]))
-            .await;
+        // let mut subscription = wallet
+        //     .subscribe(WalletSubscription::Bolt11MintQuoteState(vec![quote
+        //         .id
+        //         .clone()]))
+        //     .await;
 
-        while let Some(msg) = subscription.recv().await {
-            if let NotificationPayload::MintQuoteBolt11Response(response) = msg {
-                if response.state == MintQuoteState::Paid {
-                    break;
-                }
-            }
-        }
-        let quote_id = quote.id.to_string();
-        let proofs = wallet.mint(&quote_id, SplitTarget::default(), None).await?;
+        // while let Some(msg) = subscription.recv().await {
+        //     if let NotificationPayload::MintQuoteBolt11Response(response) = msg {
+        //         if response.state == MintQuoteState::Paid {
+        //             break;
+        //         }
+        //     }
+        // }
+        // let request = quote.request;
+        // println!("request mint {:?}", quote.request);
+        // let proofs = wallet.mint(&quote_id, SplitTarget::default(), None).await?;
 
-        let receive_amount = proofs.total_amount()?;
+        // let receive_amount = proofs.total_amount()?;
 
-        debug!("Received {receive_amount} from mint {mint_url}");
-        Ok(())
+        // debug!("Received {receive_amount} from mint {mint_url}");
+        Ok(quote.request)
     })?;
 
-    Ok(())
+    Ok(tx)
+}
+
+// this need call every init
+pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
+
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let tx = state.rt.block_on(async {
+       
+        let check = w.check_all_mint_quotes(None).await?;
+        let amounts: u64 = check.values().map(|v| *v.as_ref()).sum();
+        println!("check_all_mint_quotes {:?}", amounts);
+        Ok(amounts)
+    })?;
+
+    Ok(tx)
 }
 
 pub fn mint_token(amount: u64, quote_id: String, active_mint: String) -> anyhow::Result<()> {
