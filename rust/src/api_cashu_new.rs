@@ -564,7 +564,7 @@ pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
        
         let check = w.check_all_mint_quotes(None).await?;
         let amounts: u64 = check.values().map(|v| *v.as_ref()).sum();
-        println!("check_all_mint_quotes {:?}", amounts);
+        
         Ok(amounts)
     })?;
 
@@ -645,7 +645,7 @@ pub fn melt(invoice: String, active_mint: String, amount: Option<u64>) -> anyhow
         info!("{quote:?}");
 
         let melt = wallet.melt(&quote.id).await?;
-        info!("Paid invoice: {}", melt.state);
+        println!("Paid invoice: {}", melt.state);
 
         if let Some(preimage) = melt.preimage {
             info!("Payment preimage: {preimage}");
@@ -654,6 +654,17 @@ pub fn melt(invoice: String, active_mint: String, amount: Option<u64>) -> anyhow
         Ok(())
     })?;
     Ok(())
+}
+
+pub fn get_all_transactions() -> anyhow::Result<Vec<cdk_common::wallet::Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let tx = state.rt.block_on(w.list_transactions(
+        None,
+    ))?;
+
+    Ok(tx)
 }
 
 // incloud normal_tx ln_tx melt_tx mint_tx

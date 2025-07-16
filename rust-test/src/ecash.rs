@@ -9,12 +9,12 @@ const MINT_URL: &str = "https://8333.space:3338/";
 const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
-    // let migen_words = MnemonicInfo::generate_words(12).unwrap();
-    let migen_words = "mushroom venture grab fatigue excite solve onion include minute joy trade anxiety";
+    let migen_words = MnemonicInfo::generate_words(12).unwrap();
+    // let migen_words = "mushroom venture grab fatigue excite solve onion include minute joy trade anxiety";
     println!("migen_words is {:?}", migen_words);
 
-    let r1 = api::init_db(DB_PATH.to_string(), Some(migen_words.to_owned()), false);
-    println!("init_db {}: {:?}", DB_PATH, r1);
+    let init_db = api::init_db(DB_PATH.to_string(), Some(migen_words.to_owned()), false);
+    println!("init_db {}: {:?}", DB_PATH, init_db);
 
     // let mi = api::get_mnemonic_info();
     // println!("get_mnemonic_info is {:?}", mi);
@@ -22,32 +22,59 @@ fn main() {
     // let init_cashu = api::init_cashu(32);
     // println!("init_cashu is {:?}", init_cashu);
 
+    // test fot get balances
+    let b1 = api::get_balances();
+    println!("get_balances before {:?}", b1);
 
     // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhCGFzeEA0NGRhMTA3MmM2OGViY2ZkZDAzYWZjYTA1OWViZWQzYjQyMjAzYmE0MDA2MjJlYTY5Yjk2YWY2ODlhOWU5NzZjYWNYIQPgSOpxiWUBIYU4UVUAquyj87KBGNY1H0PCkJjEXRejBmFko2FlWCDC-Rj15xDzX_OfS_ZahtIDOjPjGl2i_wZ_M6qgSj7ZPWFzWCBILouHLy5WmF8-ueS-vkBWDK-TXXk2YEJ89Ks7zASEvGFyWCCVgJXcAD06inJehFyrx9bDcmP-lX6fnQS3wk8kMph8l6RhYQJhc3hAOWQwNzg2YmJmMzYzZWE5OTVjMTdkYjgyYWEyOTE0ODA3NmUzODBkZWE0MWE0ODJiMDBlNzBmZTIxNWMwNDk0ZWFjWCEDgPlDnEg44VTPYTdRuErA_TQWeDi0pcyUHMs33h7yGHRhZKNhZVggTVQwNX4stoXAd48oToi9YE9_bWnKuO6Gc5usshA5mIlhc1ggd7fSpnxgqsBiHSU-2hegFA4S2y1k9T96-7ebEzlfo7dhclgg1rVKstfUCd53wsxUgHsGpig5sUMquRlTWOqckOrIWAQ".trim();
-    // let r6 = api::receive_token(encoded_token_8338.to_string());
-    // println!("receive token is {:?}", r6);
-
-    // test fot get balances
-    let r7 = api::get_balances();
-    println!("get_balances {:?}", r7);
+    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCBpGFhCGFzeEA2MWViMTc5NjM2M2NhMDI2Njg1MTQ0NWE2YWVhNDhhMTJjZDBlYjQ2NzM3NjkzZDMwZmIwNTY1NTRlZTdlY2Y1YWNYIQMb9jewzX6rQvTbFjXiw7e68XXexs97ZYUBetjWBX91nGFko2FlWCDtNwZfO-9e8i3_uIKczjUG5O7-vvqto-PiWv9xWrXa-WFzWCBZRQtJ41ejEvkR10uO4w6bI1Y-BNIWEx0SoJ9BFfgyI2FyWCCks2KB82PCxZoQ0aKxuGBzHTDW1a0-b9U4HCBrBkYztA".trim();
+    // let re = api::receive_token(encoded_token_8338.to_string());
+    // println!("receive token is {:?}", re);
 
     // test for get mints
-    let mints = api::get_mints();
-    println!("get_mints is {:?}", mints);
+    // let mints = api::get_mints();
+    // println!("get_mints is {:?}", mints);
 
     // test for send token
     // let send = api::send(2, MINT_URL.to_string(), None);
     // println!("send token is {:?}", send);
 
     // test for request mint
-    // let request_mint = api::request_mint(2,MINT_URL.to_string());
+    // let request_mint = api::request_mint(2, MINT_URL.to_string());
     // println!("request_mint is {:?}", request_mint);
     // lnbc20n1p58vdq6pp5w46w0ve9rq40skwzlvk08774mtm44xymnrc3w5znymuj62zj6cssdqqcqzpuxqrwzqsp5hy7ltttz0fwgu8mpgnvn9re0638vye4ug97dr6zyxeppzukh784s9qxpqysgqxz8zzps2fyefmx8d9mq92m8xej9dy7s6kpg0x0lnxtlct30ml65rlkhwdw80ugefmeyl2jr484x4l255rc9f8nxche0lnnf6nhjwxucp4yq5my
 
     // test for check quote
-    // let amounts = api::check_all_mint_quotes();
-    // println!("check_all_mint_quotes {:?}", amounts);
+    let amounts = api::check_all_mint_quotes();
+    println!("check_all_mint_quotes {:?}", amounts);
+
+    // test for melt
+    // let invoice = "lnbc20n1p58w9l4pp5gdpv54fafwf9g8l88pjgchn07xgqwgw6srs04w4s4wptqx0qu40sdqqcqzpuxqrwzqsp50pe0jklwtcj74snhp7dw47pvsy57u2dxddffn8c65dqkhpkrekxq9qxpqysgqrdlsqcmp9wq0a56gf8r6yaxhclqn4afj2qpm8k7ff06cma5ayjrjs693jfn0x243whqd7r3a5mfak0ar3awrluydsgcr5z8dtjcgrqcqytrmul".to_string();
+    // let _melt = api::melt(invoice, MINT_URL.to_string(), None);
+
+
+    // test fot get balances
+    let b2 = api::get_balances();
+    println!("get_balances after {:?}", b2);
+    
+    // let txs = api::get_all_transactions();
+    // println!("txs {:?}", txs);
+    // for tx in txs.unwrap() {
+    //     println!("tx {:?}", tx);
+    // }
+
+    // test for get_cashu_transactions_with_offset
+    let cashu_txs = api::get_cashu_transactions_with_offset(0,100);
+    for tx in cashu_txs.unwrap() {
+        println!("cashu {:?}", tx);
+    }
+
+    // test for get_ln_transactions_with_offset
+    let ln_txs = api::get_ln_transactions_with_offset(0,100);
+    for tx in ln_txs.unwrap() {
+        println!("ln {:?}", tx);
+    }
+
 
     // let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
     // println!("try_get_wallet: {:?}", try_get_wallet);
