@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
 use bincode;
 use kc::user::MlsUser;
@@ -386,6 +388,44 @@ impl User {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
             vec.push(pubkey);
             Ok(vec)
+        })
+    }
+
+    pub(crate) fn get_group_members_with_lifetime(&self, group_id: String) -> Result<HashMap<String, Option<u64>>> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+
+        let leaf_nodes = group
+            .mls_group
+            .leaf_nodes()
+            .cloned()
+            .collect::<Vec<LeafNode>>();
+
+        let mut members = group.mls_group.members();
+        members.try_fold(HashMap::new(), |mut m, member| {
+            let credential = member.credential;
+            let pubkey = String::from_utf8(
+                BasicCredential::try_from(credential.clone())
+                    .map_err(|e| anyhow::anyhow!(e.to_string()))?
+                    .identity()
+                    .to_vec(),
+            )
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            
+            let leaf_node = leaf_nodes.iter().find(|n| *n.credential() == credential).ok_or_else(|| anyhow::anyhow!("LeafNode not found"))?;
+            if let Some(lifetime) = leaf_node.life_time() {
+                m.insert(pubkey, Some(lifetime.not_after()));
+            } else {
+                m.insert(pubkey, None);
+            }
+            Ok(m)
         })
     }
 

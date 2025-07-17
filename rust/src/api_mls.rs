@@ -339,6 +339,27 @@ pub fn get_group_members(nostr_id: String, group_id: String) -> Result<Vec<Strin
     result
 }
 
+// return <HashMap<String, Option<u64>> of group members with lifetime
+pub fn get_group_members_with_lifetime(nostr_id: String, group_id: String) -> Result<HashMap<String, Option<u64>>> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[get_group_members_with_lifetime]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[get_group_members_with_lifetime]> nostr_id do not init.");
+            return Err(format_err!("<fn[get_group_members_with_lifetime]> nostr_id do not init."));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[get_group_members_with_lifetime]> Can not get store from user."))?;
+        let members = user.get_group_members_with_lifetime(group_id.clone())?;
+        Ok(members)
+    });
+    result
+}
 /*
    Group IDs SHOULD be constructed in such a way that
    there is an overwhelmingly low probability of honest group creators generating the same group ID,

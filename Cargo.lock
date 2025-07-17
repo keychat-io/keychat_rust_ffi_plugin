@@ -1950,7 +1950,7 @@ dependencies = [
 [[package]]
 name = "kc"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "anyhow",
  "base64 0.13.1",
@@ -2368,7 +2368,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "openmls"
 version = "0.6.1"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "backtrace",
  "itertools 0.14.0",
@@ -2391,7 +2391,7 @@ dependencies = [
 [[package]]
 name = "openmls_basic_credential"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "ed25519-dalek",
  "openmls_traits",
@@ -2404,7 +2404,7 @@ dependencies = [
 [[package]]
 name = "openmls_memory_storage"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "hex",
  "log",
@@ -2417,7 +2417,7 @@ dependencies = [
 [[package]]
 name = "openmls_rust_crypto"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "aes-gcm",
  "chacha20poly1305",
@@ -2442,7 +2442,7 @@ dependencies = [
 [[package]]
 name = "openmls_sqlite_storage"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "log",
  "openmls_traits",
@@ -2456,7 +2456,7 @@ dependencies = [
 [[package]]
 name = "openmls_test"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "ansi_term",
  "openmls_rust_crypto",
@@ -2471,7 +2471,7 @@ dependencies = [
 [[package]]
 name = "openmls_traits"
 version = "0.3.0"
-source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#f374d68c9fa846495fcbbcded04022fb7ad063bb"
+source = "git+https://github.com/keychat-io/openmls.git?branch=kc4#80a149deab3a709f84b02af8df04d4211e02350e"
 dependencies = [
  "serde",
  "tls_codec",
