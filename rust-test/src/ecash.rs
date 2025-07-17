@@ -52,6 +52,10 @@ fn main() {
     // let invoice = "lnbc20n1p58w9l4pp5gdpv54fafwf9g8l88pjgchn07xgqwgw6srs04w4s4wptqx0qu40sdqqcqzpuxqrwzqsp50pe0jklwtcj74snhp7dw47pvsy57u2dxddffn8c65dqkhpkrekxq9qxpqysgqrdlsqcmp9wq0a56gf8r6yaxhclqn4afj2qpm8k7ff06cma5ayjrjs693jfn0x243whqd7r3a5mfak0ar3awrluydsgcr5z8dtjcgrqcqytrmul".to_string();
     // let _melt = api::melt(invoice, MINT_URL.to_string(), None);
 
+    // test for send stamp
+    let stamp = api::send_stamp(1,  vec![MINT_URL.to_string()], None);
+    println!("send_stamp {:?}", stamp);
+
 
     // test fot get balances
     let b2 = api::get_balances();

@@ -296,6 +296,7 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Amount> {
     Ok(amount)
 }
 
+use std::time::{SystemTime, UNIX_EPOCH};
 #[frb(ignore)]
 pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     let denomination: u64 = 1;
@@ -310,7 +311,7 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
 
     let a = state.rt.block_on(async {
         let mut count_before = 0u64;
-        let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
+        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let ps = wallet.get_unspent_proofs().await?;
         ps.iter().map(|p| {
             let is = *p.amount.as_ref() == denomination;
@@ -339,11 +340,27 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
                 .swap(
                     Some(rest_amount.into()),
                     split_target,
-                    selected,
+                    selected.clone(),
                     None,
                     false,
                 )
                 .await?;
+            // need to add tx to db
+            wallet.localstore.add_transaction(Transaction {
+                mint_url: mint_url.clone(),
+                direction: TransactionDirection::Split,
+                kind: TransactionKind::Cashu,
+                amount: amount.into(),
+                fee: Amount::ONE,
+                unit: unit,
+                ys: selected.ys()?,
+                timestamp: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs(),
+                memo: None,
+                metadata: HashMap::new(),
+            }).await?;
         }
         Ok(0)
     })?;
@@ -356,7 +373,7 @@ pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyh
         bail!("can't send amount 0");
     }
 
-    let state = State::lock()?;
+    let mut state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
 
@@ -378,7 +395,7 @@ pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyh
     }
 
     for mint_url in mints_first.iter().chain(mints_second.iter()) {
-        let tx = send(amount, mint_url.to_string(), info.clone());
+        let tx = _send(&mut state, amount, mint_url.to_string(), info.clone());
         debug!("send_stamp {} {} got: {:?}", mint_url, amount, tx);
 
         if tx.is_err() && get_wallet(mint_url.clone(), unit.clone()).is_err() {
@@ -481,8 +498,17 @@ pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::
     if amount == 0 {
         bail!("can't send amount 0");
     }
+    let mut state = State::lock()?;
+    _send(&mut state, amount, active_mint, None)
+}
+
+pub fn _send(state: &mut StdMutexGuard<'static, State>, amount: u64, active_mint: String, _info: Option<String>) -> anyhow::Result<String> {
+    if amount == 0 {
+        bail!("can't send amount 0");
+    }
+    println!("send");
+
     let unit = CurrencyUnit::from_str("sat")?;
-    let state = State::lock()?;
 
     let w = state.get_wallet()?;
 
