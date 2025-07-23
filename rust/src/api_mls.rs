@@ -154,6 +154,30 @@ pub fn create_key_package(nostr_id: String) -> Result<KeyPackageResult> {
     result
 }
 
+// parse lifetime from key package
+pub fn parse_lifetime_from_key_package(nostr_id: String, key_package_hex: String) -> Result<u64> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<fn[parse_lifetime_from_key_package]> Can not get store err."))?;
+        if !store.user.contains_key(&nostr_id) {
+            error!("<fn[parse_lifetime_from_key_package]> nostr_id do not init.");
+            return Err(format_err!(
+                "<fn[parse_lifetime_from_key_package]> nostr_id do not init."
+            ));
+        }
+        let user = store
+            .user
+            .get_mut(&nostr_id)
+            .ok_or_else(|| format_err!("<fn[parse_lifetime_from_key_package]> Can not get store from user."))?;
+        let bot_after = user.parse_lifetime_from_key_package(key_package_hex)?;
+        Ok(bot_after)
+    });
+    result
+}
+
 pub fn delete_key_package(nostr_id: String, key_package: String) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {

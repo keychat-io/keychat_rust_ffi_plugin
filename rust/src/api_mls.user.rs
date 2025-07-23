@@ -224,6 +224,19 @@ impl User {
         Ok(result)
     }
 
+    pub(crate) fn parse_lifetime_from_key_package(&mut self, key_package_hex: String) -> Result<u64> {
+        let key_package_bytes = hex::decode(key_package_hex)?;
+        let key_package_in = KeyPackageIn::tls_deserialize(&mut key_package_bytes.as_slice())
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        // Validate the signature, ciphersuite, and extensions of the key package
+        let key_package = key_package_in
+            .validate(self.mls_user.provider.crypto(), ProtocolVersion::Mls10)
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        let lifetime = key_package.life_time();
+        Ok(lifetime.not_after())
+    }
+
     pub(crate) fn delete_key_package(&mut self, key_package: String) -> Result<()> {
         let kp: KeyPackage = self.parse_key_package(key_package)?;
         let mut identity = self
