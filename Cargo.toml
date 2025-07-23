@@ -3,10 +3,13 @@ resolver = "2"
 members = ["rust", "rust-test"]
 
 [profile.release]
+debug = false
+strip = true
+opt-level = "s"
 lto = true
 codegen-units = 1
-strip = "none"
-opt-level = "z"
+panic = "abort"
+rpath = true
 
 [profile.dev]
 debug = 2
