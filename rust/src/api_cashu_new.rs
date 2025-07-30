@@ -13,7 +13,6 @@ use cashu::CurrencyUnit;
 use cdk::cdk_database;
 use cdk_common::database::WalletDatabase;
 
-
 use cdk_common::wallet::{Transaction, TransactionDirection, TransactionKind, TransactionStatus};
 
 use cdk::wallet::{MultiMintWallet, Wallet, WalletBuilder};
@@ -104,9 +103,7 @@ pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Res
         let mut wallets: Vec<Wallet> = Vec::new();
 
         let mints = localstore.get_mints().await?;
-        if mints.is_empty() {
-            
-        }
+        if mints.is_empty() {}
 
         for (mint_url, mint_info) in mints {
             let units = if let Some(mint_info) = mint_info {
@@ -296,6 +293,33 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Amount> {
     Ok(amount)
 }
 
+pub fn test_print_proofs(mint: String) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let mint_url = MintUrl::from_str(&mint)?;
+
+    let fut = async move {
+        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+        let ps = wallet.get_unspent_proofs().await?;
+        println!("get_all_proofs len: {:?}", ps.len());
+
+        for p in ps {
+            println!(
+                "{}: {} {}",
+                p.amount.as_ref(),
+                p.keyset_id,
+                p.secret.to_string(),
+            );
+        }
+        Ok(())
+    };
+
+    let _ = state.rt.block_on(fut)?;
+
+    Ok(())
+}
+
 use std::time::{SystemTime, UNIX_EPOCH};
 #[frb(ignore)]
 pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
@@ -312,60 +336,90 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     let a = state.rt.block_on(async {
         let mut count_before = 0u64;
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-        let ps = wallet.get_unspent_proofs().await?;
-        ps.iter().map(|p| {
+        let mut ps = wallet.get_unspent_proofs().await?;
+
+        ps.retain(|p| {
             let is = *p.amount.as_ref() == denomination;
             if is {
                 count_before += 1;
             }
+            !is
         });
+
         if count_before * denomination < amount {
             let rest_amount = amount - count_before * denomination;
-            let target = vec![cashu::Amount::ONE; rest_amount as usize];
-            let split_target = SplitTarget::Values(target.clone());
             let active_keyset_ids = wallet
                 .get_active_mint_keysets()
                 .await?
                 .into_iter()
                 .map(|keyset| keyset.id)
                 .collect();
+            let keyset_fees = wallet.get_keyset_fees().await?;
             let selected = Wallet::select_proofs(
                 rest_amount.into(),
                 ps,
                 &active_keyset_ids,
-                &HashMap::new(),
+                &keyset_fees,
                 true,
             )?;
+
             wallet
-                .swap(
+                .swap_denomination(
+                    denomination.into(),
                     Some(rest_amount.into()),
-                    split_target,
                     selected.clone(),
-                    None,
                     false,
                 )
                 .await?;
-            // need to add tx to db
-            wallet.localstore.add_transaction(Transaction {
-                mint_url: mint_url.clone(),
-                direction: TransactionDirection::Split,
-                kind: TransactionKind::Cashu,
-                amount: amount.into(),
-                fee: Amount::ONE,
-                unit: unit,
-                ys: selected.ys()?,
-                timestamp: SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_secs(),
-                memo: None,
-                metadata: HashMap::new(),
-            }).await?;
         }
-        Ok(0)
+        Ok(count_before)
     })?;
 
     Ok(a)
+}
+
+/// split target_count 1 sat proof
+pub async fn ensure_ones(wallet: &Wallet, target_count: usize) -> anyhow::Result<()> {
+    let proofs = wallet.get_unspent_proofs().await?;
+
+    let mut ones = Vec::new();
+    let mut others = Vec::new();
+    for p in proofs {
+        if *p.amount.as_ref() == 1 {
+            ones.push(p);
+        } else {
+            others.push(p);
+        }
+    }
+    let current_ones = ones.len();
+
+    if current_ones >= target_count {
+        println!("Already have enough 1 sat proofs: {}", current_ones);
+        return Ok(());
+    }
+
+    let need = target_count - current_ones;
+
+    let total: u64 = others.iter().map(|p| *p.amount.as_ref()).sum();
+    let fee = wallet.get_proofs_fee(&others).await?;
+
+    if total < need as u64 + fee.as_ref() {
+        bail!("Not enough value in non-1 sat proofs to split");
+    }
+
+    let split_target = SplitTarget::Values(vec![Amount::ONE; need]);
+
+    wallet
+        .swap(
+            Some(Amount::from(need as u64)),
+            split_target,
+            others,
+            None,
+            false, // include_fees
+        )
+        .await?;
+
+    Ok(())
 }
 
 pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyhow::Result<String> {
@@ -502,7 +556,12 @@ pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::
     _send(&mut state, amount, active_mint, None)
 }
 
-pub fn _send(state: &mut StdMutexGuard<'static, State>, amount: u64, active_mint: String, _info: Option<String>) -> anyhow::Result<String> {
+pub fn _send(
+    state: &mut StdMutexGuard<'static, State>,
+    amount: u64,
+    active_mint: String,
+    _info: Option<String>,
+) -> anyhow::Result<String> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -583,14 +642,12 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> 
 
 // this need call every init
 pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
-
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let tx = state.rt.block_on(async {
-       
         let check = w.check_all_mint_quotes(None).await?;
         let amounts: u64 = check.values().map(|v| *v.as_ref()).sum();
-        
+
         Ok(amounts)
     })?;
 
@@ -686,9 +743,7 @@ pub fn get_all_transactions() -> anyhow::Result<Vec<cdk_common::wallet::Transact
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let tx = state.rt.block_on(w.list_transactions(
-        None,
-    ))?;
+    let tx = state.rt.block_on(w.list_transactions(None))?;
 
     Ok(tx)
 }
@@ -751,7 +806,7 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<cdk_common::wallet
     let tx = state.rt.block_on(
         w.list_pending_transactions_with_kind([TransactionKind::Cashu].as_slice(), None),
     )?;
-    
+
     Ok(tx)
 }
 
