@@ -1,21 +1,21 @@
 use anyhow::Ok;
-use cashu::Amount;
-use cashu::MintUrl;
-use cdk_common::wallet::TransactionId;
-use cdk_sqlite::WalletSqliteDatabase;
-use std::str::FromStr;
-use std::sync::Arc;
-use std::sync::Mutex as StdMutex;
-use std::sync::MutexGuard as StdMutexGuard;
-use tokio::runtime::{Builder, Runtime};
-
-use cashu::CurrencyUnit;
+use cashu::{Amount, CurrencyUnit, MintUrl};
+use cdk::amount::{SplitTarget, MSAT_IN_SAT};
 use cdk::cdk_database;
+use cdk::nuts::nut00::ProofsMethods;
+use cdk::nuts::{MeltOptions, Token};
+use cdk::wallet::types::WalletKey;
+use cdk::wallet::ReceiveOptions;
+use cdk::wallet::{MultiMintWallet, SendOptions, Wallet, WalletBuilder};
+use cdk::Bolt11Invoice;
 use cdk_common::database::WalletDatabase;
-
-use cdk_common::wallet::{Transaction, TransactionDirection, TransactionKind, TransactionStatus};
-
-use cdk::wallet::{MultiMintWallet, Wallet, WalletBuilder};
+use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus};
+use cdk_sqlite::WalletSqliteDatabase;
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::str::FromStr;
+use std::sync::{Arc, Mutex as StdMutex, MutexGuard as StdMutexGuard};
+use tokio::runtime::{Builder, Runtime};
 
 #[frb(ignore)]
 pub struct State {
@@ -61,7 +61,7 @@ impl State {
     pub fn get_wallet(&self) -> anyhow::Result<&MultiMintWallet> {
         if self.wallet.is_none() {
             let err: anyhow::Error = format_err!("Wallet not init");
-            println!("get_wallet none");
+            debug!("get_wallet none");
             return Err(err.into());
         }
 
@@ -149,7 +149,6 @@ pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Res
     })
 }
 
-use std::collections::HashMap;
 pub fn init_cashu(
     prepare_sats_once_time: u16,
 ) -> anyhow::Result<HashMap<cashu::MintUrl, Option<cdk_common::MintInfo>>> {
@@ -161,8 +160,6 @@ pub fn init_cashu(
     Ok(mints)
 }
 
-// ignore for test
-// add by 2.0.0-dev.9
 #[frb(ignore)]
 pub fn get_mnemonic_info() -> anyhow::Result<Option<String>> {
     let state = State::lock()?;
@@ -216,7 +213,6 @@ pub fn remove_mint(url: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-// use cashu_wallet::wallet::CURRENCY_UNIT_SAT;
 // ? direct use map?
 pub fn get_balances() -> anyhow::Result<String> {
     let state = State::lock()?;
@@ -246,7 +242,6 @@ pub fn get_wallet(mint_url: MintUrl, unit: CurrencyUnit) -> anyhow::Result<Walle
     Ok(wallet)
 }
 
-use cdk::wallet::types::WalletKey;
 /// Helper function to create or get a wallet
 async fn get_or_create_wallet(
     multi_mint_wallet: &MultiMintWallet,
@@ -267,8 +262,6 @@ async fn get_or_create_wallet(
     }
 }
 
-use cdk::nuts::Token;
-use cdk::wallet::ReceiveOptions;
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Amount> {
     let token: Token = Token::from_str(&encoded_token)?;
     let mint_url = token.mint_url()?;
@@ -320,8 +313,6 @@ pub fn test_print_proofs(mint: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-use std::time::{SystemTime, UNIX_EPOCH};
-#[frb(ignore)]
 pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     let denomination: u64 = 1;
 
@@ -378,50 +369,6 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     Ok(a)
 }
 
-/// split target_count 1 sat proof
-pub async fn ensure_ones(wallet: &Wallet, target_count: usize) -> anyhow::Result<()> {
-    let proofs = wallet.get_unspent_proofs().await?;
-
-    let mut ones = Vec::new();
-    let mut others = Vec::new();
-    for p in proofs {
-        if *p.amount.as_ref() == 1 {
-            ones.push(p);
-        } else {
-            others.push(p);
-        }
-    }
-    let current_ones = ones.len();
-
-    if current_ones >= target_count {
-        println!("Already have enough 1 sat proofs: {}", current_ones);
-        return Ok(());
-    }
-
-    let need = target_count - current_ones;
-
-    let total: u64 = others.iter().map(|p| *p.amount.as_ref()).sum();
-    let fee = wallet.get_proofs_fee(&others).await?;
-
-    if total < need as u64 + fee.as_ref() {
-        bail!("Not enough value in non-1 sat proofs to split");
-    }
-
-    let split_target = SplitTarget::Values(vec![Amount::ONE; need]);
-
-    wallet
-        .swap(
-            Some(Amount::from(need as u64)),
-            split_target,
-            others,
-            None,
-            false, // include_fees
-        )
-        .await?;
-
-    Ok(())
-}
-
 pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyhow::Result<String> {
     if amount == 0 {
         bail!("can't send amount 0");
@@ -475,7 +422,6 @@ pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyh
     tx
 }
 
-use std::collections::BTreeMap;
 async fn mint_balances(
     multi_mint_wallet: &MultiMintWallet,
     unit: &CurrencyUnit,
@@ -490,7 +436,7 @@ async fn mint_balances(
         .enumerate()
     {
         let mint_url = mint_url.clone();
-        println!("{i}: {mint_url} {amount} {unit}");
+        debug!("{i}: {mint_url} {amount} {unit}");
         wallets_vec.push((mint_url, *amount))
     }
     Ok(wallets_vec)
@@ -547,7 +493,6 @@ pub fn validate_mint_number(mint_number: usize, mint_count: usize) -> anyhow::Re
     Ok(())
 }
 
-use cdk::wallet::SendOptions;
 pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::Result<String> {
     if amount == 0 {
         bail!("can't send amount 0");
@@ -556,7 +501,7 @@ pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::
     _send(&mut state, amount, active_mint, None)
 }
 
-pub fn _send(
+fn _send(
     state: &mut StdMutexGuard<'static, State>,
     amount: u64,
     active_mint: String,
@@ -565,7 +510,6 @@ pub fn _send(
     if amount == 0 {
         bail!("can't send amount 0");
     }
-    println!("send");
 
     let unit = CurrencyUnit::from_str("sat")?;
 
@@ -596,10 +540,6 @@ pub fn _send(
     Ok(token.to_v3_string())
 }
 
-use cdk::amount::SplitTarget;
-use cdk::nuts::nut00::ProofsMethods;
-use cdk::nuts::{MintQuoteState, NotificationPayload};
-use cdk::wallet::WalletSubscription;
 pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> {
     if amount == 0 {
         bail!("can't mint amount 0");
@@ -679,9 +619,6 @@ pub fn mint_token(amount: u64, quote_id: String, active_mint: String) -> anyhow:
     Ok(())
 }
 
-use cdk::amount::MSAT_IN_SAT;
-use cdk::nuts::MeltOptions;
-use cdk::Bolt11Invoice;
 pub fn melt(invoice: String, active_mint: String, amount: Option<u64>) -> anyhow::Result<()> {
     if amount == Some(0) {
         bail!("can't melt amount 0");
@@ -728,7 +665,7 @@ pub fn melt(invoice: String, active_mint: String, amount: Option<u64>) -> anyhow
         info!("{quote:?}");
 
         let melt = wallet.melt(&quote.id).await?;
-        println!("Paid invoice: {}", melt.state);
+        info!("Paid invoice: {}", melt.state);
 
         if let Some(preimage) = melt.preimage {
             info!("Payment preimage: {preimage}");
