@@ -501,7 +501,6 @@
 //     /*
 //      * forth tom to alice then  alice to tom
 //      */
-
 //     let alice_response_to_tom = "Alice response to Tom";
 //     // alice to tom
 //     let alice_response_to_tom_encrypt = encrypt_signal(

@@ -262,6 +262,52 @@ async fn get_or_create_wallet(
     }
 }
 
+/// this is test for receive stamps every multi times
+pub fn test_for_multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
+    let token: Token = Token::from_str(&stamps[0])?;
+    let mint_url = token.mint_url()?;
+    let unit = token.unit().unwrap_or_default();
+
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let fut = async move {
+        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+        let mut all_proofs = Vec::new();
+        for token_str in stamps {
+            let token_data = Token::from_str(&token_str)?;
+            let keysets_info = match w
+                .localstore
+                .get_mint_keysets(token_data.mint_url()?)
+                .await?
+            {
+                Some(keysets_info) => keysets_info,
+                // Hit the keysets endpoint if we don't have the keysets for this Mint
+                None => wallet.get_mint_keysets().await?,
+            };
+            let proofs = token_data.proofs(&keysets_info)?;
+            all_proofs.extend(proofs);
+        }
+        // must checkout proofs with unspent
+        let proofs_state = wallet.check_proofs_spent(all_proofs.clone()).await?;
+        let unspent: cashu::Proofs = all_proofs
+            .into_iter()
+            .zip(proofs_state)
+            .filter_map(|(p, s)| (s.state == cashu::State::Unspent).then_some(p))
+            .collect();
+
+        let tokens = Token::new(mint_url, unspent, None, unit);
+        let encoded_token = tokens.to_string();
+
+        let amount = w.receive(&encoded_token, ReceiveOptions::default()).await;
+        println!("amount: {:?}", amount);
+        Ok(())
+    };
+
+    let _amount = state.rt.block_on(fut)?;
+
+    Ok(())
+}
+
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Amount> {
     let token: Token = Token::from_str(&encoded_token)?;
     let mint_url = token.mint_url()?;

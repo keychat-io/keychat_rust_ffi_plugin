@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate tracing;
 
-use anyhow::bail;
 use rust::api_cashu_new::{self as api, MnemonicInfo};
 
 const DB_PATH: &str = "rustest-new.db";
@@ -27,7 +26,7 @@ fn main() {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCDo2FhBGFzeEA1ZGM1N2Q4NTE5NDQ2ZDYwYWIwMjM3MWM2OGIyNGQ0YTRhMTM5NWU3YzQ3YTFmYWMxZmEwYzc2Y2MyY2U2MTRjYWNYIQLMucn6aaZxgOoSlhBW_Xr55cGW06owZbdEp06jwhtNEqNhYRggYXN4QGFhNDE1OWYzNDkxMWNlMGEyZDRiYWY2MGE4N2FhZDViNDU5MDEzM2Y2NTlkOThkZTIzMmI3YjZlYTA4M2JmOWNhY1ghAsaU-eUb5E-QD3HMcwbcCNIK1GO3JRYNJB7_0hH_87-bo2FhGEBhc3hAOWE3MGEzMTBhN2Q3MmQ1OThlODJmNTkwNmY4MTAxNThjNTI3MDU2MWFiNjU2MjYxMDVkZjA5MGRlMWQ3NjYzYmFjWCECDmlGfch4OtroiQgFSxUXzJ6Qi1i4dJHG27clln1tQA4".trim();
+    // let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCEpGFhEGFzeEAxOWQ5YmJjMGUxZjVlODU1ZDdmMTA4NWUwYTViZmFiZDRmYzNhMzU3M2FmZDExNWI3NTZlNzkzNWVhYzliNzkzYWNYIQO5_ShacCDkyFeSiwSS-2E566aRLBampc2pr1aqX3F_72Fko2FlWCAQGR8cA1CBGFV9EG2DZxPpz4asM9pF68gyVvM0U3EqX2FzWCCQFiW4LUSop3pd-jtwp4gVzCN8w4kpoiQJS6UWNc_MUGFyWCA5-YdB5LDCIB7aii5htT5Iml2X2JoBAxbfSTGr0oArmKRhYQhhc3hANDAxZDcxMTIyNDNlNDA4YWQ5MzI5NmI5NTE2M2RmZGVhNzg5MjhkMzFkNjlmZDIwMWVkZTllZTNlMjQ1YWIyMWFjWCEDLp5pTutYmgiGhrTDXFz4iVJskf_nSsprne7fOmJJQxhhZKNhZVggqwn9cXEYjbNED6njpBVhDm6u3_Ls-o-X0kG0r14C79Fhc1ggjQZBUO-wIIuGQKjYBwEGksOlahehkv4vHqa28TVkA5FhclggAOceN9TcTDCjdihD2KR4wYuRUV-Oc0bJWXbq3DyvR8akYWEEYXN4QDVjMzExM2UzM2IwYTIwMTI1NWE0ZDNjNGExNzU4Nzg4ZTU4ODMzYWZhMTM5MWU1ZjE5OWQ3MDM3ZmZiZTE5YjNhY1ghA1GbWbgq1LBdyT8US6gWgwqRZwXa_nbSdAccjWBnsiLOYWSjYWVYIAHuS5R4X8tZjCiIEByXKAtODrZGrATAP-Xa2K0WHM4oYXNYIErxgOlw8iDeOMejkFX_ryWhpNpP0IQsFG75BT9-a-IDYXJYIGbBv1zlCXVLT-ASOnkbIM9KPZMFBW_dCzBT3W5ItoI3pGFhAmFzeEAzNTc2M2RlNGFhMjI2MDBkYTZlN2I1YWI2MTM0N2VmMDNkY2MzMzY1ODk3NjQwZTM2NTU1ZWFkYTMzMDM3ZTYxYWNYIQIad4ST6DYAlwmOGKaacQQUxoFxjuYJ-UUv0PB24aHVO2Fko2FlWCAm2ILze7djcR_MxFQE_9Y21LgWaj_WJxbG28hDvaGJyGFzWCBWTMLgb3Un0rbvbqminq6iJK9XcG4gHf2-k1zDKcSEZmFyWCAGAGrQVBNdEuSRoC9hYO48TeCD70x9aUe0PYpJIcQMAw".trim();
     // let re = api::receive_token(encoded_token_8338.to_string());
     // println!("receive token is {:?}", re);
 
@@ -53,8 +52,24 @@ fn main() {
     // let _melt = api::melt(invoice, MINT_URL.to_string(), None);
 
     // test for send stamp
-    // let stamp = api::send_stamp(1,  vec![MINT_URL.to_string()], None);
+    // let stamp = api::send_stamp(1,  vec![MINT_URL_MINIBITS.to_string()], None);
     // println!("send_stamp {:?}", stamp);
+
+    // test for multi send stamp
+    let mut stamps = vec![];
+    for _i in 0..3 {
+        let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None).unwrap();
+        println!("send_stamp {:?}", stamp);
+
+        stamps.push(stamp);
+    }
+    std::thread::sleep(std::time::Duration::from_secs(15));
+
+    // // test for check quote
+    // let amounts = api::check_all_mint_quotes();
+    // println!("check_all_mint_quotes {:?}", amounts);
+
+    let _ = api::test_for_multi_receive(stamps);
 
     // let txs = api::get_all_transactions();
     // println!("txs {:?}", txs);
@@ -75,9 +90,10 @@ fn main() {
     // }
 
     // test for print proofs
-    let _ = api::test_print_proofs(MINT_URL.to_string());
+    // let _ = api::test_print_proofs(MINT_URL.to_string());
+    // let _ = api::test_print_proofs(MINT_URL_MINIBITS.to_string());
 
-    // let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL.to_string());
+    // let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL_MINIBITS.to_string());
     // println!("prepare_one_proofs: {:?}", prepare_one_proofs);
 
     // test fot get balances
@@ -85,7 +101,8 @@ fn main() {
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    let _ = api::test_print_proofs(MINT_URL.to_string());
+    // let _ = api::test_print_proofs(MINT_URL.to_string());
+    // let _ = api::test_print_proofs(MINT_URL_MINIBITS.to_string());
 }
 
 // fn main() {
