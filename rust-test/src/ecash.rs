@@ -68,14 +68,20 @@ fn main() {
     // // test for check quote
     // let amounts = api::check_all_mint_quotes();
     // println!("check_all_mint_quotes {:?}", amounts);
+    // let amount = api::check_all_pending_proofs(MINT_URL_MINIBITS.to_string());
+    // println!("check_all_mint_quotes {:?}", amount);
 
-    let _ = api::test_for_multi_receive(stamps);
+    // test for multi receive stamps
+    let _ = api::multi_receive(stamps);
 
-    // let txs = api::get_all_transactions();
-    // println!("txs {:?}", txs);
-    // for tx in txs.unwrap() {
-    //     println!("tx {:?}", tx);
-    // }
+
+    let restore = api::restore(MINT_URL_MINIBITS.to_string(), None).unwrap();
+    println!("restore {:?}", restore);
+
+    let txs = api::get_all_transactions();
+    for tx in txs.unwrap() {
+        println!("tx {:?}", tx);
+    }
 
     // // test for get_cashu_transactions_with_offset
     // let cashu_txs = api::get_cashu_transactions_with_offset(0, 100);
@@ -93,16 +99,16 @@ fn main() {
     // let _ = api::test_print_proofs(MINT_URL.to_string());
     // let _ = api::test_print_proofs(MINT_URL_MINIBITS.to_string());
 
-    // let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL_MINIBITS.to_string());
-    // println!("prepare_one_proofs: {:?}", prepare_one_proofs);
+    let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL.to_string());
+    println!("prepare_one_proofs: {:?}", prepare_one_proofs);
 
     // test fot get balances
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    // let _ = api::test_print_proofs(MINT_URL.to_string());
-    // let _ = api::test_print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
+    // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
 }
 
 // fn main() {

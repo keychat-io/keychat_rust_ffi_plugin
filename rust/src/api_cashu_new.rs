@@ -262,8 +262,8 @@ async fn get_or_create_wallet(
     }
 }
 
-/// this is test for receive stamps every multi times
-pub fn test_for_multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
+/// inner used, this is for receive stamps every multi times 
+pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
     let token: Token = Token::from_str(&stamps[0])?;
     let mint_url = token.mint_url()?;
     let unit = token.unit().unwrap_or_default();
@@ -332,7 +332,8 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Amount> {
     Ok(amount)
 }
 
-pub fn test_print_proofs(mint: String) -> anyhow::Result<()> {
+/// inner used
+pub fn print_proofs(mint: String) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -626,7 +627,7 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> 
     Ok(tx)
 }
 
-// this need call every init
+/// this need call every init melt mint
 pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
@@ -635,6 +636,21 @@ pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
         let amounts: u64 = check.values().map(|v| *v.as_ref()).sum();
 
         Ok(amounts)
+    })?;
+
+    Ok(tx)
+}
+
+/// Checks pending proofs for spent status
+pub fn check_all_pending_proofs(active_mint: String)  -> anyhow::Result<u64> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let mint_url = MintUrl::from_str(&active_mint)?;
+    let tx = state.rt.block_on(async {
+        let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
+        let check = wallet.check_all_pending_proofs().await?;
+        Ok(*check.as_ref())
     })?;
 
     Ok(tx)
