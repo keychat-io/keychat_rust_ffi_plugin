@@ -17,3 +17,4 @@ pub mod api_cashu;
 pub mod api_mls;
 pub mod api_nostr;
 pub mod api_signal;
+pub mod api_cashu_new;

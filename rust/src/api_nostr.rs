@@ -1,5 +1,4 @@
 pub use bip39;
-use bitcoin::bech32;
 pub use nostr;
 
 use anyhow::{ensure, format_err};
@@ -187,22 +186,18 @@ pub fn get_bech32_prikey_by_hex(hex: String) -> String {
 #[frb(sync)]
 pub fn decode_bech32(content: String) -> anyhow::Result<String> {
     use bitcoin::bech32;
-    let res = bech32::decode(content.as_ref())?;
-    let data = bech32::convert_bits(&res.1, 5, 8, false)?;
+    let (_hrp, data) = bech32::decode(&content)?;
+    // println!("the hrp is {:?}", _hrp.as_str());
     Ok(String::from_utf8(data)?)
 }
 
 #[frb(sync)]
 pub fn encode_bech32(hrp: String, data: String) -> anyhow::Result<String> {
-    use bitcoin::bech32::u5;
+    use bitcoin::bech32::{self, Hrp, Bech32};
+
     let data_bytes = data.as_bytes();
-    let converted = bech32::convert_bits(data_bytes, 8, 5, true)?;
-    // Convert Vec<u8> to Vec<u5>
-    let converted_u5: Vec<u5> = converted
-        .into_iter()
-        .map(u5::try_from_u8)
-        .collect::<Result<_, _>>()?;
-    let encoded = bitcoin::bech32::encode(hrp.as_str(), converted_u5, bech32::Variant::Bech32)?;
+    let hrp_parsed = Hrp::parse(&hrp)?;
+    let encoded = bech32::encode::<Bech32>(hrp_parsed, &data_bytes)?;
     Ok(encoded)
 }
 
@@ -519,14 +514,22 @@ fn get_xonly_pubkey(pubkey: String) -> anyhow::Result<PublicKey> {
     let bob_pubkey: PublicKey = pubkey.parse()?;
     Ok(bob_pubkey)
 }
+
 // Sign a message using Schnorr signature
 pub fn sign_schnorr(private_key: String, content: String) -> anyhow::Result<String> {
-    let secp = Secp256k1::new();
-    let message = bitcoin::secp256k1::Message::from_hashed_data::<sha256::Hash>(content.as_bytes());
-    let keypair = bitcoin::secp256k1::KeyPair::from_seckey_str(&secp, &private_key)?;
-    let signature = secp.sign_schnorr(&message, &keypair);
-    Ok(signature.to_string())
+    use secp256k1::Keypair;
+    let secp = bitcoin::secp256k1::Secp256k1::new();
+
+    let sk_bytes = hex::decode(private_key)?;
+    let keypair = Keypair::from_seckey_slice(&secp, &sk_bytes)?;
+
+    let digest = sha256::Hash::hash(content.as_bytes());
+    let msg = bitcoin::secp256k1::Message::from_digest(digest.to_byte_array());
+
+    let sig = secp.sign_schnorr(&msg, &keypair);
+    Ok(hex::encode(sig.as_ref()))
 }
+
 // verify sign
 pub fn verify_schnorr(
     pubkey: String,
@@ -540,10 +543,11 @@ pub fn verify_schnorr(
     let secp = Secp256k1::new();
 
     let message = if hash {
-        bitcoin::secp256k1::Message::from_hashed_data::<sha256::Hash>(content.as_bytes())
+        let digest = sha256::Hash::hash(content.as_bytes());
+        bitcoin::secp256k1::Message::from_digest(digest.to_byte_array())
     } else {
         let message = hex::decode(&content)?;
-        bitcoin::secp256k1::Message::from_slice(message.as_ref())?
+        bitcoin::secp256k1::Message::from_digest_slice(message.as_ref())?
     };
 
     // println!("{:?}", secp.verify_schnorr(&sig, &message, &pk));
