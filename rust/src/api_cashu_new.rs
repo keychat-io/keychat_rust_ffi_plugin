@@ -25,8 +25,6 @@ pub struct State {
     sats: u16,
 }
 
-#[path = "api_cashu.check.rs"]
-pub mod check;
 #[path = "api_cashu_new.types.rs"]
 pub mod types;
 pub use types::*;
