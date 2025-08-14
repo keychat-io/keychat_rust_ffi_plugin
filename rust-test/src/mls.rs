@@ -34,7 +34,6 @@ fn main() {
     // let _ = test_remove_then_add_group();
 }
 
-
 // create add create_message decrypt_msg remove leave
 fn test_lifetime() -> Result<()> {
     println!("start -------------- start");
@@ -48,7 +47,6 @@ fn test_lifetime() -> Result<()> {
     let e = "E";
 
     let db_mls_base = "./mls-base.sqlite";
-
 
     init_mls_db(db_mls_base.to_string(), a.to_string())?;
     init_mls_db(db_mls_base.to_string(), b.to_string())?;
@@ -93,8 +91,6 @@ fn test_lifetime() -> Result<()> {
 
     // b join in the group
     join_mls_group(b.to_string(), group_id.to_string(), welcome.clone())?;
-
-   
 
     // // A send msg to B
     // let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
@@ -158,30 +154,28 @@ fn test_lifetime() -> Result<()> {
     // let members = get_group_members_with_lifetime(c.to_string(), group_id.to_string())?;
     // println!("group members of c is {:?}", members);
 
-        // println!("--C UPDATE --------------");
-        // let c_update_extension = "C update the extension".as_bytes().to_vec();
-        // // C update
-        // let queued_msg = self_update(c.to_string(), group_id.to_string(), c_update_extension)?;
-        // // C commit
-        // self_commit(c.to_string(), group_id.to_string())?;
+    // println!("--C UPDATE --------------");
+    // let c_update_extension = "C update the extension".as_bytes().to_vec();
+    // // C update
+    // let queued_msg = self_update(c.to_string(), group_id.to_string(), c_update_extension)?;
+    // // C commit
+    // self_commit(c.to_string(), group_id.to_string())?;
 
+    // // A commit
+    // let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("A commit");
+    // // B commit
+    // let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("B commit");
 
-        // // A commit
-        // let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
-        // println!("A commit");
-        // // B commit
-        // let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
-        // println!("B commit");
+    // let members = get_group_members_with_lifetime(a.to_string(), group_id.to_string())?;
+    // println!("group members of a is {:?}", members);
 
-        // let members = get_group_members_with_lifetime(a.to_string(), group_id.to_string())?;
-        // println!("group members of a is {:?}", members);
+    // let members = get_group_members_with_lifetime(b.to_string(), group_id.to_string())?;
+    // println!("group members of b is {:?}", members);
 
-        // let members = get_group_members_with_lifetime(b.to_string(), group_id.to_string())?;
-        // println!("group members of b is {:?}", members);
-
-        // let members = get_group_members_with_lifetime(c.to_string(), group_id.to_string())?;
-        // println!("group members of c is {:?}", members);
-
+    // let members = get_group_members_with_lifetime(c.to_string(), group_id.to_string())?;
+    // println!("group members of c is {:?}", members);
 
     // println!("--A add D --------------");
 
@@ -196,7 +190,6 @@ fn test_lifetime() -> Result<()> {
     // println!("commit");
     // // A commit
     // self_commit(a.to_string(), group_id.to_string())?;
-
 
     // // B commit
     // let _ = others_commit_normal(
@@ -233,18 +226,18 @@ fn test_lifetime() -> Result<()> {
     // let members = get_group_members_with_lifetime(d.to_string(), group_id.to_string())?;
     // println!("group members of d is {:?}", members);
 
-        // println!("--A remove D --------------");
-        // let d_leaf_node = get_lead_node_index(a.to_string(), d.to_string(), group_id.to_string())?;
-        // // A remove D
-        // let queued_msg = remove_members(a.to_string(), group_id.to_string(), [d_leaf_node].to_vec())?;
-        // // A commit
-        // self_commit(a.to_string(), group_id.to_string())?;
-    
-        // // B commit
-        // let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
-    
-        // // C commit
-        // let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("--A remove D --------------");
+    // let d_leaf_node = get_lead_node_index(a.to_string(), d.to_string(), group_id.to_string())?;
+    // // A remove D
+    // let queued_msg = remove_members(a.to_string(), group_id.to_string(), [d_leaf_node].to_vec())?;
+    // // A commit
+    // self_commit(a.to_string(), group_id.to_string())?;
+
+    // // B commit
+    // let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+
+    // // C commit
+    // let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
 
     println!("--A add E --------------");
 
@@ -255,7 +248,8 @@ fn test_lifetime() -> Result<()> {
         a.to_string(),
         group_id.to_string(),
         [e_pk.key_package].to_vec(),
-    ).unwrap();
+    )
+    .unwrap();
     println!("commit");
     // A commit
     self_commit(a.to_string(), group_id.to_string())?;
@@ -279,8 +273,8 @@ fn test_lifetime() -> Result<()> {
         welcome3.queued_msg.clone(),
     )?;
 
-        // D commit
-        let _ = others_commit_normal(
+    // D commit
+    let _ = others_commit_normal(
         d.to_string(),
         group_id.to_string(),
         welcome3.queued_msg.clone(),

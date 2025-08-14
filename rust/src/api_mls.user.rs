@@ -224,7 +224,10 @@ impl User {
         Ok(result)
     }
 
-    pub(crate) fn parse_lifetime_from_key_package(&mut self, key_package_hex: String) -> Result<u64> {
+    pub(crate) fn parse_lifetime_from_key_package(
+        &mut self,
+        key_package_hex: String,
+    ) -> Result<u64> {
         let key_package_bytes = hex::decode(key_package_hex)?;
         let key_package_in = KeyPackageIn::tls_deserialize(&mut key_package_bytes.as_slice())
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
@@ -404,7 +407,10 @@ impl User {
         })
     }
 
-    pub(crate) fn get_group_members_with_lifetime(&self, group_id: String) -> Result<HashMap<String, Option<u64>>> {
+    pub(crate) fn get_group_members_with_lifetime(
+        &self,
+        group_id: String,
+    ) -> Result<HashMap<String, Option<u64>>> {
         let mut groups = self
             .mls_user
             .groups
@@ -431,8 +437,11 @@ impl User {
                     .to_vec(),
             )
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-            
-            let leaf_node = leaf_nodes.iter().find(|n| *n.credential() == credential).ok_or_else(|| anyhow::anyhow!("LeafNode not found"))?;
+
+            let leaf_node = leaf_nodes
+                .iter()
+                .find(|n| *n.credential() == credential)
+                .ok_or_else(|| anyhow::anyhow!("LeafNode not found"))?;
             if let Some(lifetime) = leaf_node.life_time() {
                 m.insert(pubkey, Some(lifetime.not_after()));
             } else {

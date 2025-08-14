@@ -9,7 +9,7 @@ use cdk::wallet::ReceiveOptions;
 use cdk::wallet::{MultiMintWallet, SendOptions, Wallet, WalletBuilder};
 use cdk::Bolt11Invoice;
 use cdk_common::database::WalletDatabase;
-use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus};
+use cdk_common::wallet::{Transaction, TransactionId, TransactionKind, TransactionStatus};
 use cdk_sqlite::WalletSqliteDatabase;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
@@ -260,7 +260,7 @@ async fn get_or_create_wallet(
     }
 }
 
-/// inner used, this is for receive stamps every multi times 
+/// inner used, this is for receive stamps every multi times
 pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
     let token: Token = Token::from_str(&stamps[0])?;
     let mint_url = token.mint_url()?;
@@ -306,7 +306,7 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn receive_token(encoded_token: String) -> anyhow::Result<Amount> {
+pub fn receive_token(encoded_token: String) -> anyhow::Result<(Amount, Transaction)> {
     let token: Token = Token::from_str(&encoded_token)?;
     let mint_url = token.mint_url()?;
 
@@ -414,7 +414,11 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     Ok(a)
 }
 
-pub fn send_stamp(amount: u64, mints: Vec<String>, info: Option<String>) -> anyhow::Result<String> {
+pub fn send_stamp(
+    amount: u64,
+    mints: Vec<String>,
+    info: Option<String>,
+) -> anyhow::Result<(String, Transaction)> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -538,7 +542,11 @@ pub fn validate_mint_number(mint_number: usize, mint_count: usize) -> anyhow::Re
     Ok(())
 }
 
-pub fn send(amount: u64, active_mint: String, _info: Option<String>) -> anyhow::Result<String> {
+pub fn send(
+    amount: u64,
+    active_mint: String,
+    _info: Option<String>,
+) -> anyhow::Result<(String, Transaction)> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -551,7 +559,7 @@ fn _send(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<String> {
+) -> anyhow::Result<(String, Transaction)> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -560,29 +568,28 @@ fn _send(
 
     let w = state.get_wallet()?;
 
-    let fut = async move {
+    let tx = state.rt.block_on(async {
         let mints_amounts = mint_balances(w, &unit).await;
         // Get wallet either by mint URL or by index
-        let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await;
+        let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await?;
 
         // Find the mint amount for the selected wallet to check if we have sufficient funds
-        let wallet = wallet.unwrap();
         let mint_url = &wallet.mint_url;
-        let mint_amount = mints_amounts
-            .unwrap()
+        let mint_amount = mints_amounts?
             .iter()
             .find(|(url, _)| url == mint_url)
             .map(|(_, amount)| *amount)
             .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
 
-        check_sufficient_funds(mint_amount.unwrap(), amount.into()).unwrap();
+        check_sufficient_funds(mint_amount?, amount.into())?;
         let prepared_send = wallet
             .prepare_send(amount.into(), SendOptions::default())
-            .await;
-        wallet.send(prepared_send.unwrap(), None).await
-    };
-    let token = state.rt.block_on(fut)?;
-    Ok(token.to_v3_string())
+            .await?;
+        let token = wallet.send(prepared_send, None).await?;
+        Ok((token.0.to_v3_string(), token.1))
+    })?;
+
+    Ok(tx)
 }
 
 pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> {
@@ -640,7 +647,7 @@ pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
 }
 
 /// Checks pending proofs for spent status
-pub fn check_all_pending_proofs(active_mint: String)  -> anyhow::Result<u64> {
+pub fn check_all_pending_proofs(active_mint: String) -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -654,7 +661,11 @@ pub fn check_all_pending_proofs(active_mint: String)  -> anyhow::Result<u64> {
     Ok(tx)
 }
 
-pub fn mint_token(amount: u64, quote_id: String, active_mint: String) -> anyhow::Result<()> {
+pub fn mint_token(
+    amount: u64,
+    quote_id: String,
+    active_mint: String,
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -666,20 +677,24 @@ pub fn mint_token(amount: u64, quote_id: String, active_mint: String) -> anyhow:
 
     let w = state.get_wallet()?;
 
-    let _tx = state.rt.block_on(async {
+    let tx = state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
         let proofs = wallet.mint(&quote_id, SplitTarget::default(), None).await?;
 
-        let receive_amount = proofs.total_amount()?;
+        let receive_amount = proofs.0.total_amount()?;
 
         debug!("Received {receive_amount} from mint {mint_url}");
-        Ok(())
+        Ok(proofs.1)
     })?;
 
-    Ok(())
+    Ok(tx)
 }
 
-pub fn melt(invoice: String, active_mint: String, amount: Option<u64>) -> anyhow::Result<()> {
+pub fn melt(
+    invoice: String,
+    active_mint: String,
+    amount: Option<u64>,
+) -> anyhow::Result<Transaction> {
     if amount == Some(0) {
         bail!("can't melt amount 0");
     }
@@ -691,7 +706,7 @@ pub fn melt(invoice: String, active_mint: String, amount: Option<u64>) -> anyhow
 
     let w = state.get_wallet()?;
 
-    let _tx = state.rt.block_on(async {
+    let tx = state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let mints_amounts = mint_balances(w, &unit).await?;
         let mint_amount = mints_amounts
@@ -725,15 +740,15 @@ pub fn melt(invoice: String, active_mint: String, amount: Option<u64>) -> anyhow
         info!("{quote:?}");
 
         let melt = wallet.melt(&quote.id).await?;
-        info!("Paid invoice: {}", melt.state);
+        info!("Paid invoice: {}", melt.0.state);
 
-        if let Some(preimage) = melt.preimage {
+        if let Some(preimage) = melt.0.preimage {
             info!("Payment preimage: {preimage}");
         }
 
-        Ok(())
+        Ok(melt.1)
     })?;
-    Ok(())
+    Ok(tx)
 }
 
 pub fn get_all_transactions() -> anyhow::Result<Vec<cdk_common::wallet::Transaction>> {

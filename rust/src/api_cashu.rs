@@ -514,10 +514,14 @@ pub fn __send(
             .await?;
         let psv = ps.sum().to_u64();
 
-        let mut keysetinfo = wallet.as_ref().map(|w| w.keysetinfo.clone()).unwrap_or_default();
+        let mut keysetinfo = wallet
+            .as_ref()
+            .map(|w| w.keysetinfo.clone())
+            .unwrap_or_default();
 
-        let (mut select, mut sum_fee_ppk) =
-            cashu_wallet::select_send_proofs_with_fee::<cashu_wallet_sqlite::StoreError>(&keysetinfo, amount, &mut ps)?;
+        let (mut select, mut sum_fee_ppk) = cashu_wallet::select_send_proofs_with_fee::<
+            cashu_wallet_sqlite::StoreError,
+        >(&keysetinfo, amount, &mut ps)?;
         if amount == 1 && sats > 1 && (&ps[..=select]).sum().to_u64() > 1 {
             let change = std::cmp::min(psv, sats.into());
 
@@ -527,7 +531,10 @@ pub fn __send(
                 wallet = Some(w.get_wallet(&mint_url)?);
             }
 
-            keysetinfo = wallet.as_ref().map(|w| w.keysetinfo.clone()).unwrap_or_default();
+            keysetinfo = wallet
+                .as_ref()
+                .map(|w| w.keysetinfo.clone())
+                .unwrap_or_default();
 
             let coins = w
                 .prepare_one_proofs(&mint_url, change, Some(CURRENCY_UNIT_SAT))
@@ -539,14 +546,14 @@ pub fn __send(
                 .store()
                 .get_proofs_limit_unit(&mint_url, CURRENCY_UNIT_SAT)
                 .await?;
-            (select, sum_fee_ppk) = cashu_wallet::select_send_proofs_with_fee::<cashu_wallet_sqlite::StoreError>(
-                &keysetinfo, amount, &mut ps,
-            )?;
+            (select, sum_fee_ppk) = cashu_wallet::select_send_proofs_with_fee::<
+                cashu_wallet_sqlite::StoreError,
+            >(&keysetinfo, amount, &mut ps)?;
         }
 
         let pss = &ps[..=select];
         let mut need_swap = false;
-        let tokens = if pss.sum().to_u64() == amount{
+        let tokens = if pss.sum().to_u64() == amount {
             SplitProofsGeneric::new(pss.to_owned(), 0)
         } else {
             if wallet.is_none() {
@@ -558,7 +565,13 @@ pub fn __send(
             wallet
                 .as_ref()
                 .unwrap()
-                .send(amount.into(), sum_fee_ppk.into(), pss, Some(CURRENCY_UNIT_SAT), w.store())
+                .send(
+                    amount.into(),
+                    sum_fee_ppk.into(),
+                    pss,
+                    Some(CURRENCY_UNIT_SAT),
+                    w.store(),
+                )
                 .await?
         };
 

@@ -24,7 +24,6 @@ fn main() {
 
     let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
     println!("try_get_wallet: {:?}", try_get_wallet);
-   
 }
 
 // fn main() {

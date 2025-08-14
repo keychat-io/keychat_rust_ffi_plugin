@@ -193,7 +193,7 @@ pub fn decode_bech32(content: String) -> anyhow::Result<String> {
 
 #[frb(sync)]
 pub fn encode_bech32(hrp: String, data: String) -> anyhow::Result<String> {
-    use bitcoin::bech32::{self, Hrp, Bech32};
+    use bitcoin::bech32::{self, Bech32, Hrp};
 
     let data_bytes = data.as_bytes();
     let hrp_parsed = Hrp::parse(&hrp)?;
