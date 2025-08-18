@@ -26,7 +26,7 @@ fn main() {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCDo2FhCGFzeEAyMzM1ZmFhY2VkZDUyNDdjMzJjMjFiZDJjZGUzNDE4YjFlMzE2NWFkYjVmMDRjOWE0MTQ5MGQ3NjdiMGJjODc4YWNYIQPHCF808VtYjwLrkCseYet1pWN2u0JTOaxnvvIMfNG116NhYRBhc3hAMDdlNmVjMmRjNzU4MTIzZjliMDNjYjQ4MWQ3YzY3Y2IxMGE5OGZlNTA0ZTYyMmVmM2JjMDUxZDczMWJlMGQxNGFjWCECk5P_E3gPuhepSfXGm63zGLbKWrH54oKAHd-8gzcETfijYWEYQGFzeEBiZmM5OWU4YzFkYTE5NjVmOWI1NzY3ODY5Y2YwZmRjMjk2NTU1OWMwOGZmMTExOGQxMTc3YTA2NjU3NjEzYTBjYWNYIQJwKve6PwFYETgFMycakZ388PywnpofjQvxwBwwrdcHdg".trim();
+    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCEpGFhGEBhc3hAYThiMmE2ZjU0Mjk4NmZjYjFmN2RjNTBiODkxZWJmZmU5YTBhOTJiMDRmOGZhYWQ0YmZkYzkzNmI3MmZkYjI0OWFjWCECo2bjL4GERzUBKzFWX7TGmyXJkCq6FgR3E3EcM4IPX9hhZKNhZVggIwFsaEyV4rQlKyTH3GOnbF661BDj7KfmABSryae0zpNhc1gg4winszCgYLFVAlMLlYg_J_4sZgJWaLg0xUpe12obTGBhclggixLz2djfzSPuG2qrpIzy3d3JRh8f8otmE8keC-aL7xmkYWEQYXN4QDViNDM5MDllZjAzZGI5ZDU5ZWJiYjFlMmRiODZiZDNhM2U0ODhlZDIzMmNlOTM4NTBjNjNiNGVhZDU0NDIyZDdhY1ghAwd9afgU8iGdfr8nMA26LDvNJMgsWwnSrdLTW8fi2OxmYWSjYWVYIECkGzlVFUJV0NxQ7zprchul6PnO-Ej8yIX_ruUk-94pYXNYIJ05wkjrWHi8Ge0EH3EHlhPpm3XHiHg9UZNSowpP3HVLYXJYIJlqoZZPKfo9w0pe0gSIFTGPp-qYIP4SLQNbjVPhPbr_pGFhCGFzeEAxMDc0MGYxMTJlMzIyYWU0ZDk2MzdjYTE3MmRkZjZjMzdkYjIxNzRhYjE1NGQ0YTcxNzdjYjhiZmQyOGM4NWYxYWNYIQO8VhMEli4T8oomjCteHoeVMWSJBYHHttHE9omfVIthCmFko2FlWCDJPJk6PHLWiYitMzjRP51iJRZBjVpMLHecw2qxb_Bso2FzWCAR4hJP0E1tonDB8EupIO357D8v_lGKe5uv1y67Q-bxBWFyWCB_rrAktyIqsrDp8iNRnKLl3_jfbDz21G_BrkB0MSnC86RhYQJhc3hAYWRlZTUwZTk5ZDM5NDk4NDc3MmU0YzkwZjI3MzY3MzQ0NTFhMjExODA5ZDQzOGE0ZGZlNDFhNGU1ZGY2ODcxN2FjWCED6B26LLsnZ4170MkkrasiFnxZlyTaLXLjHDA_4N_vqJRhZKNhZVggr1vYL91h01QzO3Qxnm1gzMu1FcVrObHuDP2F57ThD9Vhc1ggGVZUJkHQJPKOPNu5TBxshN0ELY9PCIbyjImRcMA_uMxhclgg-SnfBCtsxUxoUL6vhjXdGAVDmgKo2ZWi35u7KnvKPBo".trim();
     // let re = api::receive_token(encoded_token_8338.to_string());
     // println!("receive token is {:?}", re);
 
@@ -56,14 +56,14 @@ fn main() {
     // println!("send_stamp {:?}", stamp);
 
     // test for multi send stamp
-    let mut stamps = vec![];
-    for _i in 0..3 {
-        let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None).unwrap();
-        println!("send_stamp {:?}", stamp);
+    // let mut stamps = vec![];
+    // for _i in 0..3 {
+    //     let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None).unwrap();
+    //     println!("send_stamp {:?}", stamp);
 
-        stamps.push(stamp.0);
-    }
-    std::thread::sleep(std::time::Duration::from_secs(15));
+    //     stamps.push(stamp.0);
+    // }
+    // std::thread::sleep(std::time::Duration::from_secs(15));
 
     // // // test for check quote
     // // let amounts = api::check_all_mint_quotes();
@@ -72,7 +72,7 @@ fn main() {
     // // println!("check_all_mint_quotes {:?}", amount);
 
     // test for multi receive stamps
-    let _ = api::multi_receive(stamps);
+    // let _ = api::multi_receive(stamps);
 
     // let restore = api::restore(MINT_URL_MINIBITS.to_string(), None).unwrap();
     // println!("restore {:?}", restore);
@@ -95,16 +95,31 @@ fn main() {
     // }
 
     // test for print proofs
-    // let _ = api::test_print_proofs(MINT_URL.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
     // let _ = api::test_print_proofs(MINT_URL_MINIBITS.to_string());
 
-    // let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL.to_string());
-    // println!("prepare_one_proofs: {:?}", prepare_one_proofs);
+    let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL.to_string());
+    println!("prepare_one_proofs: {:?}", prepare_one_proofs);
 
     // test fot get balances
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
 
+    // test for print proofs
+    let _ = api::print_proofs(MINT_URL.to_string());
+    // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+
+    // merge some proofs
+    let _ = api::merge_proofs(20);
+
+
+    // // send all
+    // let send_all = api::send_all(MINT_URL.to_string());
+    // println!("send_all token is {:?}", send_all);
+
+    // test fot get balances
+    let b3 = api::get_balances();
+    println!("get_balances after {:?}", b3);
     // test for print proofs
     let _ = api::print_proofs(MINT_URL.to_string());
     // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());

@@ -16,6 +16,9 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex as StdMutex, MutexGuard as StdMutexGuard};
 use tokio::runtime::{Builder, Runtime};
+use cdk::lightning_invoice::{
+    Bolt11Invoice as Invoice, Bolt11InvoiceDescriptionRef as InvoiceDescriptionRef,
+};
 
 #[frb(ignore)]
 pub struct State {
@@ -258,6 +261,81 @@ async fn get_or_create_wallet(
                 .await
         }
     }
+}
+
+pub fn send_all(mint: String) -> anyhow::Result<(String, Transaction)> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let mint_url = MintUrl::from_str(&mint)?;
+
+    let tx = state.rt.block_on(async {
+        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+        let ps = wallet.get_unspent_proofs().await?;
+
+        // // let total_amount: u64 =  *ps.total_amount()?.as_ref();
+        // let keyset_fees = wallet.get_keyset_fees().await?;
+        // let fee =
+        //     calculate_fee(&ps.count_by_keyset(), &keyset_fees).unwrap_or_default();
+        // let net_amount = ps.total_amount()? - fee;
+        // println!("net_amount is {:?}, fee is {:?}", net_amount, fee);
+
+        let prepared_send = wallet
+            .prepare_send(ps.total_amount()?, SendOptions::default())
+            .await?;
+        let token = wallet.send(prepared_send, None).await?;
+        Ok((token.0.to_v3_string(), token.1))
+    })?;
+
+    Ok(tx)
+}
+
+/// default set 20
+pub fn merge_proofs(thershold: u64) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+
+    let fut = async move {
+        // Iterate all known mints in localstore
+        let mints = w.localstore.get_mints().await?;
+        for (mint_url, _info) in mints {
+            // Only operate on wallets we already have (skip creating new ones here)
+            if let Some(wallet) = w.get_wallet(&WalletKey::new(mint_url.clone(), unit.clone())).await {
+                // Get unspent proofs for this wallet
+                let proofs = wallet.get_unspent_proofs().await?;
+                if proofs.is_empty() { continue; }
+
+                // Group proofs by denomination (amount)
+                let mut groups: HashMap<u64, cashu::Proofs> = HashMap::new();
+                for p in proofs {
+                    let amt = *p.amount.as_ref();
+                    groups.entry(amt).or_insert_with(cashu::Proofs::new).push(p);
+                }
+
+                // For each denomination with count > 20, merge to minimal outputs
+                for (_amt, group) in groups.into_iter() {
+                    if group.len() as u64 >= thershold {
+                        debug!("need merge");
+                        // Default target merges to least number of power-of-two outputs
+                        let _ = wallet
+                            .swap(
+                                None,
+                                SplitTarget::default(),
+                                group,
+                                None,
+                                false,
+                            )
+                            .await?;
+                    }
+                }
+            }
+        }
+        Ok(())
+    };
+
+    state.rt.block_on(fut)?;
+    Ok(())
 }
 
 /// inner used, this is for receive stamps every multi times
@@ -949,10 +1027,6 @@ pub struct TokenInfo {
     pub unit: Option<CurrencyUnit>,
     pub memo: Option<String>,
 }
-
-use cdk::lightning_invoice::{
-    Bolt11Invoice as Invoice, Bolt11InvoiceDescriptionRef as InvoiceDescriptionRef,
-};
 
 pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
     let encoded_invoice = encoded_invoice.replace("lightning:", "");
