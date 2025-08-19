@@ -2,6 +2,9 @@ use anyhow::Ok;
 use cashu::{Amount, CurrencyUnit, MintUrl};
 use cdk::amount::{SplitTarget, MSAT_IN_SAT};
 use cdk::cdk_database;
+use cdk::lightning_invoice::{
+    Bolt11Invoice as Invoice, Bolt11InvoiceDescriptionRef as InvoiceDescriptionRef,
+};
 use cdk::nuts::nut00::ProofsMethods;
 use cdk::nuts::{MeltOptions, Token};
 use cdk::wallet::types::WalletKey;
@@ -16,9 +19,6 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex as StdMutex, MutexGuard as StdMutexGuard};
 use tokio::runtime::{Builder, Runtime};
-use cdk::lightning_invoice::{
-    Bolt11Invoice as Invoice, Bolt11InvoiceDescriptionRef as InvoiceDescriptionRef,
-};
 
 #[frb(ignore)]
 pub struct State {
@@ -301,10 +301,15 @@ pub fn merge_proofs(thershold: u64) -> anyhow::Result<()> {
         let mints = w.localstore.get_mints().await?;
         for (mint_url, _info) in mints {
             // Only operate on wallets we already have (skip creating new ones here)
-            if let Some(wallet) = w.get_wallet(&WalletKey::new(mint_url.clone(), unit.clone())).await {
+            if let Some(wallet) = w
+                .get_wallet(&WalletKey::new(mint_url.clone(), unit.clone()))
+                .await
+            {
                 // Get unspent proofs for this wallet
                 let proofs = wallet.get_unspent_proofs().await?;
-                if proofs.is_empty() { continue; }
+                if proofs.is_empty() {
+                    continue;
+                }
 
                 // Group proofs by denomination (amount)
                 let mut groups: HashMap<u64, cashu::Proofs> = HashMap::new();
@@ -319,13 +324,7 @@ pub fn merge_proofs(thershold: u64) -> anyhow::Result<()> {
                         debug!("need merge");
                         // Default target merges to least number of power-of-two outputs
                         let _ = wallet
-                            .swap(
-                                None,
-                                SplitTarget::default(),
-                                group,
-                                None,
-                                false,
-                            )
+                            .swap(None, SplitTarget::default(), group, None, false)
                             .await?;
                     }
                 }

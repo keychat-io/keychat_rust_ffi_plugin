@@ -16,14 +16,25 @@ fn main() {
     let r1 = api::init_db(DB_PATH.to_string(), Some(migen_words.to_owned()), false);
     info!("init_db {}: {:?}", DB_PATH, r1);
 
-    let _r2 = api::init_cashu(32);
-    let encoded_token_8338: &str = "
-    cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhCGFzeEAwZTA0NWYzZjRjZDY3ZWNlNDcyYTM0ZjJjOWYzODljMTlmY2NjNWY5NzEzMzY3Nzg4NmIwZTA5NDZmYTFkMDQyYWNYIQOU_Y7FHmOAXINPW4AmwGQ07hZ9-AcL7rDtCp_iyuCAs2Fko2FlWCBx_pE41VXLU5445IlneDMCVOk5-Gr3S7Z10XDUSU7lomFzWCBcqHU9tKGS-BKdIWbWScrB0R4Ff4caY96iSEcviupC-mFyWCBsChqz1nwyJ1YLzNYvWJANwNyFNrPa8DDqbEr4JO33DqRhYQJhc3hAOGYxYTJmOWYyMDdkNDU0YzI4OTY3NjE3YzUwYTcyMjIxNWQ4Zjg3NmNjYTY2NzI4N2Y2OTkyZjMwYjZjN2U5NGFjWCEDUmct9nolmJ0fcSJ9995513qa2sV3mlK6VRhddxrTwMBhZKNhZVgg5dIjHJCuFye97zVpagG5aKpaypADIK7xkKjDlgxQ7dRhc1ggYSJcunjG3ECL7BOSqO5L4D-hfo1od94T3R1SzwjAMgZhclgguoeIZ3vHYzsnXmQCTvejXEMxD6DUimGQeQeJWwM0cNc-WbJVbC_9kYzZUHiBQj6VtLLTjKT6GFko2FlWCDTi92qog-b05IHVfWdRj6pBfRNcCKgLAcq7HzhenNRdmFzWCDfN1m9KVrVslmmLHAAxxg6HgEwhk9ecPkIXs029ZmdOGFyWCBy6EHafPw7hNZ7IYosOsp91vdHLucSODhSIuzLe4oUdqRhYQJhc3hAYTFmMjNmMTdiNzZlNjJkM2U3MTlmZmVjNTM0NWVlNzllYzExOGQ3ZTgzYjJkODM3MjhjYzVhNjU0MTliMjJlNmFjWCECSvj_wpaMyyB_e4Xk5w4xs4ekEW7xNeygRl1xr2zq7hphZKNhZVggwvhhZyT8UnlPZhFtpOuTyTwU3_2FYx6QJohdq3PzoIBhc1gglSSV-QAyN2zftL7QZutcubTLFSaM5cU0GE6OASdzreRhclggxQQrITja2YTUj1DZU1rBdxLj1f2An1fEu8sSBSkH7RCkYWECYXN4QGNhMTcxNDUzYjlhM2Y2NzM3NmYxMDcyYTBmZmU2ZGJmMmNmNTc5MjBiM2EzYzc0NGQ4MGYzNTlkMjNlYzdkZmRhY1ghAmkGlUujfErQLzC-9B7g-epclM9u4Ztlt-1TeEcDk_QUYWSjYWVYIFiWJy2YzO0FN4ZToXvX5RDBZhP4jZundh3aNN7zzsNkYXNYINg9LkzWKBsBGQg9f7CszLpEqeivDcfqiTiR4LEHu-FgYXJYIGSc-ovNetnigHeR7QMprgUmqxvwVc44Aao7BUMLwiCspGFhAmFzeEBlZmQxOWRiMzdiMDBhYTlmN2Y4ZjU5MzYwODliOTMwMWJiNDRlMWFkMDJkNTU2ODliYjllMjFkMzlkMmI0NjRiYWNYIQNdkcPsboZph-8dFR9_rSKaptpBhTw0F0053FeJItKQymFko2FlWCBFj-I-cycT-a_kzJAAT7fYcqoe-3l8I1-fep1l1Aj_oGFzWCDBxTNyhQZjGiayEADiYEsP2WxA82f8jReH5FGIo-bJWGFyWCDd7F6JtMrjMDgipSKp0e-lf1icUsV7GX61RlKcRhZ92qRhYQJhc3hAZjFmNjNkZDE4ZDE0YjZkODRlMDZkOWMzMzg4M2ViYzllNmI3Njc4ZGVhYTM4MDgyOTBhNDQzNGI5YmZiYjM1NGFjWCEDzX687ZVHQBg47GzqHHPq865f0Cguc0fVPPA21P5GyyhhZKNhZVggcBs3BJF4Oo7i1IUc9SjVyXc5Q-N247W4cXmtbgTfKP5hc1ggtgMBXavn8gX1K2SpzASmmkY3s4-qsT1tRHqdY6W6xLxhclgg6trDvxVs4QS-78bSObKI_Z7Jbs6x4XnmdPfOkVy0afc
-    ".trim();
-    let _r6 = api::receive_token(encoded_token_8338.to_string());
+    let _r1 = api::init_cashu(32);
+    let balance = api::get_balance(MINT_URL.to_string());
+    println!("get_balances: {:?}", balance);
 
-    let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
-    println!("try_get_wallet: {:?}", try_get_wallet);
+    let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCDpGFhEGFzeEA4NWExZWQ0YWI3MmRkMzMyMWE3ZDZjOWI4NWU0NzM3NmM1NTljNTZiZTdkNDQyNGE1Nzg3ZWQwMThlZGNmYTg4YWNYIQJoJpMDT942UPHZxvfU-Hh2kMhlLKoQty132_1xEpZ8OmFko2FlWCC75Hw2BjhIYzMslaf2k7N5Q4lQbJIPIusbzjRLm2TadGFzWCCFFickBGlCPbAoE8zr1-y_jzN6S4RVrzlfjR0k0aASK2FyWCBzh6kLWIoQRGajO9b57Cb_wsPLuOuAArviEDAU6f8tWqRhYQhhc3hAZGNmNjUzMjNiNDY4YTJiYTE5YWQ0NGZmYWM3M2Y1OGQ3ODIxZDM1YjQzZjI3NGFiZjhhMGM4MGVlZTkzYzFlMWFjWCEDxzxfcYASZ3jIbZC-acrvySH9n-fNE3Z6ikqEk2drSLxhZKNhZVggv84oKJ3whxdiR_E-XdzjJjAIMfYM56TgIPnTQ67SH2thc1ggx9VWAjtZA5j_2ic5SPIet5adzLR6ecxAkAPF6odcP45hclggGpg9TVjU12YXMFSxBVm2roCNJrn-Bb0ynpQkYbstqNekYWECYXN4QGYwMTU4YzBlMDFlNDE5ZThiNTRkMDFiMDVjMTM3MmUwYzY5MTNmYmE0MjZiNWY0NjZlNDkwZTYzZWRkZDljNDhhY1ghA22Hh5nceOQpmIfd0-WU_mYPEZ1NTFF96mY2VFVouCtmYWSjYWVYIMNHZOiMgQ_INb95F-uE2K6jWba99djM8BlGrIX8YNhuYXNYID3WWMtGNBrVgGeqT5FN80miSjDNt8q0jqT0PbOFQqX6YXJYIA7aGSh843sGWp_aSV7eEk2Q12bAU2izhHjvxVxafNdT".trim();
+    let r2 = api::receive_token(encoded_token_8338.to_string());
+    println!("receive_token: {:?}", r2);
+
+    let balance = api::get_balance(MINT_URL.to_string());
+    println!("get_balances: {:?}", balance);
+
+    // only balance great than 2
+    if balance.unwrap() > 2 {
+        let s = api::send_all(MINT_URL.to_string(), None);
+        println!("send {:?}\n", s);
+    }
+
+    // let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
+    // println!("try_get_wallet: {:?}", try_get_wallet);
 }
 
 // fn main() {

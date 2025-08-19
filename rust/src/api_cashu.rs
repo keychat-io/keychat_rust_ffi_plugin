@@ -382,6 +382,21 @@ pub fn get_balances() -> anyhow::Result<String> {
     Ok(js)
 }
 
+pub fn get_balance(mint: String) -> anyhow::Result<u64> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let u: cashu_wallet::Url = mint.parse()?;
+
+    let bs = state.rt.block_on(w.get_balance(&u))?;
+    let bs = bs
+        .into_iter()
+        .filter(|(k, _v)| k == CURRENCY_UNIT_SAT)
+        .collect::<std::collections::BTreeMap<_, _>>();
+    let v = bs.values().next().copied().unwrap_or(0);
+
+    Ok(v)
+}
+
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> {
     let token: Token = encoded_token.parse()?;
     let token = token.into_v3()?;
@@ -596,6 +611,110 @@ pub fn __send(
             amount,
             mint_url.as_str(),
             if need_swap { Some(sum_fee_ppk) } else { None },
+            &cashu_tokens,
+            None,
+            Some(CURRENCY_UNIT_SAT),
+        )
+        .into();
+        *tx.info_mut() = info;
+
+        w.store().add_transaction(&tx).await?;
+        Ok::<_, cashu_wallet::UniError<cashu_wallet_sqlite::StoreError>>(tx)
+    };
+    let tx = state.rt.block_on(fut)?;
+
+    Ok(tx)
+}
+
+pub fn send_all(active_mint: String, info: Option<String>) -> anyhow::Result<Transaction> {
+    let mint_url: cashu_wallet::Url = active_mint.parse()?;
+    let mut state = State::lock()?;
+    __send_all(&mut state, &mint_url, info)
+}
+
+#[frb(ignore)]
+pub fn __send_all(
+    state: &mut StdMutexGuard<'static, State>,
+    mint_url: &MintUrl,
+    info: Option<String>,
+) -> anyhow::Result<Transaction> {
+    try_load_mints(state, false).ok();
+
+    let w = state.get_wallet()?;
+
+    let fut = async move {
+        let mut wallet = w.get_wallet_optional(&mint_url)?;
+        let ps = w
+            .store()
+            .get_proofs_limit_unit(&mint_url, CURRENCY_UNIT_SAT)
+            .await?;
+        let total_amount = ps.sum().to_u64();
+        // if total_amount < 1 {
+        //     bail!("Balance must great then 1.");
+        // }
+
+        let keysetinfo = wallet
+            .as_ref()
+            .map(|w| w.keysetinfo.clone())
+            .unwrap_or_default();
+
+        let mut sum_fee_ppk = 0;
+        let mut final_fee = 0;
+
+        for (_idx, proof) in ps.clone().iter().enumerate() {
+            if let Some(need_keyset) = keysetinfo.iter().find(|i| i.id == proof.as_ref().keyset_id)
+            {
+                let input_fee_ppk = need_keyset.input_fee_ppk;
+                sum_fee_ppk += input_fee_ppk;
+            }
+            if sum_fee_ppk > 0 {
+                final_fee = (sum_fee_ppk + 999) / 1000;
+            }
+        }
+
+        debug!("The final fee is {:?}", final_fee);
+        if wallet.is_none() {
+            w.add_mint_with_units(mint_url.clone(), false, &[CURRENCY_UNIT_SAT], None)
+                .await?;
+            wallet = Some(w.get_wallet(&mint_url)?);
+        }
+        let tokens = wallet
+            .as_ref()
+            .unwrap()
+            .send(
+                (total_amount - final_fee).into(),
+                final_fee.into(),
+                &ps,
+                Some(CURRENCY_UNIT_SAT),
+                w.store(),
+            )
+            .await?;
+
+        debug!("the token is {:?}", tokens);
+
+        w.store().add_proofs(&mint_url, tokens.keep()).await?;
+        w.store().delete_proofs(&mint_url, &ps).await?;
+
+        // clear dleq for token size
+        // let (ps, send_start_idx) = tokens.into_inner();
+        // let ps = &mut ps[send_start_idx..];
+        // ps.iter_mut().for_each(|p| p.raw.dleq = None);
+        let cashu_tokens = WalletForMint::proofs_to_token(
+            // &*ps,
+            tokens.all(),
+            mint_url.clone(),
+            None,
+            Some(CURRENCY_UNIT_SAT),
+            true,
+        )?;
+        debug!("cashu tokens is {:?}", cashu_tokens);
+
+        let mut tx: Transaction = CashuTransaction::new(
+            TransactionStatus::Pending,
+            TransactionDirection::Out,
+            total_amount - final_fee,
+            mint_url.as_str(),
+            Some(final_fee),
             &cashu_tokens,
             None,
             Some(CURRENCY_UNIT_SAT),

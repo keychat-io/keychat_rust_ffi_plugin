@@ -112,7 +112,6 @@ fn main() {
     // merge some proofs
     let _ = api::merge_proofs(20);
 
-
     // // send all
     // let send_all = api::send_all(MINT_URL.to_string());
     // println!("send_all token is {:?}", send_all);
