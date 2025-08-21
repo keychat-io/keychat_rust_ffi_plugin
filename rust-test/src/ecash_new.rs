@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate tracing;
 
-use rust::api_cashu_new::{self as api, MnemonicInfo};
+use rust::api_cashu_v2::{self as api, MnemonicInfo};
 
 const DB_PATH: &str = "rustest-new.db";
 const MINT_URL: &str = "https://8333.space:3338/";
@@ -98,8 +98,8 @@ fn main() {
     let _ = api::print_proofs(MINT_URL.to_string());
     // let _ = api::test_print_proofs(MINT_URL_MINIBITS.to_string());
 
-    let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL.to_string());
-    println!("prepare_one_proofs: {:?}", prepare_one_proofs);
+    // let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL.to_string());
+    // println!("prepare_one_proofs: {:?}", prepare_one_proofs);
 
     // test fot get balances
     let b2 = api::get_balances();

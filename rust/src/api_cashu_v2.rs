@@ -16,6 +16,7 @@ use cdk_common::wallet::{Transaction, TransactionId, TransactionKind, Transactio
 use cdk_sqlite::WalletSqliteDatabase;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex as StdMutex, MutexGuard as StdMutexGuard};
 use tokio::runtime::{Builder, Runtime};
@@ -28,7 +29,7 @@ pub struct State {
     sats: u16,
 }
 
-#[path = "api_cashu_new.types.rs"]
+#[path = "api_cashu_v2.types.rs"]
 pub mod types;
 pub use types::*;
 
@@ -150,15 +151,15 @@ pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Res
     })
 }
 
-pub fn init_cashu(
-    prepare_sats_once_time: u16,
-) -> anyhow::Result<HashMap<cashu::MintUrl, Option<cdk_common::MintInfo>>> {
+pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<HashMap<String, ()>> {
     let mut state = State::lock()?;
     state.sats = prepare_sats_once_time;
 
     let w = state.get_wallet()?;
     let mints = state.rt.block_on(w.localstore.get_mints())?;
-    Ok(mints)
+    // mints.values_mut().for_each(|v| *v = None);
+    let only_keys: std::collections::HashMap<String, _> = mints.into_keys().map(|k| (k.to_string(), ())).collect();
+    Ok(only_keys)
 }
 
 #[frb(ignore)]
@@ -184,13 +185,13 @@ pub fn set_mnemonic(words: Option<String>) -> anyhow::Result<bool> {
     has
 }
 
-pub fn get_mints() -> anyhow::Result<HashMap<cashu::MintUrl, Option<cdk_common::MintInfo>>> {
+pub fn get_mints() -> anyhow::Result<HashMap<String, ()>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
     let mints = state.rt.block_on(w.localstore.get_mints())?;
-
-    Ok(mints)
+    let only_keys: std::collections::HashMap<String, _> = mints.into_keys().map(|k| (k.to_string(), ())).collect();
+    Ok(only_keys)
 }
 
 pub fn add_mint(url: String) -> anyhow::Result<()> {
@@ -230,6 +231,7 @@ pub fn get_balances() -> anyhow::Result<String> {
     Ok(js)
 }
 
+#[frb(ignore)]
 pub fn get_wallet(mint_url: MintUrl, unit: CurrencyUnit) -> anyhow::Result<Wallet> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
@@ -244,6 +246,7 @@ pub fn get_wallet(mint_url: MintUrl, unit: CurrencyUnit) -> anyhow::Result<Walle
 }
 
 /// Helper function to create or get a wallet
+#[frb(ignore)]
 async fn get_or_create_wallet(
     multi_mint_wallet: &MultiMintWallet,
     mint_url: &MintUrl,

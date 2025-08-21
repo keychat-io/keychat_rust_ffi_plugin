@@ -27,7 +27,7 @@ fn main() {
     let balance = api::get_balance(MINT_URL.to_string());
     println!("get_balances: {:?}", balance);
 
-    // only balance great than 2
+    // only balance great than 2 due to fee
     if balance.unwrap() > 2 {
         let s = api::send_all(MINT_URL.to_string(), None);
         println!("send {:?}\n", s);

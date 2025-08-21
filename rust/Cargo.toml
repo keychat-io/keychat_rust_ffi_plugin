@@ -24,15 +24,17 @@ thiserror = "1.0.40"
 tokio = {version = "1.28.1", features = ["sync", "rt-multi-thread"]}
 
 signal-store = {git = "https://github.com/keychat-io/signal-storage.git", rev = "7ea7392"}
-# cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250310"}
-# cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", tag = "250310"}
 cashu-wallet = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", branch = "bugfix2"}
 cashu-wallet-sqlite = {git = "https://github.com/keychat-io/cashu-wallet-rs.git", branch = "bugfix2"}
 
-cdk-sqlite = {path = "../../cdk/crates/cdk-sqlite"}
-cdk = {path = "../../cdk/crates/cdk"}
-cdk-common = {path = "../../cdk/crates/cdk-common"}
-cashu = {path = "../../cdk/crates/cashu"}
+# cdk-sqlite = {path = "../../cdk/crates/cdk-sqlite"}
+# cdk = {path = "../../cdk/crates/cdk"}
+# cdk-common = {path = "../../cdk/crates/cdk-common"}
+# cashu = {path = "../../cdk/crates/cashu"}
+cdk-sqlite = {git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cdk-sqlite"}
+cdk = {git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cdk"}
+cdk-common = {git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cdk-common"}
+cashu = {git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cashu"}
 
 openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls"}
 openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_traits"}
