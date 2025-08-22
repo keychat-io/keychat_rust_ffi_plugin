@@ -18,20 +18,23 @@ fn main() {
 
     let _r1 = api::init_cashu(32);
     let balance = api::get_balance(MINT_URL.to_string());
-    println!("get_balances: {:?}", balance);
+    println!("get_balance: {:?}", balance);
 
-    let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCDpGFhEGFzeEA4NWExZWQ0YWI3MmRkMzMyMWE3ZDZjOWI4NWU0NzM3NmM1NTljNTZiZTdkNDQyNGE1Nzg3ZWQwMThlZGNmYTg4YWNYIQJoJpMDT942UPHZxvfU-Hh2kMhlLKoQty132_1xEpZ8OmFko2FlWCC75Hw2BjhIYzMslaf2k7N5Q4lQbJIPIusbzjRLm2TadGFzWCCFFickBGlCPbAoE8zr1-y_jzN6S4RVrzlfjR0k0aASK2FyWCBzh6kLWIoQRGajO9b57Cb_wsPLuOuAArviEDAU6f8tWqRhYQhhc3hAZGNmNjUzMjNiNDY4YTJiYTE5YWQ0NGZmYWM3M2Y1OGQ3ODIxZDM1YjQzZjI3NGFiZjhhMGM4MGVlZTkzYzFlMWFjWCEDxzxfcYASZ3jIbZC-acrvySH9n-fNE3Z6ikqEk2drSLxhZKNhZVggv84oKJ3whxdiR_E-XdzjJjAIMfYM56TgIPnTQ67SH2thc1ggx9VWAjtZA5j_2ic5SPIet5adzLR6ecxAkAPF6odcP45hclggGpg9TVjU12YXMFSxBVm2roCNJrn-Bb0ynpQkYbstqNekYWECYXN4QGYwMTU4YzBlMDFlNDE5ZThiNTRkMDFiMDVjMTM3MmUwYzY5MTNmYmE0MjZiNWY0NjZlNDkwZTYzZWRkZDljNDhhY1ghA22Hh5nceOQpmIfd0-WU_mYPEZ1NTFF96mY2VFVouCtmYWSjYWVYIMNHZOiMgQ_INb95F-uE2K6jWba99djM8BlGrIX8YNhuYXNYID3WWMtGNBrVgGeqT5FN80miSjDNt8q0jqT0PbOFQqX6YXJYIA7aGSh843sGWp_aSV7eEk2Q12bAU2izhHjvxVxafNdT".trim();
+    let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCBpGFhAmFzeEBhM2NiMmZiN2ViMTQ2MDczNjNjMzQ5NWM4OTRhMjU3MmRhZTc3NDdjNGUxNDI5MjQ2YzBhM2I5MDkxYzBhMjYxYWNYIQPM_PT69ElNA8S9Pu48E-uj1ly48OSBu4sjsyhacs-gvmFko2FlWCBAxK-g8mitdRR7PnjpBM9MWwW3lbOpsUVlBZ9QVg4GzmFzWCBececV4rsJxgZHSfmaaTao1GL_6nsNDbcHjxrdcN9WqmFyWCDFp5UJqG80Mx9FNSFwxyjohvtEeyc7n7sfRcuLo90XBQ".trim();
     let r2 = api::receive_token(encoded_token_8338.to_string());
     println!("receive_token: {:?}", r2);
 
-    let balance = api::get_balance(MINT_URL.to_string());
+    let balance = api::get_balance(MINT_URL_MINIBITS.to_string());
+    println!("get_balance: {:?}", balance);
+
+    let balance = api::get_balances();
     println!("get_balances: {:?}", balance);
 
     // only balance great than 2 due to fee
-    if balance.unwrap() > 2 {
-        let s = api::send_all(MINT_URL.to_string(), None);
-        println!("send {:?}\n", s);
-    }
+    // if balance.unwrap().1 > 2 {
+    //     let s = api::send_all(MINT_URL.to_string(), None);
+    //     println!("send {:?}\n", s);
+    // }
 
     // let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
     // println!("try_get_wallet: {:?}", try_get_wallet);

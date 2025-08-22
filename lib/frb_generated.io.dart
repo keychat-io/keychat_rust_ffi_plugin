@@ -159,6 +159,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 
 @protected PaymentMethodSettings dco_decode_payment_method_settings(dynamic raw);
 
+@protected (bool,BigInt) dco_decode_record_bool_u_64(dynamic raw);
+
 @protected (Uint8List,Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
 @protected (Uint8List,String?,String,List<String>?) dco_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(dynamic raw);
@@ -339,6 +341,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 
 @protected PaymentMethodSettings sse_decode_payment_method_settings(SseDeserializer deserializer);
 
+@protected (bool,BigInt) sse_decode_record_bool_u_64(SseDeserializer deserializer);
+
 @protected (Uint8List,Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
 @protected (Uint8List,String?,String,List<String>?) sse_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(SseDeserializer deserializer);
@@ -518,6 +522,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 @protected void sse_encode_payment_method(PaymentMethod self, SseSerializer serializer);
 
 @protected void sse_encode_payment_method_settings(PaymentMethodSettings self, SseSerializer serializer);
+
+@protected void sse_encode_record_bool_u_64((bool,BigInt) self, SseSerializer serializer);
 
 @protected void sse_encode_record_list_prim_u_8_strict_list_prim_u_8_strict((Uint8List,Uint8List) self, SseSerializer serializer);
 

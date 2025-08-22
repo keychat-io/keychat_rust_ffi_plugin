@@ -382,19 +382,28 @@ pub fn get_balances() -> anyhow::Result<String> {
     Ok(js)
 }
 
-pub fn get_balance(mint: String) -> anyhow::Result<u64> {
+pub fn get_balance(mint: String) -> anyhow::Result<(bool, u64)> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-    let u: cashu_wallet::Url = mint.parse()?;
+    let mint_url: cashu_wallet::Url = mint.parse()?;
+    let is_charge = {
+        let wallet_opt = w.get_wallet_optional(&mint_url)?;
+        let keysetinfo = wallet_opt
+            .as_ref()
+            .map(|w| w.keysetinfo.clone())
+            .unwrap_or_default();
+        keysetinfo.iter().any(|k| k.input_fee_ppk > 0)
+    };
 
-    let bs = state.rt.block_on(w.get_balance(&u))?;
+    let bs = state.rt.block_on(w.get_balance(&mint_url))?;
+
     let bs = bs
         .into_iter()
         .filter(|(k, _v)| k == CURRENCY_UNIT_SAT)
         .collect::<std::collections::BTreeMap<_, _>>();
     let v = bs.values().next().copied().unwrap_or(0);
 
-    Ok(v)
+    Ok((is_charge, v))
 }
 
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> {

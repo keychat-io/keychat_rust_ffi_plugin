@@ -174,7 +174,7 @@ Future<Secp256k1SimpleAccount> crateApiNostrGenerateSimple();
 
 Future<List<String>> crateApiSignalGetAllAliceAddrs({required KeychatIdentityKeyPair keyPair });
 
-Future<BigInt> crateApiCashuGetBalance({required String mint });
+Future<(bool,BigInt)> crateApiCashuGetBalance({required String mint });
 
 Future<String> crateApiCashuGetBalances();
 
@@ -1543,7 +1543,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuGetBalance({required String mint })  { return handler.executeNormal(NormalTask(
+@override Future<(bool,BigInt)> crateApiCashuGetBalance({required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
@@ -1552,7 +1552,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_u_64,
+          decodeSuccessData: sse_decode_record_bool_u_64,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3905,6 +3905,13 @@ final arr = raw as List<dynamic>;
                 return PaymentMethodSettings(methods: dco_decode_list_payment_method(arr[0]),
 disabled: dco_decode_bool(arr[1]),); }
 
+@protected (bool,BigInt) dco_decode_record_bool_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 2) {
+                throw Exception('Expected 2 elements, got ${arr.length}');
+            }
+            return (dco_decode_bool(arr[0]),dco_decode_u_64(arr[1]),); }
+
 @protected (Uint8List,Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
             if (arr.length != 2) {
@@ -4463,6 +4470,11 @@ var var_methods = sse_decode_list_payment_method(deserializer);
 var var_disabled = sse_decode_bool(deserializer);
 return PaymentMethodSettings(methods: var_methods, disabled: var_disabled); }
 
+@protected (bool,BigInt) sse_decode_record_bool_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_bool(deserializer);
+var var_field1 = sse_decode_u_64(deserializer);
+return (var_field0, var_field1); }
+
 @protected (Uint8List,Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
 var var_field1 = sse_decode_list_prim_u_8_strict(deserializer);
@@ -4941,6 +4953,11 @@ sse_encode_i_64(self.maxAmount, serializer);
 @protected void sse_encode_payment_method_settings(PaymentMethodSettings self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_payment_method(self.methods, serializer);
 sse_encode_bool(self.disabled, serializer);
+ }
+
+@protected void sse_encode_record_bool_u_64((bool,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_bool(self.$1, serializer);
+sse_encode_u_64(self.$2, serializer);
  }
 
 @protected void sse_encode_record_list_prim_u_8_strict_list_prim_u_8_strict((Uint8List,Uint8List) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs

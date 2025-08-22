@@ -30,7 +30,7 @@ Future<String?>  removeMint({required String url }) => RustLib.instance.api.crat
 
 Future<String>  getBalances() => RustLib.instance.api.crateApiCashuGetBalances();
 
-Future<BigInt>  getBalance({required String mint }) => RustLib.instance.api.crateApiCashuGetBalance(mint: mint);
+Future<(bool,BigInt)>  getBalance({required String mint }) => RustLib.instance.api.crateApiCashuGetBalance(mint: mint);
 
 Future<List<Transaction>>  receiveToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuReceiveToken(encodedToken: encodedToken);
 

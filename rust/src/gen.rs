@@ -5578,6 +5578,15 @@ impl SseDecode for crate::api_cashu::types::PaymentMethodSettings {
     }
 }
 
+impl SseDecode for (bool, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <bool>::sse_decode(deserializer);
+        let mut var_field1 = <u64>::sse_decode(deserializer);
+        return (var_field0, var_field1);
+    }
+}
+
 impl SseDecode for (Vec<u8>, Vec<u8>) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -7344,6 +7353,14 @@ impl SseEncode for crate::api_cashu::types::PaymentMethodSettings {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<crate::api_cashu::types::PaymentMethod>>::sse_encode(self.methods, serializer);
         <bool>::sse_encode(self.disabled, serializer);
+    }
+}
+
+impl SseEncode for (bool, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.0, serializer);
+        <u64>::sse_encode(self.1, serializer);
     }
 }
 
