@@ -84,17 +84,14 @@ lazy_static! {
         StdMutex::new(State::new().expect("failed to create tokio runtime"));
 }
 
-pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Result<()> {
+pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
 
-    let _ = set_mnemonic(words.clone());
+    let _ = set_mnemonic(Some(words.clone()));
     // let _ = add_mint("https://8333.space:3338/".to_string());
 
-    let mut seed = None;
-    if let Some(s) = words {
-        let mi = MnemonicInfo::with_words(&s)?;
-        seed = Some(mi.mnemonic().to_seed(""));
-    }
+    let mi = MnemonicInfo::with_words(&words)?;
+    let seed = mi.mnemonic().to_seed("");
 
     let mut state = State::lock()?;
 
@@ -120,7 +117,7 @@ pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Res
                     .mint_url(mint_url_clone.clone())
                     .unit(unit)
                     .localstore(localstore.clone())
-                    .seed(&seed.unwrap());
+                    .seed(&seed);
 
                 let wallet = builder.build()?;
 
@@ -139,7 +136,7 @@ pub fn init_db(dbpath: String, words: Option<String>, _dev: bool) -> anyhow::Res
             }
         }
         // println!("wallets is {:?}", wallets);
-        let multi_mint_wallet = MultiMintWallet::new(localstore, Arc::new(seed.unwrap()), wallets);
+        let multi_mint_wallet = MultiMintWallet::new(localstore, Arc::new(seed), wallets);
 
         Ok(multi_mint_wallet)
     };
@@ -158,7 +155,8 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<HashMap<String,
     let w = state.get_wallet()?;
     let mints = state.rt.block_on(w.localstore.get_mints())?;
     // mints.values_mut().for_each(|v| *v = None);
-    let only_keys: std::collections::HashMap<String, _> = mints.into_keys().map(|k| (k.to_string(), ())).collect();
+    let only_keys: std::collections::HashMap<String, _> =
+        mints.into_keys().map(|k| (k.to_string(), ())).collect();
     Ok(only_keys)
 }
 
@@ -190,7 +188,8 @@ pub fn get_mints() -> anyhow::Result<HashMap<String, ()>> {
     let w = state.get_wallet()?;
 
     let mints = state.rt.block_on(w.localstore.get_mints())?;
-    let only_keys: std::collections::HashMap<String, _> = mints.into_keys().map(|k| (k.to_string(), ())).collect();
+    let only_keys: std::collections::HashMap<String, _> =
+        mints.into_keys().map(|k| (k.to_string(), ())).collect();
     Ok(only_keys)
 }
 
@@ -266,7 +265,7 @@ async fn get_or_create_wallet(
     }
 }
 
-pub fn send_all(mint: String) -> anyhow::Result<(String, Transaction)> {
+pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -286,8 +285,8 @@ pub fn send_all(mint: String) -> anyhow::Result<(String, Transaction)> {
         let prepared_send = wallet
             .prepare_send(ps.total_amount()?, SendOptions::default())
             .await?;
-        let token = wallet.send(prepared_send, None).await?;
-        Ok((token.0.to_v3_string(), token.1))
+        let tx = wallet.send(prepared_send, None).await?;
+        Ok(tx)
     })?;
 
     Ok(tx)
@@ -386,7 +385,7 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn receive_token(encoded_token: String) -> anyhow::Result<(Amount, Transaction)> {
+pub fn receive_token(encoded_token: String) -> anyhow::Result<Transaction> {
     let token: Token = Token::from_str(&encoded_token)?;
     let mint_url = token.mint_url()?;
 
@@ -405,9 +404,9 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<(Amount, Transacti
         w.receive(&encoded_token, ReceiveOptions::default()).await
     };
 
-    let amount = state.rt.block_on(fut)?;
+    let tx = state.rt.block_on(fut)?;
 
-    Ok(amount)
+    Ok(tx)
 }
 
 /// inner used
@@ -498,7 +497,7 @@ pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
-) -> anyhow::Result<(String, Transaction)> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -547,8 +546,8 @@ pub fn send_stamp(
         .chain(mints_second.iter())
         .next()
         .ok_or_else(|| cdk_common::Error::InsufficientFunds)?;
-    let tx = send(amount, mint_url.to_string(), info.clone());
-    tx
+    let tx = send(amount, mint_url.to_string(), info.clone())?;
+    Ok(tx)
 }
 
 async fn mint_balances(
@@ -626,7 +625,7 @@ pub fn send(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<(String, Transaction)> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -639,7 +638,7 @@ fn _send(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<(String, Transaction)> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -665,8 +664,8 @@ fn _send(
         let prepared_send = wallet
             .prepare_send(amount.into(), SendOptions::default())
             .await?;
-        let token = wallet.send(prepared_send, None).await?;
-        Ok((token.0.to_v3_string(), token.1))
+        let tx = wallet.send(prepared_send, None).await?;
+        Ok(tx)
     })?;
 
     Ok(tx)

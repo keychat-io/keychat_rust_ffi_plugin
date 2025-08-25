@@ -1,8 +1,23 @@
 use flutter_rust_bridge::frb;
 // use strum::{AsRefStr, Display, EnumIs, EnumString, IntoStaticStr};
-use cashu::{Amount, CurrencyUnit, MintUrl, PublicKey};
-use cdk_common::wallet::{TransactionDirection as TransactionDirectionV2, TransactionKind as TransactionKindV2, Transaction as TransactionV2};
+use cashu::{Amount, CurrencyUnit, MintUrl};
+use cdk_common::wallet::{
+    TransactionDirection as TransactionDirectionV2, TransactionKind as TransactionKindV2,
+};
 use std::collections::HashMap;
+
+// #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+// pub struct TransactionV2 {
+//     pub mint_url: String,
+//     pub direction: TransactionDirectionV2,
+//     pub kind: TransactionKindV2,
+//     pub amount: u64,
+//     pub fee: u64,
+//     pub unit: Option<String>,
+//     pub token: String,
+//     pub timestamp: u64,
+//     pub metadata: HashMap<String, String>,
+// }
 
 #[frb(mirror(TransactionDirectionV2))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -28,6 +43,7 @@ pub struct _Transaction {
     pub amount: Amount,
     pub fee: Amount,
     pub unit: CurrencyUnit,
+    pub token: String,
     // pub ys: Vec<PublicKey>,
     pub timestamp: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
