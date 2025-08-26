@@ -3,128 +3,84 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import '../api_cashu/types.dart';
 import '../frb_generated.dart';
+import '../lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
-            
+            // These functions are ignored because they are not marked as `pub`: `get_keys`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
+
 
             
 
-            class Amount  {
-                final BigInt field0;
+            
+                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MnemonicInfo>>
+                abstract class MnemonicInfo implements RustOpaqueInterface {
+                    static Future<String>  generateWords({required BigInt words })=>RustLib.instance.api.crateApiCashuV2TypesMnemonicInfoGenerateWords(words: words);
 
-                const Amount({required this.field0 ,});
 
+ Future<void>  mnemonic();
+
+
+  // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
+static Future<MnemonicInfo>  newInstance({required Mnemonic mnemonic })=>RustLib.instance.api.crateApiCashuV2TypesMnemonicInfoNew(mnemonic: mnemonic);
+
+
+ Future<void>  pubkey();
+
+
+static Future<MnemonicInfo>  withWords({required String words })=>RustLib.instance.api.crateApiCashuV2TypesMnemonicInfoWithWords(words: words);
+
+
+
+                    
+                }
                 
-                
 
-                
-        @override
-        int get hashCode => field0.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is Amount &&
-                runtimeType == other.runtimeType
-                && field0 == other.field0;
-        
-            }
-
-enum CurrencyUnit {
-                    /// Sat
-sat,
-/// Msat
-msat,
-/// Usd
-usd,
-/// Euro
-eur,
-/// Auth
-auth,
+enum TransactionDirectionV2 {
+                    incoming,
+outgoing,
+split,
                     ;
                     
                 }
 
-class MintUrl  {
-                final String field0;
+enum TransactionKindV2 {
+                    cashu,
+ln,
+                    ;
+                    
+                }
 
-                const MintUrl({required this.field0 ,});
-
-                
-                
-
-                
-        @override
-        int get hashCode => field0.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is MintUrl &&
-                runtimeType == other.runtimeType
-                && field0 == other.field0;
-        
-            }
-
-class PublicKey  {
-                final Uint8List bytes;
-
-                const PublicKey({required this.bytes ,});
-
-                
-                
-
-                
-        @override
-        int get hashCode => bytes.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is PublicKey &&
-                runtimeType == other.runtimeType
-                && bytes == other.bytes;
-        
-            }
-
-class Transaction  {
-                final MintUrl mintUrl;
-final TransactionDirection direction;
-final TransactionKind kind;
-final Amount amount;
-final Amount fee;
-final CurrencyUnit unit;
-final List<PublicKey> ys;
+class TransactionV2  {
+                final String mintUrl;
+final TransactionDirectionV2 direction;
+final TransactionKindV2 kind;
+final BigInt amount;
+final BigInt fee;
+final String? unit;
+final String token;
 final BigInt timestamp;
-final String? memo;
 final Map<String, String> metadata;
 
-                const Transaction({required this.mintUrl ,required this.direction ,required this.kind ,required this.amount ,required this.fee ,required this.unit ,required this.ys ,required this.timestamp ,this.memo ,required this.metadata ,});
+                const TransactionV2({required this.mintUrl ,required this.direction ,required this.kind ,required this.amount ,required this.fee ,this.unit ,required this.token ,required this.timestamp ,required this.metadata ,});
 
                 
                 
 
                 
         @override
-        int get hashCode => mintUrl.hashCode^direction.hashCode^kind.hashCode^amount.hashCode^fee.hashCode^unit.hashCode^ys.hashCode^timestamp.hashCode^memo.hashCode^metadata.hashCode;
+        int get hashCode => mintUrl.hashCode^direction.hashCode^kind.hashCode^amount.hashCode^fee.hashCode^unit.hashCode^token.hashCode^timestamp.hashCode^metadata.hashCode;
         
 
                 
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is Transaction &&
+            other is TransactionV2 &&
                 runtimeType == other.runtimeType
-                && mintUrl == other.mintUrl&& direction == other.direction&& kind == other.kind&& amount == other.amount&& fee == other.fee&& unit == other.unit&& ys == other.ys&& timestamp == other.timestamp&& memo == other.memo&& metadata == other.metadata;
+                && mintUrl == other.mintUrl&& direction == other.direction&& kind == other.kind&& amount == other.amount&& fee == other.fee&& unit == other.unit&& token == other.token&& timestamp == other.timestamp&& metadata == other.metadata;
         
             }
             

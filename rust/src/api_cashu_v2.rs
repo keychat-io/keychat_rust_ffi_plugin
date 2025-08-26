@@ -1,18 +1,18 @@
 use anyhow::Ok;
-use cashu::{Amount, CurrencyUnit, MintUrl};
-use cdk::amount::{SplitTarget, MSAT_IN_SAT};
+pub use cashu::{Amount, CurrencyUnit, MintUrl};
+pub use cdk::amount::{SplitTarget, MSAT_IN_SAT};
 use cdk::cdk_database;
-use cdk::lightning_invoice::{
+pub use cdk::lightning_invoice::{
     Bolt11Invoice as Invoice, Bolt11InvoiceDescriptionRef as InvoiceDescriptionRef,
 };
 use cdk::nuts::nut00::ProofsMethods;
 use cdk::nuts::{MeltOptions, Token};
 use cdk::wallet::types::WalletKey;
 use cdk::wallet::ReceiveOptions;
-use cdk::wallet::{MultiMintWallet, SendOptions, Wallet, WalletBuilder};
-use cdk::Bolt11Invoice;
+pub use cdk::wallet::{MultiMintWallet, SendOptions, Wallet, WalletBuilder};
+pub use cdk::Bolt11Invoice;
 use cdk_common::database::WalletDatabase;
-use cdk_common::wallet::{Transaction, TransactionId, TransactionKind, TransactionStatus};
+pub use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus as TransactionStatusV2};
 use cdk_sqlite::WalletSqliteDatabase;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
@@ -265,7 +265,7 @@ async fn get_or_create_wallet(
     }
 }
 
-pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
+pub fn send_all(mint: String) -> anyhow::Result<TransactionV2> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -274,6 +274,10 @@ pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
     let tx = state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let ps = wallet.get_unspent_proofs().await?;
+        if *ps.total_amount()?.as_ref() == 0 {
+            let err: anyhow::Error = format_err!("The amount is 0");
+            return Err(err.into());
+        }
 
         // // let total_amount: u64 =  *ps.total_amount()?.as_ref();
         // let keyset_fees = wallet.get_keyset_fees().await?;
@@ -288,8 +292,19 @@ pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
         let tx = wallet.send(prepared_send, None).await?;
         Ok(tx)
     })?;
+    let tx_new = TransactionV2 {
+        mint_url: tx.mint_url.to_string(),
+        direction: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    };
 
-    Ok(tx)
+    Ok(tx_new)
 }
 
 /// default set 20
@@ -385,7 +400,7 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn receive_token(encoded_token: String) -> anyhow::Result<Transaction> {
+pub fn receive_token(encoded_token: String) -> anyhow::Result<TransactionV2> {
     let token: Token = Token::from_str(&encoded_token)?;
     let mint_url = token.mint_url()?;
 
@@ -405,8 +420,19 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Transaction> {
     };
 
     let tx = state.rt.block_on(fut)?;
+    let tx_new = TransactionV2 {
+        mint_url: tx.mint_url.to_string(),
+        direction: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    };
 
-    Ok(tx)
+    Ok(tx_new)
 }
 
 /// inner used
@@ -497,7 +523,7 @@ pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV2> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -625,7 +651,7 @@ pub fn send(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV2> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -638,7 +664,7 @@ fn _send(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV2> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -667,8 +693,20 @@ fn _send(
         let tx = wallet.send(prepared_send, None).await?;
         Ok(tx)
     })?;
+    let tx_new = TransactionV2 {
+        mint_url: tx.mint_url.to_string(),
+        direction: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    };
 
-    Ok(tx)
+
+    Ok(tx_new)
 }
 
 pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> {
@@ -744,7 +782,7 @@ pub fn mint_token(
     amount: u64,
     quote_id: String,
     active_mint: String,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV2> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -766,14 +804,26 @@ pub fn mint_token(
         Ok(proofs.1)
     })?;
 
-    Ok(tx)
+    let tx_new = TransactionV2 {
+        mint_url: tx.mint_url.to_string(),
+        direction: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    };
+
+    Ok(tx_new)
 }
 
 pub fn melt(
     invoice: String,
     active_mint: String,
     amount: Option<u64>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV2> {
     if amount == Some(0) {
         bail!("can't melt amount 0");
     }
@@ -827,58 +877,116 @@ pub fn melt(
 
         Ok(melt.1)
     })?;
-    Ok(tx)
+    let tx_new = TransactionV2 {
+        mint_url: tx.mint_url.to_string(),
+        direction: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    };
+
+    Ok(tx_new)
 }
 
-pub fn get_all_transactions() -> anyhow::Result<Vec<cdk_common::wallet::Transaction>> {
+pub fn get_all_transactions() -> anyhow::Result<Vec<TransactionV2>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let tx = state.rt.block_on(w.list_transactions(None))?;
+    let txs = state.rt.block_on(w.list_transactions(None))?;
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = TransactionV2 {
+            mint_url: tx.mint_url.to_string(),
+            direction: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
 
-    Ok(tx)
+    Ok(txs_new)
 }
 
 // incloud normal_tx ln_tx melt_tx mint_tx
 pub fn get_cashu_transactions_with_offset(
     offset: usize,
     limit: usize,
-) -> anyhow::Result<Vec<cdk_common::wallet::Transaction>> {
+) -> anyhow::Result<Vec<TransactionV2>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let tx = state.rt.block_on(w.list_transactions_with_kind_offset(
+    let txs = state.rt.block_on(w.list_transactions_with_kind_offset(
         offset,
         limit,
         [TransactionKind::Cashu].as_slice(),
         None,
     ))?;
 
-    Ok(tx)
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = TransactionV2 {
+            mint_url: tx.mint_url.to_string(),
+            direction: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
 }
 
 pub fn get_ln_transactions_with_offset(
     offset: usize,
     limit: usize,
-) -> anyhow::Result<Vec<cdk_common::wallet::Transaction>> {
+) -> anyhow::Result<Vec<TransactionV2>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let tx = state.rt.block_on(w.list_transactions_with_kind_offset(
+    let txs = state.rt.block_on(w.list_transactions_with_kind_offset(
         offset,
         limit,
         [TransactionKind::LN].as_slice(),
         None,
     ))?;
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = TransactionV2 {
+            mint_url: tx.mint_url.to_string(),
+            direction: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
 
-    Ok(tx)
+    Ok(txs_new)
 }
 
-pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<cdk_common::wallet::Transaction>> {
+pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let tx = state
+    let txs = state
         .rt
         .block_on(w.list_pending_transactions_with_kind([TransactionKind::LN].as_slice(), None))?;
     // let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_ln()).count());
@@ -887,22 +995,54 @@ pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<cdk_common::wallet::T
     //         txs.push(t);
     //     }
     // }
-    Ok(tx)
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = TransactionV2 {
+            mint_url: tx.mint_url.to_string(),
+            direction: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
 }
 
-pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<cdk_common::wallet::Transaction>> {
+pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let tx = state.rt.block_on(
+    let txs = state.rt.block_on(
         w.list_pending_transactions_with_kind([TransactionKind::Cashu].as_slice(), None),
     )?;
 
-    Ok(tx)
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = TransactionV2 {
+            mint_url: tx.mint_url.to_string(),
+            direction: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
 }
 
 /// remove transaction.time() <= unix_timestamp_le and kind is the status, timestamp must be second
-pub fn remove_transactions(unix_timestamp_le: u64, kind: TransactionStatus) -> anyhow::Result<()> {
+pub fn remove_transactions(unix_timestamp_le: u64, _status: TransactionStatusV2) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -976,10 +1116,10 @@ pub fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
     Ok(tx)
 }
 
-pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
+pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfoV2> {
     let token: Token = Token::from_str(&encoded_token)?;
 
-    Ok(TokenInfo {
+    Ok(TokenInfoV2 {
         // encoded_token,
         mint: token.mint_url()?.to_string(),
         amount: token.value()?.into(),
@@ -1021,7 +1161,7 @@ pub fn restore(mint_url: String, words: Option<String>) -> anyhow::Result<u64> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TokenInfo {
+pub struct TokenInfoV2 {
     // pub encoded_token: String,
     pub mint: String,
     pub amount: u64,
@@ -1029,7 +1169,7 @@ pub struct TokenInfo {
     pub memo: Option<String>,
 }
 
-pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
+pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV2> {
     let encoded_invoice = encoded_invoice.replace("lightning:", "");
     let invoice: Invoice = encoded_invoice.parse()?;
 
@@ -1043,8 +1183,8 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
     };
 
     let status = match invoice.is_expired() {
-        true => InvoiceStatus::Expired,
-        false => InvoiceStatus::Unpaid,
+        true => InvoiceStatusV2::Expired,
+        false => InvoiceStatusV2::Unpaid,
     };
 
     let ts = (invoice.duration_since_epoch() + invoice.expiry_time()).as_millis();
@@ -1055,7 +1195,7 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
         ts
     );
 
-    Ok(InvoiceInfo {
+    Ok(InvoiceInfoV2 {
         // bolt11: encoded_invoice,
         amount: amount / 1000,
         hash: invoice.payment_hash().to_string(),
@@ -1067,17 +1207,17 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct InvoiceInfo {
+pub struct InvoiceInfoV2 {
     // pub bolt11: String,
     pub amount: u64,
     pub expiry_ts: u64,
     pub hash: String,
     pub memo: Option<String>,
     pub mint: Option<String>,
-    pub status: InvoiceStatus,
+    pub status: InvoiceStatusV2,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum InvoiceStatus {
+pub enum InvoiceStatusV2 {
     Paid,
     Unpaid,
     Expired,

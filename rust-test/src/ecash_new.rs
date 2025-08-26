@@ -26,7 +26,7 @@ fn main() {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhAmFzeEBmZWQ4YWNmMTI5MTgwYWE1MDUyOGExOWFkMTFhZjgxODQ4ZTMyZDg3YjJmNjFjNjlkMDc5ZTE0MmI2MmUxYzBlYWNYIQMXgxbOtSQpvWEjn_nNXGKnKM4-rPUA4e6jfFD8c-6GKmFko2FlWCAFginmiR0TFLoaQ8GgefgaKos2Ofqqib2p4DPC8EC-OGFzWCAi8UTIroajf1GN0h_OoAaEurPQMojvKhQnN79sxbG5s2FyWCASQ8NjkkQcMrOIpodF-RNKzBD4daleWir9iSKzfzhZIaRhYQFhc3hANDdiNDAyODE1N2NmNGIyNDFjODc1MTk0NzU4OGMzOWIwODhhZWMwMDhiNjRiYTI4NTAxZmNiMWYxMDk0YmY5MWFjWCECH4sqTe71hlICHtFKGKxwdMqX6TajSM6Oapietyz1fmNhZKNhZVggesKY4UrtqdVFOyt2vHaoRw9x2g2R5g8mnb5_SatzEIdhc1ggrX8gUdd1eMFglI8AYpnnFhQoWI35lK-Hd4_CLa75baxhclggMbgVQTQCVSGSAGtFcAyWhi3ajA0LDcr-GcRSuytgZLI".trim();
+    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCEpGFhAmFzeEA1OTBmNTlmNWFiMTc1OTQ5NGQ3N2JmNjcxNzdiMjhjYjQyMThhZWVkOTBmYjRhZWVjNTJlNTU0NDIxZmJiZTMzYWNYIQOmyIp1UTfH59EBNFwdhkBSkRNtZSHiIKnfmpyeswr6uWFko2FlWCC4r_Cz2yBd99aXO-DR3l-DBr8-LT0useNY7o6A4Ojr2mFzWCA1KFfS7n1SfGd7EtDMOoyJu_vESUAFnDD0Aalac8z8VGFyWCDNmi0CbpiKxGjKACZkXjw2flhXiTpln1kUvJvMtdMQhqRhYQFhc3hANzlhMGE5MzhhNGQ5NTYzMzE3ZTYwMmY0OWMyOGVmNzNjYzhmNDM4YzlhY2IzY2NlODE1MmYwNDljMjIyOTJjNmFjWCECDiJhQtaOOentTBUjfZzAvQZUJd112uzHPy87bFbi6sBhZKNhZVggsakHGGwMFJUKR-T4aCbmz6KEQHyCoJJF08nqMozxhMlhc1gg5z5eujKe4rYLYBKNbUsTDkoAoQyVJb9zZpAMOV_RS4FhclgghPmgGU5DuTl07zZl72FnWCkwZJCTvNKt1V8EJvJBf4akYWEBYXN4QDk0Y2MyNDcyMjRkMGRmNjYxYTEzMzFkZjE5ZDQ0MTYxM2I5ODM2ZTkyNDViYmNmOTVmOTcyOTUyMDBiNjViODFhY1ghAmf_y_-w8Sjl8P4lTWUtokiFgmt7M_t9KcNV0vKNjjNdYWSjYWVYIH0Y__fgvIuyuen6zNqG65PTfQufGAoMVaTJhKnBCJ2qYXNYIFzx9MdA4pF8wInMtevWGC42aARCz7vsb26vuLQQANuvYXJYIL_NT5hfGYrM9FQpi9n4DhB8WZ8k6mzgmW3qgJEbPkAIpGFhAWFzeEBiYWMwNGJmOTk3ODIzYWM5OTkxZTczMThiYjI3MzA3NTAwNjEzMWU4YWM0NWFlNjk0ZTRlZjAyMGE1ODBmODg3YWNYIQOIH0ONlXr8qLn-qKJvAfB6tHlEzw-Xo2RA12_dGpwK2WFko2FlWCB4uKn3VqpVuDY1ZPsnvA3bJ62ekceOiILO2l7nPMsUC2FzWCBuobQP4840Pj_y375F2FONypi1eLg4NIQ50AWgxZ3IPWFyWCDycqGHfoT52DqNGRxDil3hnOFPo1t7Ip423-O_LwRrxQ".trim();
     // let re = api::receive_token(encoded_token_8338.to_string());
     // println!("receive token is {:?}", re);
 
@@ -35,7 +35,10 @@ fn main() {
     // println!("get_mints is {:?}", mints);
 
     // test for send token
-    // let send = api::send(40, MINT_URL.to_string(), None);
+    let send = api::send_all(MINT_URL.to_string());
+    println!("send token is {:?}", send);
+
+    // let send = api::send_all(MINT_URL_MINIBITS.to_string());
     // println!("send token is {:?}", send);
 
     // test for request mint
@@ -77,10 +80,10 @@ fn main() {
     // let restore = api::restore(MINT_URL_MINIBITS.to_string(), None).unwrap();
     // println!("restore {:?}", restore);
 
-    // let txs = api::get_all_transactions();
-    // for tx in txs.unwrap() {
-    //     println!("tx {:?}", tx);
-    // }
+    let txs = api::get_all_transactions();
+    for tx in txs.unwrap() {
+        println!("tx {:?}", tx);
+    }
 
     // // test for get_cashu_transactions_with_offset
     // let cashu_txs = api::get_cashu_transactions_with_offset(0, 100);
@@ -89,10 +92,10 @@ fn main() {
     // }
 
     // // test for get_ln_transactions_with_offset
-    // let ln_txs = api::get_ln_transactions_with_offset(0, 100);
-    // for tx in ln_txs.unwrap() {
-    //     println!("ln {:?}", tx);
-    // }
+    let ln_txs = api::get_ln_transactions_with_offset(0, 100);
+    for tx in ln_txs.unwrap() {
+        println!("ln {:?}", tx);
+    }
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL.to_string());
@@ -101,25 +104,25 @@ fn main() {
     // let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL.to_string());
     // println!("prepare_one_proofs: {:?}", prepare_one_proofs);
 
-    // test fot get balances
-    let b2 = api::get_balances();
-    println!("get_balances after {:?}", b2);
+    // // test fot get balances
+    // let b2 = api::get_balances();
+    // println!("get_balances after {:?}", b2);
 
-    // test for print proofs
-    let _ = api::print_proofs(MINT_URL.to_string());
-    // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    // // test for print proofs
+    // let _ = api::print_proofs(MINT_URL.to_string());
+    // // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
 
-    // merge some proofs
-    let _ = api::merge_proofs(20);
+    // // merge some proofs
+    // let _ = api::merge_proofs(20);
 
-    // // send all
-    // let send_all = api::send_all(MINT_URL.to_string());
-    // println!("send_all token is {:?}", send_all);
+    // // // send all
+    // // let send_all = api::send_all(MINT_URL.to_string());
+    // // println!("send_all token is {:?}", send_all);
 
-    // test fot get balances
-    let b3 = api::get_balances();
-    println!("get_balances after {:?}", b3);
-    // test for print proofs
-    let _ = api::print_proofs(MINT_URL.to_string());
-    // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    // // test fot get balances
+    // let b3 = api::get_balances();
+    // println!("get_balances after {:?}", b3);
+    // // test for print proofs
+    // let _ = api::print_proofs(MINT_URL.to_string());
+    // // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
 }
