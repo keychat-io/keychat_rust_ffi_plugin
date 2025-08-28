@@ -2,46 +2,47 @@ use flutter_rust_bridge::frb;
 // use strum::{AsRefStr, Display, EnumIs, EnumString, IntoStaticStr};
 
 pub use cashu_wallet::types::{
-    CashuTransaction, LNTransaction, Transaction, TransactionDirection, TransactionKind,
-    TransactionStatus,
+    CashuTransaction, LNTransaction, Transaction as TransactionV1,
+    TransactionDirection as TransactionDirectionV1, TransactionKind as TransactionKindV1,
+    TransactionStatus as TransactionStatusV1,
 };
 
-#[frb(mirror(TransactionStatus))]
+#[frb(mirror(TransactionStatusV1))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
 //
 // #[derive(Display, AsRefStr, IntoStaticStr, EnumIs, EnumString)]
-pub enum _TransactionStatus {
+pub enum _TransactionStatusV1 {
     Pending,
     Success,
     Failed,
     Expired,
 }
 
-#[frb(mirror(TransactionDirection))]
+#[frb(mirror(TransactionDirectionV1))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
 //
 // #[derive(Display, AsRefStr, IntoStaticStr, EnumIs, EnumString)]
-pub enum _TransactionDirection {
+pub enum _TransactionDirectionV1 {
     In,
     Out,
     Split,
 }
 
-#[frb(mirror(TransactionKind))]
+#[frb(mirror(TransactionKindV1))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
 //
 // #[derive(Display, AsRefStr, IntoStaticStr, EnumIs, EnumString)]
-pub enum _TransactionKind {
+pub enum _TransactionKindV1 {
     Cashu,
     LN,
 }
 
-#[frb(mirror(Transaction))]
+#[frb(mirror(TransactionV1))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 //
 // #[derive(EnumIs)]
 #[serde(tag = "kind")]
-pub enum _Transaction {
+pub enum _TransactionV1 {
     Cashu(CashuTransaction),
     LN(LNTransaction),
 }
@@ -50,8 +51,8 @@ pub enum _Transaction {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct _CashuTransaction {
     pub id: String,
-    pub status: TransactionStatus,
-    pub io: TransactionDirection,
+    pub status: TransactionStatusV1,
+    pub io: TransactionDirectionV1,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub info: Option<String>,
     pub time: u64,
@@ -66,8 +67,8 @@ pub struct _CashuTransaction {
 #[frb(mirror(LNTransaction))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct _LNTransaction {
-    pub status: TransactionStatus,
-    pub io: TransactionDirection,
+    pub status: TransactionStatusV1,
+    pub io: TransactionDirectionV1,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub info: Option<String>,
     pub time: u64,

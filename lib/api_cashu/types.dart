@@ -38,43 +38,19 @@ static Future<MnemonicInfo>  withWords({required String words })=>RustLib.instan
                 }
                 
 
-enum TransactionDirectionV2 {
-                    incoming,
-outgoing,
-split,
-                    ;
-                    
-                }
-
-enum TransactionKindV2 {
-                    cashu,
-ln,
-                    ;
-                    
-                }
-
-enum TransactionStatusV2 {
-                    pending,
-success,
-failed,
-expired,
-                    ;
-                    
-                }
-
-class TransactionV2  {
+class Transaction  {
                 final String mintUrl;
-final TransactionDirectionV2 direction;
-final TransactionKindV2 kind;
+final TransactionDirection direction;
+final TransactionKind kind;
 final BigInt amount;
 final BigInt fee;
 final String? unit;
 final String token;
-final TransactionStatusV2 status;
+final TransactionStatus status;
 final BigInt timestamp;
 final Map<String, String> metadata;
 
-                const TransactionV2({required this.mintUrl ,required this.direction ,required this.kind ,required this.amount ,required this.fee ,this.unit ,required this.token ,required this.status ,required this.timestamp ,required this.metadata ,});
+                const Transaction({required this.mintUrl ,required this.direction ,required this.kind ,required this.amount ,required this.fee ,this.unit ,required this.token ,required this.status ,required this.timestamp ,required this.metadata ,});
 
                 
                 
@@ -88,9 +64,33 @@ final Map<String, String> metadata;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is TransactionV2 &&
+            other is Transaction &&
                 runtimeType == other.runtimeType
                 && mintUrl == other.mintUrl&& direction == other.direction&& kind == other.kind&& amount == other.amount&& fee == other.fee&& unit == other.unit&& token == other.token&& status == other.status&& timestamp == other.timestamp&& metadata == other.metadata;
         
             }
+
+enum TransactionDirection {
+                    incoming,
+outgoing,
+split,
+                    ;
+                    
+                }
+
+enum TransactionKind {
+                    cashu,
+ln,
+                    ;
+                    
+                }
+
+enum TransactionStatus {
+                    pending,
+success,
+failed,
+expired,
+                    ;
+                    
+                }
             

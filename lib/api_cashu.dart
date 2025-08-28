@@ -29,7 +29,7 @@ Future<void>  removeMint({required String url }) => RustLib.instance.api.crateAp
 
 Future<String>  getBalances() => RustLib.instance.api.crateApiCashuGetBalances();
 
-Future<TransactionV2>  sendAll({required String mint }) => RustLib.instance.api.crateApiCashuSendAll(mint: mint);
+Future<Transaction>  sendAll({required String mint }) => RustLib.instance.api.crateApiCashuSendAll(mint: mint);
 
 /// default set 20
 Future<void>  mergeProofs({required BigInt thershold }) => RustLib.instance.api.crateApiCashuMergeProofs(thershold: thershold);
@@ -38,14 +38,14 @@ Future<void>  mergeProofs({required BigInt thershold }) => RustLib.instance.api.
 /// need diff mint url put in a like map<url, token>
 Future<void>  multiReceive({required List<String> stamps }) => RustLib.instance.api.crateApiCashuMultiReceive(stamps: stamps);
 
-Future<TransactionV2>  receiveToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuReceiveToken(encodedToken: encodedToken);
+Future<Transaction>  receiveToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuReceiveToken(encodedToken: encodedToken);
 
 /// inner used
 Future<void>  printProofs({required String mint }) => RustLib.instance.api.crateApiCashuPrintProofs(mint: mint);
 
 Future<BigInt>  prepareOneProofs({required BigInt amount , required String mint }) => RustLib.instance.api.crateApiCashuPrepareOneProofs(amount: amount, mint: mint);
 
-Future<TransactionV2>  sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
+Future<Transaction>  sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
 
 /// Helper function to get a wallet from the multi-mint wallet
 Future<Wallet>  getWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit }) => RustLib.instance.api.crateApiCashuGetWalletByIndex(multiMintWallet: multiMintWallet, mintAmounts: mintAmounts, mintNumber: mintNumber, unit: unit);
@@ -53,7 +53,7 @@ Future<Wallet>  getWalletByIndex({required MultiMintWallet multiMintWallet , req
 /// Helper function to validate a mint number against available mints
 Future<void>  validateMintNumber({required BigInt mintNumber , required BigInt mintCount }) => RustLib.instance.api.crateApiCashuValidateMintNumber(mintNumber: mintNumber, mintCount: mintCount);
 
-Future<TransactionV2>  send({required BigInt amount , required String activeMint , String? info }) => RustLib.instance.api.crateApiCashuSend(amount: amount, activeMint: activeMint, info: info);
+Future<Transaction>  send({required BigInt amount , required String activeMint , String? info }) => RustLib.instance.api.crateApiCashuSend(amount: amount, activeMint: activeMint, info: info);
 
 Future<String>  requestMint({required BigInt amount , required String activeMint }) => RustLib.instance.api.crateApiCashuRequestMint(amount: amount, activeMint: activeMint);
 
@@ -66,22 +66,22 @@ Future<Map<String, BigInt>>  checkProofs() => RustLib.instance.api.crateApiCashu
 /// include ln and cashu
 Future<Map<String, (BigInt,BigInt)>>  checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
-Future<TransactionV2>  mintToken({required BigInt amount , required String quoteId , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, quoteId: quoteId, activeMint: activeMint);
+Future<Transaction>  mintToken({required BigInt amount , required String quoteId , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, quoteId: quoteId, activeMint: activeMint);
 
-Future<TransactionV2>  melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
+Future<Transaction>  melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
 
-Future<List<TransactionV2>>  getAllTransactions() => RustLib.instance.api.crateApiCashuGetAllTransactions();
+Future<List<Transaction>>  getAllTransactions() => RustLib.instance.api.crateApiCashuGetAllTransactions();
 
-Future<List<TransactionV2>>  getCashuTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
+Future<List<Transaction>>  getCashuTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
 
-Future<List<TransactionV2>>  getLnTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetLnTransactionsWithOffset(offset: offset, limit: limit);
+Future<List<Transaction>>  getLnTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetLnTransactionsWithOffset(offset: offset, limit: limit);
 
-Future<List<TransactionV2>>  getLnPendingTransactions() => RustLib.instance.api.crateApiCashuGetLnPendingTransactions();
+Future<List<Transaction>>  getLnPendingTransactions() => RustLib.instance.api.crateApiCashuGetLnPendingTransactions();
 
-Future<List<TransactionV2>>  getCashuPendingTransactions() => RustLib.instance.api.crateApiCashuGetCashuPendingTransactions();
+Future<List<Transaction>>  getCashuPendingTransactions() => RustLib.instance.api.crateApiCashuGetCashuPendingTransactions();
 
 /// remove transaction.time() <= unix_timestamp_le and kind is the status, timestamp must be second
-Future<void>  removeTransactions({required BigInt unixTimestampLe , required TransactionStatusV2 status }) => RustLib.instance.api.crateApiCashuRemoveTransactions(unixTimestampLe: unixTimestampLe, status: status);
+Future<void>  removeTransactions({required BigInt unixTimestampLe , required TransactionStatus status }) => RustLib.instance.api.crateApiCashuRemoveTransactions(unixTimestampLe: unixTimestampLe, status: status);
 
 Future<BigInt>  getPendingTransactionsCount() => RustLib.instance.api.crateApiCashuGetPendingTransactionsCount();
 

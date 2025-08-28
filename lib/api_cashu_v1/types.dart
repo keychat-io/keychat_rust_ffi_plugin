@@ -8,7 +8,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'types.freezed.dart';
 
-            // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `TransactionKind`
+            // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `TransactionKindV1`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 // These functions are ignored (category: IgnoreBecauseNotAllowedOwner): `default`, `default`, `default`, `default`, `default`, `default`
 
@@ -17,8 +17,8 @@ part 'types.freezed.dart';
 
             class CashuTransaction  {
                 final String id;
-final TransactionStatus status;
-final TransactionDirection io;
+final TransactionStatusV1 status;
+final TransactionDirectionV1 io;
 final String? info;
 final BigInt time;
 final BigInt amount;
@@ -72,8 +72,8 @@ final String info;
             }
 
 class LNTransaction  {
-                final TransactionStatus status;
-final TransactionDirection io;
+                final TransactionStatusV1 status;
+final TransactionDirectionV1 io;
 final String? info;
 final BigInt time;
 final BigInt amount;
@@ -263,19 +263,7 @@ final bool disabled;
         
             }
 
-@freezed
-                sealed class Transaction with _$Transaction  {
-                    const Transaction._();
-
-                     const factory Transaction.cashu(  CashuTransaction field0,) = Transaction_Cashu;
- const factory Transaction.ln(  LNTransaction field0,) = Transaction_LN;
-
-                    
-
-                    
-                }
-
-enum TransactionDirection {
+enum TransactionDirectionV1 {
                     in_,
 out,
 split,
@@ -283,12 +271,24 @@ split,
                     
                 }
 
-enum TransactionStatus {
+enum TransactionStatusV1 {
                     pending,
 success,
 failed,
 expired,
                     ;
+                    
+                }
+
+@freezed
+                sealed class TransactionV1 with _$TransactionV1  {
+                    const TransactionV1._();
+
+                     const factory TransactionV1.cashu(  CashuTransaction field0,) = TransactionV1_Cashu;
+ const factory TransactionV1.ln(  LNTransaction field0,) = TransactionV1_LN;
+
+                    
+
                     
                 }
             

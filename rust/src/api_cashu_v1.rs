@@ -13,8 +13,9 @@ use std::sync::MutexGuard as StdMutexGuard;
 use tokio::runtime::{Builder, Runtime};
 
 pub use cashu_wallet::types::{
-    CashuTransaction, LNTransaction, Mint, MintInfo, Transaction, TransactionDirection,
-    TransactionKind, TransactionStatus,
+    CashuTransaction, LNTransaction, Mint, MintInfo, Transaction as TransactionV1,
+    TransactionDirection as TransactionDirectionV1, TransactionKind as TransactionKindV1,
+    TransactionStatus as TransactionStatusV1,
 };
 
 pub use cashu_wallet_sqlite::LitePool;
@@ -427,7 +428,7 @@ pub fn get_balance(mint: String) -> anyhow::Result<(bool, u64)> {
     Ok((is_charge, v))
 }
 
-pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<Transaction>> {
+pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<TransactionV1>> {
     let token: Token = encoded_token.parse()?;
     let token = token.into_v3()?;
 
@@ -472,7 +473,7 @@ pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV1> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -525,7 +526,11 @@ pub fn send_stamp(
     tx
 }
 
-pub fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::Result<Transaction> {
+pub fn send(
+    amount: u64,
+    active_mint: String,
+    info: Option<String>,
+) -> anyhow::Result<TransactionV1> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -542,7 +547,7 @@ pub fn __send(
     amount: u64,
     mint_url: &MintUrl,
     info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV1> {
     try_load_mints(state, false).ok();
 
     let sats = state.sats;
@@ -635,9 +640,9 @@ pub fn __send(
             true,
         )?;
 
-        let mut tx: Transaction = CashuTransaction::new(
-            TransactionStatus::Pending,
-            TransactionDirection::Out,
+        let mut tx: TransactionV1 = CashuTransaction::new(
+            TransactionStatusV1::Pending,
+            TransactionDirectionV1::Out,
             amount,
             mint_url.as_str(),
             if need_swap { Some(sum_fee_ppk) } else { None },
@@ -656,7 +661,7 @@ pub fn __send(
     Ok(tx)
 }
 
-pub fn send_all(active_mint: String, info: Option<String>) -> anyhow::Result<Transaction> {
+pub fn send_all(active_mint: String, info: Option<String>) -> anyhow::Result<TransactionV1> {
     let mint_url: cashu_wallet::Url = active_mint.parse()?;
     let mut state = State::lock()?;
     __send_all(&mut state, &mint_url, info)
@@ -667,7 +672,7 @@ pub fn __send_all(
     state: &mut StdMutexGuard<'static, State>,
     mint_url: &MintUrl,
     info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV1> {
     try_load_mints(state, false).ok();
 
     let w = state.get_wallet()?;
@@ -739,9 +744,9 @@ pub fn __send_all(
         )?;
         debug!("cashu tokens is {:?}", cashu_tokens);
 
-        let mut tx: Transaction = CashuTransaction::new(
-            TransactionStatus::Pending,
-            TransactionDirection::Out,
+        let mut tx: TransactionV1 = CashuTransaction::new(
+            TransactionStatusV1::Pending,
+            TransactionDirectionV1::Out,
             total_amount - final_fee,
             mint_url.as_str(),
             Some(final_fee),
@@ -760,7 +765,7 @@ pub fn __send_all(
     Ok(tx)
 }
 
-pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transaction> {
+pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<TransactionV1> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -783,7 +788,7 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transact
     Ok(tx)
 }
 
-pub fn mint_token(amount: u64, hash: String, active_mint: String) -> anyhow::Result<Transaction> {
+pub fn mint_token(amount: u64, hash: String, active_mint: String) -> anyhow::Result<TransactionV1> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -811,7 +816,7 @@ pub fn melt(
     invoice: String,
     active_mint: String,
     amount: Option<u64>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<TransactionV1> {
     if amount == Some(0) {
         bail!("can't melt amount 0");
     }
@@ -834,7 +839,7 @@ pub fn melt(
     Ok(tx)
 }
 
-pub fn get_transactions() -> anyhow::Result<Vec<Transaction>> {
+pub fn get_transactions() -> anyhow::Result<Vec<TransactionV1>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -845,14 +850,14 @@ pub fn get_transactions() -> anyhow::Result<Vec<Transaction>> {
 pub fn get_transactions_with_offset(
     offset: usize,
     limit: usize,
-) -> anyhow::Result<Vec<Transaction>> {
+) -> anyhow::Result<Vec<TransactionV1>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
     let tx = state.rt.block_on(w.store().get_transactions_with_offset(
         offset,
         limit,
-        [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
+        [TransactionKindV1::Cashu, TransactionKindV1::LN].as_slice(),
     ))?;
     Ok(tx)
 }
@@ -867,13 +872,13 @@ pub fn get_cashu_transactions_with_offset(
     let tx = state.rt.block_on(w.store().get_transactions_with_offset(
         offset,
         limit,
-        [TransactionKind::Cashu].as_slice(),
+        [TransactionKindV1::Cashu].as_slice(),
     ))?;
 
     let mut txs = Vec::with_capacity(tx.len());
     for t in tx {
         match t {
-            Transaction::Cashu(t) => txs.push(t),
+            TransactionV1::Cashu(t) => txs.push(t),
             _ => unreachable!("unreachable not CashuTransaction"),
         }
     }
@@ -891,13 +896,13 @@ pub fn get_ln_transactions_with_offset(
     let tx = state.rt.block_on(w.store().get_transactions_with_offset(
         offset,
         limit,
-        [TransactionKind::LN].as_slice(),
+        [TransactionKindV1::LN].as_slice(),
     ))?;
 
     let mut txs = Vec::with_capacity(tx.len());
     for t in tx {
         match t {
-            Transaction::LN(t) => txs.push(t),
+            TransactionV1::LN(t) => txs.push(t),
             _ => unreachable!("unreachable not LNTransaction"),
         }
     }
@@ -905,7 +910,7 @@ pub fn get_ln_transactions_with_offset(
     Ok(txs)
 }
 
-pub fn get_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
+pub fn get_pending_transactions() -> anyhow::Result<Vec<TransactionV1>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -920,7 +925,7 @@ pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<LNTransaction>> {
     let tx = state.rt.block_on(w.store().get_pending_transactions())?;
     let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_ln()).count());
     for t in tx {
-        if let Transaction::LN(t) = t {
+        if let TransactionV1::LN(t) = t {
             txs.push(t);
         }
     }
@@ -934,7 +939,7 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>>
     let tx = state.rt.block_on(w.store().get_pending_transactions())?;
     let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_cashu()).count());
     for t in tx {
-        if let Transaction::Cashu(t) = t {
+        if let TransactionV1::Cashu(t) = t {
             txs.push(t);
         }
     }
@@ -944,7 +949,7 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>>
 /// remove transaction.time() <= unix_timestamp_ms_le and kind is the status
 pub fn remove_transactions(
     unix_timestamp_ms_le: u64,
-    kind: TransactionStatus,
+    kind: TransactionStatusV1,
 ) -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
@@ -974,7 +979,7 @@ pub fn check_pending() -> anyhow::Result<(usize, usize)> {
     Ok(upc_all)
 }
 
-pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
+pub fn check_transaction(id: String) -> anyhow::Result<TransactionV1> {
     let mut state = State::lock()?;
     try_load_mints(&mut state, false).ok();
     let w = state.get_wallet()?;

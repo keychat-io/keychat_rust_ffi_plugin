@@ -118,7 +118,7 @@ Future<(BigInt,BigInt,BigInt)> crateApiCashuV1CheckProofs();
 
 Future<void> crateApiCashuCheckTransaction({required String id });
 
-Future<Transaction> crateApiCashuV1CheckTransaction({required String id });
+Future<TransactionV1> crateApiCashuV1CheckTransaction({required String id });
 
 Future<bool> crateApiCashuV1CloseDb();
 
@@ -204,7 +204,7 @@ Future<List<String>> crateApiSignalGetAllAliceAddrs({required KeychatIdentityKey
 
 Future<(BigInt,BigInt,BigInt)> crateApiCashuGetAllProofsData();
 
-Future<List<TransactionV2>> crateApiCashuGetAllTransactions();
+Future<List<Transaction>> crateApiCashuGetAllTransactions();
 
 Future<(bool,BigInt)> crateApiCashuV1GetBalance({required String mint });
 
@@ -216,11 +216,11 @@ String crateApiNostrGetBech32PrikeyByHex({required String hex });
 
 String crateApiNostrGetBech32PubkeyByHex({required String hex });
 
-Future<List<TransactionV2>> crateApiCashuGetCashuPendingTransactions();
+Future<List<Transaction>> crateApiCashuGetCashuPendingTransactions();
 
 Future<List<CashuTransaction>> crateApiCashuV1GetCashuPendingTransactions();
 
-Future<List<TransactionV2>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<Transaction>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<List<CashuTransaction>> crateApiCashuV1GetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
@@ -246,11 +246,11 @@ Future<Uint8List> crateApiMlsGetLeadNodeIndex({required String nostrIdAdmin , re
 
 Future<String> crateApiMlsGetListenKeyFromExportSecret({required String nostrId , required String groupId });
 
-Future<List<TransactionV2>> crateApiCashuGetLnPendingTransactions();
+Future<List<Transaction>> crateApiCashuGetLnPendingTransactions();
 
 Future<List<LNTransaction>> crateApiCashuV1GetLnPendingTransactions();
 
-Future<List<TransactionV2>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<Transaction>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<List<LNTransaction>> crateApiCashuV1GetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
@@ -260,7 +260,7 @@ Future<Map<String, void>> crateApiCashuGetMints();
 
 Future<List<Mint>> crateApiCashuV1GetMints();
 
-Future<List<Transaction>> crateApiCashuV1GetPendingTransactions();
+Future<List<TransactionV1>> crateApiCashuV1GetPendingTransactions();
 
 Future<BigInt> crateApiCashuGetPendingTransactionsCount();
 
@@ -274,9 +274,9 @@ Future<KeychatSignalSession?> crateApiSignalGetSession({required KeychatIdentity
 
 Future<Uint8List> crateApiSignalGetSignedKeyApi({required KeychatIdentityKeyPair keyPair , required int signedKeyId });
 
-Future<List<Transaction>> crateApiCashuV1GetTransactions();
+Future<List<TransactionV1>> crateApiCashuV1GetTransactions();
 
-Future<List<Transaction>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<TransactionV1>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<Uint8List> crateApiMlsGetTreeHash({required String nostrId , required String groupId });
 
@@ -308,15 +308,15 @@ Future<void> crateApiSignalInitSignalDb({required String dbPath });
 
 Future<void> crateApiMlsJoinMlsGroup({required String nostrId , required String groupId , required List<int> welcome });
 
-Future<TransactionV2> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount });
+Future<Transaction> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount });
 
-Future<Transaction> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount });
+Future<TransactionV1> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount });
 
 Future<void> crateApiCashuMergeProofs({required BigInt thershold });
 
-Future<TransactionV2> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint });
+Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint });
 
-Future<Transaction> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint });
+Future<TransactionV1> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint });
 
 Future<void> crateApiCashuMultiReceive({required List<String> stamps });
 
@@ -344,9 +344,9 @@ Future<void> crateApiCashuPrintProofs({required String mint });
 
 Future<void> crateApiSignalProcessPrekeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int regId , required int deviceId , required KeychatIdentityKey identityKey , required int bobSignedId , required List<int> bobSignedPublic , required List<int> bobSigedSig , required int bobPrekeyId , required List<int> bobPrekeyPublic });
 
-Future<TransactionV2> crateApiCashuReceiveToken({required String encodedToken });
+Future<Transaction> crateApiCashuReceiveToken({required String encodedToken });
 
-Future<List<Transaction>> crateApiCashuV1ReceiveToken({required String encodedToken });
+Future<List<TransactionV1>> crateApiCashuV1ReceiveToken({required String encodedToken });
 
 Future<String> crateApiMlsRemoveMembers({required String nostrId , required String groupId , required List<Uint8List> members });
 
@@ -354,13 +354,13 @@ Future<void> crateApiCashuRemoveMint({required String url });
 
 Future<String?> crateApiCashuV1RemoveMint({required String url });
 
-Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatusV2 status });
+Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatus status });
 
-Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatus kind });
+Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatusV1 kind });
 
 Future<String> crateApiCashuRequestMint({required BigInt amount , required String activeMint });
 
-Future<Transaction> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint });
+Future<TransactionV1> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint });
 
 Future<BigInt> crateApiCashuRestore({required String mintUrl , String? words });
 
@@ -372,17 +372,17 @@ Future<Uint8List> crateApiMlsSelfLeave({required String nostrId , required Strin
 
 Future<String> crateApiMlsSelfUpdate({required String nostrId , required String groupId , required List<int> extensions });
 
-Future<TransactionV2> crateApiCashuSend({required BigInt amount , required String activeMint , String? info });
+Future<Transaction> crateApiCashuSend({required BigInt amount , required String activeMint , String? info });
 
-Future<Transaction> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info });
+Future<TransactionV1> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info });
 
-Future<TransactionV2> crateApiCashuSendAll({required String mint });
+Future<Transaction> crateApiCashuSendAll({required String mint });
 
-Future<Transaction> crateApiCashuV1SendAll({required String activeMint , String? info });
+Future<TransactionV1> crateApiCashuV1SendAll({required String activeMint , String? info });
 
-Future<TransactionV2> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
+Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
 
-Future<Transaction> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info });
+Future<TransactionV1> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info });
 
 Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address });
 
@@ -898,7 +898,7 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuV1CheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV1> crateApiCashuV1CheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(id, serializer);
@@ -907,7 +907,7 @@ sse_encode_opt_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2020,7 +2020,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuGetAllTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<Transaction>> crateApiCashuGetAllTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2029,7 +2029,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_list_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2170,7 +2170,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuGetCashuPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<Transaction>> crateApiCashuGetCashuPendingTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2179,7 +2179,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_list_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2220,7 +2220,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+@override Future<List<Transaction>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
@@ -2230,7 +2230,7 @@ sse_encode_usize(limit, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_list_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2558,7 +2558,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuGetLnPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<Transaction>> crateApiCashuGetLnPendingTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2567,7 +2567,7 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_list_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2608,7 +2608,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+@override Future<List<Transaction>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
@@ -2618,7 +2618,7 @@ sse_encode_usize(limit, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_list_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2736,7 +2736,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<Transaction>> crateApiCashuV1GetPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<TransactionV1>> crateApiCashuV1GetPendingTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2745,7 +2745,7 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction,
+          decodeSuccessData: sse_decode_list_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2917,7 +2917,7 @@ sse_encode_u_32(signedKeyId, serializer);
         );
         
 
-@override Future<List<Transaction>> crateApiCashuV1GetTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<TransactionV1>> crateApiCashuV1GetTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2926,7 +2926,7 @@ sse_encode_u_32(signedKeyId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction,
+          decodeSuccessData: sse_decode_list_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2942,7 +2942,7 @@ sse_encode_u_32(signedKeyId, serializer);
         );
         
 
-@override Future<List<Transaction>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+@override Future<List<TransactionV1>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
@@ -2952,7 +2952,7 @@ sse_encode_usize(limit, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction,
+          decodeSuccessData: sse_decode_list_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3366,7 +3366,7 @@ sse_encode_list_prim_u_8_loose(welcome, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
@@ -3377,7 +3377,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3393,7 +3393,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV1> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
@@ -3404,7 +3404,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3445,7 +3445,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -3456,7 +3456,7 @@ sse_encode_String(activeMint, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3472,7 +3472,7 @@ sse_encode_String(activeMint, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV1> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -3483,7 +3483,7 @@ sse_encode_String(activeMint, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3846,7 +3846,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
@@ -3855,7 +3855,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3871,7 +3871,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
         );
         
 
-@override Future<List<Transaction>> crateApiCashuV1ReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<List<TransactionV1>> crateApiCashuV1ReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
@@ -3880,7 +3880,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction,
+          decodeSuccessData: sse_decode_list_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3973,11 +3973,11 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
         );
         
 
-@override Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatusV2 status })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatus status })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampLe, serializer);
-sse_encode_transaction_status_v_2(status, serializer);
+sse_encode_transaction_status(status, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
             
             },
@@ -3999,11 +3999,11 @@ sse_encode_transaction_status_v_2(status, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatus kind })  { return handler.executeNormal(NormalTask(
+@override Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatusV1 kind })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampMsLe, serializer);
-sse_encode_transaction_status(kind, serializer);
+sse_encode_transaction_status_v_1(kind, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
             
             },
@@ -4051,7 +4051,7 @@ sse_encode_String(activeMint, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV1> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -4061,7 +4061,7 @@ sse_encode_String(activeMint, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4209,7 +4209,7 @@ sse_encode_list_prim_u_8_loose(extensions, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuSend({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuSend({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -4220,7 +4220,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4236,7 +4236,7 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV1> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -4247,7 +4247,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4263,7 +4263,7 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuSendAll({required String mint })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuSendAll({required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
@@ -4272,7 +4272,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4288,7 +4288,7 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuV1SendAll({required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV1> crateApiCashuV1SendAll({required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(activeMint, serializer);
@@ -4298,7 +4298,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4314,7 +4314,7 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -4325,7 +4325,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4341,7 +4341,7 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV1> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -4352,7 +4352,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4911,8 +4911,8 @@ return dco_decode_u_64(raw); }
 final arr = raw as List<dynamic>;
                 if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
                 return CashuTransaction(id: dco_decode_String(arr[0]),
-status: dco_decode_transaction_status(arr[1]),
-io: dco_decode_transaction_direction(arr[2]),
+status: dco_decode_transaction_status_v_1(arr[1]),
+io: dco_decode_transaction_direction_v_1(arr[2]),
 info: dco_decode_opt_String(arr[3]),
 time: dco_decode_u_64(arr[4]),
 amount: dco_decode_u_64(arr[5]),
@@ -5078,14 +5078,14 @@ return (raw as List<dynamic>).map(dco_decode_secp_256_k_1_account).toList(); }
 @protected List<Transaction> dco_decode_list_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_transaction).toList(); }
 
-@protected List<TransactionV2> dco_decode_list_transaction_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_transaction_v_2).toList(); }
+@protected List<TransactionV1> dco_decode_list_transaction_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return (raw as List<dynamic>).map(dco_decode_transaction_v_1).toList(); }
 
 @protected LNTransaction dco_decode_ln_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
-                return LNTransaction(status: dco_decode_transaction_status(arr[0]),
-io: dco_decode_transaction_direction(arr[1]),
+                return LNTransaction(status: dco_decode_transaction_status_v_1(arr[0]),
+io: dco_decode_transaction_direction_v_1(arr[1]),
 info: dco_decode_opt_String(arr[2]),
 time: dco_decode_u_64(arr[3]),
 amount: dco_decode_u_64(arr[4]),
@@ -5361,40 +5361,40 @@ unit: dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_ge
 memo: dco_decode_opt_String(arr[3]),); }
 
 @protected Transaction dco_decode_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-switch (raw[0]) {
-                case 0: return Transaction_Cashu(dco_decode_box_autoadd_cashu_transaction(raw[1]),);
-case 1: return Transaction_LN(dco_decode_box_autoadd_ln_transaction(raw[1]),);
-                default: throw Exception("unreachable");
-            } }
-
-@protected TransactionDirection dco_decode_transaction_direction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionDirection.values[raw as int]; }
-
-@protected TransactionDirectionV2 dco_decode_transaction_direction_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionDirectionV2.values[raw as int]; }
-
-@protected TransactionKindV2 dco_decode_transaction_kind_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionKindV2.values[raw as int]; }
-
-@protected TransactionStatus dco_decode_transaction_status(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionStatus.values[raw as int]; }
-
-@protected TransactionStatusV2 dco_decode_transaction_status_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionStatusV2.values[raw as int]; }
-
-@protected TransactionV2 dco_decode_transaction_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
-                return TransactionV2(mintUrl: dco_decode_String(arr[0]),
-direction: dco_decode_transaction_direction_v_2(arr[1]),
-kind: dco_decode_transaction_kind_v_2(arr[2]),
+                return Transaction(mintUrl: dco_decode_String(arr[0]),
+direction: dco_decode_transaction_direction(arr[1]),
+kind: dco_decode_transaction_kind(arr[2]),
 amount: dco_decode_u_64(arr[3]),
 fee: dco_decode_u_64(arr[4]),
 unit: dco_decode_opt_String(arr[5]),
 token: dco_decode_String(arr[6]),
-status: dco_decode_transaction_status_v_2(arr[7]),
+status: dco_decode_transaction_status(arr[7]),
 timestamp: dco_decode_u_64(arr[8]),
 metadata: dco_decode_Map_String_String_None(arr[9]),); }
+
+@protected TransactionDirection dco_decode_transaction_direction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return TransactionDirection.values[raw as int]; }
+
+@protected TransactionDirectionV1 dco_decode_transaction_direction_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return TransactionDirectionV1.values[raw as int]; }
+
+@protected TransactionKind dco_decode_transaction_kind(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return TransactionKind.values[raw as int]; }
+
+@protected TransactionStatus dco_decode_transaction_status(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return TransactionStatus.values[raw as int]; }
+
+@protected TransactionStatusV1 dco_decode_transaction_status_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return TransactionStatusV1.values[raw as int]; }
+
+@protected TransactionV1 dco_decode_transaction_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+switch (raw[0]) {
+                case 0: return TransactionV1_Cashu(dco_decode_box_autoadd_cashu_transaction(raw[1]),);
+case 1: return TransactionV1_LN(dco_decode_box_autoadd_ln_transaction(raw[1]),);
+                default: throw Exception("unreachable");
+            } }
 
 @protected int dco_decode_u_16(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as int; }
@@ -5540,8 +5540,8 @@ return (sse_decode_u_64(deserializer)); }
 
 @protected CashuTransaction sse_decode_cashu_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_id = sse_decode_String(deserializer);
-var var_status = sse_decode_transaction_status(deserializer);
-var var_io = sse_decode_transaction_direction(deserializer);
+var var_status = sse_decode_transaction_status_v_1(deserializer);
+var var_io = sse_decode_transaction_direction_v_1(deserializer);
 var var_info = sse_decode_opt_String(deserializer);
 var var_time = sse_decode_u_64(deserializer);
 var var_amount = sse_decode_u_64(deserializer);
@@ -5787,17 +5787,17 @@ var len_ = sse_decode_i_32(deserializer);
         return ans_;
          }
 
-@protected List<TransactionV2> sse_decode_list_transaction_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected List<TransactionV1> sse_decode_list_transaction_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <TransactionV2>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_transaction_v_2(deserializer)); }
+        var ans_ = <TransactionV1>[];
+        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_transaction_v_1(deserializer)); }
         return ans_;
          }
 
 @protected LNTransaction sse_decode_ln_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_status = sse_decode_transaction_status(deserializer);
-var var_io = sse_decode_transaction_direction(deserializer);
+var var_status = sse_decode_transaction_status_v_1(deserializer);
+var var_io = sse_decode_transaction_direction_v_1(deserializer);
 var var_info = sse_decode_opt_String(deserializer);
 var var_time = sse_decode_u_64(deserializer);
 var var_amount = sse_decode_u_64(deserializer);
@@ -6100,45 +6100,45 @@ var var_memo = sse_decode_opt_String(deserializer);
 return TokenInfoV2(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
 
 @protected Transaction sse_decode_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-            var tag_ = sse_decode_i_32(deserializer);
-            switch (tag_) { case 0: var var_field0 = sse_decode_box_autoadd_cashu_transaction(deserializer);
-return Transaction_Cashu(var_field0);case 1: var var_field0 = sse_decode_box_autoadd_ln_transaction(deserializer);
-return Transaction_LN(var_field0); default: throw UnimplementedError(''); }
-             }
+var var_mintUrl = sse_decode_String(deserializer);
+var var_direction = sse_decode_transaction_direction(deserializer);
+var var_kind = sse_decode_transaction_kind(deserializer);
+var var_amount = sse_decode_u_64(deserializer);
+var var_fee = sse_decode_u_64(deserializer);
+var var_unit = sse_decode_opt_String(deserializer);
+var var_token = sse_decode_String(deserializer);
+var var_status = sse_decode_transaction_status(deserializer);
+var var_timestamp = sse_decode_u_64(deserializer);
+var var_metadata = sse_decode_Map_String_String_None(deserializer);
+return Transaction(mintUrl: var_mintUrl, direction: var_direction, kind: var_kind, amount: var_amount, fee: var_fee, unit: var_unit, token: var_token, status: var_status, timestamp: var_timestamp, metadata: var_metadata); }
 
 @protected TransactionDirection sse_decode_transaction_direction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
         return TransactionDirection.values[inner]; }
 
-@protected TransactionDirectionV2 sse_decode_transaction_direction_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected TransactionDirectionV1 sse_decode_transaction_direction_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
-        return TransactionDirectionV2.values[inner]; }
+        return TransactionDirectionV1.values[inner]; }
 
-@protected TransactionKindV2 sse_decode_transaction_kind_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected TransactionKind sse_decode_transaction_kind(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
-        return TransactionKindV2.values[inner]; }
+        return TransactionKind.values[inner]; }
 
 @protected TransactionStatus sse_decode_transaction_status(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
         return TransactionStatus.values[inner]; }
 
-@protected TransactionStatusV2 sse_decode_transaction_status_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected TransactionStatusV1 sse_decode_transaction_status_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
-        return TransactionStatusV2.values[inner]; }
+        return TransactionStatusV1.values[inner]; }
 
-@protected TransactionV2 sse_decode_transaction_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_mintUrl = sse_decode_String(deserializer);
-var var_direction = sse_decode_transaction_direction_v_2(deserializer);
-var var_kind = sse_decode_transaction_kind_v_2(deserializer);
-var var_amount = sse_decode_u_64(deserializer);
-var var_fee = sse_decode_u_64(deserializer);
-var var_unit = sse_decode_opt_String(deserializer);
-var var_token = sse_decode_String(deserializer);
-var var_status = sse_decode_transaction_status_v_2(deserializer);
-var var_timestamp = sse_decode_u_64(deserializer);
-var var_metadata = sse_decode_Map_String_String_None(deserializer);
-return TransactionV2(mintUrl: var_mintUrl, direction: var_direction, kind: var_kind, amount: var_amount, fee: var_fee, unit: var_unit, token: var_token, status: var_status, timestamp: var_timestamp, metadata: var_metadata); }
+@protected TransactionV1 sse_decode_transaction_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+
+            var tag_ = sse_decode_i_32(deserializer);
+            switch (tag_) { case 0: var var_field0 = sse_decode_box_autoadd_cashu_transaction(deserializer);
+return TransactionV1_Cashu(var_field0);case 1: var var_field0 = sse_decode_box_autoadd_ln_transaction(deserializer);
+return TransactionV1_LN(var_field0); default: throw UnimplementedError(''); }
+             }
 
 @protected int sse_decode_u_16(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return deserializer.buffer.getUint16(); }
@@ -6278,8 +6278,8 @@ sse_encode_u_64(self, serializer); }
 
 @protected void sse_encode_cashu_transaction(CashuTransaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.id, serializer);
-sse_encode_transaction_status(self.status, serializer);
-sse_encode_transaction_direction(self.io, serializer);
+sse_encode_transaction_status_v_1(self.status, serializer);
+sse_encode_transaction_direction_v_1(self.io, serializer);
 sse_encode_opt_String(self.info, serializer);
 sse_encode_u_64(self.time, serializer);
 sse_encode_u_64(self.amount, serializer);
@@ -6454,13 +6454,13 @@ sse_encode_i_32(self.length, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_transaction(item, serializer); } }
 
-@protected void sse_encode_list_transaction_v_2(List<TransactionV2> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_list_transaction_v_1(List<TransactionV1> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_transaction_v_2(item, serializer); } }
+        for (final item in self) { sse_encode_transaction_v_1(item, serializer); } }
 
 @protected void sse_encode_ln_transaction(LNTransaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_transaction_status(self.status, serializer);
-sse_encode_transaction_direction(self.io, serializer);
+sse_encode_transaction_status_v_1(self.status, serializer);
+sse_encode_transaction_direction_v_1(self.io, serializer);
 sse_encode_opt_String(self.info, serializer);
 sse_encode_u_64(self.time, serializer);
 sse_encode_u_64(self.amount, serializer);
@@ -6751,37 +6751,37 @@ sse_encode_opt_String(self.memo, serializer);
  }
 
 @protected void sse_encode_transaction(Transaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-switch (self) { case Transaction_Cashu(field0: final field0): sse_encode_i_32(0, serializer); sse_encode_box_autoadd_cashu_transaction(field0, serializer);
-case Transaction_LN(field0: final field0): sse_encode_i_32(1, serializer); sse_encode_box_autoadd_ln_transaction(field0, serializer);
-  } }
+sse_encode_String(self.mintUrl, serializer);
+sse_encode_transaction_direction(self.direction, serializer);
+sse_encode_transaction_kind(self.kind, serializer);
+sse_encode_u_64(self.amount, serializer);
+sse_encode_u_64(self.fee, serializer);
+sse_encode_opt_String(self.unit, serializer);
+sse_encode_String(self.token, serializer);
+sse_encode_transaction_status(self.status, serializer);
+sse_encode_u_64(self.timestamp, serializer);
+sse_encode_Map_String_String_None(self.metadata, serializer);
+ }
 
 @protected void sse_encode_transaction_direction(TransactionDirection self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
-@protected void sse_encode_transaction_direction_v_2(TransactionDirectionV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_transaction_direction_v_1(TransactionDirectionV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
-@protected void sse_encode_transaction_kind_v_2(TransactionKindV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_transaction_kind(TransactionKind self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
 @protected void sse_encode_transaction_status(TransactionStatus self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
-@protected void sse_encode_transaction_status_v_2(TransactionStatusV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_transaction_status_v_1(TransactionStatusV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
-@protected void sse_encode_transaction_v_2(TransactionV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_String(self.mintUrl, serializer);
-sse_encode_transaction_direction_v_2(self.direction, serializer);
-sse_encode_transaction_kind_v_2(self.kind, serializer);
-sse_encode_u_64(self.amount, serializer);
-sse_encode_u_64(self.fee, serializer);
-sse_encode_opt_String(self.unit, serializer);
-sse_encode_String(self.token, serializer);
-sse_encode_transaction_status_v_2(self.status, serializer);
-sse_encode_u_64(self.timestamp, serializer);
-sse_encode_Map_String_String_None(self.metadata, serializer);
- }
+@protected void sse_encode_transaction_v_1(TransactionV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+switch (self) { case TransactionV1_Cashu(field0: final field0): sse_encode_i_32(0, serializer); sse_encode_box_autoadd_cashu_transaction(field0, serializer);
+case TransactionV1_LN(field0: final field0): sse_encode_i_32(1, serializer); sse_encode_box_autoadd_ln_transaction(field0, serializer);
+  } }
 
 @protected void sse_encode_u_16(int self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 serializer.buffer.putUint16(self); }

@@ -1,47 +1,43 @@
-use cdk_common::wallet::TransactionStatus;
 use flutter_rust_bridge::frb;
 // use strum::{AsRefStr, Display, EnumIs, EnumString, IntoStaticStr};
 pub use cashu::{Amount, CurrencyUnit, MintUrl};
-pub use cdk_common::wallet::{
-    TransactionDirection as TransactionDirectionV2, TransactionKind as TransactionKindV2,
-    TransactionStatus as TransactionStatusV2,
-};
+pub use cdk_common::wallet::{TransactionDirection, TransactionKind, TransactionStatus};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TransactionV2 {
+pub struct Transaction {
     pub mint_url: String,
-    pub direction: TransactionDirectionV2,
-    pub kind: TransactionKindV2,
+    pub direction: TransactionDirection,
+    pub kind: TransactionKind,
     pub amount: u64,
     pub fee: u64,
     pub unit: Option<String>,
     pub token: String,
-    pub status: TransactionStatusV2,
+    pub status: TransactionStatus,
     pub timestamp: u64,
     pub metadata: HashMap<String, String>,
 }
 
-#[frb(mirror(TransactionStatusV2))]
+#[frb(mirror(TransactionStatus))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub enum _TransactionStatusV2 {
+pub enum _TransactionStatus {
     Pending,
     Success,
     Failed,
     Expired,
 }
 
-#[frb(mirror(TransactionDirectionV2))]
+#[frb(mirror(TransactionDirection))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub enum _TransactionDirectionV2 {
+pub enum _TransactionDirection {
     Incoming,
     Outgoing,
     Split,
 }
 
-#[frb(mirror(TransactionKindV2))]
+#[frb(mirror(TransactionKind))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub enum _TransactionKindV2 {
+pub enum _TransactionKind {
     Cashu,
     LN,
 }

@@ -189,7 +189,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<Transaction> dco_decode_list_transaction(dynamic raw);
 
-@protected List<TransactionV2> dco_decode_list_transaction_v_2(dynamic raw);
+@protected List<TransactionV1> dco_decode_list_transaction_v_1(dynamic raw);
 
 @protected LNTransaction dco_decode_ln_transaction(dynamic raw);
 
@@ -281,15 +281,15 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected TransactionDirection dco_decode_transaction_direction(dynamic raw);
 
-@protected TransactionDirectionV2 dco_decode_transaction_direction_v_2(dynamic raw);
+@protected TransactionDirectionV1 dco_decode_transaction_direction_v_1(dynamic raw);
 
-@protected TransactionKindV2 dco_decode_transaction_kind_v_2(dynamic raw);
+@protected TransactionKind dco_decode_transaction_kind(dynamic raw);
 
 @protected TransactionStatus dco_decode_transaction_status(dynamic raw);
 
-@protected TransactionStatusV2 dco_decode_transaction_status_v_2(dynamic raw);
+@protected TransactionStatusV1 dco_decode_transaction_status_v_1(dynamic raw);
 
-@protected TransactionV2 dco_decode_transaction_v_2(dynamic raw);
+@protected TransactionV1 dco_decode_transaction_v_1(dynamic raw);
 
 @protected int dco_decode_u_16(dynamic raw);
 
@@ -451,7 +451,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<Transaction> sse_decode_list_transaction(SseDeserializer deserializer);
 
-@protected List<TransactionV2> sse_decode_list_transaction_v_2(SseDeserializer deserializer);
+@protected List<TransactionV1> sse_decode_list_transaction_v_1(SseDeserializer deserializer);
 
 @protected LNTransaction sse_decode_ln_transaction(SseDeserializer deserializer);
 
@@ -543,15 +543,15 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected TransactionDirection sse_decode_transaction_direction(SseDeserializer deserializer);
 
-@protected TransactionDirectionV2 sse_decode_transaction_direction_v_2(SseDeserializer deserializer);
+@protected TransactionDirectionV1 sse_decode_transaction_direction_v_1(SseDeserializer deserializer);
 
-@protected TransactionKindV2 sse_decode_transaction_kind_v_2(SseDeserializer deserializer);
+@protected TransactionKind sse_decode_transaction_kind(SseDeserializer deserializer);
 
 @protected TransactionStatus sse_decode_transaction_status(SseDeserializer deserializer);
 
-@protected TransactionStatusV2 sse_decode_transaction_status_v_2(SseDeserializer deserializer);
+@protected TransactionStatusV1 sse_decode_transaction_status_v_1(SseDeserializer deserializer);
 
-@protected TransactionV2 sse_decode_transaction_v_2(SseDeserializer deserializer);
+@protected TransactionV1 sse_decode_transaction_v_1(SseDeserializer deserializer);
 
 @protected int sse_decode_u_16(SseDeserializer deserializer);
 
@@ -713,7 +713,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_list_transaction(List<Transaction> self, SseSerializer serializer);
 
-@protected void sse_encode_list_transaction_v_2(List<TransactionV2> self, SseSerializer serializer);
+@protected void sse_encode_list_transaction_v_1(List<TransactionV1> self, SseSerializer serializer);
 
 @protected void sse_encode_ln_transaction(LNTransaction self, SseSerializer serializer);
 
@@ -805,15 +805,15 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_transaction_direction(TransactionDirection self, SseSerializer serializer);
 
-@protected void sse_encode_transaction_direction_v_2(TransactionDirectionV2 self, SseSerializer serializer);
+@protected void sse_encode_transaction_direction_v_1(TransactionDirectionV1 self, SseSerializer serializer);
 
-@protected void sse_encode_transaction_kind_v_2(TransactionKindV2 self, SseSerializer serializer);
+@protected void sse_encode_transaction_kind(TransactionKind self, SseSerializer serializer);
 
 @protected void sse_encode_transaction_status(TransactionStatus self, SseSerializer serializer);
 
-@protected void sse_encode_transaction_status_v_2(TransactionStatusV2 self, SseSerializer serializer);
+@protected void sse_encode_transaction_status_v_1(TransactionStatusV1 self, SseSerializer serializer);
 
-@protected void sse_encode_transaction_v_2(TransactionV2 self, SseSerializer serializer);
+@protected void sse_encode_transaction_v_1(TransactionV1 self, SseSerializer serializer);
 
 @protected void sse_encode_u_16(int self, SseSerializer serializer);
 

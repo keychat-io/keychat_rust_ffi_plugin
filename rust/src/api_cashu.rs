@@ -12,9 +12,7 @@ use cdk::wallet::ReceiveOptions;
 pub use cdk::wallet::{MultiMintWallet, SendOptions, Wallet, WalletBuilder};
 pub use cdk::Bolt11Invoice;
 use cdk_common::database::WalletDatabase;
-pub use cdk_common::wallet::{
-    TransactionId, TransactionKind, TransactionStatus as TransactionStatusV2,
-};
+pub use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus};
 use cdk_sqlite::WalletSqliteDatabase;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
@@ -266,7 +264,7 @@ async fn get_or_create_wallet(
     }
 }
 
-pub fn send_all(mint: String) -> anyhow::Result<TransactionV2> {
+pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -293,7 +291,7 @@ pub fn send_all(mint: String) -> anyhow::Result<TransactionV2> {
         let tx = wallet.send(prepared_send, None).await?;
         Ok(tx)
     })?;
-    let tx_new = TransactionV2 {
+    let tx_new = Transaction {
         mint_url: tx.mint_url.to_string(),
         direction: tx.direction,
         kind: tx.kind,
@@ -403,7 +401,7 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn receive_token(encoded_token: String) -> anyhow::Result<TransactionV2> {
+pub fn receive_token(encoded_token: String) -> anyhow::Result<Transaction> {
     let token: Token = Token::from_str(&encoded_token)?;
     let mint_url = token.mint_url()?;
 
@@ -423,7 +421,7 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<TransactionV2> {
     };
 
     let tx = state.rt.block_on(fut)?;
-    let tx_new = TransactionV2 {
+    let tx_new = Transaction {
         mint_url: tx.mint_url.to_string(),
         direction: tx.direction,
         kind: tx.kind,
@@ -527,7 +525,7 @@ pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
-) -> anyhow::Result<TransactionV2> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -655,7 +653,7 @@ pub fn send(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<TransactionV2> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -668,7 +666,7 @@ fn _send(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<TransactionV2> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -697,7 +695,7 @@ fn _send(
         let tx = wallet.send(prepared_send, None).await?;
         Ok(tx)
     })?;
-    let tx_new = TransactionV2 {
+    let tx_new = Transaction {
         mint_url: tx.mint_url.to_string(),
         direction: tx.direction,
         kind: tx.kind,
@@ -810,7 +808,7 @@ pub fn mint_token(
     amount: u64,
     quote_id: String,
     active_mint: String,
-) -> anyhow::Result<TransactionV2> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -832,7 +830,7 @@ pub fn mint_token(
         Ok(proofs.1)
     })?;
 
-    let tx_new = TransactionV2 {
+    let tx_new = Transaction {
         mint_url: tx.mint_url.to_string(),
         direction: tx.direction,
         kind: tx.kind,
@@ -852,7 +850,7 @@ pub fn melt(
     invoice: String,
     active_mint: String,
     amount: Option<u64>,
-) -> anyhow::Result<TransactionV2> {
+) -> anyhow::Result<Transaction> {
     if amount == Some(0) {
         bail!("can't melt amount 0");
     }
@@ -906,7 +904,7 @@ pub fn melt(
 
         Ok(melt.1)
     })?;
-    let tx_new = TransactionV2 {
+    let tx_new = Transaction {
         mint_url: tx.mint_url.to_string(),
         direction: tx.direction,
         kind: tx.kind,
@@ -922,14 +920,14 @@ pub fn melt(
     Ok(tx_new)
 }
 
-pub fn get_all_transactions() -> anyhow::Result<Vec<TransactionV2>> {
+pub fn get_all_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
     let txs = state.rt.block_on(w.list_transactions(None))?;
     let mut txs_new = Vec::new();
     for tx in txs {
-        let tx_new = TransactionV2 {
+        let tx_new = Transaction {
             mint_url: tx.mint_url.to_string(),
             direction: tx.direction,
             kind: tx.kind,
@@ -951,7 +949,7 @@ pub fn get_all_transactions() -> anyhow::Result<Vec<TransactionV2>> {
 pub fn get_cashu_transactions_with_offset(
     offset: usize,
     limit: usize,
-) -> anyhow::Result<Vec<TransactionV2>> {
+) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -964,7 +962,7 @@ pub fn get_cashu_transactions_with_offset(
 
     let mut txs_new = Vec::new();
     for tx in txs {
-        let tx_new = TransactionV2 {
+        let tx_new = Transaction {
             mint_url: tx.mint_url.to_string(),
             direction: tx.direction,
             kind: tx.kind,
@@ -985,7 +983,7 @@ pub fn get_cashu_transactions_with_offset(
 pub fn get_ln_transactions_with_offset(
     offset: usize,
     limit: usize,
-) -> anyhow::Result<Vec<TransactionV2>> {
+) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -997,7 +995,7 @@ pub fn get_ln_transactions_with_offset(
     ))?;
     let mut txs_new = Vec::new();
     for tx in txs {
-        let tx_new = TransactionV2 {
+        let tx_new = Transaction {
             mint_url: tx.mint_url.to_string(),
             direction: tx.direction,
             kind: tx.kind,
@@ -1015,7 +1013,7 @@ pub fn get_ln_transactions_with_offset(
     Ok(txs_new)
 }
 
-pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
+pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -1030,7 +1028,7 @@ pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
     // }
     let mut txs_new = Vec::new();
     for tx in txs {
-        let tx_new = TransactionV2 {
+        let tx_new = Transaction {
             mint_url: tx.mint_url.to_string(),
             direction: tx.direction,
             kind: tx.kind,
@@ -1048,7 +1046,7 @@ pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
     Ok(txs_new)
 }
 
-pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
+pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -1058,7 +1056,7 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
 
     let mut txs_new = Vec::new();
     for tx in txs {
-        let tx_new = TransactionV2 {
+        let tx_new = Transaction {
             mint_url: tx.mint_url.to_string(),
             direction: tx.direction,
             kind: tx.kind,
@@ -1079,7 +1077,7 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<TransactionV2>> {
 /// remove transaction.time() <= unix_timestamp_le and kind is the status, timestamp must be second
 pub fn remove_transactions(
     unix_timestamp_le: u64,
-    _status: TransactionStatusV2,
+    _status: TransactionStatus,
 ) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
