@@ -1,6 +1,6 @@
 #![allow(dead_code, unused_imports, unused_variables)]
 
-use rust::api_cashu as api;
+use rust::api_cashu_v1 as api;
 
 pub fn add(a: i32, b: i32) -> i32 {
     a + b

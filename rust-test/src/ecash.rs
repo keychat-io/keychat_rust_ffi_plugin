@@ -2,7 +2,7 @@
 extern crate tracing;
 
 use anyhow::bail;
-use rust::api_cashu::{self as api, cashu_wallet::wallet::MnemonicInfo};
+use rust::api_cashu_v1::{self as api, cashu_wallet::wallet::MnemonicInfo};
 
 use api::*;
 
@@ -13,22 +13,26 @@ const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 fn main() {
     let migen_words = MnemonicInfo::generate_words(12).unwrap();
 
-    let r1 = api::init_db(DB_PATH.to_string(), Some(migen_words.to_owned()), false);
-    info!("init_db {}: {:?}", DB_PATH, r1);
+    // let r1 = api::init_db(DB_PATH.to_string(), Some(migen_words.to_owned()), false);
+    // info!("init_db {}: {:?}", DB_PATH, r1);
 
-    let _r1 = api::init_cashu(32);
+    // let _r1 = api::init_cashu(32);
+
+    // let balance = api::get_balance(MINT_URL.to_string());
+    // println!("get_balance: {:?}", balance);
+
+    // let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCBpGFhAWFzeEAwNzE5ZjU1NDY1ZjEzOGY0Zjg4M2E4ZWFjZTY0N2VlNzk0YmY0YTlmYzYwN2RmMDU4MDUzOGY1MGY5YmIyNWRlYWNYIQPZyaubswJZvtcQmhcgONDFw5X6abw34WnnY6dXRPK5WmFko2FlWCAfV6dFvDoVXYUj2hEmg3eicmdO0Vy6rqrIG2tKOAHTaGFzWCDTVAOeTk6I-fV_tDVag4WkNaSpJfkfFnMtubctXfNlTmFyWCAv4Ilv0vHEWctxeuo292QQGTMfTjOMNLxeMKO_-dT_6w".trim();
+    // let r2 = api::receive_token(encoded_token_8338.to_string());
+    // println!("receive_token: {:?}", r2);
+
+    let tokens = api::cashu_v1_init_send_all(DB_PATH.to_string(), Some(migen_words.to_owned()));
+    println!("send all tokens {:?}", tokens);
+
     let balance = api::get_balance(MINT_URL.to_string());
     println!("get_balance: {:?}", balance);
 
-    let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCBpGFhAmFzeEBhM2NiMmZiN2ViMTQ2MDczNjNjMzQ5NWM4OTRhMjU3MmRhZTc3NDdjNGUxNDI5MjQ2YzBhM2I5MDkxYzBhMjYxYWNYIQPM_PT69ElNA8S9Pu48E-uj1ly48OSBu4sjsyhacs-gvmFko2FlWCBAxK-g8mitdRR7PnjpBM9MWwW3lbOpsUVlBZ9QVg4GzmFzWCBececV4rsJxgZHSfmaaTao1GL_6nsNDbcHjxrdcN9WqmFyWCDFp5UJqG80Mx9FNSFwxyjohvtEeyc7n7sfRcuLo90XBQ".trim();
-    let r2 = api::receive_token(encoded_token_8338.to_string());
-    println!("receive_token: {:?}", r2);
-
-    let balance = api::get_balance(MINT_URL_MINIBITS.to_string());
-    println!("get_balance: {:?}", balance);
-
-    let balance = api::get_balances();
-    println!("get_balances: {:?}", balance);
+    // let balance = api::get_balances();
+    // println!("get_balances: {:?}", balance);
 
     // only balance great than 2 due to fee
     // if balance.unwrap().1 > 2 {

@@ -25,8 +25,8 @@
 
 // Section: imports
 
-use crate::api_cashu_v2::types::*;
-use crate::api_cashu_v2::*;
+use crate::api_cashu::types::*;
+use crate::api_cashu::*;
 use crate::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
@@ -40,7 +40,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.10.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -19756281;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 2044617524;
 
 // Section: executor
 
@@ -48,7 +48,7 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
-fn wire__crate__api_cashu_v2__types__MnemonicInfo_generate_words_impl(
+fn wire__crate__api_cashu__types__MnemonicInfo_generate_words_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -76,7 +76,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_generate_words_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::types::MnemonicInfo::generate_words(api_words)?;
+                            crate::api_cashu::types::MnemonicInfo::generate_words(api_words)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -84,7 +84,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_generate_words_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__types__MnemonicInfo_mnemonic_impl(
+fn wire__crate__api_cashu__types__MnemonicInfo_mnemonic_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -127,7 +127,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_mnemonic_impl(
                     }
                     let api_that_guard = api_that_guard.unwrap();
                     let output_ok = Result::<_, ()>::Ok({
-                        crate::api_cashu_v2::types::MnemonicInfo::mnemonic(&*api_that_guard);
+                        crate::api_cashu::types::MnemonicInfo::mnemonic(&*api_that_guard);
                     })?;
                     Ok(output_ok)
                 })())
@@ -135,7 +135,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_mnemonic_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__types__MnemonicInfo_new_impl(
+fn wire__crate__api_cashu__types__MnemonicInfo_new_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -184,7 +184,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_new_impl(
                         }
                         let api_mnemonic_guard = api_mnemonic_guard.unwrap();
                         let output_ok =
-                            crate::api_cashu_v2::types::MnemonicInfo::new(&*api_mnemonic_guard)?;
+                            crate::api_cashu::types::MnemonicInfo::new(&*api_mnemonic_guard)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -192,7 +192,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_new_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__types__MnemonicInfo_pubkey_impl(
+fn wire__crate__api_cashu__types__MnemonicInfo_pubkey_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -235,7 +235,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_pubkey_impl(
                     }
                     let api_that_guard = api_that_guard.unwrap();
                     let output_ok = Result::<_, ()>::Ok({
-                        crate::api_cashu_v2::types::MnemonicInfo::pubkey(&*api_that_guard);
+                        crate::api_cashu::types::MnemonicInfo::pubkey(&*api_that_guard);
                     })?;
                     Ok(output_ok)
                 })())
@@ -243,7 +243,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_pubkey_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__types__MnemonicInfo_with_words_impl(
+fn wire__crate__api_cashu__types__MnemonicInfo_with_words_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -271,7 +271,7 @@ fn wire__crate__api_cashu_v2__types__MnemonicInfo_with_words_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::types::MnemonicInfo::with_words(&api_words)?;
+                            crate::api_cashu::types::MnemonicInfo::with_words(&api_words)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -355,7 +355,7 @@ fn wire__crate__api_cashu__add_mint_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__add_mint_impl(
+fn wire__crate__api_cashu_v1__add_mint_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -382,7 +382,7 @@ fn wire__crate__api_cashu_v2__add_mint_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::add_mint(api_url)?;
+                        let output_ok = crate::api_cashu_v1::add_mint(api_url)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -464,7 +464,44 @@ fn wire__crate__api_mls__admin_proposal_leave_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__check_all_mint_quotes_impl(
+fn wire__crate__api_cashu_v1__cashu_v1_init_send_all_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "cashu_v1_init_send_all",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_dbpath = <String>::sse_decode(&mut deserializer);
+            let api_words = <Option<String>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok =
+                            crate::api_cashu_v1::cashu_v1_init_send_all(api_dbpath, api_words)?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api_cashu__check_all_mint_quotes_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -490,43 +527,7 @@ fn wire__crate__api_cashu_v2__check_all_mint_quotes_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::check_all_mint_quotes()?;
-                        Ok(output_ok)
-                    })(),
-                )
-            }
-        },
-    )
-}
-fn wire__crate__api_cashu_v2__check_all_pending_proofs_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "check_all_pending_proofs",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_active_mint = <String>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok =
-                            crate::api_cashu_v2::check_all_pending_proofs(api_active_mint)?;
+                        let output_ok = crate::api_cashu::check_all_mint_quotes()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -568,7 +569,7 @@ fn wire__crate__api_cashu__check_pending_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__check_pending_impl(
+fn wire__crate__api_cashu_v1__check_pending_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -594,7 +595,7 @@ fn wire__crate__api_cashu_v2__check_pending_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::check_pending()?;
+                        let output_ok = crate::api_cashu_v1::check_pending()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -636,7 +637,7 @@ fn wire__crate__api_cashu__check_proofs_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__check_proofs_impl(
+fn wire__crate__api_cashu_v1__check_proofs_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -662,7 +663,7 @@ fn wire__crate__api_cashu_v2__check_proofs_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::check_proofs()?;
+                        let output_ok = crate::api_cashu_v1::check_proofs()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -705,7 +706,7 @@ fn wire__crate__api_cashu__check_transaction_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__check_transaction_impl(
+fn wire__crate__api_cashu_v1__check_transaction_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -732,7 +733,7 @@ fn wire__crate__api_cashu_v2__check_transaction_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::check_transaction(api_id)?;
+                        let output_ok = crate::api_cashu_v1::check_transaction(api_id)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -740,7 +741,7 @@ fn wire__crate__api_cashu_v2__check_transaction_impl(
         },
     )
 }
-fn wire__crate__api_cashu__close_db_impl(
+fn wire__crate__api_cashu_v1__close_db_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -766,7 +767,7 @@ fn wire__crate__api_cashu__close_db_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::close_db()?;
+                        let output_ok = crate::api_cashu_v1::close_db()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -1200,7 +1201,7 @@ fn wire__crate__api_cashu__decode_invoice_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__decode_invoice_impl(
+fn wire__crate__api_cashu_v1__decode_invoice_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -1227,7 +1228,7 @@ fn wire__crate__api_cashu_v2__decode_invoice_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::decode_invoice(api_encoded_invoice)?;
+                        let output_ok = crate::api_cashu_v1::decode_invoice(api_encoded_invoice)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -1270,7 +1271,7 @@ fn wire__crate__api_cashu__decode_token_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__decode_token_impl(
+fn wire__crate__api_cashu_v1__decode_token_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -1297,7 +1298,7 @@ fn wire__crate__api_cashu_v2__decode_token_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::decode_token(api_encoded_token)?;
+                        let output_ok = crate::api_cashu_v1::decode_token(api_encoded_token)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -2295,7 +2296,41 @@ fn wire__crate__api_signal__get_all_alice_addrs_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_all_transactions_impl(
+fn wire__crate__api_cashu__get_all_proofs_data_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_all_proofs_data",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api_cashu::get_all_proofs_data()?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api_cashu__get_all_transactions_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -2321,7 +2356,7 @@ fn wire__crate__api_cashu_v2__get_all_transactions_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_all_transactions()?;
+                        let output_ok = crate::api_cashu::get_all_transactions()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -2329,7 +2364,7 @@ fn wire__crate__api_cashu_v2__get_all_transactions_impl(
         },
     )
 }
-fn wire__crate__api_cashu__get_balance_impl(
+fn wire__crate__api_cashu_v1__get_balance_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -2356,7 +2391,7 @@ fn wire__crate__api_cashu__get_balance_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::get_balance(api_mint)?;
+                        let output_ok = crate::api_cashu_v1::get_balance(api_mint)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -2398,7 +2433,7 @@ fn wire__crate__api_cashu__get_balances_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_balances_impl(
+fn wire__crate__api_cashu_v1__get_balances_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -2424,7 +2459,7 @@ fn wire__crate__api_cashu_v2__get_balances_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_balances()?;
+                        let output_ok = crate::api_cashu_v1::get_balances()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -2528,7 +2563,7 @@ fn wire__crate__api_cashu__get_cashu_pending_transactions_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_cashu_pending_transactions_impl(
+fn wire__crate__api_cashu_v1__get_cashu_pending_transactions_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -2554,7 +2589,7 @@ fn wire__crate__api_cashu_v2__get_cashu_pending_transactions_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_cashu_pending_transactions()?;
+                        let output_ok = crate::api_cashu_v1::get_cashu_pending_transactions()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -2600,7 +2635,7 @@ fn wire__crate__api_cashu__get_cashu_transactions_with_offset_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_cashu_transactions_with_offset_impl(
+fn wire__crate__api_cashu_v1__get_cashu_transactions_with_offset_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -2628,7 +2663,7 @@ fn wire__crate__api_cashu_v2__get_cashu_transactions_with_offset_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_cashu_transactions_with_offset(
+                        let output_ok = crate::api_cashu_v1::get_cashu_transactions_with_offset(
                             api_offset, api_limit,
                         )?;
                         Ok(output_ok)
@@ -3079,7 +3114,7 @@ fn wire__crate__api_cashu__get_ln_pending_transactions_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_ln_pending_transactions_impl(
+fn wire__crate__api_cashu_v1__get_ln_pending_transactions_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3105,7 +3140,7 @@ fn wire__crate__api_cashu_v2__get_ln_pending_transactions_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_ln_pending_transactions()?;
+                        let output_ok = crate::api_cashu_v1::get_ln_pending_transactions()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -3151,7 +3186,7 @@ fn wire__crate__api_cashu__get_ln_transactions_with_offset_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_ln_transactions_with_offset_impl(
+fn wire__crate__api_cashu_v1__get_ln_transactions_with_offset_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3179,7 +3214,7 @@ fn wire__crate__api_cashu_v2__get_ln_transactions_with_offset_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_ln_transactions_with_offset(
+                        let output_ok = crate::api_cashu_v1::get_ln_transactions_with_offset(
                             api_offset, api_limit,
                         )?;
                         Ok(output_ok)
@@ -3260,7 +3295,7 @@ fn wire__crate__api_cashu__get_mints_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_mints_impl(
+fn wire__crate__api_cashu_v1__get_mints_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3286,7 +3321,7 @@ fn wire__crate__api_cashu_v2__get_mints_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_mints()?;
+                        let output_ok = crate::api_cashu_v1::get_mints()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -3294,7 +3329,7 @@ fn wire__crate__api_cashu_v2__get_mints_impl(
         },
     )
 }
-fn wire__crate__api_cashu__get_pending_transactions_impl(
+fn wire__crate__api_cashu_v1__get_pending_transactions_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3320,7 +3355,7 @@ fn wire__crate__api_cashu__get_pending_transactions_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::get_pending_transactions()?;
+                        let output_ok = crate::api_cashu_v1::get_pending_transactions()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -3362,7 +3397,7 @@ fn wire__crate__api_cashu__get_pending_transactions_count_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_pending_transactions_count_impl(
+fn wire__crate__api_cashu_v1__get_pending_transactions_count_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3388,7 +3423,7 @@ fn wire__crate__api_cashu_v2__get_pending_transactions_count_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::get_pending_transactions_count()?;
+                        let output_ok = crate::api_cashu_v1::get_pending_transactions_count()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -3552,7 +3587,7 @@ fn wire__crate__api_signal__get_signed_key_api_impl(
         },
     )
 }
-fn wire__crate__api_cashu__get_transactions_impl(
+fn wire__crate__api_cashu_v1__get_transactions_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3578,7 +3613,7 @@ fn wire__crate__api_cashu__get_transactions_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::get_transactions()?;
+                        let output_ok = crate::api_cashu_v1::get_transactions()?;
                         Ok(output_ok)
                     })(),
                 )
@@ -3586,7 +3621,7 @@ fn wire__crate__api_cashu__get_transactions_impl(
         },
     )
 }
-fn wire__crate__api_cashu__get_transactions_with_offset_impl(
+fn wire__crate__api_cashu_v1__get_transactions_with_offset_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3614,8 +3649,9 @@ fn wire__crate__api_cashu__get_transactions_with_offset_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok =
-                            crate::api_cashu::get_transactions_with_offset(api_offset, api_limit)?;
+                        let output_ok = crate::api_cashu_v1::get_transactions_with_offset(
+                            api_offset, api_limit,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )
@@ -3706,7 +3742,7 @@ fn wire__crate__api_nostr__get_unencrypt_event_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__get_wallet_by_index_impl(
+fn wire__crate__api_cashu__get_wallet_by_index_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3758,7 +3794,7 @@ fn wire__crate__api_cashu_v2__get_wallet_by_index_impl(
                             }
                         }
                         let api_multi_mint_wallet_guard = api_multi_mint_wallet_guard.unwrap();
-                        let output_ok = crate::api_cashu_v2::get_wallet_by_index(
+                        let output_ok = crate::api_cashu::get_wallet_by_index(
                             &*api_multi_mint_wallet_guard,
                             &api_mint_amounts,
                             api_mint_number,
@@ -3966,7 +4002,7 @@ fn wire__crate__api_cashu__init_cashu_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__init_cashu_impl(
+fn wire__crate__api_cashu_v1__init_cashu_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -3994,7 +4030,7 @@ fn wire__crate__api_cashu_v2__init_cashu_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::init_cashu(api_prepare_sats_once_time)?;
+                            crate::api_cashu_v1::init_cashu(api_prepare_sats_once_time)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4025,13 +4061,13 @@ fn wire__crate__api_cashu__init_db_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_dbpath = <String>::sse_decode(&mut deserializer);
-            let api_words = <Option<String>>::sse_decode(&mut deserializer);
-            let api_dev = <bool>::sse_decode(&mut deserializer);
+            let api_words = <String>::sse_decode(&mut deserializer);
+            let api__dev = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::init_db(api_dbpath, api_words, api_dev)?;
+                        let output_ok = crate::api_cashu::init_db(api_dbpath, api_words, api__dev)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4039,7 +4075,7 @@ fn wire__crate__api_cashu__init_db_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__init_db_impl(
+fn wire__crate__api_cashu_v1__init_db_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4062,14 +4098,14 @@ fn wire__crate__api_cashu_v2__init_db_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_dbpath = <String>::sse_decode(&mut deserializer);
-            let api_words = <String>::sse_decode(&mut deserializer);
-            let api__dev = <bool>::sse_decode(&mut deserializer);
+            let api_words = <Option<String>>::sse_decode(&mut deserializer);
+            let api_dev = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::init_db(api_dbpath, api_words, api__dev)?;
+                            crate::api_cashu_v1::init_db(api_dbpath, api_words, api_dev)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4264,7 +4300,7 @@ fn wire__crate__api_cashu__melt_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__melt_impl(
+fn wire__crate__api_cashu_v1__melt_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4294,7 +4330,7 @@ fn wire__crate__api_cashu_v2__melt_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::melt(api_invoice, api_active_mint, api_amount)?;
+                            crate::api_cashu_v1::melt(api_invoice, api_active_mint, api_amount)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4302,7 +4338,7 @@ fn wire__crate__api_cashu_v2__melt_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__merge_proofs_impl(
+fn wire__crate__api_cashu__merge_proofs_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4329,7 +4365,7 @@ fn wire__crate__api_cashu_v2__merge_proofs_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::merge_proofs(api_thershold)?;
+                        let output_ok = crate::api_cashu::merge_proofs(api_thershold)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4360,14 +4396,17 @@ fn wire__crate__api_cashu__mint_token_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_amount = <u64>::sse_decode(&mut deserializer);
-            let api_hash = <String>::sse_decode(&mut deserializer);
+            let api_quote_id = <String>::sse_decode(&mut deserializer);
             let api_active_mint = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok =
-                            crate::api_cashu::mint_token(api_amount, api_hash, api_active_mint)?;
+                        let output_ok = crate::api_cashu::mint_token(
+                            api_amount,
+                            api_quote_id,
+                            api_active_mint,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4375,7 +4414,7 @@ fn wire__crate__api_cashu__mint_token_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__mint_token_impl(
+fn wire__crate__api_cashu_v1__mint_token_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4398,17 +4437,14 @@ fn wire__crate__api_cashu_v2__mint_token_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_amount = <u64>::sse_decode(&mut deserializer);
-            let api_quote_id = <String>::sse_decode(&mut deserializer);
+            let api_hash = <String>::sse_decode(&mut deserializer);
             let api_active_mint = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::mint_token(
-                            api_amount,
-                            api_quote_id,
-                            api_active_mint,
-                        )?;
+                        let output_ok =
+                            crate::api_cashu_v1::mint_token(api_amount, api_hash, api_active_mint)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4416,7 +4452,7 @@ fn wire__crate__api_cashu_v2__mint_token_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__multi_receive_impl(
+fn wire__crate__api_cashu__multi_receive_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4443,7 +4479,7 @@ fn wire__crate__api_cashu_v2__multi_receive_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::multi_receive(api_stamps)?;
+                        let output_ok = crate::api_cashu::multi_receive(api_stamps)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4803,7 +4839,7 @@ fn wire__crate__api_mls__parse_mls_msg_type_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__prepare_one_proofs_impl(
+fn wire__crate__api_cashu__prepare_one_proofs_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4831,8 +4867,7 @@ fn wire__crate__api_cashu_v2__prepare_one_proofs_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok =
-                            crate::api_cashu_v2::prepare_one_proofs(api_amount, api_mint)?;
+                        let output_ok = crate::api_cashu::prepare_one_proofs(api_amount, api_mint)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4840,7 +4875,7 @@ fn wire__crate__api_cashu_v2__prepare_one_proofs_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__print_proofs_impl(
+fn wire__crate__api_cashu__print_proofs_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4867,7 +4902,7 @@ fn wire__crate__api_cashu_v2__print_proofs_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::print_proofs(api_mint)?;
+                        let output_ok = crate::api_cashu::print_proofs(api_mint)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4968,7 +5003,7 @@ fn wire__crate__api_cashu__receive_token_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__receive_token_impl(
+fn wire__crate__api_cashu_v1__receive_token_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -4995,7 +5030,7 @@ fn wire__crate__api_cashu_v2__receive_token_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::receive_token(api_encoded_token)?;
+                        let output_ok = crate::api_cashu_v1::receive_token(api_encoded_token)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5079,7 +5114,7 @@ fn wire__crate__api_cashu__remove_mint_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__remove_mint_impl(
+fn wire__crate__api_cashu_v1__remove_mint_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5106,7 +5141,7 @@ fn wire__crate__api_cashu_v2__remove_mint_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::remove_mint(api_url)?;
+                        let output_ok = crate::api_cashu_v1::remove_mint(api_url)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5136,16 +5171,16 @@ fn wire__crate__api_cashu__remove_transactions_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_unix_timestamp_ms_le = <u64>::sse_decode(&mut deserializer);
-            let api_kind =
-                <crate::api_cashu::types::TransactionStatus>::sse_decode(&mut deserializer);
+            let api_unix_timestamp_le = <u64>::sse_decode(&mut deserializer);
+            let api__status =
+                <crate::api_cashu::types::TransactionStatusV2>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok = crate::api_cashu::remove_transactions(
-                            api_unix_timestamp_ms_le,
-                            api_kind,
+                            api_unix_timestamp_le,
+                            api__status,
                         )?;
                         Ok(output_ok)
                     })(),
@@ -5154,7 +5189,7 @@ fn wire__crate__api_cashu__remove_transactions_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__remove_transactions_impl(
+fn wire__crate__api_cashu_v1__remove_transactions_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5176,15 +5211,16 @@ fn wire__crate__api_cashu_v2__remove_transactions_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_unix_timestamp_le = <u64>::sse_decode(&mut deserializer);
-            let api__status = <TransactionStatusV2>::sse_decode(&mut deserializer);
+            let api_unix_timestamp_ms_le = <u64>::sse_decode(&mut deserializer);
+            let api_kind =
+                <crate::api_cashu_v1::types::TransactionStatus>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::remove_transactions(
-                            api_unix_timestamp_le,
-                            api__status,
+                        let output_ok = crate::api_cashu_v1::remove_transactions(
+                            api_unix_timestamp_ms_le,
+                            api_kind,
                         )?;
                         Ok(output_ok)
                     })(),
@@ -5230,7 +5266,7 @@ fn wire__crate__api_cashu__request_mint_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__request_mint_impl(
+fn wire__crate__api_cashu_v1__request_mint_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5259,7 +5295,7 @@ fn wire__crate__api_cashu_v2__request_mint_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::request_mint(api_amount, api_active_mint)?;
+                            crate::api_cashu_v1::request_mint(api_amount, api_active_mint)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5289,18 +5325,13 @@ fn wire__crate__api_cashu__restore_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_mint = <String>::sse_decode(&mut deserializer);
+            let api_mint_url = <String>::sse_decode(&mut deserializer);
             let api_words = <Option<String>>::sse_decode(&mut deserializer);
-            let api_sleepms_after_check_a_batch = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::restore(
-                            api_mint,
-                            api_words,
-                            api_sleepms_after_check_a_batch,
-                        )?;
+                        let output_ok = crate::api_cashu::restore(api_mint_url, api_words)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5308,7 +5339,7 @@ fn wire__crate__api_cashu__restore_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__restore_impl(
+fn wire__crate__api_cashu_v1__restore_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5330,13 +5361,18 @@ fn wire__crate__api_cashu_v2__restore_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_mint_url = <String>::sse_decode(&mut deserializer);
+            let api_mint = <String>::sse_decode(&mut deserializer);
             let api_words = <Option<String>>::sse_decode(&mut deserializer);
+            let api_sleepms_after_check_a_batch = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::restore(api_mint_url, api_words)?;
+                        let output_ok = crate::api_cashu_v1::restore(
+                            api_mint,
+                            api_words,
+                            api_sleepms_after_check_a_batch,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5481,13 +5517,13 @@ fn wire__crate__api_cashu__send_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_amount = <u64>::sse_decode(&mut deserializer);
             let api_active_mint = <String>::sse_decode(&mut deserializer);
-            let api_info = <Option<String>>::sse_decode(&mut deserializer);
+            let api__info = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu::send(api_amount, api_active_mint, api_info)?;
+                            crate::api_cashu::send(api_amount, api_active_mint, api__info)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5495,7 +5531,7 @@ fn wire__crate__api_cashu__send_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__send_impl(
+fn wire__crate__api_cashu_v1__send_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5519,13 +5555,13 @@ fn wire__crate__api_cashu_v2__send_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_amount = <u64>::sse_decode(&mut deserializer);
             let api_active_mint = <String>::sse_decode(&mut deserializer);
-            let api__info = <Option<String>>::sse_decode(&mut deserializer);
+            let api_info = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::send(api_amount, api_active_mint, api__info)?;
+                            crate::api_cashu_v1::send(api_amount, api_active_mint, api_info)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5555,13 +5591,12 @@ fn wire__crate__api_cashu__send_all_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_active_mint = <String>::sse_decode(&mut deserializer);
-            let api_info = <Option<String>>::sse_decode(&mut deserializer);
+            let api_mint = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::send_all(api_active_mint, api_info)?;
+                        let output_ok = crate::api_cashu::send_all(api_mint)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5569,7 +5604,7 @@ fn wire__crate__api_cashu__send_all_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__send_all_impl(
+fn wire__crate__api_cashu_v1__send_all_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5591,12 +5626,13 @@ fn wire__crate__api_cashu_v2__send_all_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_mint = <String>::sse_decode(&mut deserializer);
+            let api_active_mint = <String>::sse_decode(&mut deserializer);
+            let api_info = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::send_all(api_mint)?;
+                        let output_ok = crate::api_cashu_v1::send_all(api_active_mint, api_info)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5642,7 +5678,7 @@ fn wire__crate__api_cashu__send_stamp_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__send_stamp_impl(
+fn wire__crate__api_cashu_v1__send_stamp_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5672,7 +5708,7 @@ fn wire__crate__api_cashu_v2__send_stamp_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v2::send_stamp(api_amount, api_mints, api_info)?;
+                            crate::api_cashu_v1::send_stamp(api_amount, api_mints, api_info)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5755,7 +5791,7 @@ fn wire__crate__api_cashu__set_mnemonic_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__set_mnemonic_impl(
+fn wire__crate__api_cashu_v1__set_mnemonic_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -5782,7 +5818,7 @@ fn wire__crate__api_cashu_v2__set_mnemonic_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::set_mnemonic(api_words)?;
+                        let output_ok = crate::api_cashu_v1::set_mnemonic(api_words)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -6151,7 +6187,7 @@ fn wire__crate__api_mls__update_group_context_extensions_impl(
         },
     )
 }
-fn wire__crate__api_cashu_v2__validate_mint_number_impl(
+fn wire__crate__api_cashu__validate_mint_number_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -6179,7 +6215,7 @@ fn wire__crate__api_cashu_v2__validate_mint_number_impl(
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu_v2::validate_mint_number(
+                        let output_ok = crate::api_cashu::validate_mint_number(
                             api_mint_number,
                             api_mint_count,
                         )?;
@@ -6274,10 +6310,10 @@ fn wire__crate__api_nostr__verify_schnorr_impl(
 #[allow(clippy::unnecessary_literal_unwrap)]
 const _: fn() = || {
     {
-        let CashuTransaction = None::<crate::api_cashu::types::CashuTransaction>.unwrap();
+        let CashuTransaction = None::<crate::api_cashu_v1::types::CashuTransaction>.unwrap();
         let _: String = CashuTransaction.id;
-        let _: crate::api_cashu::types::TransactionStatus = CashuTransaction.status;
-        let _: crate::api_cashu::types::TransactionDirection = CashuTransaction.io;
+        let _: crate::api_cashu_v1::types::TransactionStatus = CashuTransaction.status;
+        let _: crate::api_cashu_v1::types::TransactionDirection = CashuTransaction.io;
         let _: Option<String> = CashuTransaction.info;
         let _: u64 = CashuTransaction.time;
         let _: u64 = CashuTransaction.amount;
@@ -6287,14 +6323,14 @@ const _: fn() = || {
         let _: Option<String> = CashuTransaction.unit;
     }
     {
-        let Contact = None::<crate::api_cashu::types::Contact>.unwrap();
+        let Contact = None::<crate::api_cashu_v1::types::Contact>.unwrap();
         let _: String = Contact.method;
         let _: String = Contact.info;
     }
     {
-        let LNTransaction = None::<crate::api_cashu::types::LNTransaction>.unwrap();
-        let _: crate::api_cashu::types::TransactionStatus = LNTransaction.status;
-        let _: crate::api_cashu::types::TransactionDirection = LNTransaction.io;
+        let LNTransaction = None::<crate::api_cashu_v1::types::LNTransaction>.unwrap();
+        let _: crate::api_cashu_v1::types::TransactionStatus = LNTransaction.status;
+        let _: crate::api_cashu_v1::types::TransactionDirection = LNTransaction.io;
         let _: Option<String> = LNTransaction.info;
         let _: u64 = LNTransaction.time;
         let _: u64 = LNTransaction.amount;
@@ -6305,56 +6341,57 @@ const _: fn() = || {
         let _: Option<String> = LNTransaction.unit;
     }
     {
-        let Mint = None::<crate::api_cashu::types::Mint>.unwrap();
+        let Mint = None::<crate::api_cashu_v1::types::Mint>.unwrap();
         let _: String = Mint.url;
         let _: bool = Mint.active;
         let _: u64 = Mint.time;
-        let _: Option<crate::api_cashu::types::MintInfo> = Mint.info;
+        let _: Option<crate::api_cashu_v1::types::MintInfo> = Mint.info;
     }
     {
-        let MintInfo = None::<crate::api_cashu::types::MintInfo>.unwrap();
+        let MintInfo = None::<crate::api_cashu_v1::types::MintInfo>.unwrap();
         let _: String = MintInfo.name;
         let _: String = MintInfo.version;
         let _: Option<String> = MintInfo.pubkey;
         let _: Option<String> = MintInfo.description;
         let _: Option<String> = MintInfo.description_long;
         let _: Option<String> = MintInfo.motd;
-        let _: Vec<crate::api_cashu::types::Contact> = MintInfo.contact;
-        let _: crate::api_cashu::types::Nuts = MintInfo.nuts;
+        let _: Vec<crate::api_cashu_v1::types::Contact> = MintInfo.contact;
+        let _: crate::api_cashu_v1::types::Nuts = MintInfo.nuts;
     }
     {
-        let NutSupported = None::<crate::api_cashu::types::NutSupported>.unwrap();
+        let NutSupported = None::<crate::api_cashu_v1::types::NutSupported>.unwrap();
         let _: bool = NutSupported.supported;
     }
     {
-        let Nuts = None::<crate::api_cashu::types::Nuts>.unwrap();
-        let _: crate::api_cashu::types::PaymentMethodSettings = Nuts.nut04;
-        let _: crate::api_cashu::types::PaymentMethodSettings = Nuts.nut05;
-        let _: crate::api_cashu::types::NutSupported = Nuts.nut07;
-        let _: crate::api_cashu::types::NutSupported = Nuts.nut08;
-        let _: crate::api_cashu::types::NutSupported = Nuts.nut09;
-        let _: crate::api_cashu::types::NutSupported = Nuts.nut10;
-        let _: crate::api_cashu::types::NutSupported = Nuts.nut11;
-        let _: crate::api_cashu::types::NutSupported = Nuts.nut12;
+        let Nuts = None::<crate::api_cashu_v1::types::Nuts>.unwrap();
+        let _: crate::api_cashu_v1::types::PaymentMethodSettings = Nuts.nut04;
+        let _: crate::api_cashu_v1::types::PaymentMethodSettings = Nuts.nut05;
+        let _: crate::api_cashu_v1::types::NutSupported = Nuts.nut07;
+        let _: crate::api_cashu_v1::types::NutSupported = Nuts.nut08;
+        let _: crate::api_cashu_v1::types::NutSupported = Nuts.nut09;
+        let _: crate::api_cashu_v1::types::NutSupported = Nuts.nut10;
+        let _: crate::api_cashu_v1::types::NutSupported = Nuts.nut11;
+        let _: crate::api_cashu_v1::types::NutSupported = Nuts.nut12;
     }
     {
-        let PaymentMethod = None::<crate::api_cashu::types::PaymentMethod>.unwrap();
+        let PaymentMethod = None::<crate::api_cashu_v1::types::PaymentMethod>.unwrap();
         let _: String = PaymentMethod.method;
         let _: String = PaymentMethod.unit;
         let _: i64 = PaymentMethod.min_amount;
         let _: i64 = PaymentMethod.max_amount;
     }
     {
-        let PaymentMethodSettings = None::<crate::api_cashu::types::PaymentMethodSettings>.unwrap();
-        let _: Vec<crate::api_cashu::types::PaymentMethod> = PaymentMethodSettings.methods;
+        let PaymentMethodSettings =
+            None::<crate::api_cashu_v1::types::PaymentMethodSettings>.unwrap();
+        let _: Vec<crate::api_cashu_v1::types::PaymentMethod> = PaymentMethodSettings.methods;
         let _: bool = PaymentMethodSettings.disabled;
     }
-    match None::<crate::api_cashu::types::Transaction>.unwrap() {
-        crate::api_cashu::types::Transaction::Cashu(field0) => {
-            let _: crate::api_cashu::types::CashuTransaction = field0;
+    match None::<crate::api_cashu_v1::types::Transaction>.unwrap() {
+        crate::api_cashu_v1::types::Transaction::Cashu(field0) => {
+            let _: crate::api_cashu_v1::types::CashuTransaction = field0;
         }
-        crate::api_cashu::types::Transaction::LN(field0) => {
-            let _: crate::api_cashu::types::LNTransaction = field0;
+        crate::api_cashu_v1::types::Transaction::LN(field0) => {
+            let _: crate::api_cashu_v1::types::LNTransaction = field0;
         }
     }
 };
@@ -6378,9 +6415,6 @@ flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MultiMintWallet>
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TransactionStatusV2>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Wallet>
@@ -6436,16 +6470,6 @@ impl SseDecode for MnemonicInfo {
     }
 }
 
-impl SseDecode for TransactionStatusV2 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TransactionStatusV2>,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
 impl SseDecode for Wallet {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6476,6 +6500,22 @@ impl SseDecode for std::collections::HashMap<String, Option<u64>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <Vec<(String, Option<u64>)>>::sse_decode(deserializer);
+        return inner.into_iter().collect();
+    }
+}
+
+impl SseDecode for std::collections::HashMap<String, (u64, u64)> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <Vec<(String, (u64, u64))>>::sse_decode(deserializer);
+        return inner.into_iter().collect();
+    }
+}
+
+impl SseDecode for std::collections::HashMap<String, u64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <Vec<(String, u64)>>::sse_decode(deserializer);
         return inner.into_iter().collect();
     }
 }
@@ -6544,16 +6584,6 @@ impl SseDecode
     }
 }
 
-impl SseDecode
-    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TransactionStatusV2>>
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
 impl SseDecode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Wallet>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6589,12 +6619,14 @@ impl SseDecode for bool {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::CashuTransaction {
+impl SseDecode for crate::api_cashu_v1::types::CashuTransaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_id = <String>::sse_decode(deserializer);
-        let mut var_status = <crate::api_cashu::types::TransactionStatus>::sse_decode(deserializer);
-        let mut var_io = <crate::api_cashu::types::TransactionDirection>::sse_decode(deserializer);
+        let mut var_status =
+            <crate::api_cashu_v1::types::TransactionStatus>::sse_decode(deserializer);
+        let mut var_io =
+            <crate::api_cashu_v1::types::TransactionDirection>::sse_decode(deserializer);
         let mut var_info = <Option<String>>::sse_decode(deserializer);
         let mut var_time = <u64>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
@@ -6602,7 +6634,7 @@ impl SseDecode for crate::api_cashu::types::CashuTransaction {
         let mut var_mint = <String>::sse_decode(deserializer);
         let mut var_token = <String>::sse_decode(deserializer);
         let mut var_unit = <Option<String>>::sse_decode(deserializer);
-        return crate::api_cashu::types::CashuTransaction {
+        return crate::api_cashu_v1::types::CashuTransaction {
             id: var_id,
             status: var_status,
             io: var_io,
@@ -6646,12 +6678,12 @@ impl SseDecode for crate::api_mls::types::CommitTypeResult {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::Contact {
+impl SseDecode for crate::api_cashu_v1::types::Contact {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_method = <String>::sse_decode(deserializer);
         let mut var_info = <String>::sse_decode(deserializer);
-        return crate::api_cashu::types::Contact {
+        return crate::api_cashu_v1::types::Contact {
             method: var_method,
             info: var_info,
         };
@@ -6704,7 +6736,7 @@ impl SseDecode for i64 {
     }
 }
 
-impl SseDecode for crate::api_cashu::InvoiceInfo {
+impl SseDecode for crate::api_cashu_v1::InvoiceInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_amount = <u64>::sse_decode(deserializer);
@@ -6712,8 +6744,8 @@ impl SseDecode for crate::api_cashu::InvoiceInfo {
         let mut var_hash = <String>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
         let mut var_mint = <Option<String>>::sse_decode(deserializer);
-        let mut var_status = <crate::api_cashu::InvoiceStatus>::sse_decode(deserializer);
-        return crate::api_cashu::InvoiceInfo {
+        let mut var_status = <crate::api_cashu_v1::InvoiceStatus>::sse_decode(deserializer);
+        return crate::api_cashu_v1::InvoiceInfo {
             amount: var_amount,
             expiry_ts: var_expiryTs,
             hash: var_hash,
@@ -6724,7 +6756,7 @@ impl SseDecode for crate::api_cashu::InvoiceInfo {
     }
 }
 
-impl SseDecode for crate::api_cashu_v2::InvoiceInfoV2 {
+impl SseDecode for crate::api_cashu::InvoiceInfoV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_amount = <u64>::sse_decode(deserializer);
@@ -6732,8 +6764,8 @@ impl SseDecode for crate::api_cashu_v2::InvoiceInfoV2 {
         let mut var_hash = <String>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
         let mut var_mint = <Option<String>>::sse_decode(deserializer);
-        let mut var_status = <crate::api_cashu_v2::InvoiceStatusV2>::sse_decode(deserializer);
-        return crate::api_cashu_v2::InvoiceInfoV2 {
+        let mut var_status = <crate::api_cashu::InvoiceStatusV2>::sse_decode(deserializer);
+        return crate::api_cashu::InvoiceInfoV2 {
             amount: var_amount,
             expiry_ts: var_expiryTs,
             hash: var_hash,
@@ -6744,27 +6776,27 @@ impl SseDecode for crate::api_cashu_v2::InvoiceInfoV2 {
     }
 }
 
-impl SseDecode for crate::api_cashu::InvoiceStatus {
+impl SseDecode for crate::api_cashu_v1::InvoiceStatus {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu::InvoiceStatus::Paid,
-            1 => crate::api_cashu::InvoiceStatus::Unpaid,
-            2 => crate::api_cashu::InvoiceStatus::Expired,
+            0 => crate::api_cashu_v1::InvoiceStatus::Paid,
+            1 => crate::api_cashu_v1::InvoiceStatus::Unpaid,
+            2 => crate::api_cashu_v1::InvoiceStatus::Expired,
             _ => unreachable!("Invalid variant for InvoiceStatus: {}", inner),
         };
     }
 }
 
-impl SseDecode for crate::api_cashu_v2::InvoiceStatusV2 {
+impl SseDecode for crate::api_cashu::InvoiceStatusV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu_v2::InvoiceStatusV2::Paid,
-            1 => crate::api_cashu_v2::InvoiceStatusV2::Unpaid,
-            2 => crate::api_cashu_v2::InvoiceStatusV2::Expired,
+            0 => crate::api_cashu::InvoiceStatusV2::Paid,
+            1 => crate::api_cashu::InvoiceStatusV2::Unpaid,
+            2 => crate::api_cashu::InvoiceStatusV2::Expired,
             _ => unreachable!("Invalid variant for InvoiceStatusV2: {}", inner),
         };
     }
@@ -6854,13 +6886,13 @@ impl SseDecode for Vec<String> {
     }
 }
 
-impl SseDecode for Vec<crate::api_cashu::types::CashuTransaction> {
+impl SseDecode for Vec<crate::api_cashu_v1::types::CashuTransaction> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::api_cashu::types::CashuTransaction>::sse_decode(
+            ans_.push(<crate::api_cashu_v1::types::CashuTransaction>::sse_decode(
                 deserializer,
             ));
         }
@@ -6868,13 +6900,15 @@ impl SseDecode for Vec<crate::api_cashu::types::CashuTransaction> {
     }
 }
 
-impl SseDecode for Vec<crate::api_cashu::types::Contact> {
+impl SseDecode for Vec<crate::api_cashu_v1::types::Contact> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::api_cashu::types::Contact>::sse_decode(deserializer));
+            ans_.push(<crate::api_cashu_v1::types::Contact>::sse_decode(
+                deserializer,
+            ));
         }
         return ans_;
     }
@@ -6904,13 +6938,13 @@ impl SseDecode for Vec<Vec<u8>> {
     }
 }
 
-impl SseDecode for Vec<crate::api_cashu::types::LNTransaction> {
+impl SseDecode for Vec<crate::api_cashu_v1::types::LNTransaction> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::api_cashu::types::LNTransaction>::sse_decode(
+            ans_.push(<crate::api_cashu_v1::types::LNTransaction>::sse_decode(
                 deserializer,
             ));
         }
@@ -6918,25 +6952,25 @@ impl SseDecode for Vec<crate::api_cashu::types::LNTransaction> {
     }
 }
 
-impl SseDecode for Vec<crate::api_cashu::types::Mint> {
+impl SseDecode for Vec<crate::api_cashu_v1::types::Mint> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::api_cashu::types::Mint>::sse_decode(deserializer));
+            ans_.push(<crate::api_cashu_v1::types::Mint>::sse_decode(deserializer));
         }
         return ans_;
     }
 }
 
-impl SseDecode for Vec<crate::api_cashu::types::PaymentMethod> {
+impl SseDecode for Vec<crate::api_cashu_v1::types::PaymentMethod> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::api_cashu::types::PaymentMethod>::sse_decode(
+            ans_.push(<crate::api_cashu_v1::types::PaymentMethod>::sse_decode(
                 deserializer,
             ));
         }
@@ -6992,6 +7026,18 @@ impl SseDecode for Vec<(String, Option<u64>)> {
     }
 }
 
+impl SseDecode for Vec<(String, (u64, u64))> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<(String, (u64, u64))>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<(String, String)> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6999,6 +7045,18 @@ impl SseDecode for Vec<(String, String)> {
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
             ans_.push(<(String, String)>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<(String, u64)> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<(String, u64)>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -7030,13 +7088,13 @@ impl SseDecode for Vec<crate::api_nostr::Secp256k1Account> {
     }
 }
 
-impl SseDecode for Vec<crate::api_cashu::types::Transaction> {
+impl SseDecode for Vec<crate::api_cashu_v1::types::Transaction> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::api_cashu::types::Transaction>::sse_decode(
+            ans_.push(<crate::api_cashu_v1::types::Transaction>::sse_decode(
                 deserializer,
             ));
         }
@@ -7044,13 +7102,13 @@ impl SseDecode for Vec<crate::api_cashu::types::Transaction> {
     }
 }
 
-impl SseDecode for Vec<crate::api_cashu_v2::types::TransactionV2> {
+impl SseDecode for Vec<crate::api_cashu::types::TransactionV2> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::api_cashu_v2::types::TransactionV2>::sse_decode(
+            ans_.push(<crate::api_cashu::types::TransactionV2>::sse_decode(
                 deserializer,
             ));
         }
@@ -7058,11 +7116,13 @@ impl SseDecode for Vec<crate::api_cashu_v2::types::TransactionV2> {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::LNTransaction {
+impl SseDecode for crate::api_cashu_v1::types::LNTransaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_status = <crate::api_cashu::types::TransactionStatus>::sse_decode(deserializer);
-        let mut var_io = <crate::api_cashu::types::TransactionDirection>::sse_decode(deserializer);
+        let mut var_status =
+            <crate::api_cashu_v1::types::TransactionStatus>::sse_decode(deserializer);
+        let mut var_io =
+            <crate::api_cashu_v1::types::TransactionDirection>::sse_decode(deserializer);
         let mut var_info = <Option<String>>::sse_decode(deserializer);
         let mut var_time = <u64>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
@@ -7071,7 +7131,7 @@ impl SseDecode for crate::api_cashu::types::LNTransaction {
         let mut var_pr = <String>::sse_decode(deserializer);
         let mut var_hash = <String>::sse_decode(deserializer);
         let mut var_unit = <Option<String>>::sse_decode(deserializer);
-        return crate::api_cashu::types::LNTransaction {
+        return crate::api_cashu_v1::types::LNTransaction {
             status: var_status,
             io: var_io,
             info: var_info,
@@ -7116,14 +7176,14 @@ impl SseDecode for crate::api_mls::types::MessageResult {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::Mint {
+impl SseDecode for crate::api_cashu_v1::types::Mint {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_url = <String>::sse_decode(deserializer);
         let mut var_active = <bool>::sse_decode(deserializer);
         let mut var_time = <u64>::sse_decode(deserializer);
-        let mut var_info = <Option<crate::api_cashu::types::MintInfo>>::sse_decode(deserializer);
-        return crate::api_cashu::types::Mint {
+        let mut var_info = <Option<crate::api_cashu_v1::types::MintInfo>>::sse_decode(deserializer);
+        return crate::api_cashu_v1::types::Mint {
             url: var_url,
             active: var_active,
             time: var_time,
@@ -7132,7 +7192,7 @@ impl SseDecode for crate::api_cashu::types::Mint {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::MintInfo {
+impl SseDecode for crate::api_cashu_v1::types::MintInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_name = <String>::sse_decode(deserializer);
@@ -7141,9 +7201,9 @@ impl SseDecode for crate::api_cashu::types::MintInfo {
         let mut var_description = <Option<String>>::sse_decode(deserializer);
         let mut var_descriptionLong = <Option<String>>::sse_decode(deserializer);
         let mut var_motd = <Option<String>>::sse_decode(deserializer);
-        let mut var_contact = <Vec<crate::api_cashu::types::Contact>>::sse_decode(deserializer);
-        let mut var_nuts = <crate::api_cashu::types::Nuts>::sse_decode(deserializer);
-        return crate::api_cashu::types::MintInfo {
+        let mut var_contact = <Vec<crate::api_cashu_v1::types::Contact>>::sse_decode(deserializer);
+        let mut var_nuts = <crate::api_cashu_v1::types::Nuts>::sse_decode(deserializer);
+        return crate::api_cashu_v1::types::MintInfo {
             name: var_name,
             version: var_version,
             pubkey: var_pubkey,
@@ -7178,30 +7238,30 @@ impl SseDecode for crate::api_nostr::NostrEvent {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::NutSupported {
+impl SseDecode for crate::api_cashu_v1::types::NutSupported {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_supported = <bool>::sse_decode(deserializer);
-        return crate::api_cashu::types::NutSupported {
+        return crate::api_cashu_v1::types::NutSupported {
             supported: var_supported,
         };
     }
 }
 
-impl SseDecode for crate::api_cashu::types::Nuts {
+impl SseDecode for crate::api_cashu_v1::types::Nuts {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_nut04 =
-            <crate::api_cashu::types::PaymentMethodSettings>::sse_decode(deserializer);
+            <crate::api_cashu_v1::types::PaymentMethodSettings>::sse_decode(deserializer);
         let mut var_nut05 =
-            <crate::api_cashu::types::PaymentMethodSettings>::sse_decode(deserializer);
-        let mut var_nut07 = <crate::api_cashu::types::NutSupported>::sse_decode(deserializer);
-        let mut var_nut08 = <crate::api_cashu::types::NutSupported>::sse_decode(deserializer);
-        let mut var_nut09 = <crate::api_cashu::types::NutSupported>::sse_decode(deserializer);
-        let mut var_nut10 = <crate::api_cashu::types::NutSupported>::sse_decode(deserializer);
-        let mut var_nut11 = <crate::api_cashu::types::NutSupported>::sse_decode(deserializer);
-        let mut var_nut12 = <crate::api_cashu::types::NutSupported>::sse_decode(deserializer);
-        return crate::api_cashu::types::Nuts {
+            <crate::api_cashu_v1::types::PaymentMethodSettings>::sse_decode(deserializer);
+        let mut var_nut07 = <crate::api_cashu_v1::types::NutSupported>::sse_decode(deserializer);
+        let mut var_nut08 = <crate::api_cashu_v1::types::NutSupported>::sse_decode(deserializer);
+        let mut var_nut09 = <crate::api_cashu_v1::types::NutSupported>::sse_decode(deserializer);
+        let mut var_nut10 = <crate::api_cashu_v1::types::NutSupported>::sse_decode(deserializer);
+        let mut var_nut11 = <crate::api_cashu_v1::types::NutSupported>::sse_decode(deserializer);
+        let mut var_nut12 = <crate::api_cashu_v1::types::NutSupported>::sse_decode(deserializer);
+        return crate::api_cashu_v1::types::Nuts {
             nut04: var_nut04,
             nut05: var_nut05,
             nut07: var_nut07,
@@ -7273,11 +7333,11 @@ impl SseDecode for Option<crate::api_signal::KeychatSignalSession> {
     }
 }
 
-impl SseDecode for Option<crate::api_cashu::types::MintInfo> {
+impl SseDecode for Option<crate::api_cashu_v1::types::MintInfo> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
-            return Some(<crate::api_cashu::types::MintInfo>::sse_decode(
+            return Some(<crate::api_cashu_v1::types::MintInfo>::sse_decode(
                 deserializer,
             ));
         } else {
@@ -7341,14 +7401,14 @@ impl SseDecode for Option<Vec<u8>> {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::PaymentMethod {
+impl SseDecode for crate::api_cashu_v1::types::PaymentMethod {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_method = <String>::sse_decode(deserializer);
         let mut var_unit = <String>::sse_decode(deserializer);
         let mut var_minAmount = <i64>::sse_decode(deserializer);
         let mut var_maxAmount = <i64>::sse_decode(deserializer);
-        return crate::api_cashu::types::PaymentMethod {
+        return crate::api_cashu_v1::types::PaymentMethod {
             method: var_method,
             unit: var_unit,
             min_amount: var_minAmount,
@@ -7357,13 +7417,13 @@ impl SseDecode for crate::api_cashu::types::PaymentMethod {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::PaymentMethodSettings {
+impl SseDecode for crate::api_cashu_v1::types::PaymentMethodSettings {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_methods =
-            <Vec<crate::api_cashu::types::PaymentMethod>>::sse_decode(deserializer);
+            <Vec<crate::api_cashu_v1::types::PaymentMethod>>::sse_decode(deserializer);
         let mut var_disabled = <bool>::sse_decode(deserializer);
-        return crate::api_cashu::types::PaymentMethodSettings {
+        return crate::api_cashu_v1::types::PaymentMethodSettings {
             methods: var_methods,
             disabled: var_disabled,
         };
@@ -7436,6 +7496,15 @@ impl SseDecode for (String, Option<u64>) {
     }
 }
 
+impl SseDecode for (String, (u64, u64)) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <String>::sse_decode(deserializer);
+        let mut var_field1 = <(u64, u64)>::sse_decode(deserializer);
+        return (var_field0, var_field1);
+    }
+}
+
 impl SseDecode for (String, String) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -7450,6 +7519,15 @@ impl SseDecode for (String, u32) {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_field0 = <String>::sse_decode(deserializer);
         let mut var_field1 = <u32>::sse_decode(deserializer);
+        return (var_field0, var_field1);
+    }
+}
+
+impl SseDecode for (String, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <String>::sse_decode(deserializer);
+        let mut var_field1 = <u64>::sse_decode(deserializer);
         return (var_field0, var_field1);
     }
 }
@@ -7481,6 +7559,15 @@ impl SseDecode for (u32, Vec<u8>, Vec<u8>, Vec<u8>) {
         let mut var_field2 = <Vec<u8>>::sse_decode(deserializer);
         let mut var_field3 = <Vec<u8>>::sse_decode(deserializer);
         return (var_field0, var_field1, var_field2, var_field3);
+    }
+}
+
+impl SseDecode for (u64, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <u64>::sse_decode(deserializer);
+        let mut var_field1 = <u64>::sse_decode(deserializer);
+        return (var_field0, var_field1);
     }
 }
 
@@ -7550,14 +7637,14 @@ impl SseDecode for crate::api_nostr::Secp256k1SimpleAccount {
     }
 }
 
-impl SseDecode for crate::api_cashu::TokenInfo {
+impl SseDecode for crate::api_cashu_v1::TokenInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_mint = <String>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
         let mut var_unit = <Option<String>>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
-        return crate::api_cashu::TokenInfo {
+        return crate::api_cashu_v1::TokenInfo {
             mint: var_mint,
             amount: var_amount,
             unit: var_unit,
@@ -7566,14 +7653,14 @@ impl SseDecode for crate::api_cashu::TokenInfo {
     }
 }
 
-impl SseDecode for crate::api_cashu_v2::TokenInfoV2 {
+impl SseDecode for crate::api_cashu::TokenInfoV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_mint = <String>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
         let mut var_unit = <Option<CurrencyUnit>>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
-        return crate::api_cashu_v2::TokenInfoV2 {
+        return crate::api_cashu::TokenInfoV2 {
             mint: var_mint,
             amount: var_amount,
             unit: var_unit,
@@ -7582,20 +7669,20 @@ impl SseDecode for crate::api_cashu_v2::TokenInfoV2 {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::Transaction {
+impl SseDecode for crate::api_cashu_v1::types::Transaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut tag_ = <i32>::sse_decode(deserializer);
         match tag_ {
             0 => {
                 let mut var_field0 =
-                    <crate::api_cashu::types::CashuTransaction>::sse_decode(deserializer);
-                return crate::api_cashu::types::Transaction::Cashu(var_field0);
+                    <crate::api_cashu_v1::types::CashuTransaction>::sse_decode(deserializer);
+                return crate::api_cashu_v1::types::Transaction::Cashu(var_field0);
             }
             1 => {
                 let mut var_field0 =
-                    <crate::api_cashu::types::LNTransaction>::sse_decode(deserializer);
-                return crate::api_cashu::types::Transaction::LN(var_field0);
+                    <crate::api_cashu_v1::types::LNTransaction>::sse_decode(deserializer);
+                return crate::api_cashu_v1::types::Transaction::LN(var_field0);
             }
             _ => {
                 unimplemented!("");
@@ -7604,74 +7691,89 @@ impl SseDecode for crate::api_cashu::types::Transaction {
     }
 }
 
-impl SseDecode for crate::api_cashu::types::TransactionDirection {
+impl SseDecode for crate::api_cashu_v1::types::TransactionDirection {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu::types::TransactionDirection::In,
-            1 => crate::api_cashu::types::TransactionDirection::Out,
-            2 => crate::api_cashu::types::TransactionDirection::Split,
+            0 => crate::api_cashu_v1::types::TransactionDirection::In,
+            1 => crate::api_cashu_v1::types::TransactionDirection::Out,
+            2 => crate::api_cashu_v1::types::TransactionDirection::Split,
             _ => unreachable!("Invalid variant for TransactionDirection: {}", inner),
         };
     }
 }
 
-impl SseDecode for crate::api_cashu_v2::types::TransactionDirectionV2 {
+impl SseDecode for crate::api_cashu::types::TransactionDirectionV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu_v2::types::TransactionDirectionV2::Incoming,
-            1 => crate::api_cashu_v2::types::TransactionDirectionV2::Outgoing,
-            2 => crate::api_cashu_v2::types::TransactionDirectionV2::Split,
+            0 => crate::api_cashu::types::TransactionDirectionV2::Incoming,
+            1 => crate::api_cashu::types::TransactionDirectionV2::Outgoing,
+            2 => crate::api_cashu::types::TransactionDirectionV2::Split,
             _ => unreachable!("Invalid variant for TransactionDirectionV2: {}", inner),
         };
     }
 }
 
-impl SseDecode for crate::api_cashu_v2::types::TransactionKindV2 {
+impl SseDecode for crate::api_cashu::types::TransactionKindV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu_v2::types::TransactionKindV2::Cashu,
-            1 => crate::api_cashu_v2::types::TransactionKindV2::LN,
+            0 => crate::api_cashu::types::TransactionKindV2::Cashu,
+            1 => crate::api_cashu::types::TransactionKindV2::LN,
             _ => unreachable!("Invalid variant for TransactionKindV2: {}", inner),
         };
     }
 }
 
-impl SseDecode for crate::api_cashu::types::TransactionStatus {
+impl SseDecode for crate::api_cashu_v1::types::TransactionStatus {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu::types::TransactionStatus::Pending,
-            1 => crate::api_cashu::types::TransactionStatus::Success,
-            2 => crate::api_cashu::types::TransactionStatus::Failed,
-            3 => crate::api_cashu::types::TransactionStatus::Expired,
+            0 => crate::api_cashu_v1::types::TransactionStatus::Pending,
+            1 => crate::api_cashu_v1::types::TransactionStatus::Success,
+            2 => crate::api_cashu_v1::types::TransactionStatus::Failed,
+            3 => crate::api_cashu_v1::types::TransactionStatus::Expired,
             _ => unreachable!("Invalid variant for TransactionStatus: {}", inner),
         };
     }
 }
 
-impl SseDecode for crate::api_cashu_v2::types::TransactionV2 {
+impl SseDecode for crate::api_cashu::types::TransactionStatusV2 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api_cashu::types::TransactionStatusV2::Pending,
+            1 => crate::api_cashu::types::TransactionStatusV2::Success,
+            2 => crate::api_cashu::types::TransactionStatusV2::Failed,
+            3 => crate::api_cashu::types::TransactionStatusV2::Expired,
+            _ => unreachable!("Invalid variant for TransactionStatusV2: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for crate::api_cashu::types::TransactionV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_mintUrl = <String>::sse_decode(deserializer);
         let mut var_direction =
-            <crate::api_cashu_v2::types::TransactionDirectionV2>::sse_decode(deserializer);
-        let mut var_kind =
-            <crate::api_cashu_v2::types::TransactionKindV2>::sse_decode(deserializer);
+            <crate::api_cashu::types::TransactionDirectionV2>::sse_decode(deserializer);
+        let mut var_kind = <crate::api_cashu::types::TransactionKindV2>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
         let mut var_fee = <u64>::sse_decode(deserializer);
         let mut var_unit = <Option<String>>::sse_decode(deserializer);
         let mut var_token = <String>::sse_decode(deserializer);
+        let mut var_status =
+            <crate::api_cashu::types::TransactionStatusV2>::sse_decode(deserializer);
         let mut var_timestamp = <u64>::sse_decode(deserializer);
         let mut var_metadata =
             <std::collections::HashMap<String, String>>::sse_decode(deserializer);
-        return crate::api_cashu_v2::types::TransactionV2 {
+        return crate::api_cashu::types::TransactionV2 {
             mint_url: var_mintUrl,
             direction: var_direction,
             kind: var_kind,
@@ -7679,6 +7781,7 @@ impl SseDecode for crate::api_cashu_v2::types::TransactionV2 {
             fee: var_fee,
             unit: var_unit,
             token: var_token,
+            status: var_status,
             timestamp: var_timestamp,
             metadata: var_metadata,
         };
@@ -7750,31 +7853,28 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__api_cashu_v2__types__MnemonicInfo_generate_words_impl(
+        1 => wire__crate__api_cashu__types__MnemonicInfo_generate_words_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        2 => wire__crate__api_cashu_v2__types__MnemonicInfo_mnemonic_impl(
+        2 => wire__crate__api_cashu__types__MnemonicInfo_mnemonic_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        3 => wire__crate__api_cashu_v2__types__MnemonicInfo_new_impl(
+        3 => {
+            wire__crate__api_cashu__types__MnemonicInfo_new_impl(port, ptr, rust_vec_len, data_len)
+        }
+        4 => wire__crate__api_cashu__types__MnemonicInfo_pubkey_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        4 => wire__crate__api_cashu_v2__types__MnemonicInfo_pubkey_impl(
-            port,
-            ptr,
-            rust_vec_len,
-            data_len,
-        ),
-        5 => wire__crate__api_cashu_v2__types__MnemonicInfo_with_words_impl(
+        5 => wire__crate__api_cashu__types__MnemonicInfo_with_words_impl(
             port,
             ptr,
             rust_vec_len,
@@ -7782,25 +7882,23 @@ fn pde_ffi_dispatcher_primary_impl(
         ),
         6 => wire__crate__api_mls__add_members_impl(port, ptr, rust_vec_len, data_len),
         7 => wire__crate__api_cashu__add_mint_impl(port, ptr, rust_vec_len, data_len),
-        8 => wire__crate__api_cashu_v2__add_mint_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire__crate__api_cashu_v1__add_mint_impl(port, ptr, rust_vec_len, data_len),
         9 => wire__crate__api_mls__admin_commit_leave_impl(port, ptr, rust_vec_len, data_len),
         10 => wire__crate__api_mls__admin_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
-        11 => {
-            wire__crate__api_cashu_v2__check_all_mint_quotes_impl(port, ptr, rust_vec_len, data_len)
-        }
-        12 => wire__crate__api_cashu_v2__check_all_pending_proofs_impl(
+        11 => wire__crate__api_cashu_v1__cashu_v1_init_send_all_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
+        12 => wire__crate__api_cashu__check_all_mint_quotes_impl(port, ptr, rust_vec_len, data_len),
         13 => wire__crate__api_cashu__check_pending_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire__crate__api_cashu_v2__check_pending_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__api_cashu_v1__check_pending_impl(port, ptr, rust_vec_len, data_len),
         15 => wire__crate__api_cashu__check_proofs_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire__crate__api_cashu_v2__check_proofs_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire__crate__api_cashu_v1__check_proofs_impl(port, ptr, rust_vec_len, data_len),
         17 => wire__crate__api_cashu__check_transaction_impl(port, ptr, rust_vec_len, data_len),
-        18 => wire__crate__api_cashu_v2__check_transaction_impl(port, ptr, rust_vec_len, data_len),
-        19 => wire__crate__api_cashu__close_db_impl(port, ptr, rust_vec_len, data_len),
+        18 => wire__crate__api_cashu_v1__check_transaction_impl(port, ptr, rust_vec_len, data_len),
+        19 => wire__crate__api_cashu_v1__close_db_impl(port, ptr, rust_vec_len, data_len),
         20 => wire__crate__api_signal__contains_session_impl(port, ptr, rust_vec_len, data_len),
         21 => wire__crate__api_nostr__create_gift_json_impl(port, ptr, rust_vec_len, data_len),
         22 => wire__crate__api_mls__create_group_config_impl(port, ptr, rust_vec_len, data_len),
@@ -7811,9 +7909,9 @@ fn pde_ffi_dispatcher_primary_impl(
         27 => wire__crate__api_nostr__curve25519_sign_impl(port, ptr, rust_vec_len, data_len),
         28 => wire__crate__api_nostr__curve25519_verify_impl(port, ptr, rust_vec_len, data_len),
         30 => wire__crate__api_cashu__decode_invoice_impl(port, ptr, rust_vec_len, data_len),
-        31 => wire__crate__api_cashu_v2__decode_invoice_impl(port, ptr, rust_vec_len, data_len),
+        31 => wire__crate__api_cashu_v1__decode_invoice_impl(port, ptr, rust_vec_len, data_len),
         32 => wire__crate__api_cashu__decode_token_impl(port, ptr, rust_vec_len, data_len),
-        33 => wire__crate__api_cashu_v2__decode_token_impl(port, ptr, rust_vec_len, data_len),
+        33 => wire__crate__api_cashu_v1__decode_token_impl(port, ptr, rust_vec_len, data_len),
         34 => wire__crate__api_nostr__decrypt_impl(port, ptr, rust_vec_len, data_len),
         35 => wire__crate__api_nostr__decrypt_event_impl(port, ptr, rust_vec_len, data_len),
         36 => wire__crate__api_nostr__decrypt_gift_impl(port, ptr, rust_vec_len, data_len),
@@ -7865,219 +7963,215 @@ fn pde_ffi_dispatcher_primary_impl(
         }
         58 => wire__crate__api_nostr__generate_simple_impl(port, ptr, rust_vec_len, data_len),
         59 => wire__crate__api_signal__get_all_alice_addrs_impl(port, ptr, rust_vec_len, data_len),
-        60 => {
-            wire__crate__api_cashu_v2__get_all_transactions_impl(port, ptr, rust_vec_len, data_len)
-        }
-        61 => wire__crate__api_cashu__get_balance_impl(port, ptr, rust_vec_len, data_len),
-        62 => wire__crate__api_cashu__get_balances_impl(port, ptr, rust_vec_len, data_len),
-        63 => wire__crate__api_cashu_v2__get_balances_impl(port, ptr, rust_vec_len, data_len),
-        66 => wire__crate__api_cashu__get_cashu_pending_transactions_impl(
+        60 => wire__crate__api_cashu__get_all_proofs_data_impl(port, ptr, rust_vec_len, data_len),
+        61 => wire__crate__api_cashu__get_all_transactions_impl(port, ptr, rust_vec_len, data_len),
+        62 => wire__crate__api_cashu_v1__get_balance_impl(port, ptr, rust_vec_len, data_len),
+        63 => wire__crate__api_cashu__get_balances_impl(port, ptr, rust_vec_len, data_len),
+        64 => wire__crate__api_cashu_v1__get_balances_impl(port, ptr, rust_vec_len, data_len),
+        67 => wire__crate__api_cashu__get_cashu_pending_transactions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        67 => wire__crate__api_cashu_v2__get_cashu_pending_transactions_impl(
+        68 => wire__crate__api_cashu_v1__get_cashu_pending_transactions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        68 => wire__crate__api_cashu__get_cashu_transactions_with_offset_impl(
+        69 => wire__crate__api_cashu__get_cashu_transactions_with_offset_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        69 => wire__crate__api_cashu_v2__get_cashu_transactions_with_offset_impl(
+        70 => wire__crate__api_cashu_v1__get_cashu_transactions_with_offset_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        70 => wire__crate__api_nostr__get_encrypt_event_impl(port, ptr, rust_vec_len, data_len),
-        71 => wire__crate__api_mls__get_group_config_impl(port, ptr, rust_vec_len, data_len),
-        72 => wire__crate__api_mls__get_group_extension_impl(port, ptr, rust_vec_len, data_len),
-        73 => wire__crate__api_mls__get_group_members_impl(port, ptr, rust_vec_len, data_len),
-        74 => wire__crate__api_mls__get_group_members_with_lifetime_impl(
+        71 => wire__crate__api_nostr__get_encrypt_event_impl(port, ptr, rust_vec_len, data_len),
+        72 => wire__crate__api_mls__get_group_config_impl(port, ptr, rust_vec_len, data_len),
+        73 => wire__crate__api_mls__get_group_extension_impl(port, ptr, rust_vec_len, data_len),
+        74 => wire__crate__api_mls__get_group_members_impl(port, ptr, rust_vec_len, data_len),
+        75 => wire__crate__api_mls__get_group_members_with_lifetime_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        78 => wire__crate__api_signal__get_identity_impl(port, ptr, rust_vec_len, data_len),
-        79 => wire__crate__api_mls__get_lead_node_index_impl(port, ptr, rust_vec_len, data_len),
-        80 => wire__crate__api_mls__get_listen_key_from_export_secret_impl(
+        79 => wire__crate__api_signal__get_identity_impl(port, ptr, rust_vec_len, data_len),
+        80 => wire__crate__api_mls__get_lead_node_index_impl(port, ptr, rust_vec_len, data_len),
+        81 => wire__crate__api_mls__get_listen_key_from_export_secret_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        81 => wire__crate__api_cashu__get_ln_pending_transactions_impl(
+        82 => wire__crate__api_cashu__get_ln_pending_transactions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        82 => wire__crate__api_cashu_v2__get_ln_pending_transactions_impl(
+        83 => wire__crate__api_cashu_v1__get_ln_pending_transactions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        83 => wire__crate__api_cashu__get_ln_transactions_with_offset_impl(
+        84 => wire__crate__api_cashu__get_ln_transactions_with_offset_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        84 => wire__crate__api_cashu_v2__get_ln_transactions_with_offset_impl(
+        85 => wire__crate__api_cashu_v1__get_ln_transactions_with_offset_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        85 => wire__crate__api_mls__get_member_extension_impl(port, ptr, rust_vec_len, data_len),
-        86 => wire__crate__api_cashu__get_mints_impl(port, ptr, rust_vec_len, data_len),
-        87 => wire__crate__api_cashu_v2__get_mints_impl(port, ptr, rust_vec_len, data_len),
-        88 => {
-            wire__crate__api_cashu__get_pending_transactions_impl(port, ptr, rust_vec_len, data_len)
-        }
-        89 => wire__crate__api_cashu__get_pending_transactions_count_impl(
+        86 => wire__crate__api_mls__get_member_extension_impl(port, ptr, rust_vec_len, data_len),
+        87 => wire__crate__api_cashu__get_mints_impl(port, ptr, rust_vec_len, data_len),
+        88 => wire__crate__api_cashu_v1__get_mints_impl(port, ptr, rust_vec_len, data_len),
+        89 => wire__crate__api_cashu_v1__get_pending_transactions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        90 => wire__crate__api_cashu_v2__get_pending_transactions_count_impl(
+        90 => wire__crate__api_cashu__get_pending_transactions_count_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        91 => wire__crate__api_signal__get_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        92 => wire__crate__api_mls__get_sender_impl(port, ptr, rust_vec_len, data_len),
-        93 => wire__crate__api_signal__get_session_impl(port, ptr, rust_vec_len, data_len),
-        94 => wire__crate__api_signal__get_signed_key_api_impl(port, ptr, rust_vec_len, data_len),
-        95 => wire__crate__api_cashu__get_transactions_impl(port, ptr, rust_vec_len, data_len),
-        96 => wire__crate__api_cashu__get_transactions_with_offset_impl(
+        91 => wire__crate__api_cashu_v1__get_pending_transactions_count_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        97 => wire__crate__api_mls__get_tree_hash_impl(port, ptr, rust_vec_len, data_len),
-        98 => wire__crate__api_nostr__get_unencrypt_event_impl(port, ptr, rust_vec_len, data_len),
-        99 => {
-            wire__crate__api_cashu_v2__get_wallet_by_index_impl(port, ptr, rust_vec_len, data_len)
-        }
-        100 => wire__crate__api_nostr__import_from_phrase_impl(port, ptr, rust_vec_len, data_len),
-        101 => {
+        92 => wire__crate__api_signal__get_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        93 => wire__crate__api_mls__get_sender_impl(port, ptr, rust_vec_len, data_len),
+        94 => wire__crate__api_signal__get_session_impl(port, ptr, rust_vec_len, data_len),
+        95 => wire__crate__api_signal__get_signed_key_api_impl(port, ptr, rust_vec_len, data_len),
+        96 => wire__crate__api_cashu_v1__get_transactions_impl(port, ptr, rust_vec_len, data_len),
+        97 => wire__crate__api_cashu_v1__get_transactions_with_offset_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        98 => wire__crate__api_mls__get_tree_hash_impl(port, ptr, rust_vec_len, data_len),
+        99 => wire__crate__api_nostr__get_unencrypt_event_impl(port, ptr, rust_vec_len, data_len),
+        100 => wire__crate__api_cashu__get_wallet_by_index_impl(port, ptr, rust_vec_len, data_len),
+        101 => wire__crate__api_nostr__import_from_phrase_impl(port, ptr, rust_vec_len, data_len),
+        102 => {
             wire__crate__api_nostr__import_from_phrase_with_impl(port, ptr, rust_vec_len, data_len)
         }
-        102 => wire__crate__api_nostr__import_key_impl(port, ptr, rust_vec_len, data_len),
-        103 => wire__crate__api_signal__init_impl(port, ptr, rust_vec_len, data_len),
-        104 => wire__crate__api_cashu__init_cashu_impl(port, ptr, rust_vec_len, data_len),
-        105 => wire__crate__api_cashu_v2__init_cashu_impl(port, ptr, rust_vec_len, data_len),
-        106 => wire__crate__api_cashu__init_db_impl(port, ptr, rust_vec_len, data_len),
-        107 => wire__crate__api_cashu_v2__init_db_impl(port, ptr, rust_vec_len, data_len),
-        108 => wire__crate__api_signal__init_keypair_impl(port, ptr, rust_vec_len, data_len),
-        109 => wire__crate__api_mls__init_mls_db_impl(port, ptr, rust_vec_len, data_len),
-        110 => wire__crate__api_signal__init_signal_db_impl(port, ptr, rust_vec_len, data_len),
-        111 => wire__crate__api_mls__join_mls_group_impl(port, ptr, rust_vec_len, data_len),
-        112 => wire__crate__api_cashu__melt_impl(port, ptr, rust_vec_len, data_len),
-        113 => wire__crate__api_cashu_v2__melt_impl(port, ptr, rust_vec_len, data_len),
-        114 => wire__crate__api_cashu_v2__merge_proofs_impl(port, ptr, rust_vec_len, data_len),
-        115 => wire__crate__api_cashu__mint_token_impl(port, ptr, rust_vec_len, data_len),
-        116 => wire__crate__api_cashu_v2__mint_token_impl(port, ptr, rust_vec_len, data_len),
-        117 => wire__crate__api_cashu_v2__multi_receive_impl(port, ptr, rust_vec_len, data_len),
-        118 => wire__crate__api_nostr__nip47_encode_uri_impl(port, ptr, rust_vec_len, data_len),
-        119 => wire__crate__api_nostr__nip47_parse_request_impl(port, ptr, rust_vec_len, data_len),
-        120 => {
+        103 => wire__crate__api_nostr__import_key_impl(port, ptr, rust_vec_len, data_len),
+        104 => wire__crate__api_signal__init_impl(port, ptr, rust_vec_len, data_len),
+        105 => wire__crate__api_cashu__init_cashu_impl(port, ptr, rust_vec_len, data_len),
+        106 => wire__crate__api_cashu_v1__init_cashu_impl(port, ptr, rust_vec_len, data_len),
+        107 => wire__crate__api_cashu__init_db_impl(port, ptr, rust_vec_len, data_len),
+        108 => wire__crate__api_cashu_v1__init_db_impl(port, ptr, rust_vec_len, data_len),
+        109 => wire__crate__api_signal__init_keypair_impl(port, ptr, rust_vec_len, data_len),
+        110 => wire__crate__api_mls__init_mls_db_impl(port, ptr, rust_vec_len, data_len),
+        111 => wire__crate__api_signal__init_signal_db_impl(port, ptr, rust_vec_len, data_len),
+        112 => wire__crate__api_mls__join_mls_group_impl(port, ptr, rust_vec_len, data_len),
+        113 => wire__crate__api_cashu__melt_impl(port, ptr, rust_vec_len, data_len),
+        114 => wire__crate__api_cashu_v1__melt_impl(port, ptr, rust_vec_len, data_len),
+        115 => wire__crate__api_cashu__merge_proofs_impl(port, ptr, rust_vec_len, data_len),
+        116 => wire__crate__api_cashu__mint_token_impl(port, ptr, rust_vec_len, data_len),
+        117 => wire__crate__api_cashu_v1__mint_token_impl(port, ptr, rust_vec_len, data_len),
+        118 => wire__crate__api_cashu__multi_receive_impl(port, ptr, rust_vec_len, data_len),
+        119 => wire__crate__api_nostr__nip47_encode_uri_impl(port, ptr, rust_vec_len, data_len),
+        120 => wire__crate__api_nostr__nip47_parse_request_impl(port, ptr, rust_vec_len, data_len),
+        121 => {
             wire__crate__api_mls__normal_member_commit_leave_impl(port, ptr, rust_vec_len, data_len)
         }
-        121 => wire__crate__api_mls__others_commit_normal_impl(port, ptr, rust_vec_len, data_len),
-        122 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
-        123 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
+        122 => wire__crate__api_mls__others_commit_normal_impl(port, ptr, rust_vec_len, data_len),
+        123 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
+        124 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        124 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
+        125 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        125 => wire__crate__api_mls__parse_lifetime_from_key_package_impl(
+        126 => wire__crate__api_mls__parse_lifetime_from_key_package_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        126 => wire__crate__api_mls__parse_mls_msg_type_impl(port, ptr, rust_vec_len, data_len),
-        127 => {
-            wire__crate__api_cashu_v2__prepare_one_proofs_impl(port, ptr, rust_vec_len, data_len)
+        127 => wire__crate__api_mls__parse_mls_msg_type_impl(port, ptr, rust_vec_len, data_len),
+        128 => wire__crate__api_cashu__prepare_one_proofs_impl(port, ptr, rust_vec_len, data_len),
+        129 => wire__crate__api_cashu__print_proofs_impl(port, ptr, rust_vec_len, data_len),
+        130 => wire__crate__api_signal__process_prekey_bundle_api_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        131 => wire__crate__api_cashu__receive_token_impl(port, ptr, rust_vec_len, data_len),
+        132 => wire__crate__api_cashu_v1__receive_token_impl(port, ptr, rust_vec_len, data_len),
+        133 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
+        134 => wire__crate__api_cashu__remove_mint_impl(port, ptr, rust_vec_len, data_len),
+        135 => wire__crate__api_cashu_v1__remove_mint_impl(port, ptr, rust_vec_len, data_len),
+        136 => wire__crate__api_cashu__remove_transactions_impl(port, ptr, rust_vec_len, data_len),
+        137 => {
+            wire__crate__api_cashu_v1__remove_transactions_impl(port, ptr, rust_vec_len, data_len)
         }
-        128 => wire__crate__api_cashu_v2__print_proofs_impl(port, ptr, rust_vec_len, data_len),
-        129 => wire__crate__api_signal__process_prekey_bundle_api_impl(
+        138 => wire__crate__api_cashu__request_mint_impl(port, ptr, rust_vec_len, data_len),
+        139 => wire__crate__api_cashu_v1__request_mint_impl(port, ptr, rust_vec_len, data_len),
+        140 => wire__crate__api_cashu__restore_impl(port, ptr, rust_vec_len, data_len),
+        141 => wire__crate__api_cashu_v1__restore_impl(port, ptr, rust_vec_len, data_len),
+        142 => wire__crate__api_mls__self_commit_impl(port, ptr, rust_vec_len, data_len),
+        143 => wire__crate__api_mls__self_leave_impl(port, ptr, rust_vec_len, data_len),
+        144 => wire__crate__api_mls__self_update_impl(port, ptr, rust_vec_len, data_len),
+        145 => wire__crate__api_cashu__send_impl(port, ptr, rust_vec_len, data_len),
+        146 => wire__crate__api_cashu_v1__send_impl(port, ptr, rust_vec_len, data_len),
+        147 => wire__crate__api_cashu__send_all_impl(port, ptr, rust_vec_len, data_len),
+        148 => wire__crate__api_cashu_v1__send_all_impl(port, ptr, rust_vec_len, data_len),
+        149 => wire__crate__api_cashu__send_stamp_impl(port, ptr, rust_vec_len, data_len),
+        150 => wire__crate__api_cashu_v1__send_stamp_impl(port, ptr, rust_vec_len, data_len),
+        151 => wire__crate__api_signal__session_contain_alice_addr_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        130 => wire__crate__api_cashu__receive_token_impl(port, ptr, rust_vec_len, data_len),
-        131 => wire__crate__api_cashu_v2__receive_token_impl(port, ptr, rust_vec_len, data_len),
-        132 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
-        133 => wire__crate__api_cashu__remove_mint_impl(port, ptr, rust_vec_len, data_len),
-        134 => wire__crate__api_cashu_v2__remove_mint_impl(port, ptr, rust_vec_len, data_len),
-        135 => wire__crate__api_cashu__remove_transactions_impl(port, ptr, rust_vec_len, data_len),
-        136 => {
-            wire__crate__api_cashu_v2__remove_transactions_impl(port, ptr, rust_vec_len, data_len)
-        }
-        137 => wire__crate__api_cashu__request_mint_impl(port, ptr, rust_vec_len, data_len),
-        138 => wire__crate__api_cashu_v2__request_mint_impl(port, ptr, rust_vec_len, data_len),
-        139 => wire__crate__api_cashu__restore_impl(port, ptr, rust_vec_len, data_len),
-        140 => wire__crate__api_cashu_v2__restore_impl(port, ptr, rust_vec_len, data_len),
-        141 => wire__crate__api_mls__self_commit_impl(port, ptr, rust_vec_len, data_len),
-        142 => wire__crate__api_mls__self_leave_impl(port, ptr, rust_vec_len, data_len),
-        143 => wire__crate__api_mls__self_update_impl(port, ptr, rust_vec_len, data_len),
-        144 => wire__crate__api_cashu__send_impl(port, ptr, rust_vec_len, data_len),
-        145 => wire__crate__api_cashu_v2__send_impl(port, ptr, rust_vec_len, data_len),
-        146 => wire__crate__api_cashu__send_all_impl(port, ptr, rust_vec_len, data_len),
-        147 => wire__crate__api_cashu_v2__send_all_impl(port, ptr, rust_vec_len, data_len),
-        148 => wire__crate__api_cashu__send_stamp_impl(port, ptr, rust_vec_len, data_len),
-        149 => wire__crate__api_cashu_v2__send_stamp_impl(port, ptr, rust_vec_len, data_len),
-        150 => wire__crate__api_signal__session_contain_alice_addr_impl(
-            port,
-            ptr,
-            rust_vec_len,
-            data_len,
-        ),
-        151 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
-        152 => wire__crate__api_cashu_v2__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
-        153 => wire__crate__api_nostr__sha1_hash_impl(port, ptr, rust_vec_len, data_len),
-        154 => wire__crate__api_nostr__sha256_hash_impl(port, ptr, rust_vec_len, data_len),
-        155 => wire__crate__api_nostr__sha256_hash_bytes_impl(port, ptr, rust_vec_len, data_len),
-        156 => wire__crate__api_nostr__sign_event_impl(port, ptr, rust_vec_len, data_len),
-        157 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
-        158 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        159 => {
+        152 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
+        153 => wire__crate__api_cashu_v1__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
+        154 => wire__crate__api_nostr__sha1_hash_impl(port, ptr, rust_vec_len, data_len),
+        155 => wire__crate__api_nostr__sha256_hash_impl(port, ptr, rust_vec_len, data_len),
+        156 => wire__crate__api_nostr__sha256_hash_bytes_impl(port, ptr, rust_vec_len, data_len),
+        157 => wire__crate__api_nostr__sign_event_impl(port, ptr, rust_vec_len, data_len),
+        158 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        159 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        160 => {
             wire__crate__api_signal__store_signed_key_api_impl(port, ptr, rust_vec_len, data_len)
         }
-        160 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
-        161 => wire__crate__api_mls__update_group_context_extensions_impl(
+        161 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
+        162 => wire__crate__api_mls__update_group_context_extensions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        162 => {
-            wire__crate__api_cashu_v2__validate_mint_number_impl(port, ptr, rust_vec_len, data_len)
-        }
-        163 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
-        164 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        163 => wire__crate__api_cashu__validate_mint_number_impl(port, ptr, rust_vec_len, data_len),
+        164 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
+        165 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -8092,11 +8186,11 @@ fn pde_ffi_dispatcher_sync_impl(
     match func_id {
         29 => wire__crate__api_nostr__decode_bech32_impl(ptr, rust_vec_len, data_len),
         45 => wire__crate__api_nostr__encode_bech32_impl(ptr, rust_vec_len, data_len),
-        64 => wire__crate__api_nostr__get_bech32_prikey_by_hex_impl(ptr, rust_vec_len, data_len),
-        65 => wire__crate__api_nostr__get_bech32_pubkey_by_hex_impl(ptr, rust_vec_len, data_len),
-        75 => wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(ptr, rust_vec_len, data_len),
-        76 => wire__crate__api_nostr__get_hex_pubkey_by_bech32_impl(ptr, rust_vec_len, data_len),
-        77 => wire__crate__api_nostr__get_hex_pubkey_by_prikey_impl(ptr, rust_vec_len, data_len),
+        65 => wire__crate__api_nostr__get_bech32_prikey_by_hex_impl(ptr, rust_vec_len, data_len),
+        66 => wire__crate__api_nostr__get_bech32_pubkey_by_hex_impl(ptr, rust_vec_len, data_len),
+        76 => wire__crate__api_nostr__get_hex_prikey_by_bech32_impl(ptr, rust_vec_len, data_len),
+        77 => wire__crate__api_nostr__get_hex_pubkey_by_bech32_impl(ptr, rust_vec_len, data_len),
+        78 => wire__crate__api_nostr__get_hex_pubkey_by_prikey_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -8164,24 +8258,6 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<MnemonicInfo>> for MnemonicInf
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<TransactionStatusV2> {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
-            .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<TransactionStatusV2>
-{
-}
-
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<TransactionStatusV2>> for TransactionStatusV2 {
-    fn into_into_dart(self) -> FrbWrapper<TransactionStatusV2> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<Wallet> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
@@ -8218,7 +8294,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_mls::types::AddMembersResult>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::CashuTransaction> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::CashuTransaction> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.id.into_into_dart().into_dart(),
@@ -8236,13 +8312,13 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Cashu
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::CashuTransaction>
+    for FrbWrapper<crate::api_cashu_v1::types::CashuTransaction>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::CashuTransaction>>
-    for crate::api_cashu::types::CashuTransaction
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::CashuTransaction>>
+    for crate::api_cashu_v1::types::CashuTransaction
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::CashuTransaction> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::CashuTransaction> {
         self.into()
     }
 }
@@ -8292,7 +8368,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_mls::types::CommitTypeResult>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Contact> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::Contact> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.method.into_into_dart().into_dart(),
@@ -8302,13 +8378,13 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Conta
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::Contact>
+    for FrbWrapper<crate::api_cashu_v1::types::Contact>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::Contact>>
-    for crate::api_cashu::types::Contact
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::Contact>>
+    for crate::api_cashu_v1::types::Contact
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::Contact> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::Contact> {
         self.into()
     }
 }
@@ -8359,29 +8435,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_mls::types::GroupExtensionResu
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceInfo {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.amount.into_into_dart().into_dart(),
-            self.expiry_ts.into_into_dart().into_dart(),
-            self.hash.into_into_dart().into_dart(),
-            self.memo.into_into_dart().into_dart(),
-            self.mint.into_into_dart().into_dart(),
-            self.status.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api_cashu::InvoiceInfo {}
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceInfo>
-    for crate::api_cashu::InvoiceInfo
-{
-    fn into_into_dart(self) -> crate::api_cashu::InvoiceInfo {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::InvoiceInfoV2 {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceInfo {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.amount.into_into_dart().into_dart(),
@@ -8395,18 +8449,43 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::InvoiceInfoV2 {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu_v2::InvoiceInfoV2
+    for crate::api_cashu_v1::InvoiceInfo
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v2::InvoiceInfoV2>
-    for crate::api_cashu_v2::InvoiceInfoV2
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::InvoiceInfo>
+    for crate::api_cashu_v1::InvoiceInfo
 {
-    fn into_into_dart(self) -> crate::api_cashu_v2::InvoiceInfoV2 {
+    fn into_into_dart(self) -> crate::api_cashu_v1::InvoiceInfo {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceStatus {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceInfoV2 {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.amount.into_into_dart().into_dart(),
+            self.expiry_ts.into_into_dart().into_dart(),
+            self.hash.into_into_dart().into_dart(),
+            self.memo.into_into_dart().into_dart(),
+            self.mint.into_into_dart().into_dart(),
+            self.status.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api_cashu::InvoiceInfoV2
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceInfoV2>
+    for crate::api_cashu::InvoiceInfoV2
+{
+    fn into_into_dart(self) -> crate::api_cashu::InvoiceInfoV2 {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceStatus {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
             Self::Paid => 0.into_dart(),
@@ -8417,18 +8496,18 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceStatus {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu::InvoiceStatus
+    for crate::api_cashu_v1::InvoiceStatus
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceStatus>
-    for crate::api_cashu::InvoiceStatus
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::InvoiceStatus>
+    for crate::api_cashu_v1::InvoiceStatus
 {
-    fn into_into_dart(self) -> crate::api_cashu::InvoiceStatus {
+    fn into_into_dart(self) -> crate::api_cashu_v1::InvoiceStatus {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::InvoiceStatusV2 {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceStatusV2 {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
             Self::Paid => 0.into_dart(),
@@ -8439,13 +8518,13 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::InvoiceStatusV2 {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu_v2::InvoiceStatusV2
+    for crate::api_cashu::InvoiceStatusV2
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v2::InvoiceStatusV2>
-    for crate::api_cashu_v2::InvoiceStatusV2
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceStatusV2>
+    for crate::api_cashu::InvoiceStatusV2
 {
-    fn into_into_dart(self) -> crate::api_cashu_v2::InvoiceStatusV2 {
+    fn into_into_dart(self) -> crate::api_cashu::InvoiceStatusV2 {
         self
     }
 }
@@ -8558,7 +8637,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_signal::KeychatSignalSession>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::LNTransaction> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::LNTransaction> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.status.into_into_dart().into_dart(),
@@ -8576,13 +8655,13 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::LNTra
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::LNTransaction>
+    for FrbWrapper<crate::api_cashu_v1::types::LNTransaction>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::LNTransaction>>
-    for crate::api_cashu::types::LNTransaction
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::LNTransaction>>
+    for crate::api_cashu_v1::types::LNTransaction
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::LNTransaction> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::LNTransaction> {
         self.into()
     }
 }
@@ -8635,7 +8714,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_mls::types::MessageResult>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Mint> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::Mint> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.url.into_into_dart().into_dart(),
@@ -8647,18 +8726,18 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Mint>
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::Mint>
+    for FrbWrapper<crate::api_cashu_v1::types::Mint>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::Mint>>
-    for crate::api_cashu::types::Mint
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::Mint>>
+    for crate::api_cashu_v1::types::Mint
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::Mint> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::Mint> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::MintInfo> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::MintInfo> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.name.into_into_dart().into_dart(),
@@ -8674,13 +8753,13 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::MintI
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::MintInfo>
+    for FrbWrapper<crate::api_cashu_v1::types::MintInfo>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::MintInfo>>
-    for crate::api_cashu::types::MintInfo
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::MintInfo>>
+    for crate::api_cashu_v1::types::MintInfo
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::MintInfo> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::MintInfo> {
         self.into()
     }
 }
@@ -8708,24 +8787,24 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_nostr::NostrEvent>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::NutSupported> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::NutSupported> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [self.0.supported.into_into_dart().into_dart()].into_dart()
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::NutSupported>
+    for FrbWrapper<crate::api_cashu_v1::types::NutSupported>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::NutSupported>>
-    for crate::api_cashu::types::NutSupported
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::NutSupported>>
+    for crate::api_cashu_v1::types::NutSupported
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::NutSupported> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::NutSupported> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Nuts> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::Nuts> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.nut04.into_into_dart().into_dart(),
@@ -8741,18 +8820,18 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Nuts>
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::Nuts>
+    for FrbWrapper<crate::api_cashu_v1::types::Nuts>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::Nuts>>
-    for crate::api_cashu::types::Nuts
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::Nuts>>
+    for crate::api_cashu_v1::types::Nuts
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::Nuts> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::Nuts> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::PaymentMethod> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::PaymentMethod> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.method.into_into_dart().into_dart(),
@@ -8764,18 +8843,20 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Payme
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::PaymentMethod>
+    for FrbWrapper<crate::api_cashu_v1::types::PaymentMethod>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::PaymentMethod>>
-    for crate::api_cashu::types::PaymentMethod
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::PaymentMethod>>
+    for crate::api_cashu_v1::types::PaymentMethod
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::PaymentMethod> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::PaymentMethod> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::PaymentMethodSettings> {
+impl flutter_rust_bridge::IntoDart
+    for FrbWrapper<crate::api_cashu_v1::types::PaymentMethodSettings>
+{
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.methods.into_into_dart().into_dart(),
@@ -8785,13 +8866,14 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Payme
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::PaymentMethodSettings>
+    for FrbWrapper<crate::api_cashu_v1::types::PaymentMethodSettings>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::PaymentMethodSettings>>
-    for crate::api_cashu::types::PaymentMethodSettings
+impl
+    flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::PaymentMethodSettings>>
+    for crate::api_cashu_v1::types::PaymentMethodSettings
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::PaymentMethodSettings> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::PaymentMethodSettings> {
         self.into()
     }
 }
@@ -8845,27 +8927,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_nostr::Secp256k1SimpleAccount>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu::TokenInfo {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.mint.into_into_dart().into_dart(),
-            self.amount.into_into_dart().into_dart(),
-            self.unit.into_into_dart().into_dart(),
-            self.memo.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api_cashu::TokenInfo {}
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::TokenInfo>
-    for crate::api_cashu::TokenInfo
-{
-    fn into_into_dart(self) -> crate::api_cashu::TokenInfo {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::TokenInfoV2 {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::TokenInfo {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.mint.into_into_dart().into_dart(),
@@ -8877,24 +8939,44 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::TokenInfoV2 {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu_v2::TokenInfoV2
+    for crate::api_cashu_v1::TokenInfo
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v2::TokenInfoV2>
-    for crate::api_cashu_v2::TokenInfoV2
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::TokenInfo>
+    for crate::api_cashu_v1::TokenInfo
 {
-    fn into_into_dart(self) -> crate::api_cashu_v2::TokenInfoV2 {
+    fn into_into_dart(self) -> crate::api_cashu_v1::TokenInfo {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Transaction> {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::TokenInfoV2 {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.mint.into_into_dart().into_dart(),
+            self.amount.into_into_dart().into_dart(),
+            self.unit.into_into_dart().into_dart(),
+            self.memo.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api_cashu::TokenInfoV2 {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::TokenInfoV2>
+    for crate::api_cashu::TokenInfoV2
+{
+    fn into_into_dart(self) -> crate::api_cashu::TokenInfoV2 {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::Transaction> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self.0 {
-            crate::api_cashu::types::Transaction::Cashu(field0) => {
+            crate::api_cashu_v1::types::Transaction::Cashu(field0) => {
                 [0.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
-            crate::api_cashu::types::Transaction::LN(field0) => {
+            crate::api_cashu_v1::types::Transaction::LN(field0) => {
                 [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
             _ => {
@@ -8904,110 +8986,131 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::Trans
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::Transaction>
+    for FrbWrapper<crate::api_cashu_v1::types::Transaction>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::Transaction>>
-    for crate::api_cashu::types::Transaction
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::Transaction>>
+    for crate::api_cashu_v1::types::Transaction
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::Transaction> {
-        self.into()
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::TransactionDirection> {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        match self.0 {
-            crate::api_cashu::types::TransactionDirection::In => 0.into_dart(),
-            crate::api_cashu::types::TransactionDirection::Out => 1.into_dart(),
-            crate::api_cashu::types::TransactionDirection::Split => 2.into_dart(),
-            _ => unreachable!(),
-        }
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::TransactionDirection>
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::TransactionDirection>>
-    for crate::api_cashu::types::TransactionDirection
-{
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::TransactionDirection> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::Transaction> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<crate::api_cashu_v2::types::TransactionDirectionV2>
+    for FrbWrapper<crate::api_cashu_v1::types::TransactionDirection>
 {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self.0 {
-            crate::api_cashu_v2::types::TransactionDirectionV2::Incoming => 0.into_dart(),
-            crate::api_cashu_v2::types::TransactionDirectionV2::Outgoing => 1.into_dart(),
-            crate::api_cashu_v2::types::TransactionDirectionV2::Split => 2.into_dart(),
+            crate::api_cashu_v1::types::TransactionDirection::In => 0.into_dart(),
+            crate::api_cashu_v1::types::TransactionDirection::Out => 1.into_dart(),
+            crate::api_cashu_v1::types::TransactionDirection::Split => 2.into_dart(),
             _ => unreachable!(),
         }
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu_v2::types::TransactionDirectionV2>
+    for FrbWrapper<crate::api_cashu_v1::types::TransactionDirection>
 {
 }
-impl
-    flutter_rust_bridge::IntoIntoDart<
-        FrbWrapper<crate::api_cashu_v2::types::TransactionDirectionV2>,
-    > for crate::api_cashu_v2::types::TransactionDirectionV2
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::TransactionDirection>>
+    for crate::api_cashu_v1::types::TransactionDirection
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v2::types::TransactionDirectionV2> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::TransactionDirection> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v2::types::TransactionKindV2> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::TransactionDirectionV2> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self.0 {
-            crate::api_cashu_v2::types::TransactionKindV2::Cashu => 0.into_dart(),
-            crate::api_cashu_v2::types::TransactionKindV2::LN => 1.into_dart(),
+            crate::api_cashu::types::TransactionDirectionV2::Incoming => 0.into_dart(),
+            crate::api_cashu::types::TransactionDirectionV2::Outgoing => 1.into_dart(),
+            crate::api_cashu::types::TransactionDirectionV2::Split => 2.into_dart(),
             _ => unreachable!(),
         }
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu_v2::types::TransactionKindV2>
+    for FrbWrapper<crate::api_cashu::types::TransactionDirectionV2>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v2::types::TransactionKindV2>>
-    for crate::api_cashu_v2::types::TransactionKindV2
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::TransactionDirectionV2>>
+    for crate::api_cashu::types::TransactionDirectionV2
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v2::types::TransactionKindV2> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::TransactionDirectionV2> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::TransactionStatus> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::TransactionKindV2> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self.0 {
-            crate::api_cashu::types::TransactionStatus::Pending => 0.into_dart(),
-            crate::api_cashu::types::TransactionStatus::Success => 1.into_dart(),
-            crate::api_cashu::types::TransactionStatus::Failed => 2.into_dart(),
-            crate::api_cashu::types::TransactionStatus::Expired => 3.into_dart(),
+            crate::api_cashu::types::TransactionKindV2::Cashu => 0.into_dart(),
+            crate::api_cashu::types::TransactionKindV2::LN => 1.into_dart(),
             _ => unreachable!(),
         }
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<crate::api_cashu::types::TransactionStatus>
+    for FrbWrapper<crate::api_cashu::types::TransactionKindV2>
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::TransactionStatus>>
-    for crate::api_cashu::types::TransactionStatus
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::TransactionKindV2>>
+    for crate::api_cashu::types::TransactionKindV2
 {
-    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::TransactionStatus> {
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::TransactionKindV2> {
         self.into()
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::types::TransactionV2 {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu_v1::types::TransactionStatus> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self.0 {
+            crate::api_cashu_v1::types::TransactionStatus::Pending => 0.into_dart(),
+            crate::api_cashu_v1::types::TransactionStatus::Success => 1.into_dart(),
+            crate::api_cashu_v1::types::TransactionStatus::Failed => 2.into_dart(),
+            crate::api_cashu_v1::types::TransactionStatus::Expired => 3.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<crate::api_cashu_v1::types::TransactionStatus>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu_v1::types::TransactionStatus>>
+    for crate::api_cashu_v1::types::TransactionStatus
+{
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu_v1::types::TransactionStatus> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::api_cashu::types::TransactionStatusV2> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self.0 {
+            crate::api_cashu::types::TransactionStatusV2::Pending => 0.into_dart(),
+            crate::api_cashu::types::TransactionStatusV2::Success => 1.into_dart(),
+            crate::api_cashu::types::TransactionStatusV2::Failed => 2.into_dart(),
+            crate::api_cashu::types::TransactionStatusV2::Expired => 3.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<crate::api_cashu::types::TransactionStatusV2>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api_cashu::types::TransactionStatusV2>>
+    for crate::api_cashu::types::TransactionStatusV2
+{
+    fn into_into_dart(self) -> FrbWrapper<crate::api_cashu::types::TransactionStatusV2> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::types::TransactionV2 {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.mint_url.into_into_dart().into_dart(),
@@ -9017,6 +9120,7 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::types::TransactionV2
             self.fee.into_into_dart().into_dart(),
             self.unit.into_into_dart().into_dart(),
             self.token.into_into_dart().into_dart(),
+            self.status.into_into_dart().into_dart(),
             self.timestamp.into_into_dart().into_dart(),
             self.metadata.into_into_dart().into_dart(),
         ]
@@ -9024,13 +9128,13 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v2::types::TransactionV2
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu_v2::types::TransactionV2
+    for crate::api_cashu::types::TransactionV2
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v2::types::TransactionV2>
-    for crate::api_cashu_v2::types::TransactionV2
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::types::TransactionV2>
+    for crate::api_cashu::types::TransactionV2
 {
-    fn into_into_dart(self) -> crate::api_cashu_v2::types::TransactionV2 {
+    fn into_into_dart(self) -> crate::api_cashu::types::TransactionV2 {
         self
     }
 }
@@ -9070,13 +9174,6 @@ impl SseEncode for MnemonicInfo {
     }
 }
 
-impl SseEncode for TransactionStatusV2 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TransactionStatusV2>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
-    }
-}
-
 impl SseEncode for Wallet {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -9102,6 +9199,20 @@ impl SseEncode for std::collections::HashMap<String, Option<u64>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<(String, Option<u64>)>>::sse_encode(self.into_iter().collect(), serializer);
+    }
+}
+
+impl SseEncode for std::collections::HashMap<String, (u64, u64)> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<(String, (u64, u64))>>::sse_encode(self.into_iter().collect(), serializer);
+    }
+}
+
+impl SseEncode for std::collections::HashMap<String, u64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<(String, u64)>>::sse_encode(self.into_iter().collect(), serializer);
     }
 }
 
@@ -9174,17 +9285,6 @@ impl SseEncode
     }
 }
 
-impl SseEncode
-    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TransactionStatusV2>>
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
 impl SseEncode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Wallet>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -9216,12 +9316,12 @@ impl SseEncode for bool {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::CashuTransaction {
+impl SseEncode for crate::api_cashu_v1::types::CashuTransaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.id, serializer);
-        <crate::api_cashu::types::TransactionStatus>::sse_encode(self.status, serializer);
-        <crate::api_cashu::types::TransactionDirection>::sse_encode(self.io, serializer);
+        <crate::api_cashu_v1::types::TransactionStatus>::sse_encode(self.status, serializer);
+        <crate::api_cashu_v1::types::TransactionDirection>::sse_encode(self.io, serializer);
         <Option<String>>::sse_encode(self.info, serializer);
         <u64>::sse_encode(self.time, serializer);
         <u64>::sse_encode(self.amount, serializer);
@@ -9259,7 +9359,7 @@ impl SseEncode for crate::api_mls::types::CommitTypeResult {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::Contact {
+impl SseEncode for crate::api_cashu_v1::types::Contact {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.method, serializer);
@@ -9301,7 +9401,7 @@ impl SseEncode for i64 {
     }
 }
 
-impl SseEncode for crate::api_cashu::InvoiceInfo {
+impl SseEncode for crate::api_cashu_v1::InvoiceInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.amount, serializer);
@@ -9309,11 +9409,11 @@ impl SseEncode for crate::api_cashu::InvoiceInfo {
         <String>::sse_encode(self.hash, serializer);
         <Option<String>>::sse_encode(self.memo, serializer);
         <Option<String>>::sse_encode(self.mint, serializer);
-        <crate::api_cashu::InvoiceStatus>::sse_encode(self.status, serializer);
+        <crate::api_cashu_v1::InvoiceStatus>::sse_encode(self.status, serializer);
     }
 }
 
-impl SseEncode for crate::api_cashu_v2::InvoiceInfoV2 {
+impl SseEncode for crate::api_cashu::InvoiceInfoV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.amount, serializer);
@@ -9321,18 +9421,18 @@ impl SseEncode for crate::api_cashu_v2::InvoiceInfoV2 {
         <String>::sse_encode(self.hash, serializer);
         <Option<String>>::sse_encode(self.memo, serializer);
         <Option<String>>::sse_encode(self.mint, serializer);
-        <crate::api_cashu_v2::InvoiceStatusV2>::sse_encode(self.status, serializer);
+        <crate::api_cashu::InvoiceStatusV2>::sse_encode(self.status, serializer);
     }
 }
 
-impl SseEncode for crate::api_cashu::InvoiceStatus {
+impl SseEncode for crate::api_cashu_v1::InvoiceStatus {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu::InvoiceStatus::Paid => 0,
-                crate::api_cashu::InvoiceStatus::Unpaid => 1,
-                crate::api_cashu::InvoiceStatus::Expired => 2,
+                crate::api_cashu_v1::InvoiceStatus::Paid => 0,
+                crate::api_cashu_v1::InvoiceStatus::Unpaid => 1,
+                crate::api_cashu_v1::InvoiceStatus::Expired => 2,
                 _ => {
                     unimplemented!("");
                 }
@@ -9342,14 +9442,14 @@ impl SseEncode for crate::api_cashu::InvoiceStatus {
     }
 }
 
-impl SseEncode for crate::api_cashu_v2::InvoiceStatusV2 {
+impl SseEncode for crate::api_cashu::InvoiceStatusV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu_v2::InvoiceStatusV2::Paid => 0,
-                crate::api_cashu_v2::InvoiceStatusV2::Unpaid => 1,
-                crate::api_cashu_v2::InvoiceStatusV2::Expired => 2,
+                crate::api_cashu::InvoiceStatusV2::Paid => 0,
+                crate::api_cashu::InvoiceStatusV2::Unpaid => 1,
+                crate::api_cashu::InvoiceStatusV2::Expired => 2,
                 _ => {
                     unimplemented!("");
                 }
@@ -9415,22 +9515,22 @@ impl SseEncode for Vec<String> {
     }
 }
 
-impl SseEncode for Vec<crate::api_cashu::types::CashuTransaction> {
+impl SseEncode for Vec<crate::api_cashu_v1::types::CashuTransaction> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api_cashu::types::CashuTransaction>::sse_encode(item, serializer);
+            <crate::api_cashu_v1::types::CashuTransaction>::sse_encode(item, serializer);
         }
     }
 }
 
-impl SseEncode for Vec<crate::api_cashu::types::Contact> {
+impl SseEncode for Vec<crate::api_cashu_v1::types::Contact> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api_cashu::types::Contact>::sse_encode(item, serializer);
+            <crate::api_cashu_v1::types::Contact>::sse_encode(item, serializer);
         }
     }
 }
@@ -9455,32 +9555,32 @@ impl SseEncode for Vec<Vec<u8>> {
     }
 }
 
-impl SseEncode for Vec<crate::api_cashu::types::LNTransaction> {
+impl SseEncode for Vec<crate::api_cashu_v1::types::LNTransaction> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api_cashu::types::LNTransaction>::sse_encode(item, serializer);
+            <crate::api_cashu_v1::types::LNTransaction>::sse_encode(item, serializer);
         }
     }
 }
 
-impl SseEncode for Vec<crate::api_cashu::types::Mint> {
+impl SseEncode for Vec<crate::api_cashu_v1::types::Mint> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api_cashu::types::Mint>::sse_encode(item, serializer);
+            <crate::api_cashu_v1::types::Mint>::sse_encode(item, serializer);
         }
     }
 }
 
-impl SseEncode for Vec<crate::api_cashu::types::PaymentMethod> {
+impl SseEncode for Vec<crate::api_cashu_v1::types::PaymentMethod> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api_cashu::types::PaymentMethod>::sse_encode(item, serializer);
+            <crate::api_cashu_v1::types::PaymentMethod>::sse_encode(item, serializer);
         }
     }
 }
@@ -9525,12 +9625,32 @@ impl SseEncode for Vec<(String, Option<u64>)> {
     }
 }
 
+impl SseEncode for Vec<(String, (u64, u64))> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <(String, (u64, u64))>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<(String, String)> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <(String, String)>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<(String, u64)> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <(String, u64)>::sse_encode(item, serializer);
         }
     }
 }
@@ -9555,31 +9675,31 @@ impl SseEncode for Vec<crate::api_nostr::Secp256k1Account> {
     }
 }
 
-impl SseEncode for Vec<crate::api_cashu::types::Transaction> {
+impl SseEncode for Vec<crate::api_cashu_v1::types::Transaction> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api_cashu::types::Transaction>::sse_encode(item, serializer);
+            <crate::api_cashu_v1::types::Transaction>::sse_encode(item, serializer);
         }
     }
 }
 
-impl SseEncode for Vec<crate::api_cashu_v2::types::TransactionV2> {
+impl SseEncode for Vec<crate::api_cashu::types::TransactionV2> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::api_cashu_v2::types::TransactionV2>::sse_encode(item, serializer);
+            <crate::api_cashu::types::TransactionV2>::sse_encode(item, serializer);
         }
     }
 }
 
-impl SseEncode for crate::api_cashu::types::LNTransaction {
+impl SseEncode for crate::api_cashu_v1::types::LNTransaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <crate::api_cashu::types::TransactionStatus>::sse_encode(self.status, serializer);
-        <crate::api_cashu::types::TransactionDirection>::sse_encode(self.io, serializer);
+        <crate::api_cashu_v1::types::TransactionStatus>::sse_encode(self.status, serializer);
+        <crate::api_cashu_v1::types::TransactionDirection>::sse_encode(self.io, serializer);
         <Option<String>>::sse_encode(self.info, serializer);
         <u64>::sse_encode(self.time, serializer);
         <u64>::sse_encode(self.amount, serializer);
@@ -9621,17 +9741,17 @@ impl SseEncode for crate::api_mls::types::MessageResult {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::Mint {
+impl SseEncode for crate::api_cashu_v1::types::Mint {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.url, serializer);
         <bool>::sse_encode(self.active, serializer);
         <u64>::sse_encode(self.time, serializer);
-        <Option<crate::api_cashu::types::MintInfo>>::sse_encode(self.info, serializer);
+        <Option<crate::api_cashu_v1::types::MintInfo>>::sse_encode(self.info, serializer);
     }
 }
 
-impl SseEncode for crate::api_cashu::types::MintInfo {
+impl SseEncode for crate::api_cashu_v1::types::MintInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.name, serializer);
@@ -9640,8 +9760,8 @@ impl SseEncode for crate::api_cashu::types::MintInfo {
         <Option<String>>::sse_encode(self.description, serializer);
         <Option<String>>::sse_encode(self.description_long, serializer);
         <Option<String>>::sse_encode(self.motd, serializer);
-        <Vec<crate::api_cashu::types::Contact>>::sse_encode(self.contact, serializer);
-        <crate::api_cashu::types::Nuts>::sse_encode(self.nuts, serializer);
+        <Vec<crate::api_cashu_v1::types::Contact>>::sse_encode(self.contact, serializer);
+        <crate::api_cashu_v1::types::Nuts>::sse_encode(self.nuts, serializer);
     }
 }
 
@@ -9658,24 +9778,24 @@ impl SseEncode for crate::api_nostr::NostrEvent {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::NutSupported {
+impl SseEncode for crate::api_cashu_v1::types::NutSupported {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.supported, serializer);
     }
 }
 
-impl SseEncode for crate::api_cashu::types::Nuts {
+impl SseEncode for crate::api_cashu_v1::types::Nuts {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <crate::api_cashu::types::PaymentMethodSettings>::sse_encode(self.nut04, serializer);
-        <crate::api_cashu::types::PaymentMethodSettings>::sse_encode(self.nut05, serializer);
-        <crate::api_cashu::types::NutSupported>::sse_encode(self.nut07, serializer);
-        <crate::api_cashu::types::NutSupported>::sse_encode(self.nut08, serializer);
-        <crate::api_cashu::types::NutSupported>::sse_encode(self.nut09, serializer);
-        <crate::api_cashu::types::NutSupported>::sse_encode(self.nut10, serializer);
-        <crate::api_cashu::types::NutSupported>::sse_encode(self.nut11, serializer);
-        <crate::api_cashu::types::NutSupported>::sse_encode(self.nut12, serializer);
+        <crate::api_cashu_v1::types::PaymentMethodSettings>::sse_encode(self.nut04, serializer);
+        <crate::api_cashu_v1::types::PaymentMethodSettings>::sse_encode(self.nut05, serializer);
+        <crate::api_cashu_v1::types::NutSupported>::sse_encode(self.nut07, serializer);
+        <crate::api_cashu_v1::types::NutSupported>::sse_encode(self.nut08, serializer);
+        <crate::api_cashu_v1::types::NutSupported>::sse_encode(self.nut09, serializer);
+        <crate::api_cashu_v1::types::NutSupported>::sse_encode(self.nut10, serializer);
+        <crate::api_cashu_v1::types::NutSupported>::sse_encode(self.nut11, serializer);
+        <crate::api_cashu_v1::types::NutSupported>::sse_encode(self.nut12, serializer);
     }
 }
 
@@ -9729,12 +9849,12 @@ impl SseEncode for Option<crate::api_signal::KeychatSignalSession> {
     }
 }
 
-impl SseEncode for Option<crate::api_cashu::types::MintInfo> {
+impl SseEncode for Option<crate::api_cashu_v1::types::MintInfo> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
-            <crate::api_cashu::types::MintInfo>::sse_encode(value, serializer);
+            <crate::api_cashu_v1::types::MintInfo>::sse_encode(value, serializer);
         }
     }
 }
@@ -9789,7 +9909,7 @@ impl SseEncode for Option<Vec<u8>> {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::PaymentMethod {
+impl SseEncode for crate::api_cashu_v1::types::PaymentMethod {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.method, serializer);
@@ -9799,10 +9919,10 @@ impl SseEncode for crate::api_cashu::types::PaymentMethod {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::PaymentMethodSettings {
+impl SseEncode for crate::api_cashu_v1::types::PaymentMethodSettings {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<crate::api_cashu::types::PaymentMethod>>::sse_encode(self.methods, serializer);
+        <Vec<crate::api_cashu_v1::types::PaymentMethod>>::sse_encode(self.methods, serializer);
         <bool>::sse_encode(self.disabled, serializer);
     }
 }
@@ -9866,6 +9986,14 @@ impl SseEncode for (String, Option<u64>) {
     }
 }
 
+impl SseEncode for (String, (u64, u64)) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.0, serializer);
+        <(u64, u64)>::sse_encode(self.1, serializer);
+    }
+}
+
 impl SseEncode for (String, String) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -9879,6 +10007,14 @@ impl SseEncode for (String, u32) {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.0, serializer);
         <u32>::sse_encode(self.1, serializer);
+    }
+}
+
+impl SseEncode for (String, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.0, serializer);
+        <u64>::sse_encode(self.1, serializer);
     }
 }
 
@@ -9906,6 +10042,14 @@ impl SseEncode for (u32, Vec<u8>, Vec<u8>, Vec<u8>) {
         <Vec<u8>>::sse_encode(self.1, serializer);
         <Vec<u8>>::sse_encode(self.2, serializer);
         <Vec<u8>>::sse_encode(self.3, serializer);
+    }
+}
+
+impl SseEncode for (u64, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u64>::sse_encode(self.0, serializer);
+        <u64>::sse_encode(self.1, serializer);
     }
 }
 
@@ -9957,7 +10101,7 @@ impl SseEncode for crate::api_nostr::Secp256k1SimpleAccount {
     }
 }
 
-impl SseEncode for crate::api_cashu::TokenInfo {
+impl SseEncode for crate::api_cashu_v1::TokenInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.mint, serializer);
@@ -9967,7 +10111,7 @@ impl SseEncode for crate::api_cashu::TokenInfo {
     }
 }
 
-impl SseEncode for crate::api_cashu_v2::TokenInfoV2 {
+impl SseEncode for crate::api_cashu::TokenInfoV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.mint, serializer);
@@ -9977,17 +10121,17 @@ impl SseEncode for crate::api_cashu_v2::TokenInfoV2 {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::Transaction {
+impl SseEncode for crate::api_cashu_v1::types::Transaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         match self {
-            crate::api_cashu::types::Transaction::Cashu(field0) => {
+            crate::api_cashu_v1::types::Transaction::Cashu(field0) => {
                 <i32>::sse_encode(0, serializer);
-                <crate::api_cashu::types::CashuTransaction>::sse_encode(field0, serializer);
+                <crate::api_cashu_v1::types::CashuTransaction>::sse_encode(field0, serializer);
             }
-            crate::api_cashu::types::Transaction::LN(field0) => {
+            crate::api_cashu_v1::types::Transaction::LN(field0) => {
                 <i32>::sse_encode(1, serializer);
-                <crate::api_cashu::types::LNTransaction>::sse_encode(field0, serializer);
+                <crate::api_cashu_v1::types::LNTransaction>::sse_encode(field0, serializer);
             }
             _ => {
                 unimplemented!("");
@@ -9996,14 +10140,14 @@ impl SseEncode for crate::api_cashu::types::Transaction {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::TransactionDirection {
+impl SseEncode for crate::api_cashu_v1::types::TransactionDirection {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu::types::TransactionDirection::In => 0,
-                crate::api_cashu::types::TransactionDirection::Out => 1,
-                crate::api_cashu::types::TransactionDirection::Split => 2,
+                crate::api_cashu_v1::types::TransactionDirection::In => 0,
+                crate::api_cashu_v1::types::TransactionDirection::Out => 1,
+                crate::api_cashu_v1::types::TransactionDirection::Split => 2,
                 _ => {
                     unimplemented!("");
                 }
@@ -10013,14 +10157,14 @@ impl SseEncode for crate::api_cashu::types::TransactionDirection {
     }
 }
 
-impl SseEncode for crate::api_cashu_v2::types::TransactionDirectionV2 {
+impl SseEncode for crate::api_cashu::types::TransactionDirectionV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu_v2::types::TransactionDirectionV2::Incoming => 0,
-                crate::api_cashu_v2::types::TransactionDirectionV2::Outgoing => 1,
-                crate::api_cashu_v2::types::TransactionDirectionV2::Split => 2,
+                crate::api_cashu::types::TransactionDirectionV2::Incoming => 0,
+                crate::api_cashu::types::TransactionDirectionV2::Outgoing => 1,
+                crate::api_cashu::types::TransactionDirectionV2::Split => 2,
                 _ => {
                     unimplemented!("");
                 }
@@ -10030,13 +10174,13 @@ impl SseEncode for crate::api_cashu_v2::types::TransactionDirectionV2 {
     }
 }
 
-impl SseEncode for crate::api_cashu_v2::types::TransactionKindV2 {
+impl SseEncode for crate::api_cashu::types::TransactionKindV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu_v2::types::TransactionKindV2::Cashu => 0,
-                crate::api_cashu_v2::types::TransactionKindV2::LN => 1,
+                crate::api_cashu::types::TransactionKindV2::Cashu => 0,
+                crate::api_cashu::types::TransactionKindV2::LN => 1,
                 _ => {
                     unimplemented!("");
                 }
@@ -10046,15 +10190,15 @@ impl SseEncode for crate::api_cashu_v2::types::TransactionKindV2 {
     }
 }
 
-impl SseEncode for crate::api_cashu::types::TransactionStatus {
+impl SseEncode for crate::api_cashu_v1::types::TransactionStatus {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu::types::TransactionStatus::Pending => 0,
-                crate::api_cashu::types::TransactionStatus::Success => 1,
-                crate::api_cashu::types::TransactionStatus::Failed => 2,
-                crate::api_cashu::types::TransactionStatus::Expired => 3,
+                crate::api_cashu_v1::types::TransactionStatus::Pending => 0,
+                crate::api_cashu_v1::types::TransactionStatus::Success => 1,
+                crate::api_cashu_v1::types::TransactionStatus::Failed => 2,
+                crate::api_cashu_v1::types::TransactionStatus::Expired => 3,
                 _ => {
                     unimplemented!("");
                 }
@@ -10064,19 +10208,35 @@ impl SseEncode for crate::api_cashu::types::TransactionStatus {
     }
 }
 
-impl SseEncode for crate::api_cashu_v2::types::TransactionV2 {
+impl SseEncode for crate::api_cashu::types::TransactionStatusV2 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api_cashu::types::TransactionStatusV2::Pending => 0,
+                crate::api_cashu::types::TransactionStatusV2::Success => 1,
+                crate::api_cashu::types::TransactionStatusV2::Failed => 2,
+                crate::api_cashu::types::TransactionStatusV2::Expired => 3,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for crate::api_cashu::types::TransactionV2 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.mint_url, serializer);
-        <crate::api_cashu_v2::types::TransactionDirectionV2>::sse_encode(
-            self.direction,
-            serializer,
-        );
-        <crate::api_cashu_v2::types::TransactionKindV2>::sse_encode(self.kind, serializer);
+        <crate::api_cashu::types::TransactionDirectionV2>::sse_encode(self.direction, serializer);
+        <crate::api_cashu::types::TransactionKindV2>::sse_encode(self.kind, serializer);
         <u64>::sse_encode(self.amount, serializer);
         <u64>::sse_encode(self.fee, serializer);
         <Option<String>>::sse_encode(self.unit, serializer);
         <String>::sse_encode(self.token, serializer);
+        <crate::api_cashu::types::TransactionStatusV2>::sse_encode(self.status, serializer);
         <u64>::sse_encode(self.timestamp, serializer);
         <std::collections::HashMap<String, String>>::sse_encode(self.metadata, serializer);
     }
@@ -10159,8 +10319,8 @@ mod io {
     // Section: imports
 
     use super::*;
-    use crate::api_cashu_v2::types::*;
-    use crate::api_cashu_v2::*;
+    use crate::api_cashu::types::*;
+    use crate::api_cashu::*;
     use crate::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
@@ -10254,20 +10414,6 @@ mod io {
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MultiMintWallet>>::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_keychat_rust_ffi_plugin_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TransactionStatusV2>>::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_keychat_rust_ffi_plugin_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TransactionStatusV2>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]

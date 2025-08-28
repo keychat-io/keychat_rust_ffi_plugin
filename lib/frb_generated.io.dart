@@ -5,8 +5,8 @@
 
 import 'api_cashu.dart';
 import 'api_cashu/types.dart';
-import 'api_cashu_v2.dart';
-import 'api_cashu_v2/types.dart';
+import 'api_cashu_v1.dart';
+import 'api_cashu_v1/types.dart';
 import 'api_mls.dart';
 import 'api_mls/types.dart';
 import 'api_nostr.dart';
@@ -41,8 +41,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MnemonicInfoPtr =>
 
 CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MultiMintWalletPtr => wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWalletPtr;
 
-CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_TransactionStatusV2Ptr => wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2Ptr;
-
 CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWalletPtr;
 
 
@@ -56,8 +54,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected MintUrl dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(dynamic raw);
 
 @protected MnemonicInfo dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(dynamic raw);
-
-@protected TransactionStatusV2 dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(dynamic raw);
 
 @protected Wallet dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(dynamic raw);
 
@@ -73,6 +69,10 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(dynamic raw);
 
+@protected Map<String, (BigInt,BigInt)> dco_decode_Map_String_record_u_64_u_64_None(dynamic raw);
+
+@protected Map<String, BigInt> dco_decode_Map_String_u_64_None(dynamic raw);
+
 @protected Map<String, void> dco_decode_Map_String_unit_None(dynamic raw);
 
 @protected Amount dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(dynamic raw);
@@ -86,8 +86,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected MnemonicInfo dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(dynamic raw);
 
 @protected MultiMintWallet dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(dynamic raw);
-
-@protected TransactionStatusV2 dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(dynamic raw);
 
 @protected Wallet dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(dynamic raw);
 
@@ -179,7 +177,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<(String,BigInt?)> dco_decode_list_record_string_opt_box_autoadd_u_64(dynamic raw);
 
+@protected List<(String,(BigInt,BigInt))> dco_decode_list_record_string_record_u_64_u_64(dynamic raw);
+
 @protected List<(String,String)> dco_decode_list_record_string_string(dynamic raw);
+
+@protected List<(String,BigInt)> dco_decode_list_record_string_u_64(dynamic raw);
 
 @protected List<(String,void)> dco_decode_list_record_string_unit(dynamic raw);
 
@@ -245,15 +247,21 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (String,BigInt?) dco_decode_record_string_opt_box_autoadd_u_64(dynamic raw);
 
+@protected (String,(BigInt,BigInt)) dco_decode_record_string_record_u_64_u_64(dynamic raw);
+
 @protected (String,String) dco_decode_record_string_string(dynamic raw);
 
 @protected (String,int) dco_decode_record_string_u_32(dynamic raw);
+
+@protected (String,BigInt) dco_decode_record_string_u_64(dynamic raw);
 
 @protected (String,void) dco_decode_record_string_unit(dynamic raw);
 
 @protected (int,Uint8List,Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
 @protected (int,Uint8List,Uint8List,Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
+
+@protected (BigInt,BigInt) dco_decode_record_u_64_u_64(dynamic raw);
 
 @protected (BigInt,BigInt) dco_decode_record_u_64_usize(dynamic raw);
 
@@ -278,6 +286,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected TransactionKindV2 dco_decode_transaction_kind_v_2(dynamic raw);
 
 @protected TransactionStatus dco_decode_transaction_status(dynamic raw);
+
+@protected TransactionStatusV2 dco_decode_transaction_status_v_2(dynamic raw);
 
 @protected TransactionV2 dco_decode_transaction_v_2(dynamic raw);
 
@@ -307,8 +317,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected MnemonicInfo sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(SseDeserializer deserializer);
 
-@protected TransactionStatusV2 sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(SseDeserializer deserializer);
-
 @protected Wallet sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(SseDeserializer deserializer);
 
 @protected Mnemonic sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(SseDeserializer deserializer);
@@ -323,6 +331,10 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Map<String, BigInt?> sse_decode_Map_String_opt_box_autoadd_u_64_None(SseDeserializer deserializer);
 
+@protected Map<String, (BigInt,BigInt)> sse_decode_Map_String_record_u_64_u_64_None(SseDeserializer deserializer);
+
+@protected Map<String, BigInt> sse_decode_Map_String_u_64_None(SseDeserializer deserializer);
+
 @protected Map<String, void> sse_decode_Map_String_unit_None(SseDeserializer deserializer);
 
 @protected Amount sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(SseDeserializer deserializer);
@@ -336,8 +348,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected MnemonicInfo sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(SseDeserializer deserializer);
 
 @protected MultiMintWallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(SseDeserializer deserializer);
-
-@protected TransactionStatusV2 sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(SseDeserializer deserializer);
 
 @protected Wallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(SseDeserializer deserializer);
 
@@ -429,7 +439,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<(String,BigInt?)> sse_decode_list_record_string_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
+@protected List<(String,(BigInt,BigInt))> sse_decode_list_record_string_record_u_64_u_64(SseDeserializer deserializer);
+
 @protected List<(String,String)> sse_decode_list_record_string_string(SseDeserializer deserializer);
+
+@protected List<(String,BigInt)> sse_decode_list_record_string_u_64(SseDeserializer deserializer);
 
 @protected List<(String,void)> sse_decode_list_record_string_unit(SseDeserializer deserializer);
 
@@ -495,15 +509,21 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (String,BigInt?) sse_decode_record_string_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
+@protected (String,(BigInt,BigInt)) sse_decode_record_string_record_u_64_u_64(SseDeserializer deserializer);
+
 @protected (String,String) sse_decode_record_string_string(SseDeserializer deserializer);
 
 @protected (String,int) sse_decode_record_string_u_32(SseDeserializer deserializer);
+
+@protected (String,BigInt) sse_decode_record_string_u_64(SseDeserializer deserializer);
 
 @protected (String,void) sse_decode_record_string_unit(SseDeserializer deserializer);
 
 @protected (int,Uint8List,Uint8List) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
 @protected (int,Uint8List,Uint8List,Uint8List) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
+
+@protected (BigInt,BigInt) sse_decode_record_u_64_u_64(SseDeserializer deserializer);
 
 @protected (BigInt,BigInt) sse_decode_record_u_64_usize(SseDeserializer deserializer);
 
@@ -528,6 +548,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected TransactionKindV2 sse_decode_transaction_kind_v_2(SseDeserializer deserializer);
 
 @protected TransactionStatus sse_decode_transaction_status(SseDeserializer deserializer);
+
+@protected TransactionStatusV2 sse_decode_transaction_status_v_2(SseDeserializer deserializer);
 
 @protected TransactionV2 sse_decode_transaction_v_2(SseDeserializer deserializer);
 
@@ -557,8 +579,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(MnemonicInfo self, SseSerializer serializer);
 
-@protected void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(TransactionStatusV2 self, SseSerializer serializer);
-
 @protected void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(Wallet self, SseSerializer serializer);
 
 @protected void sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(Mnemonic self, SseSerializer serializer);
@@ -573,6 +593,10 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_Map_String_opt_box_autoadd_u_64_None(Map<String, BigInt?> self, SseSerializer serializer);
 
+@protected void sse_encode_Map_String_record_u_64_u_64_None(Map<String, (BigInt,BigInt)> self, SseSerializer serializer);
+
+@protected void sse_encode_Map_String_u_64_None(Map<String, BigInt> self, SseSerializer serializer);
+
 @protected void sse_encode_Map_String_unit_None(Map<String, void> self, SseSerializer serializer);
 
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(Amount self, SseSerializer serializer);
@@ -586,8 +610,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(MnemonicInfo self, SseSerializer serializer);
 
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(MultiMintWallet self, SseSerializer serializer);
-
-@protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(TransactionStatusV2 self, SseSerializer serializer);
 
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(Wallet self, SseSerializer serializer);
 
@@ -679,7 +701,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_list_record_string_opt_box_autoadd_u_64(List<(String,BigInt?)> self, SseSerializer serializer);
 
+@protected void sse_encode_list_record_string_record_u_64_u_64(List<(String,(BigInt,BigInt))> self, SseSerializer serializer);
+
 @protected void sse_encode_list_record_string_string(List<(String,String)> self, SseSerializer serializer);
+
+@protected void sse_encode_list_record_string_u_64(List<(String,BigInt)> self, SseSerializer serializer);
 
 @protected void sse_encode_list_record_string_unit(List<(String,void)> self, SseSerializer serializer);
 
@@ -745,15 +771,21 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_record_string_opt_box_autoadd_u_64((String,BigInt?) self, SseSerializer serializer);
 
+@protected void sse_encode_record_string_record_u_64_u_64((String,(BigInt,BigInt)) self, SseSerializer serializer);
+
 @protected void sse_encode_record_string_string((String,String) self, SseSerializer serializer);
 
 @protected void sse_encode_record_string_u_32((String,int) self, SseSerializer serializer);
+
+@protected void sse_encode_record_string_u_64((String,BigInt) self, SseSerializer serializer);
 
 @protected void sse_encode_record_string_unit((String,void) self, SseSerializer serializer);
 
 @protected void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict((int,Uint8List,Uint8List) self, SseSerializer serializer);
 
 @protected void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict((int,Uint8List,Uint8List,Uint8List) self, SseSerializer serializer);
+
+@protected void sse_encode_record_u_64_u_64((BigInt,BigInt) self, SseSerializer serializer);
 
 @protected void sse_encode_record_u_64_usize((BigInt,BigInt) self, SseSerializer serializer);
 
@@ -778,6 +810,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_transaction_kind_v_2(TransactionKindV2 self, SseSerializer serializer);
 
 @protected void sse_encode_transaction_status(TransactionStatus self, SseSerializer serializer);
+
+@protected void sse_encode_transaction_status_v_2(TransactionStatusV2 self, SseSerializer serializer);
 
 @protected void sse_encode_transaction_v_2(TransactionV2 self, SseSerializer serializer);
 
@@ -948,28 +982,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
             late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWalletPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>('frbgen_keychat_rust_ffi_plugin_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet');
             late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet = _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWalletPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-            
-            void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(
-              ffi.Pointer<ffi.Void> ptr,
-            ) {
-              return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(
-                ptr,
-              );
-            }
-
-            late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2Ptr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>('frbgen_keychat_rust_ffi_plugin_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2');
-            late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2 = _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2Ptr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-            
-            void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(
-              ffi.Pointer<ffi.Void> ptr,
-            ) {
-              return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(
-                ptr,
-              );
-            }
-
-            late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2Ptr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>('frbgen_keychat_rust_ffi_plugin_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2');
-            late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2 = _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2Ptr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
             
             void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
               ffi.Pointer<ffi.Void> ptr,

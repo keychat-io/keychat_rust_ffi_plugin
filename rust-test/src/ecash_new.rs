@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate tracing;
 
-use rust::api_cashu_v2::{self as api, MnemonicInfo};
+use rust::api_cashu::{self as api, MnemonicInfo};
 
 const DB_PATH: &str = "rustest-new.db";
 const MINT_URL: &str = "https://8333.space:3338/";
@@ -26,7 +26,7 @@ fn main() {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCEpGFhAmFzeEA1OTBmNTlmNWFiMTc1OTQ5NGQ3N2JmNjcxNzdiMjhjYjQyMThhZWVkOTBmYjRhZWVjNTJlNTU0NDIxZmJiZTMzYWNYIQOmyIp1UTfH59EBNFwdhkBSkRNtZSHiIKnfmpyeswr6uWFko2FlWCC4r_Cz2yBd99aXO-DR3l-DBr8-LT0useNY7o6A4Ojr2mFzWCA1KFfS7n1SfGd7EtDMOoyJu_vESUAFnDD0Aalac8z8VGFyWCDNmi0CbpiKxGjKACZkXjw2flhXiTpln1kUvJvMtdMQhqRhYQFhc3hANzlhMGE5MzhhNGQ5NTYzMzE3ZTYwMmY0OWMyOGVmNzNjYzhmNDM4YzlhY2IzY2NlODE1MmYwNDljMjIyOTJjNmFjWCECDiJhQtaOOentTBUjfZzAvQZUJd112uzHPy87bFbi6sBhZKNhZVggsakHGGwMFJUKR-T4aCbmz6KEQHyCoJJF08nqMozxhMlhc1gg5z5eujKe4rYLYBKNbUsTDkoAoQyVJb9zZpAMOV_RS4FhclgghPmgGU5DuTl07zZl72FnWCkwZJCTvNKt1V8EJvJBf4akYWEBYXN4QDk0Y2MyNDcyMjRkMGRmNjYxYTEzMzFkZjE5ZDQ0MTYxM2I5ODM2ZTkyNDViYmNmOTVmOTcyOTUyMDBiNjViODFhY1ghAmf_y_-w8Sjl8P4lTWUtokiFgmt7M_t9KcNV0vKNjjNdYWSjYWVYIH0Y__fgvIuyuen6zNqG65PTfQufGAoMVaTJhKnBCJ2qYXNYIFzx9MdA4pF8wInMtevWGC42aARCz7vsb26vuLQQANuvYXJYIL_NT5hfGYrM9FQpi9n4DhB8WZ8k6mzgmW3qgJEbPkAIpGFhAWFzeEBiYWMwNGJmOTk3ODIzYWM5OTkxZTczMThiYjI3MzA3NTAwNjEzMWU4YWM0NWFlNjk0ZTRlZjAyMGE1ODBmODg3YWNYIQOIH0ONlXr8qLn-qKJvAfB6tHlEzw-Xo2RA12_dGpwK2WFko2FlWCB4uKn3VqpVuDY1ZPsnvA3bJ62ekceOiILO2l7nPMsUC2FzWCBuobQP4840Pj_y375F2FONypi1eLg4NIQ50AWgxZ3IPWFyWCDycqGHfoT52DqNGRxDil3hnOFPo1t7Ip423-O_LwRrxQ".trim();
+    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCEpGFhAmFzeEA1ZDdhMjg4ODgwNGY4ZmU3NmMzOWY3ODE2M2E4Mjc3YzUxMWM1NjcyZDliZTljODdjNTU3OTk3NzZkNjg3Y2E0YWNYIQNI9MEblVa8Pwhso9_RJgUBx9-zv2mRJUX6sVnMShEFw2Fko2FlWCA-LE5F7hCaBt6hlJvZy5uI07G6El-U0JbWK0LAO4z3RmFzWCBnKgch7YMZtoGzh0cOLTkyGEvvzzLWBonbxVTevIbLl2FyWCBoeypUeEJG8r9IBcmXXRMWbWXmqxx0ggBq134EEemOX6RhYQJhc3hAYTI0MGQwMGUzOWI5NDdkOGVhOTg2MmY1ZDRkMTc2M2ViZjhiZmZjOTAxOGE2Mjk1NjQxMzE1YzhiZmM4MzIzZWFjWCEDRnbUMwhSGGwF-XC6VRNi1TuP2aDlVAOGXllkw9xCEIBhZKNhZVggu7xdXgDQTIY76lqy1pPBHjZoj-KgbsnERr_kU6T2m0lhc1ggbZvbUFi5ooBTAZUIyyUZ87yU46PYQCX_sEcJbXEEaFthclggfkkRhoyDjfANo4RuHLr5P9-zeTHIfl-3YRIX3yXhwFGkYWEBYXN4QDA0OTA0NTFiZDQ3YjEyMTMwMDdhMTkzN2E4NmZjOWZjOTg4MDg3OGU1NzMyZDc4YjVlOTUwMzg5OTU0OTYxMWJhY1ghA6LcKuFD8w_HFcrmsAPdCjI7PRvxnqRhv4L45eN3gRxhYWSjYWVYIEDtxo02CwyVO4vwHY1qxdxfL4iYOkgJGYQNYzLNLZt6YXNYIDfvWuBBCVIY1mGWkTqBYb3RyFLEKdbPStO_GDbg9aDCYXJYIJGFmC0cZWF-yWOK2cjk4so2_YrfGEvJjDlC6kJksvNBpGFhAWFzeEBiYjY0MTNkZWNiYTdmNGEwMjBhOTNhMWY5ZWU2N2Q4NzNhZjg1ZTNlOTVlZDAyNmMxZTY0YzhhYjM0MzkzYjlmYWNYIQIg1I92e8Xs3ETiSAHs570RcX44leHEDbFvhb6DKC9Q4mFko2FlWCAhYEnDEzarPLxHrGsnKUehJmVXGHuhc6WmlsPXTtSEImFzWCDWx4zM8j3FyAuMWYNp7QypX5F8ibpKvSK_WMr3gstK8GFyWCBt0Tm71WD6p7yAvMnym5BbtaPBBfZQGpfJzQdtSzJcug".trim();
     // let re = api::receive_token(encoded_token_8338.to_string());
     // println!("receive token is {:?}", re);
 
@@ -35,20 +35,33 @@ fn main() {
     // println!("get_mints is {:?}", mints);
 
     // test for send token
-    let send = api::send_all(MINT_URL.to_string());
-    println!("send token is {:?}", send);
-
-    // let send = api::send_all(MINT_URL_MINIBITS.to_string());
+    // let send = api::send_all(MINT_URL.to_string());
     // println!("send token is {:?}", send);
+
+    // let send = api::send(2, MINT_URL.to_string(), None);
+    // println!("send token is {:?}", send);
+
+    let check_tx = api::check_pending();
+    println!("check_pending is {:?}", check_tx);
 
     // test for request mint
     // let request_mint = api::request_mint(10, MINT_URL.to_string());
     // println!("request_mint is {:?}", request_mint);
     // lnbc20n1p58vdq6pp5w46w0ve9rq40skwzlvk08774mtm44xymnrc3w5znymuj62zj6cssdqqcqzpuxqrwzqsp5hy7ltttz0fwgu8mpgnvn9re0638vye4ug97dr6zyxeppzukh784s9qxpqysgqxz8zzps2fyefmx8d9mq92m8xej9dy7s6kpg0x0lnxtlct30ml65rlkhwdw80ugefmeyl2jr484x4l255rc9f8nxche0lnnf6nhjwxucp4yq5my
 
+    let txs = api::get_all_transactions();
+    for tx in txs.unwrap() {
+        println!("tx {:?}", tx);
+    }
+
+    let txs = api::get_cashu_pending_transactions();
+    for tx in txs.unwrap() {
+        println!("tx pending {:?}", tx);
+    }
+
     // test for check quote
-    let amounts = api::check_all_mint_quotes();
-    println!("check_all_mint_quotes {:?}", amounts);
+    // let amounts = api::check_all_mint_quotes();
+    // println!("check_all_mint_quotes {:?}", amounts);
 
     // test for melt
     // let invoice = "lnbc30n1p52csftpp5jdjqw63kjlgkupl97awn23fj8hsqkm4cvckrrvg7ejxzu9zv66zqdqqcqzpuxqrwzqsp5sn07ddv5ggu37y7mgredgy6aucjs26jgd67gmw8fpvftug33vxts9qxpqysgqua8aj7u3yxm3atw5t7jjk4lnh3k7zvc3d04gs7y9mh4grk5ks7t3sj6z7srck3du5ezaec93a8q24cvghwhqffr9dcp7k8j6h5rljagpw7sq08".to_string();
@@ -80,10 +93,10 @@ fn main() {
     // let restore = api::restore(MINT_URL_MINIBITS.to_string(), None).unwrap();
     // println!("restore {:?}", restore);
 
-    let txs = api::get_all_transactions();
-    for tx in txs.unwrap() {
-        println!("tx {:?}", tx);
-    }
+    // let txs = api::get_all_transactions();
+    // for tx in txs.unwrap() {
+    //     println!("tx {:?}", tx);
+    // }
 
     // // test for get_cashu_transactions_with_offset
     // let cashu_txs = api::get_cashu_transactions_with_offset(0, 100);
@@ -92,10 +105,10 @@ fn main() {
     // }
 
     // // test for get_ln_transactions_with_offset
-    let ln_txs = api::get_ln_transactions_with_offset(0, 100);
-    for tx in ln_txs.unwrap() {
-        println!("ln {:?}", tx);
-    }
+    // let ln_txs = api::get_ln_transactions_with_offset(0, 100);
+    // for tx in ln_txs.unwrap() {
+    //     println!("ln {:?}", tx);
+    // }
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL.to_string());

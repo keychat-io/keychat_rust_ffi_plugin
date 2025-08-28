@@ -1,170 +1,141 @@
+use cdk_common::wallet::TransactionStatus;
 use flutter_rust_bridge::frb;
 // use strum::{AsRefStr, Display, EnumIs, EnumString, IntoStaticStr};
-
-pub use cashu_wallet::types::{
-    CashuTransaction, LNTransaction, Transaction, TransactionDirection, TransactionKind,
-    TransactionStatus,
+pub use cashu::{Amount, CurrencyUnit, MintUrl};
+pub use cdk_common::wallet::{
+    TransactionDirection as TransactionDirectionV2, TransactionKind as TransactionKindV2,
+    TransactionStatus as TransactionStatusV2,
 };
+use std::collections::HashMap;
 
-#[frb(mirror(TransactionStatus))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransactionV2 {
+    pub mint_url: String,
+    pub direction: TransactionDirectionV2,
+    pub kind: TransactionKindV2,
+    pub amount: u64,
+    pub fee: u64,
+    pub unit: Option<String>,
+    pub token: String,
+    pub status: TransactionStatusV2,
+    pub timestamp: u64,
+    pub metadata: HashMap<String, String>,
+}
+
+#[frb(mirror(TransactionStatusV2))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
-//
-// #[derive(Display, AsRefStr, IntoStaticStr, EnumIs, EnumString)]
-pub enum _TransactionStatus {
+pub enum _TransactionStatusV2 {
     Pending,
     Success,
     Failed,
     Expired,
 }
 
-#[frb(mirror(TransactionDirection))]
+#[frb(mirror(TransactionDirectionV2))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
-//
-// #[derive(Display, AsRefStr, IntoStaticStr, EnumIs, EnumString)]
-pub enum _TransactionDirection {
-    In,
-    Out,
+pub enum _TransactionDirectionV2 {
+    Incoming,
+    Outgoing,
     Split,
 }
 
-#[frb(mirror(TransactionKind))]
+#[frb(mirror(TransactionKindV2))]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
-//
-// #[derive(Display, AsRefStr, IntoStaticStr, EnumIs, EnumString)]
-pub enum _TransactionKind {
+pub enum _TransactionKindV2 {
     Cashu,
     LN,
 }
 
-#[frb(mirror(Transaction))]
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-//
-// #[derive(EnumIs)]
-#[serde(tag = "kind")]
-pub enum _Transaction {
-    Cashu(CashuTransaction),
-    LN(LNTransaction),
+// #[frb(mirror(TransactionV2))]
+// #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+// pub struct _TransactionV2 {
+//     pub mint_url: MintUrl,
+//     pub direction: TransactionDirectionV2,
+//     pub kind: TransactionKindV2,
+//     pub amount: Amount,
+//     pub fee: Amount,
+//     pub unit: CurrencyUnit,
+//     pub token: String,
+//     pub timestamp: u64,
+//     #[serde(default, skip_serializing_if = "Option::is_none")]
+//     pub memo: Option<String>,
+//     pub metadata: HashMap<String, String>,
+// }
+
+// #[frb(mirror(MintUrl))]
+// #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+// pub struct _MintUrl(pub String);
+
+// #[frb(mirror(Amount))]
+// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+// pub struct _Amount(pub u64);
+
+// #[frb(mirror(CurrencyUnit))]
+// #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+// pub enum _CurrencyUnit {
+//     /// Sat
+//     #[default]
+//     Sat,
+//     /// Msat
+//     Msat,
+//     /// Usd
+//     Usd,
+//     /// Euro
+//     Eur,
+//     /// Auth
+//     Auth,
+// }
+
+pub use bip39::Mnemonic;
+use bitcoin::bip32::Xpriv;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MnemonicInfo {
+    mnemonic: Mnemonic,
+    key: Xpriv,
+    pubkey: String,
 }
 
-#[frb(mirror(CashuTransaction))]
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct _CashuTransaction {
-    pub id: String,
-    pub status: TransactionStatus,
-    pub io: TransactionDirection,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub info: Option<String>,
-    pub time: u64,
-    pub amount: u64,
-    pub fee: Option<u64>,
-    pub mint: String,
-    pub token: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub unit: Option<String>,
+impl MnemonicInfo {
+    pub fn new(mnemonic: &Mnemonic) -> anyhow::Result<Self> {
+        let (key, pubkey) = get_keys(&mnemonic)?;
+        Ok(Self {
+            mnemonic: mnemonic.clone(),
+            key,
+            pubkey,
+        })
+    }
+    pub fn with_words(words: &str) -> anyhow::Result<Self> {
+        let mnemonic = words.parse()?;
+        Self::new(&mnemonic)
+    }
+    pub fn generate_words(words: usize) -> anyhow::Result<String> {
+        let mnemonic = Mnemonic::generate(words)?;
+        Ok(mnemonic.to_string())
+    }
+    pub fn pubkey(&self) -> &str {
+        &self.pubkey
+    }
+    pub fn mnemonic(&self) -> &Mnemonic {
+        &self.mnemonic
+    }
 }
 
-#[frb(mirror(LNTransaction))]
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct _LNTransaction {
-    pub status: TransactionStatus,
-    pub io: TransactionDirection,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub info: Option<String>,
-    pub time: u64,
-    pub amount: u64,
-    pub fee: Option<u64>,
-    pub mint: String,
-    // invoice
-    pub pr: String,
-    pub hash: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub unit: Option<String>,
-}
+/// m / 129372' / 0' / keyset_k_int' / counter' / secret||r
+/// m / 129372' / 0'
+fn get_keys(mnemonic: &Mnemonic) -> anyhow::Result<(Xpriv, String)> {
+    use bitcoin::bip32::{DerivationPath, Xpriv};
+    use bitcoin::Network;
+    use cashu::SECP256K1;
 
-pub use cashu_wallet::types::{
-    Contact, Mint, MintInfo, NutSupported, Nuts, PaymentMethod, PaymentMethodSettings,
-};
+    let path: DerivationPath = "m/129372'/0'".parse().unwrap();
 
-#[frb(mirror(Mint))]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct _Mint {
-    pub url: String,
-    pub active: bool,
-    pub time: u64,
-    pub info: Option<MintInfo>,
-}
-
-/// NUT-06: Mint information
-// https://github.com/cashubtc/nuts/blob/main/06.md
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(MintInfo))]
-pub struct _MintInfo {
-    pub name: String,
-    pub version: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub pubkey: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description_long: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub motd: Option<String>,
-    #[serde(default)]
-    pub contact: Vec<Contact>,
-    pub nuts: Nuts,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(Contact))]
-pub struct _Contact {
-    #[serde(default)]
-    pub method: String,
-    #[serde(default)]
-    pub info: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(Nuts))]
-pub struct _Nuts {
-    #[serde(default, rename = "4")]
-    pub nut04: PaymentMethodSettings,
-    #[serde(default, rename = "5")]
-    pub nut05: PaymentMethodSettings,
-    #[serde(default, rename = "7")]
-    pub nut07: NutSupported,
-    #[serde(default, rename = "8")]
-    pub nut08: NutSupported,
-    #[serde(default, rename = "9")]
-    pub nut09: NutSupported,
-    #[serde(default, rename = "10")]
-    pub nut10: NutSupported,
-    #[serde(default, rename = "11")]
-    pub nut11: NutSupported,
-    #[serde(default, rename = "12")]
-    pub nut12: NutSupported,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(PaymentMethod))]
-pub struct _PaymentMethod {
-    pub method: String,
-    pub unit: String,
-    #[serde(default)]
-    pub min_amount: i64,
-    #[serde(default)]
-    pub max_amount: i64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(PaymentMethodSettings))]
-pub struct _PaymentMethodSettings {
-    #[serde(default)]
-    pub methods: Vec<PaymentMethod>,
-    pub disabled: bool,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(NutSupported))]
-pub struct _NutSupported {
-    pub supported: bool,
+    let seed: [u8; 64] = mnemonic.to_seed("");
+    let bip32_root_key = Xpriv::new_master(Network::Bitcoin, &seed)?;
+    let derived_xpriv = bip32_root_key.derive_priv(&SECP256K1, &path)?;
+    let ident = derived_xpriv
+        .to_keypair(&SECP256K1)
+        .public_key()
+        .to_string();
+    Ok((bip32_root_key, ident))
 }

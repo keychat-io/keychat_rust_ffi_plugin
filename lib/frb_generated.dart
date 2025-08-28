@@ -5,8 +5,8 @@
 
 import 'api_cashu.dart';
 import 'api_cashu/types.dart';
-import 'api_cashu_v2.dart';
-import 'api_cashu_v2/types.dart';
+import 'api_cashu_v1.dart';
+import 'api_cashu_v1/types.dart';
 import 'api_mls.dart';
 import 'api_mls/types.dart';
 import 'api_nostr.dart';
@@ -73,7 +73,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
                   String get codegenVersion => '2.10.0';
 
                   @override
-                  int get rustContentHash => -19756281;
+                  int get rustContentHash => 2044617524;
 
                   static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
                     stem: 'keychat_rust_ffi_plugin',
@@ -84,43 +84,43 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
                 
 
                 abstract class RustLibApi extends BaseApi {
-                  Future<String> crateApiCashuV2TypesMnemonicInfoGenerateWords({required BigInt words });
+                  Future<String> crateApiCashuTypesMnemonicInfoGenerateWords({required BigInt words });
 
-Future<void> crateApiCashuV2TypesMnemonicInfoMnemonic({required MnemonicInfo that });
+Future<void> crateApiCashuTypesMnemonicInfoMnemonic({required MnemonicInfo that });
 
-Future<MnemonicInfo> crateApiCashuV2TypesMnemonicInfoNew({required Mnemonic mnemonic });
+Future<MnemonicInfo> crateApiCashuTypesMnemonicInfoNew({required Mnemonic mnemonic });
 
-Future<void> crateApiCashuV2TypesMnemonicInfoPubkey({required MnemonicInfo that });
+Future<void> crateApiCashuTypesMnemonicInfoPubkey({required MnemonicInfo that });
 
-Future<MnemonicInfo> crateApiCashuV2TypesMnemonicInfoWithWords({required String words });
+Future<MnemonicInfo> crateApiCashuTypesMnemonicInfoWithWords({required String words });
 
 Future<AddMembersResult> crateApiMlsAddMembers({required String nostrId , required String groupId , required List<String> keyPackages });
 
-Future<bool> crateApiCashuAddMint({required String url });
+Future<void> crateApiCashuAddMint({required String url });
 
-Future<void> crateApiCashuV2AddMint({required String url });
+Future<bool> crateApiCashuV1AddMint({required String url });
 
 Future<void> crateApiMlsAdminCommitLeave({required String nostrId , required String groupId });
 
 Future<Uint8List> crateApiMlsAdminProposalLeave({required String nostrId , required String groupId });
 
-Future<BigInt> crateApiCashuV2CheckAllMintQuotes();
+Future<List<String>> crateApiCashuV1CashuV1InitSendAll({required String dbpath , String? words });
 
-Future<BigInt> crateApiCashuV2CheckAllPendingProofs({required String activeMint });
+Future<BigInt> crateApiCashuCheckAllMintQuotes();
 
-Future<(BigInt,BigInt)> crateApiCashuCheckPending();
+Future<Map<String, (BigInt,BigInt)>> crateApiCashuCheckPending();
 
-Future<void> crateApiCashuV2CheckPending();
+Future<(BigInt,BigInt)> crateApiCashuV1CheckPending();
 
-Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs();
+Future<Map<String, BigInt>> crateApiCashuCheckProofs();
 
-Future<(BigInt,BigInt,BigInt)> crateApiCashuV2CheckProofs();
+Future<(BigInt,BigInt,BigInt)> crateApiCashuV1CheckProofs();
 
-Future<Transaction> crateApiCashuCheckTransaction({required String id });
+Future<void> crateApiCashuCheckTransaction({required String id });
 
-Future<void> crateApiCashuV2CheckTransaction({required String id });
+Future<Transaction> crateApiCashuV1CheckTransaction({required String id });
 
-Future<bool> crateApiCashuCloseDb();
+Future<bool> crateApiCashuV1CloseDb();
 
 Future<bool> crateApiSignalContainsSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
 
@@ -142,13 +142,13 @@ Future<bool> crateApiNostrCurve25519Verify({required List<int> publicKey , requi
 
 String crateApiNostrDecodeBech32({required String content });
 
-Future<InvoiceInfo> crateApiCashuDecodeInvoice({required String encodedInvoice });
+Future<InvoiceInfoV2> crateApiCashuDecodeInvoice({required String encodedInvoice });
 
-Future<InvoiceInfoV2> crateApiCashuV2DecodeInvoice({required String encodedInvoice });
+Future<InvoiceInfo> crateApiCashuV1DecodeInvoice({required String encodedInvoice });
 
-Future<TokenInfo> crateApiCashuDecodeToken({required String encodedToken });
+Future<TokenInfoV2> crateApiCashuDecodeToken({required String encodedToken });
 
-Future<TokenInfoV2> crateApiCashuV2DecodeToken({required String encodedToken });
+Future<TokenInfo> crateApiCashuV1DecodeToken({required String encodedToken });
 
 Future<String> crateApiNostrDecrypt({required String senderKeys , required String receiverPubkey , required String content });
 
@@ -202,25 +202,27 @@ Future<Secp256k1SimpleAccount> crateApiNostrGenerateSimple();
 
 Future<List<String>> crateApiSignalGetAllAliceAddrs({required KeychatIdentityKeyPair keyPair });
 
-Future<List<TransactionV2>> crateApiCashuV2GetAllTransactions();
+Future<(BigInt,BigInt,BigInt)> crateApiCashuGetAllProofsData();
 
-Future<(bool,BigInt)> crateApiCashuGetBalance({required String mint });
+Future<List<TransactionV2>> crateApiCashuGetAllTransactions();
+
+Future<(bool,BigInt)> crateApiCashuV1GetBalance({required String mint });
 
 Future<String> crateApiCashuGetBalances();
 
-Future<String> crateApiCashuV2GetBalances();
+Future<String> crateApiCashuV1GetBalances();
 
 String crateApiNostrGetBech32PrikeyByHex({required String hex });
 
 String crateApiNostrGetBech32PubkeyByHex({required String hex });
 
-Future<List<CashuTransaction>> crateApiCashuGetCashuPendingTransactions();
+Future<List<TransactionV2>> crateApiCashuGetCashuPendingTransactions();
 
-Future<List<TransactionV2>> crateApiCashuV2GetCashuPendingTransactions();
+Future<List<CashuTransaction>> crateApiCashuV1GetCashuPendingTransactions();
 
-Future<List<CashuTransaction>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<TransactionV2>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
-Future<List<TransactionV2>> crateApiCashuV2GetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<CashuTransaction>> crateApiCashuV1GetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<String> crateApiNostrGetEncryptEvent({required String senderKeys , required String receiverPubkey , required String content , String? reply });
 
@@ -244,25 +246,25 @@ Future<Uint8List> crateApiMlsGetLeadNodeIndex({required String nostrIdAdmin , re
 
 Future<String> crateApiMlsGetListenKeyFromExportSecret({required String nostrId , required String groupId });
 
-Future<List<LNTransaction>> crateApiCashuGetLnPendingTransactions();
+Future<List<TransactionV2>> crateApiCashuGetLnPendingTransactions();
 
-Future<List<TransactionV2>> crateApiCashuV2GetLnPendingTransactions();
+Future<List<LNTransaction>> crateApiCashuV1GetLnPendingTransactions();
 
-Future<List<LNTransaction>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<TransactionV2>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
-Future<List<TransactionV2>> crateApiCashuV2GetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<LNTransaction>> crateApiCashuV1GetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<Map<String, List<Uint8List>>> crateApiMlsGetMemberExtension({required String nostrId , required String groupId });
 
-Future<List<Mint>> crateApiCashuGetMints();
+Future<Map<String, void>> crateApiCashuGetMints();
 
-Future<Map<String, void>> crateApiCashuV2GetMints();
+Future<List<Mint>> crateApiCashuV1GetMints();
 
-Future<List<Transaction>> crateApiCashuGetPendingTransactions();
+Future<List<Transaction>> crateApiCashuV1GetPendingTransactions();
 
 Future<BigInt> crateApiCashuGetPendingTransactionsCount();
 
-Future<BigInt> crateApiCashuV2GetPendingTransactionsCount();
+Future<BigInt> crateApiCashuV1GetPendingTransactionsCount();
 
 Future<Uint8List> crateApiSignalGetPrekeyApi({required KeychatIdentityKeyPair keyPair , required int prekeyId });
 
@@ -272,15 +274,15 @@ Future<KeychatSignalSession?> crateApiSignalGetSession({required KeychatIdentity
 
 Future<Uint8List> crateApiSignalGetSignedKeyApi({required KeychatIdentityKeyPair keyPair , required int signedKeyId });
 
-Future<List<Transaction>> crateApiCashuGetTransactions();
+Future<List<Transaction>> crateApiCashuV1GetTransactions();
 
-Future<List<Transaction>> crateApiCashuGetTransactionsWithOffset({required BigInt offset , required BigInt limit });
+Future<List<Transaction>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<Uint8List> crateApiMlsGetTreeHash({required String nostrId , required String groupId });
 
 Future<String> crateApiNostrGetUnencryptEvent({required String senderKeys , required List<String> receiverPubkeys , required String content , required int kind , List<List<String>>? additionalTags });
 
-Future<Wallet> crateApiCashuV2GetWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit });
+Future<Wallet> crateApiCashuGetWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit });
 
 Future<Secp256k1Account> crateApiNostrImportFromPhrase({required String phrase , String? password , int? account });
 
@@ -290,13 +292,13 @@ Future<Secp256k1Account> crateApiNostrImportKey({required String senderKeys });
 
 Future<void> crateApiSignalInit({required String dbPath , required KeychatIdentityKeyPair keyPair , required int regId });
 
-Future<List<Mint>> crateApiCashuInitCashu({required int prepareSatsOnceTime });
+Future<List<String>> crateApiCashuInitCashu({required int prepareSatsOnceTime });
 
-Future<Map<String, void>> crateApiCashuV2InitCashu({required int prepareSatsOnceTime });
+Future<List<Mint>> crateApiCashuV1InitCashu({required int prepareSatsOnceTime });
 
-Future<void> crateApiCashuInitDb({required String dbpath , String? words , required bool dev });
+Future<void> crateApiCashuInitDb({required String dbpath , required String words , required bool dev });
 
-Future<void> crateApiCashuV2InitDb({required String dbpath , required String words , required bool dev });
+Future<void> crateApiCashuV1InitDb({required String dbpath , String? words , required bool dev });
 
 Future<void> crateApiSignalInitKeypair({required KeychatIdentityKeyPair keyPair , required int regId });
 
@@ -306,17 +308,17 @@ Future<void> crateApiSignalInitSignalDb({required String dbPath });
 
 Future<void> crateApiMlsJoinMlsGroup({required String nostrId , required String groupId , required List<int> welcome });
 
-Future<Transaction> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount });
+Future<TransactionV2> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount });
 
-Future<TransactionV2> crateApiCashuV2Melt({required String invoice , required String activeMint , BigInt? amount });
+Future<Transaction> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount });
 
-Future<void> crateApiCashuV2MergeProofs({required BigInt thershold });
+Future<void> crateApiCashuMergeProofs({required BigInt thershold });
 
-Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String hash , required String activeMint });
+Future<TransactionV2> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint });
 
-Future<TransactionV2> crateApiCashuV2MintToken({required BigInt amount , required String quoteId , required String activeMint });
+Future<Transaction> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint });
 
-Future<void> crateApiCashuV2MultiReceive({required List<String> stamps });
+Future<void> crateApiCashuMultiReceive({required List<String> stamps });
 
 Future<String> crateApiNostrNip47EncodeUri({required String pubkey , required String relay , required String secret , String? lud16 });
 
@@ -336,33 +338,33 @@ Future<BigInt> crateApiMlsParseLifetimeFromKeyPackage({required String nostrId ,
 
 Future<MessageInType> crateApiMlsParseMlsMsgType({required String nostrId , required String groupId , required String data });
 
-Future<BigInt> crateApiCashuV2PrepareOneProofs({required BigInt amount , required String mint });
+Future<BigInt> crateApiCashuPrepareOneProofs({required BigInt amount , required String mint });
 
-Future<void> crateApiCashuV2PrintProofs({required String mint });
+Future<void> crateApiCashuPrintProofs({required String mint });
 
 Future<void> crateApiSignalProcessPrekeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int regId , required int deviceId , required KeychatIdentityKey identityKey , required int bobSignedId , required List<int> bobSignedPublic , required List<int> bobSigedSig , required int bobPrekeyId , required List<int> bobPrekeyPublic });
 
-Future<List<Transaction>> crateApiCashuReceiveToken({required String encodedToken });
+Future<TransactionV2> crateApiCashuReceiveToken({required String encodedToken });
 
-Future<TransactionV2> crateApiCashuV2ReceiveToken({required String encodedToken });
+Future<List<Transaction>> crateApiCashuV1ReceiveToken({required String encodedToken });
 
 Future<String> crateApiMlsRemoveMembers({required String nostrId , required String groupId , required List<Uint8List> members });
 
-Future<String?> crateApiCashuRemoveMint({required String url });
+Future<void> crateApiCashuRemoveMint({required String url });
 
-Future<void> crateApiCashuV2RemoveMint({required String url });
+Future<String?> crateApiCashuV1RemoveMint({required String url });
 
-Future<BigInt> crateApiCashuRemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatus kind });
+Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatusV2 status });
 
-Future<void> crateApiCashuV2RemoveTransactions({required BigInt unixTimestampLe , required TransactionStatusV2 status });
+Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatus kind });
 
-Future<Transaction> crateApiCashuRequestMint({required BigInt amount , required String activeMint });
+Future<String> crateApiCashuRequestMint({required BigInt amount , required String activeMint });
 
-Future<String> crateApiCashuV2RequestMint({required BigInt amount , required String activeMint });
+Future<Transaction> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint });
 
-Future<(BigInt,BigInt)> crateApiCashuRestore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch });
+Future<BigInt> crateApiCashuRestore({required String mintUrl , String? words });
 
-Future<BigInt> crateApiCashuV2Restore({required String mintUrl , String? words });
+Future<(BigInt,BigInt)> crateApiCashuV1Restore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch });
 
 Future<void> crateApiMlsSelfCommit({required String nostrId , required String groupId });
 
@@ -370,23 +372,23 @@ Future<Uint8List> crateApiMlsSelfLeave({required String nostrId , required Strin
 
 Future<String> crateApiMlsSelfUpdate({required String nostrId , required String groupId , required List<int> extensions });
 
-Future<Transaction> crateApiCashuSend({required BigInt amount , required String activeMint , String? info });
+Future<TransactionV2> crateApiCashuSend({required BigInt amount , required String activeMint , String? info });
 
-Future<TransactionV2> crateApiCashuV2Send({required BigInt amount , required String activeMint , String? info });
+Future<Transaction> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info });
 
-Future<Transaction> crateApiCashuSendAll({required String activeMint , String? info });
+Future<TransactionV2> crateApiCashuSendAll({required String mint });
 
-Future<TransactionV2> crateApiCashuV2SendAll({required String mint });
+Future<Transaction> crateApiCashuV1SendAll({required String activeMint , String? info });
 
-Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
+Future<TransactionV2> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
 
-Future<TransactionV2> crateApiCashuV2SendStamp({required BigInt amount , required List<String> mints , String? info });
+Future<Transaction> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info });
 
 Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address });
 
 Future<bool> crateApiCashuSetMnemonic({String? words });
 
-Future<bool> crateApiCashuV2SetMnemonic({String? words });
+Future<bool> crateApiCashuV1SetMnemonic({String? words });
 
 Future<String> crateApiNostrSha1Hash({required String data });
 
@@ -406,7 +408,7 @@ Future<bool> crateApiSignalUpdateAliceAddr({required KeychatIdentityKeyPair keyP
 
 Future<String> crateApiMlsUpdateGroupContextExtensions({required String nostrId , required String groupId , String? groupName , String? description , List<String>? adminPubkeysHex , List<String>? groupRelays , String? status });
 
-Future<void> crateApiCashuV2ValidateMintNumber({required BigInt mintNumber , required BigInt mintCount });
+Future<void> crateApiCashuValidateMintNumber({required BigInt mintNumber , required BigInt mintCount });
 
 Future<NostrEvent> crateApiNostrVerifyEvent({required String json });
 
@@ -448,12 +450,6 @@ RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_MultiMintW
 
 CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MultiMintWalletPtr;
 
-RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_TransactionStatusV2;
-
-RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_TransactionStatusV2;
-
-CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_TransactionStatusV2Ptr;
-
 RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_Wallet;
 
 RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_Wallet;
@@ -472,7 +468,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
                     required super.portManager,
                   });
 
-                  @override Future<String> crateApiCashuV2TypesMnemonicInfoGenerateWords({required BigInt words })  { return handler.executeNormal(NormalTask(
+                  @override Future<String> crateApiCashuTypesMnemonicInfoGenerateWords({required BigInt words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(words, serializer);
@@ -485,19 +481,19 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2TypesMnemonicInfoGenerateWordsConstMeta,
+            constMeta: kCrateApiCashuTypesMnemonicInfoGenerateWordsConstMeta,
             argValues: [words],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2TypesMnemonicInfoGenerateWordsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuTypesMnemonicInfoGenerateWordsConstMeta => const TaskConstMeta(
             debugName: "MnemonicInfo_generate_words",
             argNames: ["words"],
         );
         
 
-@override Future<void> crateApiCashuV2TypesMnemonicInfoMnemonic({required MnemonicInfo that })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuTypesMnemonicInfoMnemonic({required MnemonicInfo that })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(that, serializer);
@@ -510,19 +506,19 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
           decodeErrorData: null,
         )
         ,
-            constMeta: kCrateApiCashuV2TypesMnemonicInfoMnemonicConstMeta,
+            constMeta: kCrateApiCashuTypesMnemonicInfoMnemonicConstMeta,
             argValues: [that],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2TypesMnemonicInfoMnemonicConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuTypesMnemonicInfoMnemonicConstMeta => const TaskConstMeta(
             debugName: "MnemonicInfo_mnemonic",
             argNames: ["that"],
         );
         
 
-@override Future<MnemonicInfo> crateApiCashuV2TypesMnemonicInfoNew({required Mnemonic mnemonic })  { return handler.executeNormal(NormalTask(
+@override Future<MnemonicInfo> crateApiCashuTypesMnemonicInfoNew({required Mnemonic mnemonic })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(mnemonic, serializer);
@@ -535,19 +531,19 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2TypesMnemonicInfoNewConstMeta,
+            constMeta: kCrateApiCashuTypesMnemonicInfoNewConstMeta,
             argValues: [mnemonic],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2TypesMnemonicInfoNewConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuTypesMnemonicInfoNewConstMeta => const TaskConstMeta(
             debugName: "MnemonicInfo_new",
             argNames: ["mnemonic"],
         );
         
 
-@override Future<void> crateApiCashuV2TypesMnemonicInfoPubkey({required MnemonicInfo that })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuTypesMnemonicInfoPubkey({required MnemonicInfo that })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(that, serializer);
@@ -560,19 +556,19 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
           decodeErrorData: null,
         )
         ,
-            constMeta: kCrateApiCashuV2TypesMnemonicInfoPubkeyConstMeta,
+            constMeta: kCrateApiCashuTypesMnemonicInfoPubkeyConstMeta,
             argValues: [that],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2TypesMnemonicInfoPubkeyConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuTypesMnemonicInfoPubkeyConstMeta => const TaskConstMeta(
             debugName: "MnemonicInfo_pubkey",
             argNames: ["that"],
         );
         
 
-@override Future<MnemonicInfo> crateApiCashuV2TypesMnemonicInfoWithWords({required String words })  { return handler.executeNormal(NormalTask(
+@override Future<MnemonicInfo> crateApiCashuTypesMnemonicInfoWithWords({required String words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(words, serializer);
@@ -585,13 +581,13 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2TypesMnemonicInfoWithWordsConstMeta,
+            constMeta: kCrateApiCashuTypesMnemonicInfoWithWordsConstMeta,
             argValues: [words],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2TypesMnemonicInfoWithWordsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuTypesMnemonicInfoWithWordsConstMeta => const TaskConstMeta(
             debugName: "MnemonicInfo_with_words",
             argNames: ["words"],
         );
@@ -624,7 +620,7 @@ sse_encode_list_String(keyPackages, serializer);
         );
         
 
-@override Future<bool> crateApiCashuAddMint({required String url })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuAddMint({required String url })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
@@ -633,7 +629,7 @@ sse_encode_list_String(keyPackages, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_bool,
+          decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -649,7 +645,7 @@ sse_encode_list_String(keyPackages, serializer);
         );
         
 
-@override Future<void> crateApiCashuV2AddMint({required String url })  { return handler.executeNormal(NormalTask(
+@override Future<bool> crateApiCashuV1AddMint({required String url })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
@@ -658,17 +654,17 @@ sse_encode_list_String(keyPackages, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_bool,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2AddMintConstMeta,
+            constMeta: kCrateApiCashuV1AddMintConstMeta,
             argValues: [url],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2AddMintConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1AddMintConstMeta => const TaskConstMeta(
             debugName: "add_mint",
             argNames: ["url"],
         );
@@ -726,35 +722,36 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuV2CheckAllMintQuotes()  { return handler.executeNormal(NormalTask(
+@override Future<List<String>> crateApiCashuV1CashuV1InitSendAll({required String dbpath , String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
-            final serializer = SseSerializer(generalizedFrbRustBinding);
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
+sse_encode_opt_String(words, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_u_64,
+          decodeSuccessData: sse_decode_list_String,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2CheckAllMintQuotesConstMeta,
-            argValues: [],
+            constMeta: kCrateApiCashuV1CashuV1InitSendAllConstMeta,
+            argValues: [dbpath, words],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2CheckAllMintQuotesConstMeta => const TaskConstMeta(
-            debugName: "check_all_mint_quotes",
-            argNames: [],
+        TaskConstMeta get kCrateApiCashuV1CashuV1InitSendAllConstMeta => const TaskConstMeta(
+            debugName: "cashu_v1_init_send_all",
+            argNames: ["dbpath", "words"],
         );
         
 
-@override Future<BigInt> crateApiCashuV2CheckAllPendingProofs({required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<BigInt> crateApiCashuCheckAllMintQuotes()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(activeMint, serializer);
+            final serializer = SseSerializer(generalizedFrbRustBinding);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12, port: port_);
             
             },
@@ -764,19 +761,19 @@ sse_encode_String(groupId, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2CheckAllPendingProofsConstMeta,
-            argValues: [activeMint],
+            constMeta: kCrateApiCashuCheckAllMintQuotesConstMeta,
+            argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2CheckAllPendingProofsConstMeta => const TaskConstMeta(
-            debugName: "check_all_pending_proofs",
-            argNames: ["activeMint"],
+        TaskConstMeta get kCrateApiCashuCheckAllMintQuotesConstMeta => const TaskConstMeta(
+            debugName: "check_all_mint_quotes",
+            argNames: [],
         );
         
 
-@override Future<(BigInt,BigInt)> crateApiCashuCheckPending()  { return handler.executeNormal(NormalTask(
+@override Future<Map<String, (BigInt,BigInt)>> crateApiCashuCheckPending()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -785,7 +782,7 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_record_usize_usize,
+          decodeSuccessData: sse_decode_Map_String_record_u_64_u_64_None,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -801,7 +798,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<void> crateApiCashuV2CheckPending()  { return handler.executeNormal(NormalTask(
+@override Future<(BigInt,BigInt)> crateApiCashuV1CheckPending()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -810,23 +807,23 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_record_usize_usize,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2CheckPendingConstMeta,
+            constMeta: kCrateApiCashuV1CheckPendingConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2CheckPendingConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1CheckPendingConstMeta => const TaskConstMeta(
             debugName: "check_pending",
             argNames: [],
         );
         
 
-@override Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs()  { return handler.executeNormal(NormalTask(
+@override Future<Map<String, BigInt>> crateApiCashuCheckProofs()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -835,7 +832,7 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_record_usize_usize_usize,
+          decodeSuccessData: sse_decode_Map_String_u_64_None,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -851,7 +848,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<(BigInt,BigInt,BigInt)> crateApiCashuV2CheckProofs()  { return handler.executeNormal(NormalTask(
+@override Future<(BigInt,BigInt,BigInt)> crateApiCashuV1CheckProofs()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -864,19 +861,19 @@ sse_encode_String(groupId, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2CheckProofsConstMeta,
+            constMeta: kCrateApiCashuV1CheckProofsConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2CheckProofsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1CheckProofsConstMeta => const TaskConstMeta(
             debugName: "check_proofs",
             argNames: [],
         );
         
 
-@override Future<Transaction> crateApiCashuCheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuCheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(id, serializer);
@@ -885,7 +882,7 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -901,7 +898,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<void> crateApiCashuV2CheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuV1CheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(id, serializer);
@@ -910,23 +907,23 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2CheckTransactionConstMeta,
+            constMeta: kCrateApiCashuV1CheckTransactionConstMeta,
             argValues: [id],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2CheckTransactionConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1CheckTransactionConstMeta => const TaskConstMeta(
             debugName: "check_transaction",
             argNames: ["id"],
         );
         
 
-@override Future<bool> crateApiCashuCloseDb()  { return handler.executeNormal(NormalTask(
+@override Future<bool> crateApiCashuV1CloseDb()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -939,13 +936,13 @@ sse_encode_String(groupId, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuCloseDbConstMeta,
+            constMeta: kCrateApiCashuV1CloseDbConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuCloseDbConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1CloseDbConstMeta => const TaskConstMeta(
             debugName: "close_db",
             argNames: [],
         );
@@ -1219,7 +1216,7 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<InvoiceInfo> crateApiCashuDecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
+@override Future<InvoiceInfoV2> crateApiCashuDecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
@@ -1228,7 +1225,7 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_invoice_info,
+          decodeSuccessData: sse_decode_invoice_info_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -1244,7 +1241,7 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<InvoiceInfoV2> crateApiCashuV2DecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
+@override Future<InvoiceInfo> crateApiCashuV1DecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
@@ -1253,23 +1250,23 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_invoice_info_v_2,
+          decodeSuccessData: sse_decode_invoice_info,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2DecodeInvoiceConstMeta,
+            constMeta: kCrateApiCashuV1DecodeInvoiceConstMeta,
             argValues: [encodedInvoice],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2DecodeInvoiceConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1DecodeInvoiceConstMeta => const TaskConstMeta(
             debugName: "decode_invoice",
             argNames: ["encodedInvoice"],
         );
         
 
-@override Future<TokenInfo> crateApiCashuDecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<TokenInfoV2> crateApiCashuDecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
@@ -1278,7 +1275,7 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_token_info,
+          decodeSuccessData: sse_decode_token_info_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -1294,7 +1291,7 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<TokenInfoV2> crateApiCashuV2DecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<TokenInfo> crateApiCashuV1DecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
@@ -1303,17 +1300,17 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_token_info_v_2,
+          decodeSuccessData: sse_decode_token_info,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2DecodeTokenConstMeta,
+            constMeta: kCrateApiCashuV1DecodeTokenConstMeta,
             argValues: [encodedToken],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2DecodeTokenConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1DecodeTokenConstMeta => const TaskConstMeta(
             debugName: "decode_token",
             argNames: ["encodedToken"],
         );
@@ -1998,7 +1995,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuV2GetAllTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<(BigInt,BigInt,BigInt)> crateApiCashuGetAllProofsData()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2007,27 +2004,52 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_record_usize_usize_usize,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2GetAllTransactionsConstMeta,
+            constMeta: kCrateApiCashuGetAllProofsDataConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2GetAllTransactionsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuGetAllProofsDataConstMeta => const TaskConstMeta(
+            debugName: "get_all_proofs_data",
+            argNames: [],
+        );
+        
+
+@override Future<List<TransactionV2>> crateApiCashuGetAllTransactions()  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuGetAllTransactionsConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuGetAllTransactionsConstMeta => const TaskConstMeta(
             debugName: "get_all_transactions",
             argNames: [],
         );
         
 
-@override Future<(bool,BigInt)> crateApiCashuGetBalance({required String mint })  { return handler.executeNormal(NormalTask(
+@override Future<(bool,BigInt)> crateApiCashuV1GetBalance({required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
             
             },
             codec: 
@@ -2036,13 +2058,13 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuGetBalanceConstMeta,
+            constMeta: kCrateApiCashuV1GetBalanceConstMeta,
             argValues: [mint],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuGetBalanceConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1GetBalanceConstMeta => const TaskConstMeta(
             debugName: "get_balance",
             argNames: ["mint"],
         );
@@ -2052,7 +2074,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
             
             },
             codec: 
@@ -2073,11 +2095,11 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<String> crateApiCashuV2GetBalances()  { return handler.executeNormal(NormalTask(
+@override Future<String> crateApiCashuV1GetBalances()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64, port: port_);
             
             },
             codec: 
@@ -2086,13 +2108,13 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2GetBalancesConstMeta,
+            constMeta: kCrateApiCashuV1GetBalancesConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2GetBalancesConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1GetBalancesConstMeta => const TaskConstMeta(
             debugName: "get_balances",
             argNames: [],
         );
@@ -2102,7 +2124,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65)!;
             
             },
             codec: 
@@ -2127,7 +2149,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66)!;
             
             },
             codec: 
@@ -2148,16 +2170,16 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<List<CashuTransaction>> crateApiCashuGetCashuPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<TransactionV2>> crateApiCashuGetCashuPendingTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_cashu_transaction,
+          decodeSuccessData: sse_decode_list_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2173,42 +2195,42 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuV2GetCashuPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<CashuTransaction>> crateApiCashuV1GetCashuPendingTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2GetCashuPendingTransactionsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2GetCashuPendingTransactionsConstMeta => const TaskConstMeta(
-            debugName: "get_cashu_pending_transactions",
-            argNames: [],
-        );
-        
-
-@override Future<List<CashuTransaction>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
-sse_encode_usize(limit, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68, port: port_);
             
             },
             codec: 
         SseCodec(
           decodeSuccessData: sse_decode_list_cashu_transaction,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1GetCashuPendingTransactionsConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1GetCashuPendingTransactionsConstMeta => const TaskConstMeta(
+            debugName: "get_cashu_pending_transactions",
+            argNames: [],
+        );
+        
+
+@override Future<List<TransactionV2>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
+sse_encode_usize(limit, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2224,27 +2246,27 @@ sse_encode_usize(limit, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuV2GetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+@override Future<List<CashuTransaction>> crateApiCashuV1GetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_list_cashu_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2GetCashuTransactionsWithOffsetConstMeta,
+            constMeta: kCrateApiCashuV1GetCashuTransactionsWithOffsetConstMeta,
             argValues: [offset, limit],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2GetCashuTransactionsWithOffsetConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1GetCashuTransactionsWithOffsetConstMeta => const TaskConstMeta(
             debugName: "get_cashu_transactions_with_offset",
             argNames: ["offset", "limit"],
         );
@@ -2257,7 +2279,7 @@ sse_encode_usize(limit, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
 sse_encode_opt_String(reply, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
             
             },
             codec: 
@@ -2283,7 +2305,7 @@ sse_encode_opt_String(reply, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
             
             },
             codec: 
@@ -2309,7 +2331,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
             
             },
             codec: 
@@ -2335,7 +2357,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
             
             },
             codec: 
@@ -2361,7 +2383,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
             
             },
             codec: 
@@ -2386,7 +2408,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76)!;
             
             },
             codec: 
@@ -2411,7 +2433,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77)!;
             
             },
             codec: 
@@ -2436,7 +2458,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(prikey, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78)!;
             
             },
             codec: 
@@ -2462,7 +2484,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
             
             },
             codec: 
@@ -2489,7 +2511,7 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrIdAdmin, serializer);
 sse_encode_String(nostrIdCommon, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80, port: port_);
             
             },
             codec: 
@@ -2515,7 +2537,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81, port: port_);
             
             },
             codec: 
@@ -2536,16 +2558,16 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<LNTransaction>> crateApiCashuGetLnPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<TransactionV2>> crateApiCashuGetLnPendingTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_ln_transaction,
+          decodeSuccessData: sse_decode_list_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2561,42 +2583,42 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuV2GetLnPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<LNTransaction>> crateApiCashuV1GetLnPendingTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2GetLnPendingTransactionsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2GetLnPendingTransactionsConstMeta => const TaskConstMeta(
-            debugName: "get_ln_pending_transactions",
-            argNames: [],
-        );
-        
-
-@override Future<List<LNTransaction>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
-sse_encode_usize(limit, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 83, port: port_);
             
             },
             codec: 
         SseCodec(
           decodeSuccessData: sse_decode_list_ln_transaction,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1GetLnPendingTransactionsConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1GetLnPendingTransactionsConstMeta => const TaskConstMeta(
+            debugName: "get_ln_pending_transactions",
+            argNames: [],
+        );
+        
+
+@override Future<List<TransactionV2>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
+sse_encode_usize(limit, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2612,27 +2634,27 @@ sse_encode_usize(limit, serializer);
         );
         
 
-@override Future<List<TransactionV2>> crateApiCashuV2GetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+@override Future<List<LNTransaction>> crateApiCashuV1GetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_2,
+          decodeSuccessData: sse_decode_list_ln_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2GetLnTransactionsWithOffsetConstMeta,
+            constMeta: kCrateApiCashuV1GetLnTransactionsWithOffsetConstMeta,
             argValues: [offset, limit],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2GetLnTransactionsWithOffsetConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1GetLnTransactionsWithOffsetConstMeta => const TaskConstMeta(
             debugName: "get_ln_transactions_with_offset",
             argNames: ["offset", "limit"],
         );
@@ -2643,7 +2665,7 @@ sse_encode_usize(limit, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
             
             },
             codec: 
@@ -2664,16 +2686,16 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<Mint>> crateApiCashuGetMints()  { return handler.executeNormal(NormalTask(
+@override Future<Map<String, void>> crateApiCashuGetMints()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_mint,
+          decodeSuccessData: sse_decode_Map_String_unit_None,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2689,32 +2711,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<Map<String, void>> crateApiCashuV2GetMints()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_Map_String_unit_None,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2GetMintsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2GetMintsConstMeta => const TaskConstMeta(
-            debugName: "get_mints",
-            argNames: [],
-        );
-        
-
-@override Future<List<Transaction>> crateApiCashuGetPendingTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<Mint>> crateApiCashuV1GetMints()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2723,17 +2720,42 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction,
+          decodeSuccessData: sse_decode_list_mint,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuGetPendingTransactionsConstMeta,
+            constMeta: kCrateApiCashuV1GetMintsConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuGetPendingTransactionsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1GetMintsConstMeta => const TaskConstMeta(
+            debugName: "get_mints",
+            argNames: [],
+        );
+        
+
+@override Future<List<Transaction>> crateApiCashuV1GetPendingTransactions()  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_transaction,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1GetPendingTransactionsConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1GetPendingTransactionsConstMeta => const TaskConstMeta(
             debugName: "get_pending_transactions",
             argNames: [],
         );
@@ -2743,7 +2765,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
             
             },
             codec: 
@@ -2764,11 +2786,11 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuV2GetPendingTransactionsCount()  { return handler.executeNormal(NormalTask(
+@override Future<BigInt> crateApiCashuV1GetPendingTransactionsCount()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
             
             },
             codec: 
@@ -2777,13 +2799,13 @@ sse_encode_String(groupId, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2GetPendingTransactionsCountConstMeta,
+            constMeta: kCrateApiCashuV1GetPendingTransactionsCountConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2GetPendingTransactionsCountConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1GetPendingTransactionsCountConstMeta => const TaskConstMeta(
             debugName: "get_pending_transactions_count",
             argNames: [],
         );
@@ -2794,7 +2816,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(prekeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
             
             },
             codec: 
@@ -2821,7 +2843,7 @@ sse_encode_u_32(prekeyId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93, port: port_);
             
             },
             codec: 
@@ -2848,7 +2870,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94, port: port_);
             
             },
             codec: 
@@ -2874,7 +2896,7 @@ sse_encode_String(deviceId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedKeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95, port: port_);
             
             },
             codec: 
@@ -2895,36 +2917,10 @@ sse_encode_u_32(signedKeyId, serializer);
         );
         
 
-@override Future<List<Transaction>> crateApiCashuGetTransactions()  { return handler.executeNormal(NormalTask(
+@override Future<List<Transaction>> crateApiCashuV1GetTransactions()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_transaction,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuGetTransactionsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuGetTransactionsConstMeta => const TaskConstMeta(
-            debugName: "get_transactions",
-            argNames: [],
-        );
-        
-
-@override Future<List<Transaction>> crateApiCashuGetTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
-sse_encode_usize(limit, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 96, port: port_);
             
             },
@@ -2934,13 +2930,39 @@ sse_encode_usize(limit, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuGetTransactionsWithOffsetConstMeta,
+            constMeta: kCrateApiCashuV1GetTransactionsConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1GetTransactionsConstMeta => const TaskConstMeta(
+            debugName: "get_transactions",
+            argNames: [],
+        );
+        
+
+@override Future<List<Transaction>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
+sse_encode_usize(limit, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_transaction,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1GetTransactionsWithOffsetConstMeta,
             argValues: [offset, limit],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuGetTransactionsWithOffsetConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1GetTransactionsWithOffsetConstMeta => const TaskConstMeta(
             debugName: "get_transactions_with_offset",
             argNames: ["offset", "limit"],
         );
@@ -2951,7 +2973,7 @@ sse_encode_usize(limit, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
             
             },
             codec: 
@@ -2980,7 +3002,7 @@ sse_encode_list_String(receiverPubkeys, serializer);
 sse_encode_String(content, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
             
             },
             codec: 
@@ -3001,14 +3023,14 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
         );
         
 
-@override Future<Wallet> crateApiCashuV2GetWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit })  { return handler.executeNormal(NormalTask(
+@override Future<Wallet> crateApiCashuGetWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(multiMintWallet, serializer);
 sse_encode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(mintAmounts, serializer);
 sse_encode_usize(mintNumber, serializer);
 sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(unit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
             
             },
             codec: 
@@ -3017,13 +3039,13 @@ sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueI
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2GetWalletByIndexConstMeta,
+            constMeta: kCrateApiCashuGetWalletByIndexConstMeta,
             argValues: [multiMintWallet, mintAmounts, mintNumber, unit],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2GetWalletByIndexConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuGetWalletByIndexConstMeta => const TaskConstMeta(
             debugName: "get_wallet_by_index",
             argNames: ["multiMintWallet", "mintAmounts", "mintNumber", "unit"],
         );
@@ -3035,7 +3057,7 @@ sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueI
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(phrase, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_opt_box_autoadd_u_32(account, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
             
             },
             codec: 
@@ -3063,7 +3085,7 @@ sse_encode_opt_box_autoadd_u_32(account, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_u_32(offset, serializer);
 sse_encode_u_32(count, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
             
             },
             codec: 
@@ -3088,7 +3110,7 @@ sse_encode_u_32(count, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
             
             },
             codec: 
@@ -3115,7 +3137,7 @@ sse_encode_u_32(count, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(regId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
             
             },
             codec: 
@@ -3136,16 +3158,16 @@ sse_encode_u_32(regId, serializer);
         );
         
 
-@override Future<List<Mint>> crateApiCashuInitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
+@override Future<List<String>> crateApiCashuInitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_16(prepareSatsOnceTime, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_mint,
+          decodeSuccessData: sse_decode_list_String,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3161,38 +3183,38 @@ sse_encode_u_32(regId, serializer);
         );
         
 
-@override Future<Map<String, void>> crateApiCashuV2InitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
+@override Future<List<Mint>> crateApiCashuV1InitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_16(prepareSatsOnceTime, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_Map_String_unit_None,
+          decodeSuccessData: sse_decode_list_mint,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2InitCashuConstMeta,
+            constMeta: kCrateApiCashuV1InitCashuConstMeta,
             argValues: [prepareSatsOnceTime],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2InitCashuConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1InitCashuConstMeta => const TaskConstMeta(
             debugName: "init_cashu",
             argNames: ["prepareSatsOnceTime"],
         );
         
 
-@override Future<void> crateApiCashuInitDb({required String dbpath , String? words , required bool dev })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuInitDb({required String dbpath , required String words , required bool dev })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
-sse_encode_opt_String(words, serializer);
+sse_encode_String(words, serializer);
 sse_encode_bool(dev, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
             
             },
             codec: 
@@ -3213,13 +3235,13 @@ sse_encode_bool(dev, serializer);
         );
         
 
-@override Future<void> crateApiCashuV2InitDb({required String dbpath , required String words , required bool dev })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuV1InitDb({required String dbpath , String? words , required bool dev })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
-sse_encode_String(words, serializer);
+sse_encode_opt_String(words, serializer);
 sse_encode_bool(dev, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
             
             },
             codec: 
@@ -3228,13 +3250,13 @@ sse_encode_bool(dev, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2InitDbConstMeta,
+            constMeta: kCrateApiCashuV1InitDbConstMeta,
             argValues: [dbpath, words, dev],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2InitDbConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1InitDbConstMeta => const TaskConstMeta(
             debugName: "init_db",
             argNames: ["dbpath", "words", "dev"],
         );
@@ -3245,7 +3267,7 @@ sse_encode_bool(dev, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(regId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
             
             },
             codec: 
@@ -3271,7 +3293,7 @@ sse_encode_u_32(regId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_String(nostrId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
             
             },
             codec: 
@@ -3296,7 +3318,7 @@ sse_encode_String(nostrId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
             
             },
             codec: 
@@ -3323,7 +3345,7 @@ sse_encode_String(nostrId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(welcome, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
             
             },
             codec: 
@@ -3344,18 +3366,18 @@ sse_encode_list_prim_u_8_loose(welcome, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV2> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_box_autoadd_u_64(amount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3371,65 +3393,13 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuV2Melt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_box_autoadd_u_64(amount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2MeltConstMeta,
-            argValues: [invoice, activeMint, amount],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2MeltConstMeta => const TaskConstMeta(
-            debugName: "melt",
-            argNames: ["invoice", "activeMint", "amount"],
-        );
-        
-
-@override Future<void> crateApiCashuV2MergeProofs({required BigInt thershold })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(thershold, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 114, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2MergeProofsConstMeta,
-            argValues: [thershold],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2MergeProofsConstMeta => const TaskConstMeta(
-            debugName: "merge_proofs",
-            argNames: ["thershold"],
-        );
-        
-
-@override Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String hash , required String activeMint })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_String(hash, serializer);
-sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
             
             },
             codec: 
@@ -3438,19 +3408,44 @@ sse_encode_String(activeMint, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuMintTokenConstMeta,
-            argValues: [amount, hash, activeMint],
+            constMeta: kCrateApiCashuV1MeltConstMeta,
+            argValues: [invoice, activeMint, amount],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuMintTokenConstMeta => const TaskConstMeta(
-            debugName: "mint_token",
-            argNames: ["amount", "hash", "activeMint"],
+        TaskConstMeta get kCrateApiCashuV1MeltConstMeta => const TaskConstMeta(
+            debugName: "melt",
+            argNames: ["invoice", "activeMint", "amount"],
         );
         
 
-@override Future<TransactionV2> crateApiCashuV2MintToken({required BigInt amount , required String quoteId , required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuMergeProofs({required BigInt thershold })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(thershold, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuMergeProofsConstMeta,
+            argValues: [thershold],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuMergeProofsConstMeta => const TaskConstMeta(
+            debugName: "merge_proofs",
+            argNames: ["thershold"],
+        );
+        
+
+@override Future<TransactionV2> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -3465,23 +3460,50 @@ sse_encode_String(activeMint, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2MintTokenConstMeta,
+            constMeta: kCrateApiCashuMintTokenConstMeta,
             argValues: [amount, quoteId, activeMint],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2MintTokenConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuMintTokenConstMeta => const TaskConstMeta(
             debugName: "mint_token",
             argNames: ["amount", "quoteId", "activeMint"],
         );
         
 
-@override Future<void> crateApiCashuV2MultiReceive({required List<String> stamps })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
+sse_encode_String(hash, serializer);
+sse_encode_String(activeMint, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_transaction,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1MintTokenConstMeta,
+            argValues: [amount, hash, activeMint],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1MintTokenConstMeta => const TaskConstMeta(
+            debugName: "mint_token",
+            argNames: ["amount", "hash", "activeMint"],
+        );
+        
+
+@override Future<void> crateApiCashuMultiReceive({required List<String> stamps })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_String(stamps, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
             
             },
             codec: 
@@ -3490,13 +3512,13 @@ sse_encode_String(activeMint, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2MultiReceiveConstMeta,
+            constMeta: kCrateApiCashuMultiReceiveConstMeta,
             argValues: [stamps],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2MultiReceiveConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuMultiReceiveConstMeta => const TaskConstMeta(
             debugName: "multi_receive",
             argNames: ["stamps"],
         );
@@ -3509,7 +3531,7 @@ sse_encode_String(activeMint, serializer);
 sse_encode_String(relay, serializer);
 sse_encode_String(secret, serializer);
 sse_encode_opt_String(lud16, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
             
             },
             codec: 
@@ -3534,7 +3556,7 @@ sse_encode_opt_String(lud16, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(request, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
             
             },
             codec: 
@@ -3561,7 +3583,7 @@ sse_encode_opt_String(lud16, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
             
             },
             codec: 
@@ -3588,7 +3610,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
             
             },
             codec: 
@@ -3615,7 +3637,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
             
             },
             codec: 
@@ -3640,7 +3662,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
             
             },
             codec: 
@@ -3665,7 +3687,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
             
             },
             codec: 
@@ -3691,7 +3713,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(keyPackageHex, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
             
             },
             codec: 
@@ -3718,7 +3740,7 @@ sse_encode_String(keyPackageHex, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
             
             },
             codec: 
@@ -3739,12 +3761,12 @@ sse_encode_String(data, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuV2PrepareOneProofs({required BigInt amount , required String mint })  { return handler.executeNormal(NormalTask(
+@override Future<BigInt> crateApiCashuPrepareOneProofs({required BigInt amount , required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
             
             },
             codec: 
@@ -3753,23 +3775,23 @@ sse_encode_String(mint, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2PrepareOneProofsConstMeta,
+            constMeta: kCrateApiCashuPrepareOneProofsConstMeta,
             argValues: [amount, mint],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2PrepareOneProofsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuPrepareOneProofsConstMeta => const TaskConstMeta(
             debugName: "prepare_one_proofs",
             argNames: ["amount", "mint"],
         );
         
 
-@override Future<void> crateApiCashuV2PrintProofs({required String mint })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuPrintProofs({required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
             
             },
             codec: 
@@ -3778,13 +3800,13 @@ sse_encode_String(mint, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2PrintProofsConstMeta,
+            constMeta: kCrateApiCashuPrintProofsConstMeta,
             argValues: [mint],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2PrintProofsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuPrintProofsConstMeta => const TaskConstMeta(
             debugName: "print_proofs",
             argNames: ["mint"],
         );
@@ -3803,7 +3825,7 @@ sse_encode_list_prim_u_8_loose(bobSignedPublic, serializer);
 sse_encode_list_prim_u_8_loose(bobSigedSig, serializer);
 sse_encode_u_32(bobPrekeyId, serializer);
 sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
             
             },
             codec: 
@@ -3824,16 +3846,16 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
         );
         
 
-@override Future<List<Transaction>> crateApiCashuReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV2> crateApiCashuReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_transaction,
+          decodeSuccessData: sse_decode_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3849,26 +3871,26 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuV2ReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<List<Transaction>> crateApiCashuV1ReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_list_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2ReceiveTokenConstMeta,
+            constMeta: kCrateApiCashuV1ReceiveTokenConstMeta,
             argValues: [encodedToken],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2ReceiveTokenConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1ReceiveTokenConstMeta => const TaskConstMeta(
             debugName: "receive_token",
             argNames: ["encodedToken"],
         );
@@ -3880,7 +3902,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_list_prim_u_8_strict(members, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
             
             },
             codec: 
@@ -3901,16 +3923,16 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
         );
         
 
-@override Future<String?> crateApiCashuRemoveMint({required String url })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuRemoveMint({required String url })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_opt_String,
+          decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3926,62 +3948,36 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
         );
         
 
-@override Future<void> crateApiCashuV2RemoveMint({required String url })  { return handler.executeNormal(NormalTask(
+@override Future<String?> crateApiCashuV1RemoveMint({required String url })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2RemoveMintConstMeta,
-            argValues: [url],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2RemoveMintConstMeta => const TaskConstMeta(
-            debugName: "remove_mint",
-            argNames: ["url"],
-        );
-        
-
-@override Future<BigInt> crateApiCashuRemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatus kind })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampMsLe, serializer);
-sse_encode_transaction_status(kind, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 135, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_u_64,
+          decodeSuccessData: sse_decode_opt_String,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuRemoveTransactionsConstMeta,
-            argValues: [unixTimestampMsLe, kind],
+            constMeta: kCrateApiCashuV1RemoveMintConstMeta,
+            argValues: [url],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuRemoveTransactionsConstMeta => const TaskConstMeta(
-            debugName: "remove_transactions",
-            argNames: ["unixTimestampMsLe", "kind"],
+        TaskConstMeta get kCrateApiCashuV1RemoveMintConstMeta => const TaskConstMeta(
+            debugName: "remove_mint",
+            argNames: ["url"],
         );
         
 
-@override Future<void> crateApiCashuV2RemoveTransactions({required BigInt unixTimestampLe , required TransactionStatusV2 status })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatusV2 status })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampLe, serializer);
-sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(status, serializer);
+sse_encode_transaction_status_v_2(status, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
             
             },
@@ -3991,29 +3987,55 @@ sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueI
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2RemoveTransactionsConstMeta,
+            constMeta: kCrateApiCashuRemoveTransactionsConstMeta,
             argValues: [unixTimestampLe, status],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2RemoveTransactionsConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuRemoveTransactionsConstMeta => const TaskConstMeta(
             debugName: "remove_transactions",
             argNames: ["unixTimestampLe", "status"],
         );
         
 
-@override Future<Transaction> crateApiCashuRequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatus kind })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_String(activeMint, serializer);
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampMsLe, serializer);
+sse_encode_transaction_status(kind, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_u_64,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1RemoveTransactionsConstMeta,
+            argValues: [unixTimestampMsLe, kind],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1RemoveTransactionsConstMeta => const TaskConstMeta(
+            debugName: "remove_transactions",
+            argNames: ["unixTimestampMsLe", "kind"],
+        );
+        
+
+@override Future<String> crateApiCashuRequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
+sse_encode_String(activeMint, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 138, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_String,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4029,60 +4051,33 @@ sse_encode_String(activeMint, serializer);
         );
         
 
-@override Future<String> crateApiCashuV2RequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 138, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2RequestMintConstMeta,
-            argValues: [amount, activeMint],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2RequestMintConstMeta => const TaskConstMeta(
-            debugName: "request_mint",
-            argNames: ["amount", "activeMint"],
-        );
-        
-
-@override Future<(BigInt,BigInt)> crateApiCashuRestore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-sse_encode_opt_String(words, serializer);
-sse_encode_u_64(sleepmsAfterCheckABatch, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 139, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_record_u_64_usize,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuRestoreConstMeta,
-            argValues: [mint, words, sleepmsAfterCheckABatch],
+            constMeta: kCrateApiCashuV1RequestMintConstMeta,
+            argValues: [amount, activeMint],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuRestoreConstMeta => const TaskConstMeta(
-            debugName: "restore",
-            argNames: ["mint", "words", "sleepmsAfterCheckABatch"],
+        TaskConstMeta get kCrateApiCashuV1RequestMintConstMeta => const TaskConstMeta(
+            debugName: "request_mint",
+            argNames: ["amount", "activeMint"],
         );
         
 
-@override Future<BigInt> crateApiCashuV2Restore({required String mintUrl , String? words })  { return handler.executeNormal(NormalTask(
+@override Future<BigInt> crateApiCashuRestore({required String mintUrl , String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mintUrl, serializer);
@@ -4096,15 +4091,42 @@ sse_encode_opt_String(words, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2RestoreConstMeta,
+            constMeta: kCrateApiCashuRestoreConstMeta,
             argValues: [mintUrl, words],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2RestoreConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuRestoreConstMeta => const TaskConstMeta(
             debugName: "restore",
             argNames: ["mintUrl", "words"],
+        );
+        
+
+@override Future<(BigInt,BigInt)> crateApiCashuV1Restore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
+sse_encode_opt_String(words, serializer);
+sse_encode_u_64(sleepmsAfterCheckABatch, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 141, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_record_u_64_usize,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1RestoreConstMeta,
+            argValues: [mint, words, sleepmsAfterCheckABatch],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1RestoreConstMeta => const TaskConstMeta(
+            debugName: "restore",
+            argNames: ["mint", "words", "sleepmsAfterCheckABatch"],
         );
         
 
@@ -4113,7 +4135,7 @@ sse_encode_opt_String(words, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 141, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 142, port: port_);
             
             },
             codec: 
@@ -4139,7 +4161,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 142, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 143, port: port_);
             
             },
             codec: 
@@ -4166,7 +4188,7 @@ sse_encode_String(groupId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(extensions, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 143, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 144, port: port_);
             
             },
             codec: 
@@ -4187,18 +4209,18 @@ sse_encode_list_prim_u_8_loose(extensions, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuSend({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV2> crateApiCashuSend({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 144, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 145, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4214,37 +4236,11 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuV2Send({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
-sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 145, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV2SendConstMeta,
-            argValues: [amount, activeMint, info],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV2SendConstMeta => const TaskConstMeta(
-            debugName: "send",
-            argNames: ["amount", "activeMint", "info"],
-        );
-        
-
-@override Future<Transaction> crateApiCashuSendAll({required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(activeMint, serializer);
 sse_encode_opt_String(info, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 146, port: port_);
             
@@ -4255,19 +4251,19 @@ sse_encode_opt_String(info, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuSendAllConstMeta,
-            argValues: [activeMint, info],
+            constMeta: kCrateApiCashuV1SendConstMeta,
+            argValues: [amount, activeMint, info],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuSendAllConstMeta => const TaskConstMeta(
-            debugName: "send_all",
-            argNames: ["activeMint", "info"],
+        TaskConstMeta get kCrateApiCashuV1SendConstMeta => const TaskConstMeta(
+            debugName: "send",
+            argNames: ["amount", "activeMint", "info"],
         );
         
 
-@override Future<TransactionV2> crateApiCashuV2SendAll({required String mint })  { return handler.executeNormal(NormalTask(
+@override Future<TransactionV2> crateApiCashuSendAll({required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
@@ -4280,23 +4276,22 @@ sse_encode_opt_String(info, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2SendAllConstMeta,
+            constMeta: kCrateApiCashuSendAllConstMeta,
             argValues: [mint],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2SendAllConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuSendAllConstMeta => const TaskConstMeta(
             debugName: "send_all",
             argNames: ["mint"],
         );
         
 
-@override Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuV1SendAll({required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_list_String(mints, serializer);
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(activeMint, serializer);
 sse_encode_opt_String(info, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 148, port: port_);
             
@@ -4304,6 +4299,33 @@ sse_encode_opt_String(info, serializer);
             codec: 
         SseCodec(
           decodeSuccessData: sse_decode_transaction,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuV1SendAllConstMeta,
+            argValues: [activeMint, info],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuV1SendAllConstMeta => const TaskConstMeta(
+            debugName: "send_all",
+            argNames: ["activeMint", "info"],
+        );
+        
+
+@override Future<TransactionV2> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
+sse_encode_list_String(mints, serializer);
+sse_encode_opt_String(info, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 149, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_transaction_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4319,28 +4341,28 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<TransactionV2> crateApiCashuV2SendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_list_String(mints, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 149, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 150, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_2,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2SendStampConstMeta,
+            constMeta: kCrateApiCashuV1SendStampConstMeta,
             argValues: [amount, mints, info],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2SendStampConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1SendStampConstMeta => const TaskConstMeta(
             debugName: "send_stamp",
             argNames: ["amount", "mints", "info"],
         );
@@ -4351,7 +4373,7 @@ sse_encode_opt_String(info, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 150, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 151, port: port_);
             
             },
             codec: 
@@ -4376,7 +4398,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 151, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 152, port: port_);
             
             },
             codec: 
@@ -4397,11 +4419,11 @@ sse_encode_String(address, serializer);
         );
         
 
-@override Future<bool> crateApiCashuV2SetMnemonic({String? words })  { return handler.executeNormal(NormalTask(
+@override Future<bool> crateApiCashuV1SetMnemonic({String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 152, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 153, port: port_);
             
             },
             codec: 
@@ -4410,13 +4432,13 @@ sse_encode_String(address, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2SetMnemonicConstMeta,
+            constMeta: kCrateApiCashuV1SetMnemonicConstMeta,
             argValues: [words],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2SetMnemonicConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuV1SetMnemonicConstMeta => const TaskConstMeta(
             debugName: "set_mnemonic",
             argNames: ["words"],
         );
@@ -4426,7 +4448,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 153, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 154, port: port_);
             
             },
             codec: 
@@ -4451,7 +4473,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 154, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 155, port: port_);
             
             },
             codec: 
@@ -4476,7 +4498,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 155, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 156, port: port_);
             
             },
             codec: 
@@ -4505,7 +4527,7 @@ sse_encode_String(content, serializer);
 sse_encode_u_64(createdAt, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_list_list_String(tags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 156, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 157, port: port_);
             
             },
             codec: 
@@ -4531,7 +4553,7 @@ sse_encode_list_list_String(tags, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(privateKey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 157, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 158, port: port_);
             
             },
             codec: 
@@ -4558,7 +4580,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(prekeyId, serializer);
 sse_encode_list_prim_u_8_loose(record, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 158, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 159, port: port_);
             
             },
             codec: 
@@ -4585,7 +4607,7 @@ sse_encode_list_prim_u_8_loose(record, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedKeyId, serializer);
 sse_encode_list_prim_u_8_loose(record, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 159, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 160, port: port_);
             
             },
             codec: 
@@ -4613,7 +4635,7 @@ sse_encode_list_prim_u_8_loose(record, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
 sse_encode_String(aliceAddr, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 160, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 161, port: port_);
             
             },
             codec: 
@@ -4644,7 +4666,7 @@ sse_encode_opt_String(description, serializer);
 sse_encode_opt_list_String(adminPubkeysHex, serializer);
 sse_encode_opt_list_String(groupRelays, serializer);
 sse_encode_opt_String(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 161, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 162, port: port_);
             
             },
             codec: 
@@ -4665,12 +4687,12 @@ sse_encode_opt_String(status, serializer);
         );
         
 
-@override Future<void> crateApiCashuV2ValidateMintNumber({required BigInt mintNumber , required BigInt mintCount })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuValidateMintNumber({required BigInt mintNumber , required BigInt mintCount })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(mintNumber, serializer);
 sse_encode_usize(mintCount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 162, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 163, port: port_);
             
             },
             codec: 
@@ -4679,13 +4701,13 @@ sse_encode_usize(mintCount, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiCashuV2ValidateMintNumberConstMeta,
+            constMeta: kCrateApiCashuValidateMintNumberConstMeta,
             argValues: [mintNumber, mintCount],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV2ValidateMintNumberConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiCashuValidateMintNumberConstMeta => const TaskConstMeta(
             debugName: "validate_mint_number",
             argNames: ["mintNumber", "mintCount"],
         );
@@ -4695,7 +4717,7 @@ sse_encode_usize(mintCount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(json, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 163, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 164, port: port_);
             
             },
             codec: 
@@ -4723,7 +4745,7 @@ sse_encode_usize(mintCount, serializer);
 sse_encode_String(sig, serializer);
 sse_encode_String(content, serializer);
 sse_encode_bool(hash, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 164, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 165, port: port_);
             
             },
             codec: 
@@ -4768,10 +4790,6 @@ RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_MultiMintW
 
 RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_MultiMintWallet => wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet;
 
-RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_TransactionStatusV2 => wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2;
-
-RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_TransactionStatusV2 => wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2;
-
 RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_Wallet => wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet;
 
 RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_Wallet => wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet;
@@ -4792,9 +4810,6 @@ return MintUrlImpl.frbInternalDcoDecode(raw as List<dynamic>); }
 
 @protected MnemonicInfo dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return MnemonicInfoImpl.frbInternalDcoDecode(raw as List<dynamic>); }
-
-@protected TransactionStatusV2 dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionStatusV2Impl.frbInternalDcoDecode(raw as List<dynamic>); }
 
 @protected Wallet dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return WalletImpl.frbInternalDcoDecode(raw as List<dynamic>); }
@@ -4817,6 +4832,12 @@ return Map.fromEntries(dco_decode_list_record_string_list_list_prim_u_8_strict(r
 @protected Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return Map.fromEntries(dco_decode_list_record_string_opt_box_autoadd_u_64(raw).map((e) => MapEntry(e.$1, e.$2))); }
 
+@protected Map<String, (BigInt,BigInt)> dco_decode_Map_String_record_u_64_u_64_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return Map.fromEntries(dco_decode_list_record_string_record_u_64_u_64(raw).map((e) => MapEntry(e.$1, e.$2))); }
+
+@protected Map<String, BigInt> dco_decode_Map_String_u_64_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return Map.fromEntries(dco_decode_list_record_string_u_64(raw).map((e) => MapEntry(e.$1, e.$2))); }
+
 @protected Map<String, void> dco_decode_Map_String_unit_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return Map.fromEntries(dco_decode_list_record_string_unit(raw).map((e) => MapEntry(e.$1, e.$2))); }
 
@@ -4837,9 +4858,6 @@ return MnemonicInfoImpl.frbInternalDcoDecode(raw as List<dynamic>); }
 
 @protected MultiMintWallet dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return MultiMintWalletImpl.frbInternalDcoDecode(raw as List<dynamic>); }
-
-@protected TransactionStatusV2 dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionStatusV2Impl.frbInternalDcoDecode(raw as List<dynamic>); }
 
 @protected Wallet dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return WalletImpl.frbInternalDcoDecode(raw as List<dynamic>); }
@@ -5042,8 +5060,14 @@ return (raw as List<dynamic>).map(dco_decode_record_string_list_list_prim_u_8_st
 @protected List<(String,BigInt?)> dco_decode_list_record_string_opt_box_autoadd_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_opt_box_autoadd_u_64).toList(); }
 
+@protected List<(String,(BigInt,BigInt))> dco_decode_list_record_string_record_u_64_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return (raw as List<dynamic>).map(dco_decode_record_string_record_u_64_u_64).toList(); }
+
 @protected List<(String,String)> dco_decode_list_record_string_string(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_string).toList(); }
+
+@protected List<(String,BigInt)> dco_decode_list_record_string_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return (raw as List<dynamic>).map(dco_decode_record_string_u_64).toList(); }
 
 @protected List<(String,void)> dco_decode_list_record_string_unit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_unit).toList(); }
@@ -5224,6 +5248,13 @@ final arr = raw as List<dynamic>;
             }
             return (dco_decode_String(arr[0]),dco_decode_opt_box_autoadd_u_64(arr[1]),); }
 
+@protected (String,(BigInt,BigInt)) dco_decode_record_string_record_u_64_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 2) {
+                throw Exception('Expected 2 elements, got ${arr.length}');
+            }
+            return (dco_decode_String(arr[0]),dco_decode_record_u_64_u_64(arr[1]),); }
+
 @protected (String,String) dco_decode_record_string_string(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
             if (arr.length != 2) {
@@ -5237,6 +5268,13 @@ final arr = raw as List<dynamic>;
                 throw Exception('Expected 2 elements, got ${arr.length}');
             }
             return (dco_decode_String(arr[0]),dco_decode_u_32(arr[1]),); }
+
+@protected (String,BigInt) dco_decode_record_string_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 2) {
+                throw Exception('Expected 2 elements, got ${arr.length}');
+            }
+            return (dco_decode_String(arr[0]),dco_decode_u_64(arr[1]),); }
 
 @protected (String,void) dco_decode_record_string_unit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5258,6 +5296,13 @@ final arr = raw as List<dynamic>;
                 throw Exception('Expected 4 elements, got ${arr.length}');
             }
             return (dco_decode_u_32(arr[0]),dco_decode_list_prim_u_8_strict(arr[1]),dco_decode_list_prim_u_8_strict(arr[2]),dco_decode_list_prim_u_8_strict(arr[3]),); }
+
+@protected (BigInt,BigInt) dco_decode_record_u_64_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 2) {
+                throw Exception('Expected 2 elements, got ${arr.length}');
+            }
+            return (dco_decode_u_64(arr[0]),dco_decode_u_64(arr[1]),); }
 
 @protected (BigInt,BigInt) dco_decode_record_u_64_usize(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5334,9 +5379,12 @@ return TransactionKindV2.values[raw as int]; }
 @protected TransactionStatus dco_decode_transaction_status(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return TransactionStatus.values[raw as int]; }
 
+@protected TransactionStatusV2 dco_decode_transaction_status_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return TransactionStatusV2.values[raw as int]; }
+
 @protected TransactionV2 dco_decode_transaction_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
-                if (arr.length != 9) throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+                if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
                 return TransactionV2(mintUrl: dco_decode_String(arr[0]),
 direction: dco_decode_transaction_direction_v_2(arr[1]),
 kind: dco_decode_transaction_kind_v_2(arr[2]),
@@ -5344,8 +5392,9 @@ amount: dco_decode_u_64(arr[3]),
 fee: dco_decode_u_64(arr[4]),
 unit: dco_decode_opt_String(arr[5]),
 token: dco_decode_String(arr[6]),
-timestamp: dco_decode_u_64(arr[7]),
-metadata: dco_decode_Map_String_String_None(arr[8]),); }
+status: dco_decode_transaction_status_v_2(arr[7]),
+timestamp: dco_decode_u_64(arr[8]),
+metadata: dco_decode_Map_String_String_None(arr[9]),); }
 
 @protected int dco_decode_u_16(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as int; }
@@ -5387,9 +5436,6 @@ return MintUrlImpl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_deco
 @protected MnemonicInfo sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return MnemonicInfoImpl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_decode_i_32(deserializer)); }
 
-@protected TransactionStatusV2 sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return TransactionStatusV2Impl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_decode_i_32(deserializer)); }
-
 @protected Wallet sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return WalletImpl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_decode_i_32(deserializer)); }
 
@@ -5414,6 +5460,14 @@ var inner = sse_decode_list_record_string_list_list_prim_u_8_strict(deserializer
 var inner = sse_decode_list_record_string_opt_box_autoadd_u_64(deserializer);
         return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
 
+@protected Map<String, (BigInt,BigInt)> sse_decode_Map_String_record_u_64_u_64_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var inner = sse_decode_list_record_string_record_u_64_u_64(deserializer);
+        return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
+
+@protected Map<String, BigInt> sse_decode_Map_String_u_64_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var inner = sse_decode_list_record_string_u_64(deserializer);
+        return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
+
 @protected Map<String, void> sse_decode_Map_String_unit_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_list_record_string_unit(deserializer);
         return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
@@ -5435,9 +5489,6 @@ return MnemonicInfoImpl.frbInternalSseDecode(sse_decode_usize(deserializer), sse
 
 @protected MultiMintWallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return MultiMintWalletImpl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_decode_i_32(deserializer)); }
-
-@protected TransactionStatusV2 sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return TransactionStatusV2Impl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_decode_i_32(deserializer)); }
 
 @protected Wallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return WalletImpl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_decode_i_32(deserializer)); }
@@ -5688,11 +5739,27 @@ var len_ = sse_decode_i_32(deserializer);
         return ans_;
          }
 
+@protected List<(String,(BigInt,BigInt))> sse_decode_list_record_string_record_u_64_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+
+        var len_ = sse_decode_i_32(deserializer);
+        var ans_ = <(String,(BigInt,BigInt))>[];
+        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_record_u_64_u_64(deserializer)); }
+        return ans_;
+         }
+
 @protected List<(String,String)> sse_decode_list_record_string_string(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
         var ans_ = <(String,String)>[];
         for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_string(deserializer)); }
+        return ans_;
+         }
+
+@protected List<(String,BigInt)> sse_decode_list_record_string_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+
+        var len_ = sse_decode_i_32(deserializer);
+        var ans_ = <(String,BigInt)>[];
+        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_u_64(deserializer)); }
         return ans_;
          }
 
@@ -5942,6 +6009,11 @@ var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_opt_box_autoadd_u_64(deserializer);
 return (var_field0, var_field1); }
 
+@protected (String,(BigInt,BigInt)) sse_decode_record_string_record_u_64_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_String(deserializer);
+var var_field1 = sse_decode_record_u_64_u_64(deserializer);
+return (var_field0, var_field1); }
+
 @protected (String,String) sse_decode_record_string_string(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_String(deserializer);
@@ -5950,6 +6022,11 @@ return (var_field0, var_field1); }
 @protected (String,int) sse_decode_record_string_u_32(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_u_32(deserializer);
+return (var_field0, var_field1); }
+
+@protected (String,BigInt) sse_decode_record_string_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_String(deserializer);
+var var_field1 = sse_decode_u_64(deserializer);
 return (var_field0, var_field1); }
 
 @protected (String,void) sse_decode_record_string_unit(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -5969,6 +6046,11 @@ var var_field1 = sse_decode_list_prim_u_8_strict(deserializer);
 var var_field2 = sse_decode_list_prim_u_8_strict(deserializer);
 var var_field3 = sse_decode_list_prim_u_8_strict(deserializer);
 return (var_field0, var_field1, var_field2, var_field3); }
+
+@protected (BigInt,BigInt) sse_decode_record_u_64_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_u_64(deserializer);
+var var_field1 = sse_decode_u_64(deserializer);
+return (var_field0, var_field1); }
 
 @protected (BigInt,BigInt) sse_decode_record_u_64_usize(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_u_64(deserializer);
@@ -6041,6 +6123,10 @@ var inner = sse_decode_i_32(deserializer);
 var inner = sse_decode_i_32(deserializer);
         return TransactionStatus.values[inner]; }
 
+@protected TransactionStatusV2 sse_decode_transaction_status_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var inner = sse_decode_i_32(deserializer);
+        return TransactionStatusV2.values[inner]; }
+
 @protected TransactionV2 sse_decode_transaction_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_mintUrl = sse_decode_String(deserializer);
 var var_direction = sse_decode_transaction_direction_v_2(deserializer);
@@ -6049,9 +6135,10 @@ var var_amount = sse_decode_u_64(deserializer);
 var var_fee = sse_decode_u_64(deserializer);
 var var_unit = sse_decode_opt_String(deserializer);
 var var_token = sse_decode_String(deserializer);
+var var_status = sse_decode_transaction_status_v_2(deserializer);
 var var_timestamp = sse_decode_u_64(deserializer);
 var var_metadata = sse_decode_Map_String_String_None(deserializer);
-return TransactionV2(mintUrl: var_mintUrl, direction: var_direction, kind: var_kind, amount: var_amount, fee: var_fee, unit: var_unit, token: var_token, timestamp: var_timestamp, metadata: var_metadata); }
+return TransactionV2(mintUrl: var_mintUrl, direction: var_direction, kind: var_kind, amount: var_amount, fee: var_fee, unit: var_unit, token: var_token, status: var_status, timestamp: var_timestamp, metadata: var_metadata); }
 
 @protected int sse_decode_u_16(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return deserializer.buffer.getUint16(); }
@@ -6094,9 +6181,6 @@ sse_encode_usize((self as MintUrlImpl).frbInternalSseEncode(move: true), seriali
 @protected void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(MnemonicInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_usize((self as MnemonicInfoImpl).frbInternalSseEncode(move: true), serializer); }
 
-@protected void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(TransactionStatusV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_usize((self as TransactionStatusV2Impl).frbInternalSseEncode(move: true), serializer); }
-
 @protected void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(Wallet self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_usize((self as WalletImpl).frbInternalSseEncode(move: true), serializer); }
 
@@ -6118,6 +6202,12 @@ sse_encode_list_record_string_list_list_prim_u_8_strict(self.entries.map((e) => 
 @protected void sse_encode_Map_String_opt_box_autoadd_u_64_None(Map<String, BigInt?> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_record_string_opt_box_autoadd_u_64(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
 
+@protected void sse_encode_Map_String_record_u_64_u_64_None(Map<String, (BigInt,BigInt)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_list_record_string_record_u_64_u_64(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
+
+@protected void sse_encode_Map_String_u_64_None(Map<String, BigInt> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_list_record_string_u_64(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
+
 @protected void sse_encode_Map_String_unit_None(Map<String, void> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_record_string_unit(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
 
@@ -6138,9 +6228,6 @@ sse_encode_usize((self as MnemonicInfoImpl).frbInternalSseEncode(move: null), se
 
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(MultiMintWallet self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_usize((self as MultiMintWalletImpl).frbInternalSseEncode(move: null), serializer); }
-
-@protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTransactionStatusV2(TransactionStatusV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_usize((self as TransactionStatusV2Impl).frbInternalSseEncode(move: null), serializer); }
 
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(Wallet self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_usize((self as WalletImpl).frbInternalSseEncode(move: null), serializer); }
@@ -6343,9 +6430,17 @@ sse_encode_i_32(self.length, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_record_string_opt_box_autoadd_u_64(item, serializer); } }
 
+@protected void sse_encode_list_record_string_record_u_64_u_64(List<(String,(BigInt,BigInt))> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_i_32(self.length, serializer);
+        for (final item in self) { sse_encode_record_string_record_u_64_u_64(item, serializer); } }
+
 @protected void sse_encode_list_record_string_string(List<(String,String)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_record_string_string(item, serializer); } }
+
+@protected void sse_encode_list_record_string_u_64(List<(String,BigInt)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_i_32(self.length, serializer);
+        for (final item in self) { sse_encode_record_string_u_64(item, serializer); } }
 
 @protected void sse_encode_list_record_string_unit(List<(String,void)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
@@ -6565,6 +6660,11 @@ sse_encode_String(self.$1, serializer);
 sse_encode_opt_box_autoadd_u_64(self.$2, serializer);
  }
 
+@protected void sse_encode_record_string_record_u_64_u_64((String,(BigInt,BigInt)) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_String(self.$1, serializer);
+sse_encode_record_u_64_u_64(self.$2, serializer);
+ }
+
 @protected void sse_encode_record_string_string((String,String) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.$1, serializer);
 sse_encode_String(self.$2, serializer);
@@ -6573,6 +6673,11 @@ sse_encode_String(self.$2, serializer);
 @protected void sse_encode_record_string_u_32((String,int) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.$1, serializer);
 sse_encode_u_32(self.$2, serializer);
+ }
+
+@protected void sse_encode_record_string_u_64((String,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_String(self.$1, serializer);
+sse_encode_u_64(self.$2, serializer);
  }
 
 @protected void sse_encode_record_string_unit((String,void) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6591,6 +6696,11 @@ sse_encode_u_32(self.$1, serializer);
 sse_encode_list_prim_u_8_strict(self.$2, serializer);
 sse_encode_list_prim_u_8_strict(self.$3, serializer);
 sse_encode_list_prim_u_8_strict(self.$4, serializer);
+ }
+
+@protected void sse_encode_record_u_64_u_64((BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_u_64(self.$1, serializer);
+sse_encode_u_64(self.$2, serializer);
  }
 
 @protected void sse_encode_record_u_64_usize((BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6657,6 +6767,9 @@ sse_encode_i_32(self.index, serializer); }
 @protected void sse_encode_transaction_status(TransactionStatus self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
+@protected void sse_encode_transaction_status_v_2(TransactionStatusV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_i_32(self.index, serializer); }
+
 @protected void sse_encode_transaction_v_2(TransactionV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.mintUrl, serializer);
 sse_encode_transaction_direction_v_2(self.direction, serializer);
@@ -6665,6 +6778,7 @@ sse_encode_u_64(self.amount, serializer);
 sse_encode_u_64(self.fee, serializer);
 sse_encode_opt_String(self.unit, serializer);
 sse_encode_String(self.token, serializer);
+sse_encode_transaction_status_v_2(self.status, serializer);
 sse_encode_u_64(self.timestamp, serializer);
 sse_encode_Map_String_String_None(self.metadata, serializer);
  }
@@ -6778,10 +6892,10 @@ serializer.buffer.putBigUint64(self); }
                     rustArcDecrementStrongCountPtr: RustLib.instance.api.rust_arc_decrement_strong_count_MnemonicInfoPtr,
                 );
 
-                 Future<void>  mnemonic()=>RustLib.instance.api.crateApiCashuV2TypesMnemonicInfoMnemonic(that: this, );
+                 Future<void>  mnemonic()=>RustLib.instance.api.crateApiCashuTypesMnemonicInfoMnemonic(that: this, );
 
 
- Future<void>  pubkey()=>RustLib.instance.api.crateApiCashuV2TypesMnemonicInfoPubkey(that: this, );
+ Future<void>  pubkey()=>RustLib.instance.api.crateApiCashuTypesMnemonicInfoPubkey(that: this, );
 
 
             }
@@ -6798,23 +6912,6 @@ serializer.buffer.putBigUint64(self); }
                     rustArcIncrementStrongCount: RustLib.instance.api.rust_arc_increment_strong_count_MultiMintWallet,
                     rustArcDecrementStrongCount: RustLib.instance.api.rust_arc_decrement_strong_count_MultiMintWallet,
                     rustArcDecrementStrongCountPtr: RustLib.instance.api.rust_arc_decrement_strong_count_MultiMintWalletPtr,
-                );
-
-                
-            }
-            @sealed class TransactionStatusV2Impl extends RustOpaque implements TransactionStatusV2 {
-                // Not to be used by end users
-                TransactionStatusV2Impl.frbInternalDcoDecode(List<dynamic> wire):
-                    super.frbInternalDcoDecode(wire, _kStaticData);
-
-                // Not to be used by end users
-                TransactionStatusV2Impl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative):
-                    super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-                static final _kStaticData = RustArcStaticData(
-                    rustArcIncrementStrongCount: RustLib.instance.api.rust_arc_increment_strong_count_TransactionStatusV2,
-                    rustArcDecrementStrongCount: RustLib.instance.api.rust_arc_decrement_strong_count_TransactionStatusV2,
-                    rustArcDecrementStrongCountPtr: RustLib.instance.api.rust_arc_decrement_strong_count_TransactionStatusV2Ptr,
                 );
 
                 
