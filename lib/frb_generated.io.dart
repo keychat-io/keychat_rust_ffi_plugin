@@ -69,10 +69,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(dynamic raw);
 
-@protected Map<String, (BigInt,BigInt)> dco_decode_Map_String_record_u_64_u_64_None(dynamic raw);
-
-@protected Map<String, BigInt> dco_decode_Map_String_u_64_None(dynamic raw);
-
 @protected Map<String, void> dco_decode_Map_String_unit_None(dynamic raw);
 
 @protected Amount dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(dynamic raw);
@@ -135,11 +131,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected InvoiceInfo dco_decode_invoice_info(dynamic raw);
 
-@protected InvoiceInfoV2 dco_decode_invoice_info_v_2(dynamic raw);
+@protected InvoiceInfoV1 dco_decode_invoice_info_v_1(dynamic raw);
 
 @protected InvoiceStatus dco_decode_invoice_status(dynamic raw);
 
-@protected InvoiceStatusV2 dco_decode_invoice_status_v_2(dynamic raw);
+@protected InvoiceStatusV1 dco_decode_invoice_status_v_1(dynamic raw);
 
 @protected KeyPackageResult dco_decode_key_package_result(dynamic raw);
 
@@ -177,11 +173,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<(String,BigInt?)> dco_decode_list_record_string_opt_box_autoadd_u_64(dynamic raw);
 
-@protected List<(String,(BigInt,BigInt))> dco_decode_list_record_string_record_u_64_u_64(dynamic raw);
-
 @protected List<(String,String)> dco_decode_list_record_string_string(dynamic raw);
-
-@protected List<(String,BigInt)> dco_decode_list_record_string_u_64(dynamic raw);
 
 @protected List<(String,void)> dco_decode_list_record_string_unit(dynamic raw);
 
@@ -247,13 +239,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (String,BigInt?) dco_decode_record_string_opt_box_autoadd_u_64(dynamic raw);
 
-@protected (String,(BigInt,BigInt)) dco_decode_record_string_record_u_64_u_64(dynamic raw);
-
 @protected (String,String) dco_decode_record_string_string(dynamic raw);
 
 @protected (String,int) dco_decode_record_string_u_32(dynamic raw);
-
-@protected (String,BigInt) dco_decode_record_string_u_64(dynamic raw);
 
 @protected (String,void) dco_decode_record_string_unit(dynamic raw);
 
@@ -262,6 +250,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected (int,Uint8List,Uint8List,Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
 @protected (BigInt,BigInt) dco_decode_record_u_64_u_64(dynamic raw);
+
+@protected (BigInt,BigInt,BigInt) dco_decode_record_u_64_u_64_u_64(dynamic raw);
 
 @protected (BigInt,BigInt) dco_decode_record_u_64_usize(dynamic raw);
 
@@ -275,7 +265,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected TokenInfo dco_decode_token_info(dynamic raw);
 
-@protected TokenInfoV2 dco_decode_token_info_v_2(dynamic raw);
+@protected TokenInfoV1 dco_decode_token_info_v_1(dynamic raw);
 
 @protected Transaction dco_decode_transaction(dynamic raw);
 
@@ -330,10 +320,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected Map<String, List<Uint8List>> sse_decode_Map_String_list_list_prim_u_8_strict_None(SseDeserializer deserializer);
 
 @protected Map<String, BigInt?> sse_decode_Map_String_opt_box_autoadd_u_64_None(SseDeserializer deserializer);
-
-@protected Map<String, (BigInt,BigInt)> sse_decode_Map_String_record_u_64_u_64_None(SseDeserializer deserializer);
-
-@protected Map<String, BigInt> sse_decode_Map_String_u_64_None(SseDeserializer deserializer);
 
 @protected Map<String, void> sse_decode_Map_String_unit_None(SseDeserializer deserializer);
 
@@ -397,11 +383,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected InvoiceInfo sse_decode_invoice_info(SseDeserializer deserializer);
 
-@protected InvoiceInfoV2 sse_decode_invoice_info_v_2(SseDeserializer deserializer);
+@protected InvoiceInfoV1 sse_decode_invoice_info_v_1(SseDeserializer deserializer);
 
 @protected InvoiceStatus sse_decode_invoice_status(SseDeserializer deserializer);
 
-@protected InvoiceStatusV2 sse_decode_invoice_status_v_2(SseDeserializer deserializer);
+@protected InvoiceStatusV1 sse_decode_invoice_status_v_1(SseDeserializer deserializer);
 
 @protected KeyPackageResult sse_decode_key_package_result(SseDeserializer deserializer);
 
@@ -439,11 +425,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<(String,BigInt?)> sse_decode_list_record_string_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
-@protected List<(String,(BigInt,BigInt))> sse_decode_list_record_string_record_u_64_u_64(SseDeserializer deserializer);
-
 @protected List<(String,String)> sse_decode_list_record_string_string(SseDeserializer deserializer);
-
-@protected List<(String,BigInt)> sse_decode_list_record_string_u_64(SseDeserializer deserializer);
 
 @protected List<(String,void)> sse_decode_list_record_string_unit(SseDeserializer deserializer);
 
@@ -509,13 +491,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (String,BigInt?) sse_decode_record_string_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
-@protected (String,(BigInt,BigInt)) sse_decode_record_string_record_u_64_u_64(SseDeserializer deserializer);
-
 @protected (String,String) sse_decode_record_string_string(SseDeserializer deserializer);
 
 @protected (String,int) sse_decode_record_string_u_32(SseDeserializer deserializer);
-
-@protected (String,BigInt) sse_decode_record_string_u_64(SseDeserializer deserializer);
 
 @protected (String,void) sse_decode_record_string_unit(SseDeserializer deserializer);
 
@@ -524,6 +502,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected (int,Uint8List,Uint8List,Uint8List) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
 @protected (BigInt,BigInt) sse_decode_record_u_64_u_64(SseDeserializer deserializer);
+
+@protected (BigInt,BigInt,BigInt) sse_decode_record_u_64_u_64_u_64(SseDeserializer deserializer);
 
 @protected (BigInt,BigInt) sse_decode_record_u_64_usize(SseDeserializer deserializer);
 
@@ -537,7 +517,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected TokenInfo sse_decode_token_info(SseDeserializer deserializer);
 
-@protected TokenInfoV2 sse_decode_token_info_v_2(SseDeserializer deserializer);
+@protected TokenInfoV1 sse_decode_token_info_v_1(SseDeserializer deserializer);
 
 @protected Transaction sse_decode_transaction(SseDeserializer deserializer);
 
@@ -592,10 +572,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_Map_String_list_list_prim_u_8_strict_None(Map<String, List<Uint8List>> self, SseSerializer serializer);
 
 @protected void sse_encode_Map_String_opt_box_autoadd_u_64_None(Map<String, BigInt?> self, SseSerializer serializer);
-
-@protected void sse_encode_Map_String_record_u_64_u_64_None(Map<String, (BigInt,BigInt)> self, SseSerializer serializer);
-
-@protected void sse_encode_Map_String_u_64_None(Map<String, BigInt> self, SseSerializer serializer);
 
 @protected void sse_encode_Map_String_unit_None(Map<String, void> self, SseSerializer serializer);
 
@@ -659,11 +635,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_invoice_info(InvoiceInfo self, SseSerializer serializer);
 
-@protected void sse_encode_invoice_info_v_2(InvoiceInfoV2 self, SseSerializer serializer);
+@protected void sse_encode_invoice_info_v_1(InvoiceInfoV1 self, SseSerializer serializer);
 
 @protected void sse_encode_invoice_status(InvoiceStatus self, SseSerializer serializer);
 
-@protected void sse_encode_invoice_status_v_2(InvoiceStatusV2 self, SseSerializer serializer);
+@protected void sse_encode_invoice_status_v_1(InvoiceStatusV1 self, SseSerializer serializer);
 
 @protected void sse_encode_key_package_result(KeyPackageResult self, SseSerializer serializer);
 
@@ -701,11 +677,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_list_record_string_opt_box_autoadd_u_64(List<(String,BigInt?)> self, SseSerializer serializer);
 
-@protected void sse_encode_list_record_string_record_u_64_u_64(List<(String,(BigInt,BigInt))> self, SseSerializer serializer);
-
 @protected void sse_encode_list_record_string_string(List<(String,String)> self, SseSerializer serializer);
-
-@protected void sse_encode_list_record_string_u_64(List<(String,BigInt)> self, SseSerializer serializer);
 
 @protected void sse_encode_list_record_string_unit(List<(String,void)> self, SseSerializer serializer);
 
@@ -771,13 +743,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_record_string_opt_box_autoadd_u_64((String,BigInt?) self, SseSerializer serializer);
 
-@protected void sse_encode_record_string_record_u_64_u_64((String,(BigInt,BigInt)) self, SseSerializer serializer);
-
 @protected void sse_encode_record_string_string((String,String) self, SseSerializer serializer);
 
 @protected void sse_encode_record_string_u_32((String,int) self, SseSerializer serializer);
-
-@protected void sse_encode_record_string_u_64((String,BigInt) self, SseSerializer serializer);
 
 @protected void sse_encode_record_string_unit((String,void) self, SseSerializer serializer);
 
@@ -786,6 +754,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict((int,Uint8List,Uint8List,Uint8List) self, SseSerializer serializer);
 
 @protected void sse_encode_record_u_64_u_64((BigInt,BigInt) self, SseSerializer serializer);
+
+@protected void sse_encode_record_u_64_u_64_u_64((BigInt,BigInt,BigInt) self, SseSerializer serializer);
 
 @protected void sse_encode_record_u_64_usize((BigInt,BigInt) self, SseSerializer serializer);
 
@@ -799,7 +769,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_token_info(TokenInfo self, SseSerializer serializer);
 
-@protected void sse_encode_token_info_v_2(TokenInfoV2 self, SseSerializer serializer);
+@protected void sse_encode_token_info_v_1(TokenInfoV1 self, SseSerializer serializer);
 
 @protected void sse_encode_transaction(Transaction self, SseSerializer serializer);
 

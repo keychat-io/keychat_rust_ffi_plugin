@@ -6504,22 +6504,6 @@ impl SseDecode for std::collections::HashMap<String, Option<u64>> {
     }
 }
 
-impl SseDecode for std::collections::HashMap<String, (u64, u64)> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <Vec<(String, (u64, u64))>>::sse_decode(deserializer);
-        return inner.into_iter().collect();
-    }
-}
-
-impl SseDecode for std::collections::HashMap<String, u64> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <Vec<(String, u64)>>::sse_decode(deserializer);
-        return inner.into_iter().collect();
-    }
-}
-
 impl SseDecode for std::collections::HashMap<String, ()> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6736,7 +6720,7 @@ impl SseDecode for i64 {
     }
 }
 
-impl SseDecode for crate::api_cashu_v1::InvoiceInfo {
+impl SseDecode for crate::api_cashu::InvoiceInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_amount = <u64>::sse_decode(deserializer);
@@ -6744,8 +6728,8 @@ impl SseDecode for crate::api_cashu_v1::InvoiceInfo {
         let mut var_hash = <String>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
         let mut var_mint = <Option<String>>::sse_decode(deserializer);
-        let mut var_status = <crate::api_cashu_v1::InvoiceStatus>::sse_decode(deserializer);
-        return crate::api_cashu_v1::InvoiceInfo {
+        let mut var_status = <crate::api_cashu::InvoiceStatus>::sse_decode(deserializer);
+        return crate::api_cashu::InvoiceInfo {
             amount: var_amount,
             expiry_ts: var_expiryTs,
             hash: var_hash,
@@ -6756,7 +6740,7 @@ impl SseDecode for crate::api_cashu_v1::InvoiceInfo {
     }
 }
 
-impl SseDecode for crate::api_cashu::InvoiceInfoV2 {
+impl SseDecode for crate::api_cashu_v1::InvoiceInfoV1 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_amount = <u64>::sse_decode(deserializer);
@@ -6764,8 +6748,8 @@ impl SseDecode for crate::api_cashu::InvoiceInfoV2 {
         let mut var_hash = <String>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
         let mut var_mint = <Option<String>>::sse_decode(deserializer);
-        let mut var_status = <crate::api_cashu::InvoiceStatusV2>::sse_decode(deserializer);
-        return crate::api_cashu::InvoiceInfoV2 {
+        let mut var_status = <crate::api_cashu_v1::InvoiceStatusV1>::sse_decode(deserializer);
+        return crate::api_cashu_v1::InvoiceInfoV1 {
             amount: var_amount,
             expiry_ts: var_expiryTs,
             hash: var_hash,
@@ -6776,28 +6760,28 @@ impl SseDecode for crate::api_cashu::InvoiceInfoV2 {
     }
 }
 
-impl SseDecode for crate::api_cashu_v1::InvoiceStatus {
+impl SseDecode for crate::api_cashu::InvoiceStatus {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu_v1::InvoiceStatus::Paid,
-            1 => crate::api_cashu_v1::InvoiceStatus::Unpaid,
-            2 => crate::api_cashu_v1::InvoiceStatus::Expired,
+            0 => crate::api_cashu::InvoiceStatus::Paid,
+            1 => crate::api_cashu::InvoiceStatus::Unpaid,
+            2 => crate::api_cashu::InvoiceStatus::Expired,
             _ => unreachable!("Invalid variant for InvoiceStatus: {}", inner),
         };
     }
 }
 
-impl SseDecode for crate::api_cashu::InvoiceStatusV2 {
+impl SseDecode for crate::api_cashu_v1::InvoiceStatusV1 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
-            0 => crate::api_cashu::InvoiceStatusV2::Paid,
-            1 => crate::api_cashu::InvoiceStatusV2::Unpaid,
-            2 => crate::api_cashu::InvoiceStatusV2::Expired,
-            _ => unreachable!("Invalid variant for InvoiceStatusV2: {}", inner),
+            0 => crate::api_cashu_v1::InvoiceStatusV1::Paid,
+            1 => crate::api_cashu_v1::InvoiceStatusV1::Unpaid,
+            2 => crate::api_cashu_v1::InvoiceStatusV1::Expired,
+            _ => unreachable!("Invalid variant for InvoiceStatusV1: {}", inner),
         };
     }
 }
@@ -7026,18 +7010,6 @@ impl SseDecode for Vec<(String, Option<u64>)> {
     }
 }
 
-impl SseDecode for Vec<(String, (u64, u64))> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
-        let mut ans_ = vec![];
-        for idx_ in 0..len_ {
-            ans_.push(<(String, (u64, u64))>::sse_decode(deserializer));
-        }
-        return ans_;
-    }
-}
-
 impl SseDecode for Vec<(String, String)> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -7045,18 +7017,6 @@ impl SseDecode for Vec<(String, String)> {
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
             ans_.push(<(String, String)>::sse_decode(deserializer));
-        }
-        return ans_;
-    }
-}
-
-impl SseDecode for Vec<(String, u64)> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
-        let mut ans_ = vec![];
-        for idx_ in 0..len_ {
-            ans_.push(<(String, u64)>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -7496,15 +7456,6 @@ impl SseDecode for (String, Option<u64>) {
     }
 }
 
-impl SseDecode for (String, (u64, u64)) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_field0 = <String>::sse_decode(deserializer);
-        let mut var_field1 = <(u64, u64)>::sse_decode(deserializer);
-        return (var_field0, var_field1);
-    }
-}
-
 impl SseDecode for (String, String) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -7519,15 +7470,6 @@ impl SseDecode for (String, u32) {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_field0 = <String>::sse_decode(deserializer);
         let mut var_field1 = <u32>::sse_decode(deserializer);
-        return (var_field0, var_field1);
-    }
-}
-
-impl SseDecode for (String, u64) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_field0 = <String>::sse_decode(deserializer);
-        let mut var_field1 = <u64>::sse_decode(deserializer);
         return (var_field0, var_field1);
     }
 }
@@ -7568,6 +7510,16 @@ impl SseDecode for (u64, u64) {
         let mut var_field0 = <u64>::sse_decode(deserializer);
         let mut var_field1 = <u64>::sse_decode(deserializer);
         return (var_field0, var_field1);
+    }
+}
+
+impl SseDecode for (u64, u64, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <u64>::sse_decode(deserializer);
+        let mut var_field1 = <u64>::sse_decode(deserializer);
+        let mut var_field2 = <u64>::sse_decode(deserializer);
+        return (var_field0, var_field1, var_field2);
     }
 }
 
@@ -7637,14 +7589,14 @@ impl SseDecode for crate::api_nostr::Secp256k1SimpleAccount {
     }
 }
 
-impl SseDecode for crate::api_cashu_v1::TokenInfo {
+impl SseDecode for crate::api_cashu::TokenInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_mint = <String>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
-        let mut var_unit = <Option<String>>::sse_decode(deserializer);
+        let mut var_unit = <Option<CurrencyUnit>>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
-        return crate::api_cashu_v1::TokenInfo {
+        return crate::api_cashu::TokenInfo {
             mint: var_mint,
             amount: var_amount,
             unit: var_unit,
@@ -7653,14 +7605,14 @@ impl SseDecode for crate::api_cashu_v1::TokenInfo {
     }
 }
 
-impl SseDecode for crate::api_cashu::TokenInfoV2 {
+impl SseDecode for crate::api_cashu_v1::TokenInfoV1 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_mint = <String>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
-        let mut var_unit = <Option<CurrencyUnit>>::sse_decode(deserializer);
+        let mut var_unit = <Option<String>>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
-        return crate::api_cashu::TokenInfoV2 {
+        return crate::api_cashu_v1::TokenInfoV1 {
             mint: var_mint,
             amount: var_amount,
             unit: var_unit,
@@ -8434,7 +8386,29 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_mls::types::GroupExtensionResu
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceInfo {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceInfo {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.amount.into_into_dart().into_dart(),
+            self.expiry_ts.into_into_dart().into_dart(),
+            self.hash.into_into_dart().into_dart(),
+            self.memo.into_into_dart().into_dart(),
+            self.mint.into_into_dart().into_dart(),
+            self.status.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api_cashu::InvoiceInfo {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceInfo>
+    for crate::api_cashu::InvoiceInfo
+{
+    fn into_into_dart(self) -> crate::api_cashu::InvoiceInfo {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceInfoV1 {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.amount.into_into_dart().into_dart(),
@@ -8448,43 +8422,18 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceInfo {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu_v1::InvoiceInfo
+    for crate::api_cashu_v1::InvoiceInfoV1
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::InvoiceInfo>
-    for crate::api_cashu_v1::InvoiceInfo
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::InvoiceInfoV1>
+    for crate::api_cashu_v1::InvoiceInfoV1
 {
-    fn into_into_dart(self) -> crate::api_cashu_v1::InvoiceInfo {
+    fn into_into_dart(self) -> crate::api_cashu_v1::InvoiceInfoV1 {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceInfoV2 {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.amount.into_into_dart().into_dart(),
-            self.expiry_ts.into_into_dart().into_dart(),
-            self.hash.into_into_dart().into_dart(),
-            self.memo.into_into_dart().into_dart(),
-            self.mint.into_into_dart().into_dart(),
-            self.status.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu::InvoiceInfoV2
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceInfoV2>
-    for crate::api_cashu::InvoiceInfoV2
-{
-    fn into_into_dart(self) -> crate::api_cashu::InvoiceInfoV2 {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceStatus {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceStatus {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
             Self::Paid => 0.into_dart(),
@@ -8495,18 +8444,18 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceStatus {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu_v1::InvoiceStatus
+    for crate::api_cashu::InvoiceStatus
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::InvoiceStatus>
-    for crate::api_cashu_v1::InvoiceStatus
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceStatus>
+    for crate::api_cashu::InvoiceStatus
 {
-    fn into_into_dart(self) -> crate::api_cashu_v1::InvoiceStatus {
+    fn into_into_dart(self) -> crate::api_cashu::InvoiceStatus {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceStatusV2 {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::InvoiceStatusV1 {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
             Self::Paid => 0.into_dart(),
@@ -8517,13 +8466,13 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu::InvoiceStatusV2 {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu::InvoiceStatusV2
+    for crate::api_cashu_v1::InvoiceStatusV1
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::InvoiceStatusV2>
-    for crate::api_cashu::InvoiceStatusV2
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::InvoiceStatusV1>
+    for crate::api_cashu_v1::InvoiceStatusV1
 {
-    fn into_into_dart(self) -> crate::api_cashu::InvoiceStatusV2 {
+    fn into_into_dart(self) -> crate::api_cashu_v1::InvoiceStatusV1 {
         self
     }
 }
@@ -8926,7 +8875,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_nostr::Secp256k1SimpleAccount>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::TokenInfo {
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::TokenInfo {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.mint.into_into_dart().into_dart(),
+            self.amount.into_into_dart().into_dart(),
+            self.unit.into_into_dart().into_dart(),
+            self.memo.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api_cashu::TokenInfo {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::TokenInfo>
+    for crate::api_cashu::TokenInfo
+{
+    fn into_into_dart(self) -> crate::api_cashu::TokenInfo {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::TokenInfoV1 {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.mint.into_into_dart().into_dart(),
@@ -8938,33 +8907,13 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu_v1::TokenInfo {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::api_cashu_v1::TokenInfo
+    for crate::api_cashu_v1::TokenInfoV1
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::TokenInfo>
-    for crate::api_cashu_v1::TokenInfo
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::TokenInfoV1>
+    for crate::api_cashu_v1::TokenInfoV1
 {
-    fn into_into_dart(self) -> crate::api_cashu_v1::TokenInfo {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::api_cashu::TokenInfoV2 {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.mint.into_into_dart().into_dart(),
-            self.amount.into_into_dart().into_dart(),
-            self.unit.into_into_dart().into_dart(),
-            self.memo.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api_cashu::TokenInfoV2 {}
-impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::TokenInfoV2>
-    for crate::api_cashu::TokenInfoV2
-{
-    fn into_into_dart(self) -> crate::api_cashu::TokenInfoV2 {
+    fn into_into_dart(self) -> crate::api_cashu_v1::TokenInfoV1 {
         self
     }
 }
@@ -9203,20 +9152,6 @@ impl SseEncode for std::collections::HashMap<String, Option<u64>> {
     }
 }
 
-impl SseEncode for std::collections::HashMap<String, (u64, u64)> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<(String, (u64, u64))>>::sse_encode(self.into_iter().collect(), serializer);
-    }
-}
-
-impl SseEncode for std::collections::HashMap<String, u64> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<(String, u64)>>::sse_encode(self.into_iter().collect(), serializer);
-    }
-}
-
 impl SseEncode for std::collections::HashMap<String, ()> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -9402,7 +9337,7 @@ impl SseEncode for i64 {
     }
 }
 
-impl SseEncode for crate::api_cashu_v1::InvoiceInfo {
+impl SseEncode for crate::api_cashu::InvoiceInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.amount, serializer);
@@ -9410,11 +9345,11 @@ impl SseEncode for crate::api_cashu_v1::InvoiceInfo {
         <String>::sse_encode(self.hash, serializer);
         <Option<String>>::sse_encode(self.memo, serializer);
         <Option<String>>::sse_encode(self.mint, serializer);
-        <crate::api_cashu_v1::InvoiceStatus>::sse_encode(self.status, serializer);
+        <crate::api_cashu::InvoiceStatus>::sse_encode(self.status, serializer);
     }
 }
 
-impl SseEncode for crate::api_cashu::InvoiceInfoV2 {
+impl SseEncode for crate::api_cashu_v1::InvoiceInfoV1 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.amount, serializer);
@@ -9422,18 +9357,18 @@ impl SseEncode for crate::api_cashu::InvoiceInfoV2 {
         <String>::sse_encode(self.hash, serializer);
         <Option<String>>::sse_encode(self.memo, serializer);
         <Option<String>>::sse_encode(self.mint, serializer);
-        <crate::api_cashu::InvoiceStatusV2>::sse_encode(self.status, serializer);
+        <crate::api_cashu_v1::InvoiceStatusV1>::sse_encode(self.status, serializer);
     }
 }
 
-impl SseEncode for crate::api_cashu_v1::InvoiceStatus {
+impl SseEncode for crate::api_cashu::InvoiceStatus {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu_v1::InvoiceStatus::Paid => 0,
-                crate::api_cashu_v1::InvoiceStatus::Unpaid => 1,
-                crate::api_cashu_v1::InvoiceStatus::Expired => 2,
+                crate::api_cashu::InvoiceStatus::Paid => 0,
+                crate::api_cashu::InvoiceStatus::Unpaid => 1,
+                crate::api_cashu::InvoiceStatus::Expired => 2,
                 _ => {
                     unimplemented!("");
                 }
@@ -9443,14 +9378,14 @@ impl SseEncode for crate::api_cashu_v1::InvoiceStatus {
     }
 }
 
-impl SseEncode for crate::api_cashu::InvoiceStatusV2 {
+impl SseEncode for crate::api_cashu_v1::InvoiceStatusV1 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
-                crate::api_cashu::InvoiceStatusV2::Paid => 0,
-                crate::api_cashu::InvoiceStatusV2::Unpaid => 1,
-                crate::api_cashu::InvoiceStatusV2::Expired => 2,
+                crate::api_cashu_v1::InvoiceStatusV1::Paid => 0,
+                crate::api_cashu_v1::InvoiceStatusV1::Unpaid => 1,
+                crate::api_cashu_v1::InvoiceStatusV1::Expired => 2,
                 _ => {
                     unimplemented!("");
                 }
@@ -9626,32 +9561,12 @@ impl SseEncode for Vec<(String, Option<u64>)> {
     }
 }
 
-impl SseEncode for Vec<(String, (u64, u64))> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <(String, (u64, u64))>::sse_encode(item, serializer);
-        }
-    }
-}
-
 impl SseEncode for Vec<(String, String)> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <(String, String)>::sse_encode(item, serializer);
-        }
-    }
-}
-
-impl SseEncode for Vec<(String, u64)> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <(String, u64)>::sse_encode(item, serializer);
         }
     }
 }
@@ -9987,14 +9902,6 @@ impl SseEncode for (String, Option<u64>) {
     }
 }
 
-impl SseEncode for (String, (u64, u64)) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <String>::sse_encode(self.0, serializer);
-        <(u64, u64)>::sse_encode(self.1, serializer);
-    }
-}
-
 impl SseEncode for (String, String) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -10008,14 +9915,6 @@ impl SseEncode for (String, u32) {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.0, serializer);
         <u32>::sse_encode(self.1, serializer);
-    }
-}
-
-impl SseEncode for (String, u64) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <String>::sse_encode(self.0, serializer);
-        <u64>::sse_encode(self.1, serializer);
     }
 }
 
@@ -10051,6 +9950,15 @@ impl SseEncode for (u64, u64) {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.0, serializer);
         <u64>::sse_encode(self.1, serializer);
+    }
+}
+
+impl SseEncode for (u64, u64, u64) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u64>::sse_encode(self.0, serializer);
+        <u64>::sse_encode(self.1, serializer);
+        <u64>::sse_encode(self.2, serializer);
     }
 }
 
@@ -10102,22 +10010,22 @@ impl SseEncode for crate::api_nostr::Secp256k1SimpleAccount {
     }
 }
 
-impl SseEncode for crate::api_cashu_v1::TokenInfo {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <String>::sse_encode(self.mint, serializer);
-        <u64>::sse_encode(self.amount, serializer);
-        <Option<String>>::sse_encode(self.unit, serializer);
-        <Option<String>>::sse_encode(self.memo, serializer);
-    }
-}
-
-impl SseEncode for crate::api_cashu::TokenInfoV2 {
+impl SseEncode for crate::api_cashu::TokenInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.mint, serializer);
         <u64>::sse_encode(self.amount, serializer);
         <Option<CurrencyUnit>>::sse_encode(self.unit, serializer);
+        <Option<String>>::sse_encode(self.memo, serializer);
+    }
+}
+
+impl SseEncode for crate::api_cashu_v1::TokenInfoV1 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.mint, serializer);
+        <u64>::sse_encode(self.amount, serializer);
+        <Option<String>>::sse_encode(self.unit, serializer);
         <Option<String>>::sse_encode(self.memo, serializer);
     }
 }

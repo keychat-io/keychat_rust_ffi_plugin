@@ -751,59 +751,7 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> 
     Ok(tx)
 }
 
-/// this need call every init melt mint
-pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let tx = state.rt.block_on(async {
-        let check = w.check_all_mint_quotes(None).await?;
-        let amounts: u64 = check.values().map(|v| *v.as_ref()).sum();
-
-        Ok(amounts)
-    })?;
-
-    Ok(tx)
-}
-
-/// Checks pending proofs for spent status
-pub fn check_proofs() -> anyhow::Result<HashMap<String, u64>> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-    // let mint_url = MintUrl::from_str(&active_mint)?;
-    let tx = state.rt.block_on(async {
-        let mut check_map = HashMap::new();
-        let mints = w.localstore.get_mints().await?;
-        for (mint_url, _info) in mints {
-            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            let check = wallet.check_all_pending_proofs().await?;
-            check_map.insert(mint_url.to_string(), *check.as_ref());
-        }
-        Ok(check_map)
-    })?;
-
-    Ok(tx)
-}
-
-/// include ln and cashu
-pub fn check_pending() -> anyhow::Result<HashMap<String, (u64, u64)>> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-    let tx = state.rt.block_on(async {
-        let mut check_map = HashMap::new();
-        let mints = w.localstore.get_mints().await?;
-        for (mint_url, _info) in mints {
-            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            let check = wallet.check_proofs_tx_spent_state().await?;
-            check_map.insert(mint_url.to_string(), check);
-        }
-        Ok(check_map)
-    })?;
-
-    Ok(tx)
-}
-
+/// don not used in flutter, and put it in check_pending
 pub fn mint_token(
     amount: u64,
     quote_id: String,
@@ -844,6 +792,64 @@ pub fn mint_token(
     };
 
     Ok(tx_new)
+}
+
+/// this need call every init melt mint
+pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let tx = state.rt.block_on(async {
+        let check = w.check_all_mint_quotes(None).await?;
+        let amounts: u64 = check.values().map(|v| *v.as_ref()).sum();
+
+        Ok(amounts)
+    })?;
+
+    Ok(tx)
+}
+
+/// Checks pending proofs for spent status
+pub fn check_proofs() -> anyhow::Result<(u64, u64, u64)> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    // let mint_url = MintUrl::from_str(&active_mint)?;
+    let tx = state.rt.block_on(async {
+        let mut check_map: HashMap<String, (u64, u64)> = HashMap::new();
+        let mints = w.localstore.get_mints().await?;
+        for (mint_url, _info) in mints {
+            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+            let check = wallet.check_all_pending_proofs().await?;
+            check_map.insert(mint_url.to_string(), (check.1, check.2));
+        }
+        Ok(check_map)
+    })?;
+    let cnt = tx
+        .values()
+        .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
+    Ok((cnt.0, cnt.1, cnt.0 + cnt.1))
+}
+
+/// include ln and cashu
+pub fn check_pending() -> anyhow::Result<(u64, u64)> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let tx = state.rt.block_on(async {
+        let mut check_map = HashMap::new();
+        let mints = w.localstore.get_mints().await?;
+        for (mint_url, _info) in mints {
+            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+            let check = wallet.check_proofs_tx_spent_state().await?;
+            check_map.insert(mint_url.to_string(), check);
+        }
+        Ok(check_map)
+    })?;
+    let cnt = tx
+        .values()
+        .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
+
+    Ok(cnt)
 }
 
 pub fn melt(
@@ -1144,10 +1150,10 @@ pub fn get_all_proofs_data() -> anyhow::Result<(usize, usize, usize)> {
     Ok(tx)
 }
 
-pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfoV2> {
+pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
     let token: Token = Token::from_str(&encoded_token)?;
 
-    Ok(TokenInfoV2 {
+    Ok(TokenInfo {
         // encoded_token,
         mint: token.mint_url()?.to_string(),
         amount: token.value()?.into(),
@@ -1157,7 +1163,7 @@ pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfoV2> {
 }
 
 /// sleepms_after_check_a_batch for (code: 429): {"detail":"Rate limit exceeded."}
-pub fn restore(mint_url: String, words: Option<String>) -> anyhow::Result<u64> {
+pub fn restore(mint_url: String, words: Option<String>) -> anyhow::Result<(u64, u64)> {
     let mint_url = MintUrl::from_str(&mint_url)?;
     let mut state = State::lock()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -1185,11 +1191,11 @@ pub fn restore(mint_url: String, words: Option<String>) -> anyhow::Result<u64> {
         Ok(amount)
     })?;
 
-    Ok(amount.into())
+    Ok((amount.0.into(), amount.1))
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TokenInfoV2 {
+pub struct TokenInfo {
     // pub encoded_token: String,
     pub mint: String,
     pub amount: u64,
@@ -1197,7 +1203,7 @@ pub struct TokenInfoV2 {
     pub memo: Option<String>,
 }
 
-pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV2> {
+pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
     let encoded_invoice = encoded_invoice.replace("lightning:", "");
     let invoice: Invoice = encoded_invoice.parse()?;
 
@@ -1211,8 +1217,8 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV2> 
     };
 
     let status = match invoice.is_expired() {
-        true => InvoiceStatusV2::Expired,
-        false => InvoiceStatusV2::Unpaid,
+        true => InvoiceStatus::Expired,
+        false => InvoiceStatus::Unpaid,
     };
 
     let ts = (invoice.duration_since_epoch() + invoice.expiry_time()).as_millis();
@@ -1223,7 +1229,7 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV2> 
         ts
     );
 
-    Ok(InvoiceInfoV2 {
+    Ok(InvoiceInfo {
         // bolt11: encoded_invoice,
         amount: amount / 1000,
         hash: invoice.payment_hash().to_string(),
@@ -1235,17 +1241,17 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV2> 
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct InvoiceInfoV2 {
+pub struct InvoiceInfo {
     // pub bolt11: String,
     pub amount: u64,
     pub expiry_ts: u64,
     pub hash: String,
     pub memo: Option<String>,
     pub mint: Option<String>,
-    pub status: InvoiceStatusV2,
+    pub status: InvoiceStatus,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum InvoiceStatusV2 {
+pub enum InvoiceStatus {
     Paid,
     Unpaid,
     Expired,

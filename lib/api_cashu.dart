@@ -57,16 +57,17 @@ Future<Transaction>  send({required BigInt amount , required String activeMint ,
 
 Future<String>  requestMint({required BigInt amount , required String activeMint }) => RustLib.instance.api.crateApiCashuRequestMint(amount: amount, activeMint: activeMint);
 
+/// don not used in flutter, and put it in check_pending
+Future<Transaction>  mintToken({required BigInt amount , required String quoteId , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, quoteId: quoteId, activeMint: activeMint);
+
 /// this need call every init melt mint
 Future<BigInt>  checkAllMintQuotes() => RustLib.instance.api.crateApiCashuCheckAllMintQuotes();
 
 /// Checks pending proofs for spent status
-Future<Map<String, BigInt>>  checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
+Future<(BigInt,BigInt,BigInt)>  checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 
 /// include ln and cashu
-Future<Map<String, (BigInt,BigInt)>>  checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
-
-Future<Transaction>  mintToken({required BigInt amount , required String quoteId , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, quoteId: quoteId, activeMint: activeMint);
+Future<(BigInt,BigInt)>  checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
 Future<Transaction>  melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
 
@@ -90,12 +91,12 @@ Future<void>  checkTransaction({required String id }) => RustLib.instance.api.cr
 /// (spents, pendings, all)
 Future<(BigInt,BigInt,BigInt)>  getAllProofsData() => RustLib.instance.api.crateApiCashuGetAllProofsData();
 
-Future<TokenInfoV2>  decodeToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuDecodeToken(encodedToken: encodedToken);
+Future<TokenInfo>  decodeToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuDecodeToken(encodedToken: encodedToken);
 
 /// sleepms_after_check_a_batch for (code: 429): {"detail":"Rate limit exceeded."}
-Future<BigInt>  restore({required String mintUrl , String? words }) => RustLib.instance.api.crateApiCashuRestore(mintUrl: mintUrl, words: words);
+Future<(BigInt,BigInt)>  restore({required String mintUrl , String? words }) => RustLib.instance.api.crateApiCashuRestore(mintUrl: mintUrl, words: words);
 
-Future<InvoiceInfoV2>  decodeInvoice({required String encodedInvoice }) => RustLib.instance.api.crateApiCashuDecodeInvoice(encodedInvoice: encodedInvoice);
+Future<InvoiceInfo>  decodeInvoice({required String encodedInvoice }) => RustLib.instance.api.crateApiCashuDecodeInvoice(encodedInvoice: encodedInvoice);
 
             
                 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Amount>>
@@ -133,15 +134,15 @@ Future<InvoiceInfoV2>  decodeInvoice({required String encodedInvoice }) => RustL
                 }
                 
 
-class InvoiceInfoV2  {
+class InvoiceInfo  {
                 final BigInt amount;
 final BigInt expiryTs;
 final String hash;
 final String? memo;
 final String? mint;
-final InvoiceStatusV2 status;
+final InvoiceStatus status;
 
-                const InvoiceInfoV2({required this.amount ,required this.expiryTs ,required this.hash ,this.memo ,this.mint ,required this.status ,});
+                const InvoiceInfo({required this.amount ,required this.expiryTs ,required this.hash ,this.memo ,this.mint ,required this.status ,});
 
                 
                 
@@ -155,13 +156,13 @@ final InvoiceStatusV2 status;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is InvoiceInfoV2 &&
+            other is InvoiceInfo &&
                 runtimeType == other.runtimeType
                 && amount == other.amount&& expiryTs == other.expiryTs&& hash == other.hash&& memo == other.memo&& mint == other.mint&& status == other.status;
         
             }
 
-enum InvoiceStatusV2 {
+enum InvoiceStatus {
                     paid,
 unpaid,
 expired,
@@ -169,13 +170,13 @@ expired,
                     
                 }
 
-class TokenInfoV2  {
+class TokenInfo  {
                 final String mint;
 final BigInt amount;
 final CurrencyUnit? unit;
 final String? memo;
 
-                const TokenInfoV2({required this.mint ,required this.amount ,this.unit ,this.memo ,});
+                const TokenInfo({required this.mint ,required this.amount ,this.unit ,this.memo ,});
 
                 
                 
@@ -189,7 +190,7 @@ final String? memo;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is TokenInfoV2 &&
+            other is TokenInfo &&
                 runtimeType == other.runtimeType
                 && mint == other.mint&& amount == other.amount&& unit == other.unit&& memo == other.memo;
         

@@ -73,22 +73,22 @@ Future<TransactionV1>  checkTransaction({required String id }) => RustLib.instan
 /// (spents, pendings, all)
 Future<(BigInt,BigInt,BigInt)>  checkProofs() => RustLib.instance.api.crateApiCashuV1CheckProofs();
 
-Future<TokenInfo>  decodeToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuV1DecodeToken(encodedToken: encodedToken);
+Future<TokenInfoV1>  decodeToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuV1DecodeToken(encodedToken: encodedToken);
 
 /// sleepms_after_check_a_batch for (code: 429): {"detail":"Rate limit exceeded."}
 Future<(BigInt,BigInt)>  restore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch }) => RustLib.instance.api.crateApiCashuV1Restore(mint: mint, words: words, sleepmsAfterCheckABatch: sleepmsAfterCheckABatch);
 
-Future<InvoiceInfo>  decodeInvoice({required String encodedInvoice }) => RustLib.instance.api.crateApiCashuV1DecodeInvoice(encodedInvoice: encodedInvoice);
+Future<InvoiceInfoV1>  decodeInvoice({required String encodedInvoice }) => RustLib.instance.api.crateApiCashuV1DecodeInvoice(encodedInvoice: encodedInvoice);
 
-            class InvoiceInfo  {
+            class InvoiceInfoV1  {
                 final BigInt amount;
 final BigInt expiryTs;
 final String hash;
 final String? memo;
 final String? mint;
-final InvoiceStatus status;
+final InvoiceStatusV1 status;
 
-                const InvoiceInfo({required this.amount ,required this.expiryTs ,required this.hash ,this.memo ,this.mint ,required this.status ,});
+                const InvoiceInfoV1({required this.amount ,required this.expiryTs ,required this.hash ,this.memo ,this.mint ,required this.status ,});
 
                 
                 
@@ -102,13 +102,13 @@ final InvoiceStatus status;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is InvoiceInfo &&
+            other is InvoiceInfoV1 &&
                 runtimeType == other.runtimeType
                 && amount == other.amount&& expiryTs == other.expiryTs&& hash == other.hash&& memo == other.memo&& mint == other.mint&& status == other.status;
         
             }
 
-enum InvoiceStatus {
+enum InvoiceStatusV1 {
                     paid,
 unpaid,
 expired,
@@ -116,13 +116,13 @@ expired,
                     
                 }
 
-class TokenInfo  {
+class TokenInfoV1  {
                 final String mint;
 final BigInt amount;
 final String? unit;
 final String? memo;
 
-                const TokenInfo({required this.mint ,required this.amount ,this.unit ,this.memo ,});
+                const TokenInfoV1({required this.mint ,required this.amount ,this.unit ,this.memo ,});
 
                 
                 
@@ -136,7 +136,7 @@ final String? memo;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is TokenInfo &&
+            other is TokenInfoV1 &&
                 runtimeType == other.runtimeType
                 && mint == other.mint&& amount == other.amount&& unit == other.unit&& memo == other.memo;
         

@@ -108,11 +108,11 @@ Future<List<String>> crateApiCashuV1CashuV1InitSendAll({required String dbpath ,
 
 Future<BigInt> crateApiCashuCheckAllMintQuotes();
 
-Future<Map<String, (BigInt,BigInt)>> crateApiCashuCheckPending();
+Future<(BigInt,BigInt)> crateApiCashuCheckPending();
 
 Future<(BigInt,BigInt)> crateApiCashuV1CheckPending();
 
-Future<Map<String, BigInt>> crateApiCashuCheckProofs();
+Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs();
 
 Future<(BigInt,BigInt,BigInt)> crateApiCashuV1CheckProofs();
 
@@ -142,13 +142,13 @@ Future<bool> crateApiNostrCurve25519Verify({required List<int> publicKey , requi
 
 String crateApiNostrDecodeBech32({required String content });
 
-Future<InvoiceInfoV2> crateApiCashuDecodeInvoice({required String encodedInvoice });
+Future<InvoiceInfo> crateApiCashuDecodeInvoice({required String encodedInvoice });
 
-Future<InvoiceInfo> crateApiCashuV1DecodeInvoice({required String encodedInvoice });
+Future<InvoiceInfoV1> crateApiCashuV1DecodeInvoice({required String encodedInvoice });
 
-Future<TokenInfoV2> crateApiCashuDecodeToken({required String encodedToken });
+Future<TokenInfo> crateApiCashuDecodeToken({required String encodedToken });
 
-Future<TokenInfo> crateApiCashuV1DecodeToken({required String encodedToken });
+Future<TokenInfoV1> crateApiCashuV1DecodeToken({required String encodedToken });
 
 Future<String> crateApiNostrDecrypt({required String senderKeys , required String receiverPubkey , required String content });
 
@@ -362,7 +362,7 @@ Future<String> crateApiCashuRequestMint({required BigInt amount , required Strin
 
 Future<TransactionV1> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint });
 
-Future<BigInt> crateApiCashuRestore({required String mintUrl , String? words });
+Future<(BigInt,BigInt)> crateApiCashuRestore({required String mintUrl , String? words });
 
 Future<(BigInt,BigInt)> crateApiCashuV1Restore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch });
 
@@ -773,7 +773,7 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<Map<String, (BigInt,BigInt)>> crateApiCashuCheckPending()  { return handler.executeNormal(NormalTask(
+@override Future<(BigInt,BigInt)> crateApiCashuCheckPending()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -782,7 +782,7 @@ sse_encode_opt_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_Map_String_record_u_64_u_64_None,
+          decodeSuccessData: sse_decode_record_u_64_u_64,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -823,7 +823,7 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<Map<String, BigInt>> crateApiCashuCheckProofs()  { return handler.executeNormal(NormalTask(
+@override Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -832,7 +832,7 @@ sse_encode_opt_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_Map_String_u_64_None,
+          decodeSuccessData: sse_decode_record_u_64_u_64_u_64,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -1216,7 +1216,7 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<InvoiceInfoV2> crateApiCashuDecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
+@override Future<InvoiceInfo> crateApiCashuDecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
@@ -1225,7 +1225,7 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_invoice_info_v_2,
+          decodeSuccessData: sse_decode_invoice_info,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -1241,7 +1241,7 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<InvoiceInfo> crateApiCashuV1DecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
+@override Future<InvoiceInfoV1> crateApiCashuV1DecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
@@ -1250,7 +1250,7 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_invoice_info,
+          decodeSuccessData: sse_decode_invoice_info_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -1266,7 +1266,7 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<TokenInfoV2> crateApiCashuDecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<TokenInfo> crateApiCashuDecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
@@ -1275,7 +1275,7 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_token_info_v_2,
+          decodeSuccessData: sse_decode_token_info,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -1291,7 +1291,7 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<TokenInfo> crateApiCashuV1DecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
+@override Future<TokenInfoV1> crateApiCashuV1DecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
@@ -1300,7 +1300,7 @@ sse_encode_String(sig, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_token_info,
+          decodeSuccessData: sse_decode_token_info_v_1,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4077,7 +4077,7 @@ sse_encode_String(activeMint, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuRestore({required String mintUrl , String? words })  { return handler.executeNormal(NormalTask(
+@override Future<(BigInt,BigInt)> crateApiCashuRestore({required String mintUrl , String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mintUrl, serializer);
@@ -4087,7 +4087,7 @@ sse_encode_opt_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_u_64,
+          decodeSuccessData: sse_decode_record_u_64_u_64,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4832,12 +4832,6 @@ return Map.fromEntries(dco_decode_list_record_string_list_list_prim_u_8_strict(r
 @protected Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return Map.fromEntries(dco_decode_list_record_string_opt_box_autoadd_u_64(raw).map((e) => MapEntry(e.$1, e.$2))); }
 
-@protected Map<String, (BigInt,BigInt)> dco_decode_Map_String_record_u_64_u_64_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return Map.fromEntries(dco_decode_list_record_string_record_u_64_u_64(raw).map((e) => MapEntry(e.$1, e.$2))); }
-
-@protected Map<String, BigInt> dco_decode_Map_String_u_64_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return Map.fromEntries(dco_decode_list_record_string_u_64(raw).map((e) => MapEntry(e.$1, e.$2))); }
-
 @protected Map<String, void> dco_decode_Map_String_unit_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return Map.fromEntries(dco_decode_list_record_string_unit(raw).map((e) => MapEntry(e.$1, e.$2))); }
 
@@ -4969,21 +4963,21 @@ memo: dco_decode_opt_String(arr[3]),
 mint: dco_decode_opt_String(arr[4]),
 status: dco_decode_invoice_status(arr[5]),); }
 
-@protected InvoiceInfoV2 dco_decode_invoice_info_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+@protected InvoiceInfoV1 dco_decode_invoice_info_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 6) throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
-                return InvoiceInfoV2(amount: dco_decode_u_64(arr[0]),
+                return InvoiceInfoV1(amount: dco_decode_u_64(arr[0]),
 expiryTs: dco_decode_u_64(arr[1]),
 hash: dco_decode_String(arr[2]),
 memo: dco_decode_opt_String(arr[3]),
 mint: dco_decode_opt_String(arr[4]),
-status: dco_decode_invoice_status_v_2(arr[5]),); }
+status: dco_decode_invoice_status_v_1(arr[5]),); }
 
 @protected InvoiceStatus dco_decode_invoice_status(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return InvoiceStatus.values[raw as int]; }
 
-@protected InvoiceStatusV2 dco_decode_invoice_status_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return InvoiceStatusV2.values[raw as int]; }
+@protected InvoiceStatusV1 dco_decode_invoice_status_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return InvoiceStatusV1.values[raw as int]; }
 
 @protected KeyPackageResult dco_decode_key_package_result(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5060,14 +5054,8 @@ return (raw as List<dynamic>).map(dco_decode_record_string_list_list_prim_u_8_st
 @protected List<(String,BigInt?)> dco_decode_list_record_string_opt_box_autoadd_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_opt_box_autoadd_u_64).toList(); }
 
-@protected List<(String,(BigInt,BigInt))> dco_decode_list_record_string_record_u_64_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_record_string_record_u_64_u_64).toList(); }
-
 @protected List<(String,String)> dco_decode_list_record_string_string(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_string).toList(); }
-
-@protected List<(String,BigInt)> dco_decode_list_record_string_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_record_string_u_64).toList(); }
 
 @protected List<(String,void)> dco_decode_list_record_string_unit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_unit).toList(); }
@@ -5248,13 +5236,6 @@ final arr = raw as List<dynamic>;
             }
             return (dco_decode_String(arr[0]),dco_decode_opt_box_autoadd_u_64(arr[1]),); }
 
-@protected (String,(BigInt,BigInt)) dco_decode_record_string_record_u_64_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-            if (arr.length != 2) {
-                throw Exception('Expected 2 elements, got ${arr.length}');
-            }
-            return (dco_decode_String(arr[0]),dco_decode_record_u_64_u_64(arr[1]),); }
-
 @protected (String,String) dco_decode_record_string_string(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
             if (arr.length != 2) {
@@ -5268,13 +5249,6 @@ final arr = raw as List<dynamic>;
                 throw Exception('Expected 2 elements, got ${arr.length}');
             }
             return (dco_decode_String(arr[0]),dco_decode_u_32(arr[1]),); }
-
-@protected (String,BigInt) dco_decode_record_string_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-            if (arr.length != 2) {
-                throw Exception('Expected 2 elements, got ${arr.length}');
-            }
-            return (dco_decode_String(arr[0]),dco_decode_u_64(arr[1]),); }
 
 @protected (String,void) dco_decode_record_string_unit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5303,6 +5277,13 @@ final arr = raw as List<dynamic>;
                 throw Exception('Expected 2 elements, got ${arr.length}');
             }
             return (dco_decode_u_64(arr[0]),dco_decode_u_64(arr[1]),); }
+
+@protected (BigInt,BigInt,BigInt) dco_decode_record_u_64_u_64_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 3) {
+                throw Exception('Expected 3 elements, got ${arr.length}');
+            }
+            return (dco_decode_u_64(arr[0]),dco_decode_u_64(arr[1]),dco_decode_u_64(arr[2]),); }
 
 @protected (BigInt,BigInt) dco_decode_record_u_64_usize(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5349,15 +5330,15 @@ final arr = raw as List<dynamic>;
                 if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
                 return TokenInfo(mint: dco_decode_String(arr[0]),
 amount: dco_decode_u_64(arr[1]),
-unit: dco_decode_opt_String(arr[2]),
+unit: dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(arr[2]),
 memo: dco_decode_opt_String(arr[3]),); }
 
-@protected TokenInfoV2 dco_decode_token_info_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+@protected TokenInfoV1 dco_decode_token_info_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-                return TokenInfoV2(mint: dco_decode_String(arr[0]),
+                return TokenInfoV1(mint: dco_decode_String(arr[0]),
 amount: dco_decode_u_64(arr[1]),
-unit: dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(arr[2]),
+unit: dco_decode_opt_String(arr[2]),
 memo: dco_decode_opt_String(arr[3]),); }
 
 @protected Transaction dco_decode_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -5458,14 +5439,6 @@ var inner = sse_decode_list_record_string_list_list_prim_u_8_strict(deserializer
 
 @protected Map<String, BigInt?> sse_decode_Map_String_opt_box_autoadd_u_64_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_list_record_string_opt_box_autoadd_u_64(deserializer);
-        return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
-
-@protected Map<String, (BigInt,BigInt)> sse_decode_Map_String_record_u_64_u_64_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var inner = sse_decode_list_record_string_record_u_64_u_64(deserializer);
-        return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
-
-@protected Map<String, BigInt> sse_decode_Map_String_u_64_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var inner = sse_decode_list_record_string_u_64(deserializer);
         return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
 
 @protected Map<String, void> sse_decode_Map_String_unit_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -5595,22 +5568,22 @@ var var_mint = sse_decode_opt_String(deserializer);
 var var_status = sse_decode_invoice_status(deserializer);
 return InvoiceInfo(amount: var_amount, expiryTs: var_expiryTs, hash: var_hash, memo: var_memo, mint: var_mint, status: var_status); }
 
-@protected InvoiceInfoV2 sse_decode_invoice_info_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected InvoiceInfoV1 sse_decode_invoice_info_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_amount = sse_decode_u_64(deserializer);
 var var_expiryTs = sse_decode_u_64(deserializer);
 var var_hash = sse_decode_String(deserializer);
 var var_memo = sse_decode_opt_String(deserializer);
 var var_mint = sse_decode_opt_String(deserializer);
-var var_status = sse_decode_invoice_status_v_2(deserializer);
-return InvoiceInfoV2(amount: var_amount, expiryTs: var_expiryTs, hash: var_hash, memo: var_memo, mint: var_mint, status: var_status); }
+var var_status = sse_decode_invoice_status_v_1(deserializer);
+return InvoiceInfoV1(amount: var_amount, expiryTs: var_expiryTs, hash: var_hash, memo: var_memo, mint: var_mint, status: var_status); }
 
 @protected InvoiceStatus sse_decode_invoice_status(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
         return InvoiceStatus.values[inner]; }
 
-@protected InvoiceStatusV2 sse_decode_invoice_status_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected InvoiceStatusV1 sse_decode_invoice_status_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
-        return InvoiceStatusV2.values[inner]; }
+        return InvoiceStatusV1.values[inner]; }
 
 @protected KeyPackageResult sse_decode_key_package_result(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_keyPackage = sse_decode_String(deserializer);
@@ -5739,27 +5712,11 @@ var len_ = sse_decode_i_32(deserializer);
         return ans_;
          }
 
-@protected List<(String,(BigInt,BigInt))> sse_decode_list_record_string_record_u_64_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-        var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <(String,(BigInt,BigInt))>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_record_u_64_u_64(deserializer)); }
-        return ans_;
-         }
-
 @protected List<(String,String)> sse_decode_list_record_string_string(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
         var ans_ = <(String,String)>[];
         for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_string(deserializer)); }
-        return ans_;
-         }
-
-@protected List<(String,BigInt)> sse_decode_list_record_string_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-        var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <(String,BigInt)>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_u_64(deserializer)); }
         return ans_;
          }
 
@@ -6009,11 +5966,6 @@ var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_opt_box_autoadd_u_64(deserializer);
 return (var_field0, var_field1); }
 
-@protected (String,(BigInt,BigInt)) sse_decode_record_string_record_u_64_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_field0 = sse_decode_String(deserializer);
-var var_field1 = sse_decode_record_u_64_u_64(deserializer);
-return (var_field0, var_field1); }
-
 @protected (String,String) sse_decode_record_string_string(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_String(deserializer);
@@ -6022,11 +5974,6 @@ return (var_field0, var_field1); }
 @protected (String,int) sse_decode_record_string_u_32(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_u_32(deserializer);
-return (var_field0, var_field1); }
-
-@protected (String,BigInt) sse_decode_record_string_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_field0 = sse_decode_String(deserializer);
-var var_field1 = sse_decode_u_64(deserializer);
 return (var_field0, var_field1); }
 
 @protected (String,void) sse_decode_record_string_unit(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6051,6 +5998,12 @@ return (var_field0, var_field1, var_field2, var_field3); }
 var var_field0 = sse_decode_u_64(deserializer);
 var var_field1 = sse_decode_u_64(deserializer);
 return (var_field0, var_field1); }
+
+@protected (BigInt,BigInt,BigInt) sse_decode_record_u_64_u_64_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_u_64(deserializer);
+var var_field1 = sse_decode_u_64(deserializer);
+var var_field2 = sse_decode_u_64(deserializer);
+return (var_field0, var_field1, var_field2); }
 
 @protected (BigInt,BigInt) sse_decode_record_u_64_usize(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_u_64(deserializer);
@@ -6088,16 +6041,16 @@ return Secp256k1SimpleAccount(pubkey: var_pubkey, prikey: var_prikey); }
 @protected TokenInfo sse_decode_token_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_mint = sse_decode_String(deserializer);
 var var_amount = sse_decode_u_64(deserializer);
-var var_unit = sse_decode_opt_String(deserializer);
+var var_unit = sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(deserializer);
 var var_memo = sse_decode_opt_String(deserializer);
 return TokenInfo(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
 
-@protected TokenInfoV2 sse_decode_token_info_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected TokenInfoV1 sse_decode_token_info_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_mint = sse_decode_String(deserializer);
 var var_amount = sse_decode_u_64(deserializer);
-var var_unit = sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(deserializer);
+var var_unit = sse_decode_opt_String(deserializer);
 var var_memo = sse_decode_opt_String(deserializer);
-return TokenInfoV2(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
+return TokenInfoV1(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
 
 @protected Transaction sse_decode_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_mintUrl = sse_decode_String(deserializer);
@@ -6201,12 +6154,6 @@ sse_encode_list_record_string_list_list_prim_u_8_strict(self.entries.map((e) => 
 
 @protected void sse_encode_Map_String_opt_box_autoadd_u_64_None(Map<String, BigInt?> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_record_string_opt_box_autoadd_u_64(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
-
-@protected void sse_encode_Map_String_record_u_64_u_64_None(Map<String, (BigInt,BigInt)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_list_record_string_record_u_64_u_64(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
-
-@protected void sse_encode_Map_String_u_64_None(Map<String, BigInt> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_list_record_string_u_64(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
 
 @protected void sse_encode_Map_String_unit_None(Map<String, void> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_record_string_unit(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
@@ -6332,19 +6279,19 @@ sse_encode_opt_String(self.mint, serializer);
 sse_encode_invoice_status(self.status, serializer);
  }
 
-@protected void sse_encode_invoice_info_v_2(InvoiceInfoV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_invoice_info_v_1(InvoiceInfoV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_64(self.amount, serializer);
 sse_encode_u_64(self.expiryTs, serializer);
 sse_encode_String(self.hash, serializer);
 sse_encode_opt_String(self.memo, serializer);
 sse_encode_opt_String(self.mint, serializer);
-sse_encode_invoice_status_v_2(self.status, serializer);
+sse_encode_invoice_status_v_1(self.status, serializer);
  }
 
 @protected void sse_encode_invoice_status(InvoiceStatus self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
-@protected void sse_encode_invoice_status_v_2(InvoiceStatusV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_invoice_status_v_1(InvoiceStatusV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
 @protected void sse_encode_key_package_result(KeyPackageResult self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6430,17 +6377,9 @@ sse_encode_i_32(self.length, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_record_string_opt_box_autoadd_u_64(item, serializer); } }
 
-@protected void sse_encode_list_record_string_record_u_64_u_64(List<(String,(BigInt,BigInt))> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_record_string_record_u_64_u_64(item, serializer); } }
-
 @protected void sse_encode_list_record_string_string(List<(String,String)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_record_string_string(item, serializer); } }
-
-@protected void sse_encode_list_record_string_u_64(List<(String,BigInt)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_record_string_u_64(item, serializer); } }
 
 @protected void sse_encode_list_record_string_unit(List<(String,void)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
@@ -6660,11 +6599,6 @@ sse_encode_String(self.$1, serializer);
 sse_encode_opt_box_autoadd_u_64(self.$2, serializer);
  }
 
-@protected void sse_encode_record_string_record_u_64_u_64((String,(BigInt,BigInt)) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_String(self.$1, serializer);
-sse_encode_record_u_64_u_64(self.$2, serializer);
- }
-
 @protected void sse_encode_record_string_string((String,String) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.$1, serializer);
 sse_encode_String(self.$2, serializer);
@@ -6673,11 +6607,6 @@ sse_encode_String(self.$2, serializer);
 @protected void sse_encode_record_string_u_32((String,int) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.$1, serializer);
 sse_encode_u_32(self.$2, serializer);
- }
-
-@protected void sse_encode_record_string_u_64((String,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_String(self.$1, serializer);
-sse_encode_u_64(self.$2, serializer);
  }
 
 @protected void sse_encode_record_string_unit((String,void) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6701,6 +6630,12 @@ sse_encode_list_prim_u_8_strict(self.$4, serializer);
 @protected void sse_encode_record_u_64_u_64((BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_64(self.$1, serializer);
 sse_encode_u_64(self.$2, serializer);
+ }
+
+@protected void sse_encode_record_u_64_u_64_u_64((BigInt,BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_u_64(self.$1, serializer);
+sse_encode_u_64(self.$2, serializer);
+sse_encode_u_64(self.$3, serializer);
  }
 
 @protected void sse_encode_record_u_64_usize((BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6739,14 +6674,14 @@ sse_encode_String(self.prikey, serializer);
 @protected void sse_encode_token_info(TokenInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.mint, serializer);
 sse_encode_u_64(self.amount, serializer);
-sse_encode_opt_String(self.unit, serializer);
+sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(self.unit, serializer);
 sse_encode_opt_String(self.memo, serializer);
  }
 
-@protected void sse_encode_token_info_v_2(TokenInfoV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_token_info_v_1(TokenInfoV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.mint, serializer);
 sse_encode_u_64(self.amount, serializer);
-sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(self.unit, serializer);
+sse_encode_opt_String(self.unit, serializer);
 sse_encode_opt_String(self.memo, serializer);
  }
 

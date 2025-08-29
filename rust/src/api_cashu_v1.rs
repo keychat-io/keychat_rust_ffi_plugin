@@ -1028,7 +1028,7 @@ pub fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
     Ok(spa)
 }
 
-pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
+pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfoV1> {
     let token: Token = encoded_token.parse()?;
     let token = token.into_v3()?;
 
@@ -1036,7 +1036,7 @@ pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
         bail!("empty token")
     }
 
-    Ok(TokenInfo {
+    Ok(TokenInfoV1 {
         // encoded_token,
         mint: token.mint0().as_str().to_owned(),
         amount: token.amount(),
@@ -1085,7 +1085,7 @@ pub fn restore(
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TokenInfo {
+pub struct TokenInfoV1 {
     // pub encoded_token: String,
     pub mint: String,
     pub amount: u64,
@@ -1096,7 +1096,7 @@ pub struct TokenInfo {
 pub use cashu_wallet::cashu::lightning_invoice::{
     Bolt11Invoice as Invoice, Bolt11InvoiceDescription as InvoiceDescription,
 };
-pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
+pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV1> {
     let encoded_invoice = encoded_invoice.replace("lightning:", "");
     let invoice: Invoice = encoded_invoice.parse()?;
 
@@ -1110,8 +1110,8 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
     };
 
     let status = match invoice.is_expired() {
-        true => InvoiceStatus::Expired,
-        false => InvoiceStatus::Unpaid,
+        true => InvoiceStatusV1::Expired,
+        false => InvoiceStatusV1::Unpaid,
     };
 
     let ts = (invoice.duration_since_epoch() + invoice.expiry_time()).as_millis();
@@ -1122,7 +1122,7 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
     //     ts
     // );
 
-    Ok(InvoiceInfo {
+    Ok(InvoiceInfoV1 {
         // bolt11: encoded_invoice,
         amount: amount / 1000,
         hash: invoice.payment_hash().to_string(),
@@ -1134,17 +1134,17 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct InvoiceInfo {
+pub struct InvoiceInfoV1 {
     // pub bolt11: String,
     pub amount: u64,
     pub expiry_ts: u64,
     pub hash: String,
     pub memo: Option<String>,
     pub mint: Option<String>,
-    pub status: InvoiceStatus,
+    pub status: InvoiceStatusV1,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum InvoiceStatus {
+pub enum InvoiceStatusV1 {
     Paid,
     Unpaid,
     Expired,
