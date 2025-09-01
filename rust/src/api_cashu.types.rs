@@ -6,8 +6,9 @@ use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Transaction {
+    pub id: String,
     pub mint_url: String,
-    pub direction: TransactionDirection,
+    pub io: TransactionDirection,
     pub kind: TransactionKind,
     pub amount: u64,
     pub fee: u64,
@@ -80,6 +81,40 @@ pub enum _TransactionKind {
 //     Eur,
 //     /// Auth
 //     Auth,
+// }
+
+// #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+// pub struct Mint {
+//     pub url: String,
+//     pub active: bool,
+//     pub time: u64,
+//     pub info: Option<MintInfo>,
+// }
+
+// #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+// #[frb(mirror(MintInfo))]
+// pub struct MintInfo {
+//     pub name: String,
+//     pub version: String,
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub pubkey: Option<String>,
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub description: Option<String>,
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub description_long: Option<String>,
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub motd: Option<String>,
+//     #[serde(default)]
+//     pub contact: Vec<Contact>,
+//     pub nuts: HashMap<String, bool>,
+// }
+
+// #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+// pub struct Contact {
+//     #[serde(default)]
+//     pub method: String,
+//     #[serde(default)]
+//     pub info: String,
 // }
 
 pub use bip39::Mnemonic;

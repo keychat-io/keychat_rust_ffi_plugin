@@ -7624,9 +7624,9 @@ impl SseDecode for crate::api_cashu_v1::TokenInfoV1 {
 impl SseDecode for crate::api_cashu::types::Transaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_id = <String>::sse_decode(deserializer);
         let mut var_mintUrl = <String>::sse_decode(deserializer);
-        let mut var_direction =
-            <crate::api_cashu::types::TransactionDirection>::sse_decode(deserializer);
+        let mut var_io = <crate::api_cashu::types::TransactionDirection>::sse_decode(deserializer);
         let mut var_kind = <crate::api_cashu::types::TransactionKind>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
         let mut var_fee = <u64>::sse_decode(deserializer);
@@ -7637,8 +7637,9 @@ impl SseDecode for crate::api_cashu::types::Transaction {
         let mut var_metadata =
             <std::collections::HashMap<String, String>>::sse_decode(deserializer);
         return crate::api_cashu::types::Transaction {
+            id: var_id,
             mint_url: var_mintUrl,
-            direction: var_direction,
+            io: var_io,
             kind: var_kind,
             amount: var_amount,
             fee: var_fee,
@@ -8921,8 +8922,9 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu_v1::TokenInfoV1>
 impl flutter_rust_bridge::IntoDart for crate::api_cashu::types::Transaction {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
+            self.id.into_into_dart().into_dart(),
             self.mint_url.into_into_dart().into_dart(),
-            self.direction.into_into_dart().into_dart(),
+            self.io.into_into_dart().into_dart(),
             self.kind.into_into_dart().into_dart(),
             self.amount.into_into_dart().into_dart(),
             self.fee.into_into_dart().into_dart(),
@@ -10033,8 +10035,9 @@ impl SseEncode for crate::api_cashu_v1::TokenInfoV1 {
 impl SseEncode for crate::api_cashu::types::Transaction {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.id, serializer);
         <String>::sse_encode(self.mint_url, serializer);
-        <crate::api_cashu::types::TransactionDirection>::sse_encode(self.direction, serializer);
+        <crate::api_cashu::types::TransactionDirection>::sse_encode(self.io, serializer);
         <crate::api_cashu::types::TransactionKind>::sse_encode(self.kind, serializer);
         <u64>::sse_encode(self.amount, serializer);
         <u64>::sse_encode(self.fee, serializer);

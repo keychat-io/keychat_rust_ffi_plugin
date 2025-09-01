@@ -292,8 +292,9 @@ pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
         Ok(tx)
     })?;
     let tx_new = Transaction {
+        id: tx.id().to_string(),
         mint_url: tx.mint_url.to_string(),
-        direction: tx.direction,
+        io: tx.direction,
         kind: tx.kind,
         amount: *tx.amount.as_ref(),
         fee: *tx.fee.as_ref(),
@@ -422,8 +423,9 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Transaction> {
 
     let tx = state.rt.block_on(fut)?;
     let tx_new = Transaction {
+        id: tx.id().to_string(),
         mint_url: tx.mint_url.to_string(),
-        direction: tx.direction,
+        io: tx.direction,
         kind: tx.kind,
         amount: *tx.amount.as_ref(),
         fee: *tx.fee.as_ref(),
@@ -696,8 +698,9 @@ fn _send(
         Ok(tx)
     })?;
     let tx_new = Transaction {
+        id: tx.id().to_string(),
         mint_url: tx.mint_url.to_string(),
-        direction: tx.direction,
+        io: tx.direction,
         kind: tx.kind,
         amount: *tx.amount.as_ref(),
         fee: *tx.fee.as_ref(),
@@ -779,8 +782,9 @@ pub fn mint_token(
     })?;
 
     let tx_new = Transaction {
+        id: tx.id().to_string(),
         mint_url: tx.mint_url.to_string(),
-        direction: tx.direction,
+        io: tx.direction,
         kind: tx.kind,
         amount: *tx.amount.as_ref(),
         fee: *tx.fee.as_ref(),
@@ -830,7 +834,7 @@ pub fn check_proofs() -> anyhow::Result<(u64, u64, u64)> {
     Ok((cnt.0, cnt.1, cnt.0 + cnt.1))
 }
 
-/// include ln and cashu
+/// include ln and cashu, tx status
 pub fn check_pending() -> anyhow::Result<(u64, u64)> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
@@ -911,8 +915,9 @@ pub fn melt(
         Ok(melt.1)
     })?;
     let tx_new = Transaction {
+        id: tx.id().to_string(),
         mint_url: tx.mint_url.to_string(),
-        direction: tx.direction,
+        io: tx.direction,
         kind: tx.kind,
         amount: *tx.amount.as_ref(),
         fee: *tx.fee.as_ref(),
@@ -934,8 +939,9 @@ pub fn get_all_transactions() -> anyhow::Result<Vec<Transaction>> {
     let mut txs_new = Vec::new();
     for tx in txs {
         let tx_new = Transaction {
+            id: tx.id().to_string(),
             mint_url: tx.mint_url.to_string(),
-            direction: tx.direction,
+            io: tx.direction,
             kind: tx.kind,
             amount: *tx.amount.as_ref(),
             fee: *tx.fee.as_ref(),
@@ -969,8 +975,9 @@ pub fn get_cashu_transactions_with_offset(
     let mut txs_new = Vec::new();
     for tx in txs {
         let tx_new = Transaction {
+            id: tx.id().to_string(),
             mint_url: tx.mint_url.to_string(),
-            direction: tx.direction,
+            io: tx.direction,
             kind: tx.kind,
             amount: *tx.amount.as_ref(),
             fee: *tx.fee.as_ref(),
@@ -1002,8 +1009,9 @@ pub fn get_ln_transactions_with_offset(
     let mut txs_new = Vec::new();
     for tx in txs {
         let tx_new = Transaction {
+            id: tx.id().to_string(),
             mint_url: tx.mint_url.to_string(),
-            direction: tx.direction,
+            io: tx.direction,
             kind: tx.kind,
             amount: *tx.amount.as_ref(),
             fee: *tx.fee.as_ref(),
@@ -1035,8 +1043,9 @@ pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let mut txs_new = Vec::new();
     for tx in txs {
         let tx_new = Transaction {
+            id: tx.id().to_string(),
             mint_url: tx.mint_url.to_string(),
-            direction: tx.direction,
+            io: tx.direction,
             kind: tx.kind,
             amount: *tx.amount.as_ref(),
             fee: *tx.fee.as_ref(),
@@ -1063,8 +1072,9 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let mut txs_new = Vec::new();
     for tx in txs {
         let tx_new = Transaction {
+            id: tx.id().to_string(),
             mint_url: tx.mint_url.to_string(),
-            direction: tx.direction,
+            io: tx.direction,
             kind: tx.kind,
             amount: *tx.amount.as_ref(),
             fee: *tx.fee.as_ref(),

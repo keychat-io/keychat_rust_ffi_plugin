@@ -26,7 +26,7 @@ fn main() {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCEpGFhAmFzeEA1ZDdhMjg4ODgwNGY4ZmU3NmMzOWY3ODE2M2E4Mjc3YzUxMWM1NjcyZDliZTljODdjNTU3OTk3NzZkNjg3Y2E0YWNYIQNI9MEblVa8Pwhso9_RJgUBx9-zv2mRJUX6sVnMShEFw2Fko2FlWCA-LE5F7hCaBt6hlJvZy5uI07G6El-U0JbWK0LAO4z3RmFzWCBnKgch7YMZtoGzh0cOLTkyGEvvzzLWBonbxVTevIbLl2FyWCBoeypUeEJG8r9IBcmXXRMWbWXmqxx0ggBq134EEemOX6RhYQJhc3hAYTI0MGQwMGUzOWI5NDdkOGVhOTg2MmY1ZDRkMTc2M2ViZjhiZmZjOTAxOGE2Mjk1NjQxMzE1YzhiZmM4MzIzZWFjWCEDRnbUMwhSGGwF-XC6VRNi1TuP2aDlVAOGXllkw9xCEIBhZKNhZVggu7xdXgDQTIY76lqy1pPBHjZoj-KgbsnERr_kU6T2m0lhc1ggbZvbUFi5ooBTAZUIyyUZ87yU46PYQCX_sEcJbXEEaFthclggfkkRhoyDjfANo4RuHLr5P9-zeTHIfl-3YRIX3yXhwFGkYWEBYXN4QDA0OTA0NTFiZDQ3YjEyMTMwMDdhMTkzN2E4NmZjOWZjOTg4MDg3OGU1NzMyZDc4YjVlOTUwMzg5OTU0OTYxMWJhY1ghA6LcKuFD8w_HFcrmsAPdCjI7PRvxnqRhv4L45eN3gRxhYWSjYWVYIEDtxo02CwyVO4vwHY1qxdxfL4iYOkgJGYQNYzLNLZt6YXNYIDfvWuBBCVIY1mGWkTqBYb3RyFLEKdbPStO_GDbg9aDCYXJYIJGFmC0cZWF-yWOK2cjk4so2_YrfGEvJjDlC6kJksvNBpGFhAWFzeEBiYjY0MTNkZWNiYTdmNGEwMjBhOTNhMWY5ZWU2N2Q4NzNhZjg1ZTNlOTVlZDAyNmMxZTY0YzhhYjM0MzkzYjlmYWNYIQIg1I92e8Xs3ETiSAHs570RcX44leHEDbFvhb6DKC9Q4mFko2FlWCAhYEnDEzarPLxHrGsnKUehJmVXGHuhc6WmlsPXTtSEImFzWCDWx4zM8j3FyAuMWYNp7QypX5F8ibpKvSK_WMr3gstK8GFyWCBt0Tm71WD6p7yAvMnym5BbtaPBBfZQGpfJzQdtSzJcug".trim();
+    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCFpGFhAmFzeEA4NTlhYWY3ZDc2ODlmNDAxYjA5ODAyM2VkODUxY2JlYzRhMTAwYTZiN2UyODAxN2M1MTMxMjMyYjE4MTM4NmE1YWNYIQJ79MIc8Q6WS1tHBYNt0VpeALFvKhYC8ss2aBq_nJQPAmFko2FlWCCLMJmoe1pRqB0COfeYF7J06Ino7OuoVMFpS2bKwG72zGFzWCD1Dl2mkKw3liNZ7XYXGMrqCJXuQB0UWm-uOKk7ij6vC2FyWCA3ujDzDRSKb5wSp4GPx6a7VYVFXL_w8qh--q3UkDjlLqRhYQJhc3hAYTQxMWUyODE3ODBkYTEyNDA5NDZlZTQzMWUyZGI1Y2I5ODE0ODNmZWY5YzljMWU5OTNlZTlmYTgxOTI2MmFkM2FjWCECZSA-jt4LEDUkXnwCPUpTgZiCw9O1ac_SKOwtu3Pa9WhhZKNhZVggzRXmkSThGDsNlnjWXKP3bMsmVPLzZgJsZsoy_OAyIRZhc1ggaKx9yYu05bjSRT8ov1kb3CJLa9aoa2zwYD3RK3K2SZFhclgghZRLcjz6KqoXS3GshgsyiKZ11NFgFGak3Fq7ohJiCROkYWECYXN4QGJmMTExYWZjYWU1YTIxMDNhYTBlMGZiYTVjYTM1ZmYyNmRlNzNmNTkyMjExYzUyZDZlZDdiZDJiYWU4ZGFlYTNhY1ghA2R3ueOAXvtIKBIJp2S1a7vsp6cxZodzaFJBTU0azxsyYWSjYWVYIOZKzYEjIlpUPELRNuNKYEuFlihj7HAltFpq4SXLBf4mYXNYICHZ9nNqnm-5oyFh9hSuuH_0ynnMrOqsLF1V4no8pRCgYXJYIELI3kNv9VNr4WLc7_PuDxvnx0-IP_lAxYd0ZgtvnbvxpGFhAmFzeEBkMmQ5YTNmNTYyYjBmNWExY2ZiZDdkNDJhYjhlMGEyZWE5ZjViODFlNDVmZTMxMjk0OGU5NmRhMmY1OTkwNTQ0YWNYIQJfNrCZGdWC27swbLLPiZeDa9dxoUrNUYCPpGpnCQTbsGFko2FlWCAtbw3KzH2pyyh96jbPzfds4daRQL-JnQZZzOGIqB9spGFzWCCuHdcthrK-mAoO8-IsCuDxTzmkiCBuk9JYsGUM67jXNmFyWCC2b6oxfRakvHSO4nygzqQshSlUcLuSliUqwdvYT6Ht2aRhYQJhc3hAZTRhYTdlNWU5OWQ0YTkyNTljYTQ5MGVhZTA3NzYzODMzZTA3NmQ3NTRkNGQ4NzllNDY1ZTliNTcxOGQzZmQ5ZWFjWCEDurTiAFW22YhpkGhu1y8FUHp3TGLs5TEH2JyahZoLe-9hZKNhZVggfzoCRnbEOw-yqaI8Zghf_ObHhu9ka2fLQP0jtMcwCw5hc1ggJE0jeIcmFThNY834fwTfJU7c3GZZtpLifIQAaINrvgphclggmVsnpwnwysguJDkh0BYZunASbkgaTnBtU908sIgcGc4".trim();
     // let re = api::receive_token(encoded_token_8338.to_string());
     // println!("receive token is {:?}", re);
 
@@ -38,18 +38,21 @@ fn main() {
     // let send = api::send_all(MINT_URL_MINIBITS.to_string());
     // println!("send token is {:?}", send);
 
-    // let send = api::send(2, MINT_URL.to_string(), None);
+    // let send = api::send(2, MINT_URL_MINIBITS.to_string(), None);
     // println!("send token is {:?}", send);
 
     let check_tx = api::check_pending();
     println!("check_pending is {:?}", check_tx);
+
+    // let check_proofs_tx: Result<(u64, u64, u64), anyhow::Error> = api::check_proofs();
+    // println!("check_proofs is {:?}", check_proofs_tx);
 
     // test for request mint
     // let request_mint = api::request_mint(10, MINT_URL_MINIBITS.to_string());
     // println!("request_mint is {:?}", request_mint);
     // lnbc20n1p58vdq6pp5w46w0ve9rq40skwzlvk08774mtm44xymnrc3w5znymuj62zj6cssdqqcqzpuxqrwzqsp5hy7ltttz0fwgu8mpgnvn9re0638vye4ug97dr6zyxeppzukh784s9qxpqysgqxz8zzps2fyefmx8d9mq92m8xej9dy7s6kpg0x0lnxtlct30ml65rlkhwdw80ugefmeyl2jr484x4l255rc9f8nxche0lnnf6nhjwxucp4yq5my
 
-    let txs = api::get_all_transactions();
+    let txs = api::get_ln_pending_transactions();
     for tx in txs.unwrap() {
         println!("tx {:?}", tx);
     }

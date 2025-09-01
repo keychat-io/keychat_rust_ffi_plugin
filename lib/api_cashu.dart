@@ -66,7 +66,7 @@ Future<BigInt>  checkAllMintQuotes() => RustLib.instance.api.crateApiCashuCheckA
 /// Checks pending proofs for spent status
 Future<(BigInt,BigInt,BigInt)>  checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 
-/// include ln and cashu
+/// include ln and cashu, tx status
 Future<(BigInt,BigInt)>  checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
 Future<Transaction>  melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);

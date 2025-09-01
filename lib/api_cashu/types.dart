@@ -39,8 +39,9 @@ static Future<MnemonicInfo>  withWords({required String words })=>RustLib.instan
                 
 
 class Transaction  {
-                final String mintUrl;
-final TransactionDirection direction;
+                final String id;
+final String mintUrl;
+final TransactionDirection io;
 final TransactionKind kind;
 final BigInt amount;
 final BigInt fee;
@@ -50,14 +51,14 @@ final TransactionStatus status;
 final BigInt timestamp;
 final Map<String, String> metadata;
 
-                const Transaction({required this.mintUrl ,required this.direction ,required this.kind ,required this.amount ,required this.fee ,this.unit ,required this.token ,required this.status ,required this.timestamp ,required this.metadata ,});
+                const Transaction({required this.id ,required this.mintUrl ,required this.io ,required this.kind ,required this.amount ,required this.fee ,this.unit ,required this.token ,required this.status ,required this.timestamp ,required this.metadata ,});
 
                 
                 
 
                 
         @override
-        int get hashCode => mintUrl.hashCode^direction.hashCode^kind.hashCode^amount.hashCode^fee.hashCode^unit.hashCode^token.hashCode^status.hashCode^timestamp.hashCode^metadata.hashCode;
+        int get hashCode => id.hashCode^mintUrl.hashCode^io.hashCode^kind.hashCode^amount.hashCode^fee.hashCode^unit.hashCode^token.hashCode^status.hashCode^timestamp.hashCode^metadata.hashCode;
         
 
                 
@@ -66,7 +67,7 @@ final Map<String, String> metadata;
             identical(this, other) ||
             other is Transaction &&
                 runtimeType == other.runtimeType
-                && mintUrl == other.mintUrl&& direction == other.direction&& kind == other.kind&& amount == other.amount&& fee == other.fee&& unit == other.unit&& token == other.token&& status == other.status&& timestamp == other.timestamp&& metadata == other.metadata;
+                && id == other.id&& mintUrl == other.mintUrl&& io == other.io&& kind == other.kind&& amount == other.amount&& fee == other.fee&& unit == other.unit&& token == other.token&& status == other.status&& timestamp == other.timestamp&& metadata == other.metadata;
         
             }
 

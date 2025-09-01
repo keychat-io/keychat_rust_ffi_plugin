@@ -5343,17 +5343,18 @@ memo: dco_decode_opt_String(arr[3]),); }
 
 @protected Transaction dco_decode_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
-                if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
-                return Transaction(mintUrl: dco_decode_String(arr[0]),
-direction: dco_decode_transaction_direction(arr[1]),
-kind: dco_decode_transaction_kind(arr[2]),
-amount: dco_decode_u_64(arr[3]),
-fee: dco_decode_u_64(arr[4]),
-unit: dco_decode_opt_String(arr[5]),
-token: dco_decode_String(arr[6]),
-status: dco_decode_transaction_status(arr[7]),
-timestamp: dco_decode_u_64(arr[8]),
-metadata: dco_decode_Map_String_String_None(arr[9]),); }
+                if (arr.length != 11) throw Exception('unexpected arr length: expect 11 but see ${arr.length}');
+                return Transaction(id: dco_decode_String(arr[0]),
+mintUrl: dco_decode_String(arr[1]),
+io: dco_decode_transaction_direction(arr[2]),
+kind: dco_decode_transaction_kind(arr[3]),
+amount: dco_decode_u_64(arr[4]),
+fee: dco_decode_u_64(arr[5]),
+unit: dco_decode_opt_String(arr[6]),
+token: dco_decode_String(arr[7]),
+status: dco_decode_transaction_status(arr[8]),
+timestamp: dco_decode_u_64(arr[9]),
+metadata: dco_decode_Map_String_String_None(arr[10]),); }
 
 @protected TransactionDirection dco_decode_transaction_direction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return TransactionDirection.values[raw as int]; }
@@ -6053,8 +6054,9 @@ var var_memo = sse_decode_opt_String(deserializer);
 return TokenInfoV1(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
 
 @protected Transaction sse_decode_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_id = sse_decode_String(deserializer);
 var var_mintUrl = sse_decode_String(deserializer);
-var var_direction = sse_decode_transaction_direction(deserializer);
+var var_io = sse_decode_transaction_direction(deserializer);
 var var_kind = sse_decode_transaction_kind(deserializer);
 var var_amount = sse_decode_u_64(deserializer);
 var var_fee = sse_decode_u_64(deserializer);
@@ -6063,7 +6065,7 @@ var var_token = sse_decode_String(deserializer);
 var var_status = sse_decode_transaction_status(deserializer);
 var var_timestamp = sse_decode_u_64(deserializer);
 var var_metadata = sse_decode_Map_String_String_None(deserializer);
-return Transaction(mintUrl: var_mintUrl, direction: var_direction, kind: var_kind, amount: var_amount, fee: var_fee, unit: var_unit, token: var_token, status: var_status, timestamp: var_timestamp, metadata: var_metadata); }
+return Transaction(id: var_id, mintUrl: var_mintUrl, io: var_io, kind: var_kind, amount: var_amount, fee: var_fee, unit: var_unit, token: var_token, status: var_status, timestamp: var_timestamp, metadata: var_metadata); }
 
 @protected TransactionDirection sse_decode_transaction_direction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
@@ -6686,8 +6688,9 @@ sse_encode_opt_String(self.memo, serializer);
  }
 
 @protected void sse_encode_transaction(Transaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_String(self.id, serializer);
 sse_encode_String(self.mintUrl, serializer);
-sse_encode_transaction_direction(self.direction, serializer);
+sse_encode_transaction_direction(self.io, serializer);
 sse_encode_transaction_kind(self.kind, serializer);
 sse_encode_u_64(self.amount, serializer);
 sse_encode_u_64(self.fee, serializer);
