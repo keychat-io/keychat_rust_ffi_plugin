@@ -38,13 +38,13 @@ static Future<MnemonicInfo>  withWords({required String words })=>RustLib.instan
                 }
                 
 
-class Contact  {
+class ContactCashu  {
                 final String method;
 final String info;
 
-                const Contact({required this.method ,required this.info ,});
+                const ContactCashu({required this.method ,required this.info ,});
 
-                static Future<Contact>  default_()=>RustLib.instance.api.crateApiCashuTypesContactDefault();
+                static Future<ContactCashu>  default_()=>RustLib.instance.api.crateApiCashuTypesContactCashuDefault();
 
 
                 
@@ -58,19 +58,19 @@ final String info;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is Contact &&
+            other is ContactCashu &&
                 runtimeType == other.runtimeType
                 && method == other.method&& info == other.info;
         
             }
 
-class Mint  {
+class MintCashu  {
                 final String url;
 final bool active;
 final BigInt time;
-final MintInfo? info;
+final MintCashuInfo? info;
 
-                const Mint({required this.url ,required this.active ,required this.time ,this.info ,});
+                const MintCashu({required this.url ,required this.active ,required this.time ,this.info ,});
 
                 
                 
@@ -84,25 +84,25 @@ final MintInfo? info;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is Mint &&
+            other is MintCashu &&
                 runtimeType == other.runtimeType
                 && url == other.url&& active == other.active&& time == other.time&& info == other.info;
         
             }
 
-class MintInfo  {
+class MintCashuInfo  {
                 final String name;
 final String version;
 final String? pubkey;
 final String? description;
 final String? descriptionLong;
 final String? motd;
-final List<Contact> contact;
+final List<ContactCashu> contact;
 final Map<String, bool> nuts;
 
-                const MintInfo({required this.name ,required this.version ,this.pubkey ,this.description ,this.descriptionLong ,this.motd ,required this.contact ,required this.nuts ,});
+                const MintCashuInfo({required this.name ,required this.version ,this.pubkey ,this.description ,this.descriptionLong ,this.motd ,required this.contact ,required this.nuts ,});
 
-                static Future<MintInfo>  default_()=>RustLib.instance.api.crateApiCashuTypesMintInfoDefault();
+                static Future<MintCashuInfo>  default_()=>RustLib.instance.api.crateApiCashuTypesMintCashuInfoDefault();
 
 
                 
@@ -116,7 +116,7 @@ final Map<String, bool> nuts;
         @override
         bool operator ==(Object other) =>
             identical(this, other) ||
-            other is MintInfo &&
+            other is MintCashuInfo &&
                 runtimeType == other.runtimeType
                 && name == other.name&& version == other.version&& pubkey == other.pubkey&& description == other.description&& descriptionLong == other.descriptionLong&& motd == other.motd&& contact == other.contact&& nuts == other.nuts;
         

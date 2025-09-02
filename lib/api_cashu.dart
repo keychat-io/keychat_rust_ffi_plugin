@@ -9,7 +9,7 @@ import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
-            // These functions are ignored because they are not marked as `pub`: `_send`, `check_sufficient_funds`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `mint_balances`, `new`
+            // These functions are ignored because they are not marked as `pub`: `_send`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `mint_balances`, `new`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `STATE`, `State`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `get_wallet`, `get_wallet`, `lock`, `mnemonic`, `update_mnmonic`
@@ -19,11 +19,11 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 Future<void>  initDb({required String dbpath , required String words , required bool dev }) => RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words, dev: dev);
 
-Future<List<Mint>>  initCashu({required int prepareSatsOnceTime }) => RustLib.instance.api.crateApiCashuInitCashu(prepareSatsOnceTime: prepareSatsOnceTime);
+Future<List<MintCashu>>  initCashu({required int prepareSatsOnceTime }) => RustLib.instance.api.crateApiCashuInitCashu(prepareSatsOnceTime: prepareSatsOnceTime);
 
 Future<bool>  setMnemonic({String? words }) => RustLib.instance.api.crateApiCashuSetMnemonic(words: words);
 
-Future<Map<String, void>>  getMints() => RustLib.instance.api.crateApiCashuGetMints();
+Future<List<MintCashu>>  getMints() => RustLib.instance.api.crateApiCashuGetMints();
 
 Future<void>  addMint({required String url }) => RustLib.instance.api.crateApiCashuAddMint(url: url);
 
@@ -57,7 +57,7 @@ Future<void>  validateMintNumber({required BigInt mintNumber , required BigInt m
 
 Future<Transaction>  send({required BigInt amount , required String activeMint , String? info }) => RustLib.instance.api.crateApiCashuSend(amount: amount, activeMint: activeMint, info: info);
 
-Future<String>  requestMint({required BigInt amount , required String activeMint }) => RustLib.instance.api.crateApiCashuRequestMint(amount: amount, activeMint: activeMint);
+Future<Transaction>  requestMint({required BigInt amount , required String activeMint }) => RustLib.instance.api.crateApiCashuRequestMint(amount: amount, activeMint: activeMint);
 
 /// don not used in flutter, and put it in check_pending
 Future<Transaction>  mintToken({required BigInt amount , required String quoteId , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, quoteId: quoteId, activeMint: activeMint);
@@ -66,10 +66,10 @@ Future<Transaction>  mintToken({required BigInt amount , required String quoteId
 Future<BigInt>  checkAllMintQuotes() => RustLib.instance.api.crateApiCashuCheckAllMintQuotes();
 
 /// Checks pending proofs for spent status
-Future<(BigInt,BigInt,BigInt)>  checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
+Future<void>  checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 
 /// include ln and cashu, tx status
-Future<(BigInt,BigInt)>  checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
+Future<void>  checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
 Future<Transaction>  melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
 

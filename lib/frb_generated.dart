@@ -72,7 +72,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
                   String get codegenVersion => '2.10.0';
 
                   @override
-                  int get rustContentHash => 1372729656;
+                  int get rustContentHash => -1285402745;
 
                   static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
                     stem: 'keychat_rust_ffi_plugin',
@@ -107,13 +107,13 @@ Future<List<String>> crateApiCashuV1CashuV1InitSendAll({required String dbpath ,
 
 Future<BigInt> crateApiCashuCheckAllMintQuotes();
 
-Future<(BigInt,BigInt)> crateApiCashuCheckPending();
+Future<void> crateApiCashuCheckPending();
 
-Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs();
+Future<void> crateApiCashuCheckProofs();
 
 Future<Transaction> crateApiCashuCheckTransaction({required String id });
 
-Future<Contact> crateApiCashuTypesContactDefault();
+Future<ContactCashu> crateApiCashuTypesContactCashuDefault();
 
 Future<bool> crateApiSignalContainsSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
 
@@ -233,7 +233,7 @@ Future<List<Transaction>> crateApiCashuGetLnTransactionsWithOffset({required Big
 
 Future<Map<String, List<Uint8List>>> crateApiMlsGetMemberExtension({required String nostrId , required String groupId });
 
-Future<Map<String, void>> crateApiCashuGetMints();
+Future<List<MintCashu>> crateApiCashuGetMints();
 
 Future<BigInt> crateApiCashuGetPendingTransactionsCount();
 
@@ -259,7 +259,7 @@ Future<Secp256k1Account> crateApiNostrImportKey({required String senderKeys });
 
 Future<void> crateApiSignalInit({required String dbPath , required KeychatIdentityKeyPair keyPair , required int regId });
 
-Future<List<Mint>> crateApiCashuInitCashu({required int prepareSatsOnceTime });
+Future<List<MintCashu>> crateApiCashuInitCashu({required int prepareSatsOnceTime });
 
 Future<void> crateApiCashuInitDb({required String dbpath , required String words , required bool dev });
 
@@ -275,7 +275,7 @@ Future<Transaction> crateApiCashuMelt({required String invoice , required String
 
 Future<void> crateApiCashuMergeProofs({required BigInt thershold });
 
-Future<MintInfo> crateApiCashuTypesMintInfoDefault();
+Future<MintCashuInfo> crateApiCashuTypesMintCashuInfoDefault();
 
 Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint });
 
@@ -313,7 +313,7 @@ Future<void> crateApiCashuRemoveMint({required String url });
 
 Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatus status });
 
-Future<String> crateApiCashuRequestMint({required BigInt amount , required String activeMint });
+Future<Transaction> crateApiCashuRequestMint({required BigInt amount , required String activeMint });
 
 Future<(BigInt,BigInt)> crateApiCashuRestore({required String mintUrl , String? words });
 
@@ -717,7 +717,7 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<(BigInt,BigInt)> crateApiCashuCheckPending()  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuCheckPending()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -726,7 +726,7 @@ sse_encode_opt_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_record_u_64_u_64,
+          decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -742,7 +742,7 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs()  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuCheckProofs()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -751,7 +751,7 @@ sse_encode_opt_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_record_u_64_u_64_u_64,
+          decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -792,7 +792,7 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<Contact> crateApiCashuTypesContactDefault()  { return handler.executeNormal(NormalTask(
+@override Future<ContactCashu> crateApiCashuTypesContactCashuDefault()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -801,18 +801,18 @@ sse_encode_opt_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_contact,
+          decodeSuccessData: sse_decode_contact_cashu,
           decodeErrorData: null,
         )
         ,
-            constMeta: kCrateApiCashuTypesContactDefaultConstMeta,
+            constMeta: kCrateApiCashuTypesContactCashuDefaultConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuTypesContactDefaultConstMeta => const TaskConstMeta(
-            debugName: "contact_default",
+        TaskConstMeta get kCrateApiCashuTypesContactCashuDefaultConstMeta => const TaskConstMeta(
+            debugName: "contact_cashu_default",
             argNames: [],
         );
         
@@ -2353,7 +2353,7 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<Map<String, void>> crateApiCashuGetMints()  { return handler.executeNormal(NormalTask(
+@override Future<List<MintCashu>> crateApiCashuGetMints()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2362,7 +2362,7 @@ sse_encode_String(groupId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_Map_String_unit_None,
+          decodeSuccessData: sse_decode_list_mint_cashu,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2699,7 +2699,7 @@ sse_encode_u_32(regId, serializer);
         );
         
 
-@override Future<List<Mint>> crateApiCashuInitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
+@override Future<List<MintCashu>> crateApiCashuInitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_16(prepareSatsOnceTime, serializer);
@@ -2708,7 +2708,7 @@ sse_encode_u_32(regId, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_mint,
+          decodeSuccessData: sse_decode_list_mint_cashu,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -2907,7 +2907,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         );
         
 
-@override Future<MintInfo> crateApiCashuTypesMintInfoDefault()  { return handler.executeNormal(NormalTask(
+@override Future<MintCashuInfo> crateApiCashuTypesMintCashuInfoDefault()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2916,18 +2916,18 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_mint_info,
+          decodeSuccessData: sse_decode_mint_cashu_info,
           decodeErrorData: null,
         )
         ,
-            constMeta: kCrateApiCashuTypesMintInfoDefaultConstMeta,
+            constMeta: kCrateApiCashuTypesMintCashuInfoDefaultConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuTypesMintInfoDefaultConstMeta => const TaskConstMeta(
-            debugName: "mint_info_default",
+        TaskConstMeta get kCrateApiCashuTypesMintCashuInfoDefaultConstMeta => const TaskConstMeta(
+            debugName: "mint_cashu_info_default",
             argNames: [],
         );
         
@@ -3409,7 +3409,7 @@ sse_encode_transaction_status(status, serializer);
         );
         
 
-@override Future<String> crateApiCashuRequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuRequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -3419,7 +3419,7 @@ sse_encode_String(activeMint, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_String,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4061,9 +4061,6 @@ return Map.fromEntries(dco_decode_list_record_string_list_list_prim_u_8_strict(r
 @protected Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return Map.fromEntries(dco_decode_list_record_string_opt_box_autoadd_u_64(raw).map((e) => MapEntry(e.$1, e.$2))); }
 
-@protected Map<String, void> dco_decode_Map_String_unit_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return Map.fromEntries(dco_decode_list_record_string_unit(raw).map((e) => MapEntry(e.$1, e.$2))); }
-
 @protected Amount dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return AmountImpl.frbInternalDcoDecode(raw as List<dynamic>); }
 
@@ -4115,8 +4112,8 @@ return dco_decode_keychat_protocol_address(raw); }
 @protected KeychatSignalSession dco_decode_box_autoadd_keychat_signal_session(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return dco_decode_keychat_signal_session(raw); }
 
-@protected MintInfo dco_decode_box_autoadd_mint_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return dco_decode_mint_info(raw); }
+@protected MintCashuInfo dco_decode_box_autoadd_mint_cashu_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return dco_decode_mint_cashu_info(raw); }
 
 @protected int dco_decode_box_autoadd_u_32(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as int; }
@@ -4134,10 +4131,10 @@ operatedMembers: dco_decode_opt_list_String(arr[2]),); }
 @protected CommitTypeResult dco_decode_commit_type_result(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return CommitTypeResult.values[raw as int]; }
 
-@protected Contact dco_decode_contact(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+@protected ContactCashu dco_decode_contact_cashu(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 2) throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-                return Contact(method: dco_decode_String(arr[0]),
+                return ContactCashu(method: dco_decode_String(arr[0]),
 info: dco_decode_String(arr[1]),); }
 
 @protected DecryptedMessage dco_decode_decrypted_message(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -4211,8 +4208,8 @@ aliceAddresses: dco_decode_opt_String(arr[6]),); }
 @protected List<String> dco_decode_list_String(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_String).toList(); }
 
-@protected List<Contact> dco_decode_list_contact(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_contact).toList(); }
+@protected List<ContactCashu> dco_decode_list_contact_cashu(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return (raw as List<dynamic>).map(dco_decode_contact_cashu).toList(); }
 
 @protected List<List<String>> dco_decode_list_list_String(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_list_String).toList(); }
@@ -4220,8 +4217,8 @@ return (raw as List<dynamic>).map(dco_decode_list_String).toList(); }
 @protected List<Uint8List> dco_decode_list_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_list_prim_u_8_strict).toList(); }
 
-@protected List<Mint> dco_decode_list_mint(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_mint).toList(); }
+@protected List<MintCashu> dco_decode_list_mint_cashu(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return (raw as List<dynamic>).map(dco_decode_mint_cashu).toList(); }
 
 @protected List<int> dco_decode_list_prim_u_8_loose(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as List<int>; }
@@ -4244,9 +4241,6 @@ return (raw as List<dynamic>).map(dco_decode_record_string_opt_box_autoadd_u_64)
 @protected List<(String,String)> dco_decode_list_record_string_string(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_string).toList(); }
 
-@protected List<(String,void)> dco_decode_list_record_string_unit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_record_string_unit).toList(); }
-
 @protected List<Secp256k1Account> dco_decode_list_secp_256_k_1_account(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_secp_256_k_1_account).toList(); }
 
@@ -4262,24 +4256,24 @@ final arr = raw as List<dynamic>;
                 return MessageResult(encryptMsg: dco_decode_String(arr[0]),
 listenKey: dco_decode_String(arr[1]),); }
 
-@protected Mint dco_decode_mint(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+@protected MintCashu dco_decode_mint_cashu(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-                return Mint(url: dco_decode_String(arr[0]),
+                return MintCashu(url: dco_decode_String(arr[0]),
 active: dco_decode_bool(arr[1]),
 time: dco_decode_u_64(arr[2]),
-info: dco_decode_opt_box_autoadd_mint_info(arr[3]),); }
+info: dco_decode_opt_box_autoadd_mint_cashu_info(arr[3]),); }
 
-@protected MintInfo dco_decode_mint_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+@protected MintCashuInfo dco_decode_mint_cashu_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 8) throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
-                return MintInfo(name: dco_decode_String(arr[0]),
+                return MintCashuInfo(name: dco_decode_String(arr[0]),
 version: dco_decode_String(arr[1]),
 pubkey: dco_decode_opt_String(arr[2]),
 description: dco_decode_opt_String(arr[3]),
 descriptionLong: dco_decode_opt_String(arr[4]),
 motd: dco_decode_opt_String(arr[5]),
-contact: dco_decode_list_contact(arr[6]),
+contact: dco_decode_list_contact_cashu(arr[6]),
 nuts: dco_decode_Map_String_bool_None(arr[7]),); }
 
 @protected NostrEvent dco_decode_nostr_event(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -4308,8 +4302,8 @@ return raw == null ? null : dco_decode_box_autoadd_keychat_identity_key(raw); }
 @protected KeychatSignalSession? dco_decode_opt_box_autoadd_keychat_signal_session(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_box_autoadd_keychat_signal_session(raw); }
 
-@protected MintInfo? dco_decode_opt_box_autoadd_mint_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return raw == null ? null : dco_decode_box_autoadd_mint_info(raw); }
+@protected MintCashuInfo? dco_decode_opt_box_autoadd_mint_cashu_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return raw == null ? null : dco_decode_box_autoadd_mint_cashu_info(raw); }
 
 @protected int? dco_decode_opt_box_autoadd_u_32(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_box_autoadd_u_32(raw); }
@@ -4389,13 +4383,6 @@ final arr = raw as List<dynamic>;
             }
             return (dco_decode_String(arr[0]),dco_decode_u_32(arr[1]),); }
 
-@protected (String,void) dco_decode_record_string_unit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-            if (arr.length != 2) {
-                throw Exception('Expected 2 elements, got ${arr.length}');
-            }
-            return (dco_decode_String(arr[0]),dco_decode_unit(arr[1]),); }
-
 @protected (int,Uint8List,Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
             if (arr.length != 3) {
@@ -4416,13 +4403,6 @@ final arr = raw as List<dynamic>;
                 throw Exception('Expected 2 elements, got ${arr.length}');
             }
             return (dco_decode_u_64(arr[0]),dco_decode_u_64(arr[1]),); }
-
-@protected (BigInt,BigInt,BigInt) dco_decode_record_u_64_u_64_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-            if (arr.length != 3) {
-                throw Exception('Expected 3 elements, got ${arr.length}');
-            }
-            return (dco_decode_u_64(arr[0]),dco_decode_u_64(arr[1]),dco_decode_u_64(arr[2]),); }
 
 @protected (BigInt,BigInt,BigInt) dco_decode_record_usize_usize_usize(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -4550,10 +4530,6 @@ var inner = sse_decode_list_record_string_list_list_prim_u_8_strict(deserializer
 var inner = sse_decode_list_record_string_opt_box_autoadd_u_64(deserializer);
         return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
 
-@protected Map<String, void> sse_decode_Map_String_unit_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var inner = sse_decode_list_record_string_unit(deserializer);
-        return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
-
 @protected Amount sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return AmountImpl.frbInternalSseDecode(sse_decode_usize(deserializer), sse_decode_i_32(deserializer)); }
 
@@ -4605,8 +4581,8 @@ return (sse_decode_keychat_protocol_address(deserializer)); }
 @protected KeychatSignalSession sse_decode_box_autoadd_keychat_signal_session(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_keychat_signal_session(deserializer)); }
 
-@protected MintInfo sse_decode_box_autoadd_mint_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return (sse_decode_mint_info(deserializer)); }
+@protected MintCashuInfo sse_decode_box_autoadd_mint_cashu_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+return (sse_decode_mint_cashu_info(deserializer)); }
 
 @protected int sse_decode_box_autoadd_u_32(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_u_32(deserializer)); }
@@ -4624,10 +4600,10 @@ return CommitResult(sender: var_sender, commitType: var_commitType, operatedMemb
 var inner = sse_decode_i_32(deserializer);
         return CommitTypeResult.values[inner]; }
 
-@protected Contact sse_decode_contact(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected ContactCashu sse_decode_contact_cashu(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_method = sse_decode_String(deserializer);
 var var_info = sse_decode_String(deserializer);
-return Contact(method: var_method, info: var_info); }
+return ContactCashu(method: var_method, info: var_info); }
 
 @protected DecryptedMessage sse_decode_decrypted_message(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_decryptMsg = sse_decode_String(deserializer);
@@ -4698,11 +4674,11 @@ return KeychatSignalSession(aliceSenderRatchetKey: var_aliceSenderRatchetKey, ad
         return ans_;
          }
 
-@protected List<Contact> sse_decode_list_contact(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected List<ContactCashu> sse_decode_list_contact_cashu(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <Contact>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_contact(deserializer)); }
+        var ans_ = <ContactCashu>[];
+        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_contact_cashu(deserializer)); }
         return ans_;
          }
 
@@ -4722,11 +4698,11 @@ return KeychatSignalSession(aliceSenderRatchetKey: var_aliceSenderRatchetKey, ad
         return ans_;
          }
 
-@protected List<Mint> sse_decode_list_mint(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected List<MintCashu> sse_decode_list_mint_cashu(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <Mint>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_mint(deserializer)); }
+        var ans_ = <MintCashu>[];
+        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_mint_cashu(deserializer)); }
         return ans_;
          }
 
@@ -4778,14 +4754,6 @@ var len_ = sse_decode_i_32(deserializer);
         return ans_;
          }
 
-@protected List<(String,void)> sse_decode_list_record_string_unit(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-        var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <(String,void)>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_unit(deserializer)); }
-        return ans_;
-         }
-
 @protected List<Secp256k1Account> sse_decode_list_secp_256_k_1_account(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
@@ -4811,23 +4779,23 @@ var var_encryptMsg = sse_decode_String(deserializer);
 var var_listenKey = sse_decode_String(deserializer);
 return MessageResult(encryptMsg: var_encryptMsg, listenKey: var_listenKey); }
 
-@protected Mint sse_decode_mint(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected MintCashu sse_decode_mint_cashu(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_url = sse_decode_String(deserializer);
 var var_active = sse_decode_bool(deserializer);
 var var_time = sse_decode_u_64(deserializer);
-var var_info = sse_decode_opt_box_autoadd_mint_info(deserializer);
-return Mint(url: var_url, active: var_active, time: var_time, info: var_info); }
+var var_info = sse_decode_opt_box_autoadd_mint_cashu_info(deserializer);
+return MintCashu(url: var_url, active: var_active, time: var_time, info: var_info); }
 
-@protected MintInfo sse_decode_mint_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected MintCashuInfo sse_decode_mint_cashu_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_name = sse_decode_String(deserializer);
 var var_version = sse_decode_String(deserializer);
 var var_pubkey = sse_decode_opt_String(deserializer);
 var var_description = sse_decode_opt_String(deserializer);
 var var_descriptionLong = sse_decode_opt_String(deserializer);
 var var_motd = sse_decode_opt_String(deserializer);
-var var_contact = sse_decode_list_contact(deserializer);
+var var_contact = sse_decode_list_contact_cashu(deserializer);
 var var_nuts = sse_decode_Map_String_bool_None(deserializer);
-return MintInfo(name: var_name, version: var_version, pubkey: var_pubkey, description: var_description, descriptionLong: var_descriptionLong, motd: var_motd, contact: var_contact, nuts: var_nuts); }
+return MintCashuInfo(name: var_name, version: var_version, pubkey: var_pubkey, description: var_description, descriptionLong: var_descriptionLong, motd: var_motd, contact: var_contact, nuts: var_nuts); }
 
 @protected NostrEvent sse_decode_nostr_event(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_id = sse_decode_String(deserializer);
@@ -4884,10 +4852,10 @@ return NostrEvent(id: var_id, pubkey: var_pubkey, createdAt: var_createdAt, kind
             }
              }
 
-@protected MintInfo? sse_decode_opt_box_autoadd_mint_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected MintCashuInfo? sse_decode_opt_box_autoadd_mint_cashu_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
             if (sse_decode_bool(deserializer)) {
-                return (sse_decode_box_autoadd_mint_info(deserializer));
+                return (sse_decode_box_autoadd_mint_cashu_info(deserializer));
             } else {
                 return null;
             }
@@ -4986,11 +4954,6 @@ var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_u_32(deserializer);
 return (var_field0, var_field1); }
 
-@protected (String,void) sse_decode_record_string_unit(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_field0 = sse_decode_String(deserializer);
-var var_field1 = sse_decode_unit(deserializer);
-return (var_field0, var_field1); }
-
 @protected (int,Uint8List,Uint8List) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_u_32(deserializer);
 var var_field1 = sse_decode_list_prim_u_8_strict(deserializer);
@@ -5008,12 +4971,6 @@ return (var_field0, var_field1, var_field2, var_field3); }
 var var_field0 = sse_decode_u_64(deserializer);
 var var_field1 = sse_decode_u_64(deserializer);
 return (var_field0, var_field1); }
-
-@protected (BigInt,BigInt,BigInt) sse_decode_record_u_64_u_64_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_field0 = sse_decode_u_64(deserializer);
-var var_field1 = sse_decode_u_64(deserializer);
-var var_field2 = sse_decode_u_64(deserializer);
-return (var_field0, var_field1, var_field2); }
 
 @protected (BigInt,BigInt,BigInt) sse_decode_record_usize_usize_usize(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_usize(deserializer);
@@ -5136,9 +5093,6 @@ sse_encode_list_record_string_list_list_prim_u_8_strict(self.entries.map((e) => 
 @protected void sse_encode_Map_String_opt_box_autoadd_u_64_None(Map<String, BigInt?> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_record_string_opt_box_autoadd_u_64(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
 
-@protected void sse_encode_Map_String_unit_None(Map<String, void> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_list_record_string_unit(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
-
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(Amount self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_usize((self as AmountImpl).frbInternalSseEncode(move: null), serializer); }
 
@@ -5189,8 +5143,8 @@ sse_encode_keychat_protocol_address(self, serializer); }
 @protected void sse_encode_box_autoadd_keychat_signal_session(KeychatSignalSession self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_keychat_signal_session(self, serializer); }
 
-@protected void sse_encode_box_autoadd_mint_info(MintInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_mint_info(self, serializer); }
+@protected void sse_encode_box_autoadd_mint_cashu_info(MintCashuInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_mint_cashu_info(self, serializer); }
 
 @protected void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_32(self, serializer); }
@@ -5207,7 +5161,7 @@ sse_encode_opt_list_String(self.operatedMembers, serializer);
 @protected void sse_encode_commit_type_result(CommitTypeResult self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
-@protected void sse_encode_contact(Contact self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_contact_cashu(ContactCashu self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.method, serializer);
 sse_encode_String(self.info, serializer);
  }
@@ -5276,9 +5230,9 @@ sse_encode_opt_String(self.aliceAddresses, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_String(item, serializer); } }
 
-@protected void sse_encode_list_contact(List<Contact> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_list_contact_cashu(List<ContactCashu> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_contact(item, serializer); } }
+        for (final item in self) { sse_encode_contact_cashu(item, serializer); } }
 
 @protected void sse_encode_list_list_String(List<List<String>> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
@@ -5288,9 +5242,9 @@ sse_encode_i_32(self.length, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_list_prim_u_8_strict(item, serializer); } }
 
-@protected void sse_encode_list_mint(List<Mint> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_list_mint_cashu(List<MintCashu> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_mint(item, serializer); } }
+        for (final item in self) { sse_encode_mint_cashu(item, serializer); } }
 
 @protected void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
@@ -5320,10 +5274,6 @@ sse_encode_i_32(self.length, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_record_string_string(item, serializer); } }
 
-@protected void sse_encode_list_record_string_unit(List<(String,void)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_record_string_unit(item, serializer); } }
-
 @protected void sse_encode_list_secp_256_k_1_account(List<Secp256k1Account> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_secp_256_k_1_account(item, serializer); } }
@@ -5340,21 +5290,21 @@ sse_encode_String(self.encryptMsg, serializer);
 sse_encode_String(self.listenKey, serializer);
  }
 
-@protected void sse_encode_mint(Mint self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_mint_cashu(MintCashu self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.url, serializer);
 sse_encode_bool(self.active, serializer);
 sse_encode_u_64(self.time, serializer);
-sse_encode_opt_box_autoadd_mint_info(self.info, serializer);
+sse_encode_opt_box_autoadd_mint_cashu_info(self.info, serializer);
  }
 
-@protected void sse_encode_mint_info(MintInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_mint_cashu_info(MintCashuInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.name, serializer);
 sse_encode_String(self.version, serializer);
 sse_encode_opt_String(self.pubkey, serializer);
 sse_encode_opt_String(self.description, serializer);
 sse_encode_opt_String(self.descriptionLong, serializer);
 sse_encode_opt_String(self.motd, serializer);
-sse_encode_list_contact(self.contact, serializer);
+sse_encode_list_contact_cashu(self.contact, serializer);
 sse_encode_Map_String_bool_None(self.nuts, serializer);
  }
 
@@ -5408,11 +5358,11 @@ sse_encode_String(self.sig, serializer);
                 }
                  }
 
-@protected void sse_encode_opt_box_autoadd_mint_info(MintInfo? self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+@protected void sse_encode_opt_box_autoadd_mint_cashu_info(MintCashuInfo? self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
                 sse_encode_bool(self != null, serializer);
                 if (self != null) {
-                    sse_encode_box_autoadd_mint_info(self, serializer);
+                    sse_encode_box_autoadd_mint_cashu_info(self, serializer);
                 }
                  }
 
@@ -5504,11 +5454,6 @@ sse_encode_String(self.$1, serializer);
 sse_encode_u_32(self.$2, serializer);
  }
 
-@protected void sse_encode_record_string_unit((String,void) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_String(self.$1, serializer);
-sse_encode_unit(self.$2, serializer);
- }
-
 @protected void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict((int,Uint8List,Uint8List) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_32(self.$1, serializer);
 sse_encode_list_prim_u_8_strict(self.$2, serializer);
@@ -5525,12 +5470,6 @@ sse_encode_list_prim_u_8_strict(self.$4, serializer);
 @protected void sse_encode_record_u_64_u_64((BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_64(self.$1, serializer);
 sse_encode_u_64(self.$2, serializer);
- }
-
-@protected void sse_encode_record_u_64_u_64_u_64((BigInt,BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_u_64(self.$1, serializer);
-sse_encode_u_64(self.$2, serializer);
-sse_encode_u_64(self.$3, serializer);
  }
 
 @protected void sse_encode_record_usize_usize_usize((BigInt,BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs

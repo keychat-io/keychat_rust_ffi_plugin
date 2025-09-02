@@ -633,7 +633,7 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 [[package]]
 name = "cashu"
 version = "0.11.0"
-source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#d92534092462083725762c7f761a9a36c7540de1"
+source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#ca5835adce9365306041013e872e6da42e82e362"
 dependencies = [
  "bitcoin 0.32.7",
  "cbor-diag",
@@ -765,7 +765,7 @@ dependencies = [
 [[package]]
 name = "cdk"
 version = "0.11.0"
-source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#d92534092462083725762c7f761a9a36c7540de1"
+source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#ca5835adce9365306041013e872e6da42e82e362"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -799,7 +799,7 @@ dependencies = [
 [[package]]
 name = "cdk-common"
 version = "0.11.0"
-source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#d92534092462083725762c7f761a9a36c7540de1"
+source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#ca5835adce9365306041013e872e6da42e82e362"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -822,7 +822,7 @@ dependencies = [
 [[package]]
 name = "cdk-signatory"
 version = "0.11.0"
-source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#d92534092462083725762c7f761a9a36c7540de1"
+source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#ca5835adce9365306041013e872e6da42e82e362"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -846,7 +846,7 @@ dependencies = [
 [[package]]
 name = "cdk-sqlite"
 version = "0.11.0"
-source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#d92534092462083725762c7f761a9a36c7540de1"
+source = "git+https://github.com/keychat-io/cdk.git?branch=kc2#ca5835adce9365306041013e872e6da42e82e362"
 dependencies = [
  "async-trait",
  "bitcoin 0.32.7",

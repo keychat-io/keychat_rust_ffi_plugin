@@ -1,5 +1,5 @@
 use anyhow::Ok;
-pub use cashu::{Amount, CurrencyUnit, MintUrl};
+pub use cashu::{Amount, CurrencyUnit, MintInfo, MintUrl};
 pub use cdk::amount::{SplitTarget, MSAT_IN_SAT};
 use cdk::cdk_database;
 pub use cdk::lightning_invoice::{
@@ -157,16 +157,47 @@ pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> 
     })
 }
 
-pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
+pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<MintCashu>> {
     let mut state = State::lock()?;
     state.sats = prepare_sats_once_time;
 
     let w = state.get_wallet()?;
-    let mut mints = Vec::new();
     let result = state.rt.block_on(w.localstore.get_mints())?;
-    for (k, v) in result {
+    let mints = decode_mint_info(result)?;
+
+    Ok(mints)
+}
+
+#[frb(ignore)]
+pub fn get_mnemonic_info() -> anyhow::Result<Option<String>> {
+    let state = State::lock()?;
+    let mnemonic = state.mnemonic();
+    let mi = mnemonic.map(|m| m.pubkey().to_string());
+    Ok(mi)
+}
+
+pub fn set_mnemonic(words: Option<String>) -> anyhow::Result<bool> {
+    if words.is_none() {
+        return Ok(false);
+    }
+    let mut mnemonic = None;
+    if let Some(s) = words {
+        let mi = MnemonicInfo::with_words(&s)?;
+        mnemonic = Some(Arc::new(mi))
+    }
+
+    let mut state = State::lock()?;
+    let has = state.update_mnmonic(mnemonic);
+    has
+}
+
+fn decode_mint_info(
+    mint_info: HashMap<MintUrl, Option<MintInfo>>,
+) -> anyhow::Result<Vec<MintCashu>> {
+    let mut mints = Vec::new();
+    for (k, v) in mint_info {
         if let Some(v) = v {
-            let mint_info = MintInfo {
+            let mint_info = MintCashuInfo {
                 name: v.name.unwrap_or_default(),
                 version: v.version.map(|v| v.to_string()).unwrap_or_default(),
                 pubkey: v.pubkey.map(|v| v.to_string()),
@@ -177,7 +208,7 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
                     .contact
                     .unwrap_or_default()
                     .into_iter()
-                    .map(|contact_info| Contact {
+                    .map(|contact_info| ContactCashu {
                         method: contact_info.method,
                         info: contact_info.info,
                     })
@@ -233,7 +264,7 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
                     nuts_map
                 },
             };
-            let mint = Mint {
+            let mint = MintCashu {
                 url: k.to_string(),
                 active: true,
                 time: v.time.unwrap_or(0),
@@ -245,37 +276,13 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
     Ok(mints)
 }
 
-#[frb(ignore)]
-pub fn get_mnemonic_info() -> anyhow::Result<Option<String>> {
-    let state = State::lock()?;
-    let mnemonic = state.mnemonic();
-    let mi = mnemonic.map(|m| m.pubkey().to_string());
-    Ok(mi)
-}
-
-pub fn set_mnemonic(words: Option<String>) -> anyhow::Result<bool> {
-    if words.is_none() {
-        return Ok(false);
-    }
-    let mut mnemonic = None;
-    if let Some(s) = words {
-        let mi = MnemonicInfo::with_words(&s)?;
-        mnemonic = Some(Arc::new(mi))
-    }
-
-    let mut state = State::lock()?;
-    let has = state.update_mnmonic(mnemonic);
-    has
-}
-
-pub fn get_mints() -> anyhow::Result<HashMap<String, ()>> {
+pub fn get_mints() -> anyhow::Result<Vec<MintCashu>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
-    let mints = state.rt.block_on(w.localstore.get_mints())?;
-    let only_keys: std::collections::HashMap<String, _> =
-        mints.into_keys().map(|k| (k.to_string(), ())).collect();
-    Ok(only_keys)
+    // let mut mints = Vec::new();
+    let result = state.rt.block_on(w.localstore.get_mints())?;
+    let mints = decode_mint_info(result)?;
+    Ok(mints)
 }
 
 pub fn add_mint(url: String) -> anyhow::Result<()> {
@@ -800,7 +807,7 @@ fn _send(
     Ok(tx_new)
 }
 
-pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> {
+pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -834,10 +841,24 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<String> 
         // let receive_amount = proofs.total_amount()?;
 
         // debug!("Received {receive_amount} from mint {mint_url}");
-        Ok(quote.request)
+        Ok(quote)
     })?;
+    let tx = tx.1;
+    let tx_new = Transaction {
+        id: tx.id().to_string(),
+        mint_url: tx.mint_url.to_string(),
+        io: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        status: tx.status,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    };
 
-    Ok(tx)
+    Ok(tx_new)
 }
 
 /// don not used in flutter, and put it in check_pending
@@ -899,12 +920,12 @@ pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
 }
 
 /// Checks pending proofs for spent status
-pub fn check_proofs() -> anyhow::Result<(u64, u64, u64)> {
+pub fn check_proofs() -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
     // let mint_url = MintUrl::from_str(&active_mint)?;
-    let tx = state.rt.block_on(async {
+    let _tx = state.rt.block_on(async {
         let mut check_map: HashMap<String, (u64, u64)> = HashMap::new();
         let mints = w.localstore.get_mints().await?;
         for (mint_url, _info) in mints {
@@ -914,18 +935,19 @@ pub fn check_proofs() -> anyhow::Result<(u64, u64, u64)> {
         }
         Ok(check_map)
     })?;
-    let cnt = tx
-        .values()
-        .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
-    Ok((cnt.0, cnt.1, cnt.0 + cnt.1))
+    // let cnt = tx
+    //     .values()
+    //     .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
+    // Ok((cnt.0, cnt.1, cnt.0 + cnt.1))
+    Ok(())
 }
 
 /// include ln and cashu, tx status
-pub fn check_pending() -> anyhow::Result<(u64, u64)> {
+pub fn check_pending() -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
-    let tx = state.rt.block_on(async {
+    let _tx = state.rt.block_on(async {
         let mut check_map = HashMap::new();
         let mints = w.localstore.get_mints().await?;
         for (mint_url, _info) in mints {
@@ -935,11 +957,11 @@ pub fn check_pending() -> anyhow::Result<(u64, u64)> {
         }
         Ok(check_map)
     })?;
-    let cnt = tx
-        .values()
-        .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
+    // let cnt = tx
+    //     .values()
+    //     .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
 
-    Ok(cnt)
+    Ok(())
 }
 
 pub fn melt(

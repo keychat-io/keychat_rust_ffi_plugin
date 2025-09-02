@@ -44,15 +44,15 @@ pub enum _TransactionKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Mint {
+pub struct MintCashu {
     pub url: String,
     pub active: bool,
     pub time: u64,
-    pub info: Option<MintInfo>,
+    pub info: Option<MintCashuInfo>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct MintInfo {
+pub struct MintCashuInfo {
     pub name: String,
     pub version: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -64,12 +64,12 @@ pub struct MintInfo {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub motd: Option<String>,
     #[serde(default)]
-    pub contact: Vec<Contact>,
+    pub contact: Vec<ContactCashu>,
     pub nuts: HashMap<String, bool>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Contact {
+pub struct ContactCashu {
     #[serde(default)]
     pub method: String,
     #[serde(default)]
