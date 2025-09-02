@@ -75,15 +75,19 @@ lazy_static! {
 // the only pub fn that v2 can call
 pub fn cashu_v1_init_send_all(
     dbpath: String,
-    words: Option<String>,
+    _words: Option<String>,
 ) -> anyhow::Result<Vec<String>> {
-    init_db(dbpath, words, false)?;
+    let words  = MnemonicInfo::generate_words(12)?;
+    init_db(dbpath, Some(words), false)?;
     init_cashu(32)?;
+    check_proofs()?;
+    check_pending()?;
     let mints = get_mints()?;
     let mut tokens: Vec<String> = Vec::new();
     for m in mints {
         let url = m.url;
         let (is_charge, amount) = get_balance(url.clone())?;
+        println!("is_charge, amount {}, {}", is_charge, amount);
 
         if (!is_charge && amount > 0) || amount > 2 {
             let tx = send_all(url, None)?;

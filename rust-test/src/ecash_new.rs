@@ -8,15 +8,19 @@ const MINT_URL: &str = "https://8333.space:3338/";
 const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
-    let migen_words = MnemonicInfo::generate_words(12).unwrap();
+    // let migen_words = MnemonicInfo::generate_words(12).unwrap();
+    let words = "unaware awesome finish calm deputy doll roast own dumb liar afraid differ";
+
     // let migen_words = "mushroom venture grab fatigue excite solve onion include minute joy trade anxiety";
-    println!("migen_words is {:?}", migen_words);
+    println!("migen_words is {:?}", words);
 
     let tokens =
-        api::cashu_v1_init_send_all("rustest.db".to_string(), Some(migen_words.to_owned()));
+        api::cashu_v1_init_send_all("ecash.db".to_string(), Some(words.to_owned()));
     println!("send all tokens {:?}", tokens);
 
-    let init_db = api::init_db(DB_PATH.to_string(), migen_words.to_owned(), false);
+    // let words = "bunker feel away slide trip girl amazing resource veteran direct cotton blanket";
+
+    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH, init_db);
 
     // let mi = api::get_mnemonic_info();
@@ -25,9 +29,18 @@ fn main() {
     let init_cashu = api::init_cashu(32);
     println!("init_cashu is {:?}", init_cashu);
 
+    if tokens.is_ok() {
+        for token in tokens.unwrap() {
+            let re = api::receive_token(token);
+            println!("receive token is {:?}", re);
+        }
+    }
+    
+
     // test fot get balances
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
+    // return;
 
     // test for receive token
     // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCFpGFhAmFzeEA4NTlhYWY3ZDc2ODlmNDAxYjA5ODAyM2VkODUxY2JlYzRhMTAwYTZiN2UyODAxN2M1MTMxMjMyYjE4MTM4NmE1YWNYIQJ79MIc8Q6WS1tHBYNt0VpeALFvKhYC8ss2aBq_nJQPAmFko2FlWCCLMJmoe1pRqB0COfeYF7J06Ino7OuoVMFpS2bKwG72zGFzWCD1Dl2mkKw3liNZ7XYXGMrqCJXuQB0UWm-uOKk7ij6vC2FyWCA3ujDzDRSKb5wSp4GPx6a7VYVFXL_w8qh--q3UkDjlLqRhYQJhc3hAYTQxMWUyODE3ODBkYTEyNDA5NDZlZTQzMWUyZGI1Y2I5ODE0ODNmZWY5YzljMWU5OTNlZTlmYTgxOTI2MmFkM2FjWCECZSA-jt4LEDUkXnwCPUpTgZiCw9O1ac_SKOwtu3Pa9WhhZKNhZVggzRXmkSThGDsNlnjWXKP3bMsmVPLzZgJsZsoy_OAyIRZhc1ggaKx9yYu05bjSRT8ov1kb3CJLa9aoa2zwYD3RK3K2SZFhclgghZRLcjz6KqoXS3GshgsyiKZ11NFgFGak3Fq7ohJiCROkYWECYXN4QGJmMTExYWZjYWU1YTIxMDNhYTBlMGZiYTVjYTM1ZmYyNmRlNzNmNTkyMjExYzUyZDZlZDdiZDJiYWU4ZGFlYTNhY1ghA2R3ueOAXvtIKBIJp2S1a7vsp6cxZodzaFJBTU0azxsyYWSjYWVYIOZKzYEjIlpUPELRNuNKYEuFlihj7HAltFpq4SXLBf4mYXNYICHZ9nNqnm-5oyFh9hSuuH_0ynnMrOqsLF1V4no8pRCgYXJYIELI3kNv9VNr4WLc7_PuDxvnx0-IP_lAxYd0ZgtvnbvxpGFhAmFzeEBkMmQ5YTNmNTYyYjBmNWExY2ZiZDdkNDJhYjhlMGEyZWE5ZjViODFlNDVmZTMxMjk0OGU5NmRhMmY1OTkwNTQ0YWNYIQJfNrCZGdWC27swbLLPiZeDa9dxoUrNUYCPpGpnCQTbsGFko2FlWCAtbw3KzH2pyyh96jbPzfds4daRQL-JnQZZzOGIqB9spGFzWCCuHdcthrK-mAoO8-IsCuDxTzmkiCBuk9JYsGUM67jXNmFyWCC2b6oxfRakvHSO4nygzqQshSlUcLuSliUqwdvYT6Ht2aRhYQJhc3hAZTRhYTdlNWU5OWQ0YTkyNTljYTQ5MGVhZTA3NzYzODMzZTA3NmQ3NTRkNGQ4NzllNDY1ZTliNTcxOGQzZmQ5ZWFjWCEDurTiAFW22YhpkGhu1y8FUHp3TGLs5TEH2JyahZoLe-9hZKNhZVggfzoCRnbEOw-yqaI8Zghf_ObHhu9ka2fLQP0jtMcwCw5hc1ggJE0jeIcmFThNY834fwTfJU7c3GZZtpLifIQAaINrvgphclggmVsnpwnwysguJDkh0BYZunASbkgaTnBtU908sIgcGc4".trim();

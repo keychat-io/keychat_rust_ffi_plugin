@@ -4094,9 +4094,6 @@ welcome: dco_decode_list_prim_u_8_strict(arr[1]),); }
 @protected bool dco_decode_bool(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as bool; }
 
-@protected CurrencyUnit dco_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(raw); }
-
 @protected bool dco_decode_box_autoadd_bool(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as bool; }
 
@@ -4290,9 +4287,6 @@ sig: dco_decode_String(arr[6]),); }
 @protected String? dco_decode_opt_String(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_String(raw); }
 
-@protected CurrencyUnit? dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return raw == null ? null : dco_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(raw); }
-
 @protected bool? dco_decode_opt_box_autoadd_bool(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_box_autoadd_bool(raw); }
 
@@ -4435,7 +4429,7 @@ final arr = raw as List<dynamic>;
                 if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
                 return TokenInfo(mint: dco_decode_String(arr[0]),
 amount: dco_decode_u_64(arr[1]),
-unit: dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(arr[2]),
+unit: dco_decode_opt_String(arr[2]),
 memo: dco_decode_opt_String(arr[3]),); }
 
 @protected Transaction dco_decode_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -4562,9 +4556,6 @@ return AddMembersResult(queuedMsg: var_queuedMsg, welcome: var_welcome); }
 
 @protected bool sse_decode_bool(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return deserializer.buffer.getUint8() != 0; }
-
-@protected CurrencyUnit sse_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return (sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(deserializer)); }
 
 @protected bool sse_decode_box_autoadd_bool(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_bool(deserializer)); }
@@ -4816,15 +4807,6 @@ return NostrEvent(id: var_id, pubkey: var_pubkey, createdAt: var_createdAt, kind
             }
              }
 
-@protected CurrencyUnit? sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-            if (sse_decode_bool(deserializer)) {
-                return (sse_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(deserializer));
-            } else {
-                return null;
-            }
-             }
-
 @protected bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
             if (sse_decode_bool(deserializer)) {
@@ -4998,7 +4980,7 @@ return Secp256k1SimpleAccount(pubkey: var_pubkey, prikey: var_prikey); }
 @protected TokenInfo sse_decode_token_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_mint = sse_decode_String(deserializer);
 var var_amount = sse_decode_u_64(deserializer);
-var var_unit = sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(deserializer);
+var var_unit = sse_decode_opt_String(deserializer);
 var var_memo = sse_decode_opt_String(deserializer);
 return TokenInfo(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
 
@@ -5124,9 +5106,6 @@ sse_encode_list_prim_u_8_strict(self.welcome, serializer);
 
 @protected void sse_encode_bool(bool self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 serializer.buffer.putUint8(self ? 1 : 0); }
-
-@protected void sse_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(CurrencyUnit self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(self, serializer); }
 
 @protected void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_bool(self, serializer); }
@@ -5326,14 +5305,6 @@ sse_encode_String(self.sig, serializer);
                 }
                  }
 
-@protected void sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(CurrencyUnit? self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-                sse_encode_bool(self != null, serializer);
-                if (self != null) {
-                    sse_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(self, serializer);
-                }
-                 }
-
 @protected void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
                 sse_encode_bool(self != null, serializer);
@@ -5498,7 +5469,7 @@ sse_encode_String(self.prikey, serializer);
 @protected void sse_encode_token_info(TokenInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.mint, serializer);
 sse_encode_u_64(self.amount, serializer);
-sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(self.unit, serializer);
+sse_encode_opt_String(self.unit, serializer);
 sse_encode_opt_String(self.memo, serializer);
  }
 

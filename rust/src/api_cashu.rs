@@ -1295,7 +1295,7 @@ pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
         // encoded_token,
         mint: token.mint_url()?.to_string(),
         amount: token.value()?.into(),
-        unit: token.unit(),
+        unit: token.unit().as_ref().map(|s| s.to_string()),
         memo: token.memo().clone(),
     })
 }
@@ -1337,7 +1337,7 @@ pub struct TokenInfo {
     // pub encoded_token: String,
     pub mint: String,
     pub amount: u64,
-    pub unit: Option<CurrencyUnit>,
+    pub unit: Option<String>,
     pub memo: Option<String>,
 }
 

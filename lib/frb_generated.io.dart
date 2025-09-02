@@ -90,8 +90,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected bool dco_decode_bool(dynamic raw);
 
-@protected CurrencyUnit dco_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(dynamic raw);
-
 @protected bool dco_decode_box_autoadd_bool(dynamic raw);
 
 @protected KeychatIdentityKey dco_decode_box_autoadd_keychat_identity_key(dynamic raw);
@@ -173,8 +171,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected NostrEvent dco_decode_nostr_event(dynamic raw);
 
 @protected String? dco_decode_opt_String(dynamic raw);
-
-@protected CurrencyUnit? dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(dynamic raw);
 
 @protected bool? dco_decode_opt_box_autoadd_bool(dynamic raw);
 
@@ -296,8 +292,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected bool sse_decode_bool(SseDeserializer deserializer);
 
-@protected CurrencyUnit sse_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(SseDeserializer deserializer);
-
 @protected bool sse_decode_box_autoadd_bool(SseDeserializer deserializer);
 
 @protected KeychatIdentityKey sse_decode_box_autoadd_keychat_identity_key(SseDeserializer deserializer);
@@ -379,8 +373,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected NostrEvent sse_decode_nostr_event(SseDeserializer deserializer);
 
 @protected String? sse_decode_opt_String(SseDeserializer deserializer);
-
-@protected CurrencyUnit? sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(SseDeserializer deserializer);
 
 @protected bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer);
 
@@ -502,8 +494,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_bool(bool self, SseSerializer serializer);
 
-@protected void sse_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(CurrencyUnit self, SseSerializer serializer);
-
 @protected void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer);
 
 @protected void sse_encode_box_autoadd_keychat_identity_key(KeychatIdentityKey self, SseSerializer serializer);
@@ -585,8 +575,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_nostr_event(NostrEvent self, SseSerializer serializer);
 
 @protected void sse_encode_opt_String(String? self, SseSerializer serializer);
-
-@protected void sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(CurrencyUnit? self, SseSerializer serializer);
 
 @protected void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer);
 

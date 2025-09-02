@@ -489,13 +489,13 @@ fn wire__crate__api_cashu_v1__cashu_v1_init_send_all_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_dbpath = <String>::sse_decode(&mut deserializer);
-            let api_words = <Option<String>>::sse_decode(&mut deserializer);
+            let api__words = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v1::cashu_v1_init_send_all(api_dbpath, api_words)?;
+                            crate::api_cashu_v1::cashu_v1_init_send_all(api_dbpath, api__words)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5955,17 +5955,6 @@ impl SseDecode for Option<String> {
     }
 }
 
-impl SseDecode for Option<CurrencyUnit> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        if (<bool>::sse_decode(deserializer)) {
-            return Some(<CurrencyUnit>::sse_decode(deserializer));
-        } else {
-            return None;
-        }
-    }
-}
-
 impl SseDecode for Option<bool> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6238,7 +6227,7 @@ impl SseDecode for crate::api_cashu::TokenInfo {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_mint = <String>::sse_decode(deserializer);
         let mut var_amount = <u64>::sse_decode(deserializer);
-        let mut var_unit = <Option<CurrencyUnit>>::sse_decode(deserializer);
+        let mut var_unit = <Option<String>>::sse_decode(deserializer);
         let mut var_memo = <Option<String>>::sse_decode(deserializer);
         return crate::api_cashu::TokenInfo {
             mint: var_mint,
@@ -7829,16 +7818,6 @@ impl SseEncode for Option<String> {
     }
 }
 
-impl SseEncode for Option<CurrencyUnit> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <bool>::sse_encode(self.is_some(), serializer);
-        if let Some(value) = self {
-            <CurrencyUnit>::sse_encode(value, serializer);
-        }
-    }
-}
-
 impl SseEncode for Option<bool> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -8068,7 +8047,7 @@ impl SseEncode for crate::api_cashu::TokenInfo {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.mint, serializer);
         <u64>::sse_encode(self.amount, serializer);
-        <Option<CurrencyUnit>>::sse_encode(self.unit, serializer);
+        <Option<String>>::sse_encode(self.unit, serializer);
         <Option<String>>::sse_encode(self.memo, serializer);
     }
 }

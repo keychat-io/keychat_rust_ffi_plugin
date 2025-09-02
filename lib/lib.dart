@@ -13,15 +13,6 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
             
 
             
-                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<CurrencyUnit>>
-                abstract class CurrencyUnit implements RustOpaqueInterface {
-                    
-
-                    
-                }
-                
-
-
                 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Mnemonic>>
                 abstract class Mnemonic implements RustOpaqueInterface {
                     

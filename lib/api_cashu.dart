@@ -5,7 +5,6 @@
 
 import 'api_cashu/types.dart';
 import 'frb_generated.dart';
-import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
@@ -110,6 +109,15 @@ Future<InvoiceInfo>  decodeInvoice({required String encodedInvoice }) => RustLib
                 
 
 
+                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<CurrencyUnit>>
+                abstract class CurrencyUnit implements RustOpaqueInterface {
+                    
+
+                    
+                }
+                
+
+
                 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MintUrl>>
                 abstract class MintUrl implements RustOpaqueInterface {
                     
@@ -175,7 +183,7 @@ expired,
 class TokenInfo  {
                 final String mint;
 final BigInt amount;
-final CurrencyUnit? unit;
+final String? unit;
 final String? memo;
 
                 const TokenInfo({required this.mint ,required this.amount ,this.unit ,this.memo ,});
