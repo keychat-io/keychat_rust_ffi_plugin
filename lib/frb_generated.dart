@@ -6,7 +6,6 @@
 import 'api_cashu.dart';
 import 'api_cashu/types.dart';
 import 'api_cashu_v1.dart';
-import 'api_cashu_v1/types.dart';
 import 'api_mls.dart';
 import 'api_mls/types.dart';
 import 'api_nostr.dart';
@@ -73,7 +72,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
                   String get codegenVersion => '2.10.0';
 
                   @override
-                  int get rustContentHash => 2044617524;
+                  int get rustContentHash => 1372729656;
 
                   static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
                     stem: 'keychat_rust_ffi_plugin',
@@ -98,11 +97,11 @@ Future<AddMembersResult> crateApiMlsAddMembers({required String nostrId , requir
 
 Future<void> crateApiCashuAddMint({required String url });
 
-Future<bool> crateApiCashuV1AddMint({required String url });
-
 Future<void> crateApiMlsAdminCommitLeave({required String nostrId , required String groupId });
 
 Future<Uint8List> crateApiMlsAdminProposalLeave({required String nostrId , required String groupId });
+
+Future<List<String>> crateApiCashuCashuV1InitSendAll({required String dbpath , String? words });
 
 Future<List<String>> crateApiCashuV1CashuV1InitSendAll({required String dbpath , String? words });
 
@@ -110,17 +109,11 @@ Future<BigInt> crateApiCashuCheckAllMintQuotes();
 
 Future<(BigInt,BigInt)> crateApiCashuCheckPending();
 
-Future<(BigInt,BigInt)> crateApiCashuV1CheckPending();
-
 Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs();
 
-Future<(BigInt,BigInt,BigInt)> crateApiCashuV1CheckProofs();
+Future<Transaction> crateApiCashuCheckTransaction({required String id });
 
-Future<void> crateApiCashuCheckTransaction({required String id });
-
-Future<TransactionV1> crateApiCashuV1CheckTransaction({required String id });
-
-Future<bool> crateApiCashuV1CloseDb();
+Future<Contact> crateApiCashuTypesContactDefault();
 
 Future<bool> crateApiSignalContainsSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
 
@@ -144,11 +137,7 @@ String crateApiNostrDecodeBech32({required String content });
 
 Future<InvoiceInfo> crateApiCashuDecodeInvoice({required String encodedInvoice });
 
-Future<InvoiceInfoV1> crateApiCashuV1DecodeInvoice({required String encodedInvoice });
-
 Future<TokenInfo> crateApiCashuDecodeToken({required String encodedToken });
-
-Future<TokenInfoV1> crateApiCashuV1DecodeToken({required String encodedToken });
 
 Future<String> crateApiNostrDecrypt({required String senderKeys , required String receiverPubkey , required String content });
 
@@ -206,11 +195,7 @@ Future<(BigInt,BigInt,BigInt)> crateApiCashuGetAllProofsData();
 
 Future<List<Transaction>> crateApiCashuGetAllTransactions();
 
-Future<(bool,BigInt)> crateApiCashuV1GetBalance({required String mint });
-
 Future<String> crateApiCashuGetBalances();
-
-Future<String> crateApiCashuV1GetBalances();
 
 String crateApiNostrGetBech32PrikeyByHex({required String hex });
 
@@ -218,11 +203,7 @@ String crateApiNostrGetBech32PubkeyByHex({required String hex });
 
 Future<List<Transaction>> crateApiCashuGetCashuPendingTransactions();
 
-Future<List<CashuTransaction>> crateApiCashuV1GetCashuPendingTransactions();
-
 Future<List<Transaction>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
-
-Future<List<CashuTransaction>> crateApiCashuV1GetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<String> crateApiNostrGetEncryptEvent({required String senderKeys , required String receiverPubkey , required String content , String? reply });
 
@@ -248,23 +229,13 @@ Future<String> crateApiMlsGetListenKeyFromExportSecret({required String nostrId 
 
 Future<List<Transaction>> crateApiCashuGetLnPendingTransactions();
 
-Future<List<LNTransaction>> crateApiCashuV1GetLnPendingTransactions();
-
 Future<List<Transaction>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
-
-Future<List<LNTransaction>> crateApiCashuV1GetLnTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<Map<String, List<Uint8List>>> crateApiMlsGetMemberExtension({required String nostrId , required String groupId });
 
 Future<Map<String, void>> crateApiCashuGetMints();
 
-Future<List<Mint>> crateApiCashuV1GetMints();
-
-Future<List<TransactionV1>> crateApiCashuV1GetPendingTransactions();
-
 Future<BigInt> crateApiCashuGetPendingTransactionsCount();
-
-Future<BigInt> crateApiCashuV1GetPendingTransactionsCount();
 
 Future<Uint8List> crateApiSignalGetPrekeyApi({required KeychatIdentityKeyPair keyPair , required int prekeyId });
 
@@ -273,10 +244,6 @@ Future<String?> crateApiMlsGetSender({required String nostrId , required String 
 Future<KeychatSignalSession?> crateApiSignalGetSession({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId });
 
 Future<Uint8List> crateApiSignalGetSignedKeyApi({required KeychatIdentityKeyPair keyPair , required int signedKeyId });
-
-Future<List<TransactionV1>> crateApiCashuV1GetTransactions();
-
-Future<List<TransactionV1>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
 Future<Uint8List> crateApiMlsGetTreeHash({required String nostrId , required String groupId });
 
@@ -292,13 +259,9 @@ Future<Secp256k1Account> crateApiNostrImportKey({required String senderKeys });
 
 Future<void> crateApiSignalInit({required String dbPath , required KeychatIdentityKeyPair keyPair , required int regId });
 
-Future<List<String>> crateApiCashuInitCashu({required int prepareSatsOnceTime });
-
-Future<List<Mint>> crateApiCashuV1InitCashu({required int prepareSatsOnceTime });
+Future<List<Mint>> crateApiCashuInitCashu({required int prepareSatsOnceTime });
 
 Future<void> crateApiCashuInitDb({required String dbpath , required String words , required bool dev });
-
-Future<void> crateApiCashuV1InitDb({required String dbpath , String? words , required bool dev });
 
 Future<void> crateApiSignalInitKeypair({required KeychatIdentityKeyPair keyPair , required int regId });
 
@@ -310,13 +273,11 @@ Future<void> crateApiMlsJoinMlsGroup({required String nostrId , required String 
 
 Future<Transaction> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount });
 
-Future<TransactionV1> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount });
-
 Future<void> crateApiCashuMergeProofs({required BigInt thershold });
 
-Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint });
+Future<MintInfo> crateApiCashuTypesMintInfoDefault();
 
-Future<TransactionV1> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint });
+Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint });
 
 Future<void> crateApiCashuMultiReceive({required List<String> stamps });
 
@@ -346,25 +307,15 @@ Future<void> crateApiSignalProcessPrekeyBundleApi({required KeychatIdentityKeyPa
 
 Future<Transaction> crateApiCashuReceiveToken({required String encodedToken });
 
-Future<List<TransactionV1>> crateApiCashuV1ReceiveToken({required String encodedToken });
-
 Future<String> crateApiMlsRemoveMembers({required String nostrId , required String groupId , required List<Uint8List> members });
 
 Future<void> crateApiCashuRemoveMint({required String url });
 
-Future<String?> crateApiCashuV1RemoveMint({required String url });
-
 Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatus status });
-
-Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatusV1 kind });
 
 Future<String> crateApiCashuRequestMint({required BigInt amount , required String activeMint });
 
-Future<TransactionV1> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint });
-
 Future<(BigInt,BigInt)> crateApiCashuRestore({required String mintUrl , String? words });
-
-Future<(BigInt,BigInt)> crateApiCashuV1Restore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch });
 
 Future<void> crateApiMlsSelfCommit({required String nostrId , required String groupId });
 
@@ -374,21 +325,13 @@ Future<String> crateApiMlsSelfUpdate({required String nostrId , required String 
 
 Future<Transaction> crateApiCashuSend({required BigInt amount , required String activeMint , String? info });
 
-Future<TransactionV1> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info });
-
 Future<Transaction> crateApiCashuSendAll({required String mint });
 
-Future<TransactionV1> crateApiCashuV1SendAll({required String activeMint , String? info });
-
 Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
-
-Future<TransactionV1> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info });
 
 Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address });
 
 Future<bool> crateApiCashuSetMnemonic({String? words });
-
-Future<bool> crateApiCashuV1SetMnemonic({String? words });
 
 Future<String> crateApiNostrSha1Hash({required String data });
 
@@ -645,37 +588,12 @@ sse_encode_list_String(keyPackages, serializer);
         );
         
 
-@override Future<bool> crateApiCashuV1AddMint({required String url })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_bool,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1AddMintConstMeta,
-            argValues: [url],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1AddMintConstMeta => const TaskConstMeta(
-            debugName: "add_mint",
-            argNames: ["url"],
-        );
-        
-
 @override Future<void> crateApiMlsAdminCommitLeave({required String nostrId , required String groupId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8, port: port_);
             
             },
             codec: 
@@ -701,7 +619,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9, port: port_);
             
             },
             codec: 
@@ -719,6 +637,32 @@ sse_encode_String(groupId, serializer);
         TaskConstMeta get kCrateApiMlsAdminProposalLeaveConstMeta => const TaskConstMeta(
             debugName: "admin_proposal_leave",
             argNames: ["nostrId", "groupId"],
+        );
+        
+
+@override Future<List<String>> crateApiCashuCashuV1InitSendAll({required String dbpath , String? words })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
+sse_encode_opt_String(words, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_String,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuCashuV1InitSendAllConstMeta,
+            argValues: [dbpath, words],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuCashuV1InitSendAllConstMeta => const TaskConstMeta(
+            debugName: "cashu_v1_init_send_all",
+            argNames: ["dbpath", "words"],
         );
         
 
@@ -798,36 +742,11 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<(BigInt,BigInt)> crateApiCashuV1CheckPending()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_record_usize_usize,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1CheckPendingConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1CheckPendingConstMeta => const TaskConstMeta(
-            debugName: "check_pending",
-            argNames: [],
-        );
-        
-
 @override Future<(BigInt,BigInt,BigInt)> crateApiCashuCheckProofs()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14, port: port_);
             
             },
             codec: 
@@ -848,41 +767,16 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<(BigInt,BigInt,BigInt)> crateApiCashuV1CheckProofs()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_record_usize_usize_usize,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1CheckProofsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1CheckProofsConstMeta => const TaskConstMeta(
-            debugName: "check_proofs",
-            argNames: [],
-        );
-        
-
-@override Future<void> crateApiCashuCheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuCheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(id, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -898,52 +792,27 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<TransactionV1> crateApiCashuV1CheckTransaction({required String id })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(id, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1CheckTransactionConstMeta,
-            argValues: [id],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1CheckTransactionConstMeta => const TaskConstMeta(
-            debugName: "check_transaction",
-            argNames: ["id"],
-        );
-        
-
-@override Future<bool> crateApiCashuV1CloseDb()  { return handler.executeNormal(NormalTask(
+@override Future<Contact> crateApiCashuTypesContactDefault()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_bool,
-          decodeErrorData: sse_decode_AnyhowException,
+          decodeSuccessData: sse_decode_contact,
+          decodeErrorData: null,
         )
         ,
-            constMeta: kCrateApiCashuV1CloseDbConstMeta,
+            constMeta: kCrateApiCashuTypesContactDefaultConstMeta,
             argValues: [],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiCashuV1CloseDbConstMeta => const TaskConstMeta(
-            debugName: "close_db",
+        TaskConstMeta get kCrateApiCashuTypesContactDefaultConstMeta => const TaskConstMeta(
+            debugName: "contact_default",
             argNames: [],
         );
         
@@ -953,7 +822,7 @@ sse_encode_opt_String(words, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17, port: port_);
             
             },
             codec: 
@@ -984,7 +853,7 @@ sse_encode_String(content, serializer);
 sse_encode_opt_box_autoadd_u_64(expirationTimestamp, serializer);
 sse_encode_opt_box_autoadd_bool(timestampTweaked, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18, port: port_);
             
             },
             codec: 
@@ -1009,7 +878,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19, port: port_);
             
             },
             codec: 
@@ -1034,7 +903,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20, port: port_);
             
             },
             codec: 
@@ -1061,7 +930,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(msg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21, port: port_);
             
             },
             codec: 
@@ -1092,7 +961,7 @@ sse_encode_String(description, serializer);
 sse_encode_list_String(adminPubkeysHex, serializer);
 sse_encode_list_String(groupRelays, serializer);
 sse_encode_String(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22, port: port_);
             
             },
             codec: 
@@ -1117,7 +986,7 @@ sse_encode_String(status, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(prikey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23, port: port_);
             
             },
             codec: 
@@ -1143,7 +1012,7 @@ sse_encode_String(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(secretKey, serializer);
 sse_encode_list_prim_u_8_loose(message, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24, port: port_);
             
             },
             codec: 
@@ -1170,7 +1039,7 @@ sse_encode_list_prim_u_8_loose(message, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(publicKey, serializer);
 sse_encode_list_prim_u_8_loose(message, serializer);
 sse_encode_String(sig, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25, port: port_);
             
             },
             codec: 
@@ -1195,7 +1064,7 @@ sse_encode_String(sig, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(content, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
             
             },
             codec: 
@@ -1220,7 +1089,7 @@ sse_encode_String(sig, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27, port: port_);
             
             },
             codec: 
@@ -1241,36 +1110,11 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<InvoiceInfoV1> crateApiCashuV1DecodeInvoice({required String encodedInvoice })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_invoice_info_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1DecodeInvoiceConstMeta,
-            argValues: [encodedInvoice],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1DecodeInvoiceConstMeta => const TaskConstMeta(
-            debugName: "decode_invoice",
-            argNames: ["encodedInvoice"],
-        );
-        
-
 @override Future<TokenInfo> crateApiCashuDecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28, port: port_);
             
             },
             codec: 
@@ -1291,38 +1135,13 @@ sse_encode_String(sig, serializer);
         );
         
 
-@override Future<TokenInfoV1> crateApiCashuV1DecodeToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_token_info_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1DecodeTokenConstMeta,
-            argValues: [encodedToken],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1DecodeTokenConstMeta => const TaskConstMeta(
-            debugName: "decode_token",
-            argNames: ["encodedToken"],
-        );
-        
-
 @override Future<String> crateApiNostrDecrypt({required String senderKeys , required String receiverPubkey , required String content })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29, port: port_);
             
             },
             codec: 
@@ -1348,7 +1167,7 @@ sse_encode_String(content, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(json, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30, port: port_);
             
             },
             codec: 
@@ -1375,7 +1194,7 @@ sse_encode_String(json, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiver, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31, port: port_);
             
             },
             codec: 
@@ -1402,7 +1221,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(msg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32, port: port_);
             
             },
             codec: 
@@ -1429,7 +1248,7 @@ sse_encode_String(msg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(secretKey, serializer);
 sse_encode_String(publicKey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33, port: port_);
             
             },
             codec: 
@@ -1458,7 +1277,7 @@ sse_encode_list_prim_u_8_loose(ciphertext, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
 sse_encode_u_32(roomId, serializer);
 sse_encode_bool(isPrekey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 39, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34, port: port_);
             
             },
             codec: 
@@ -1484,7 +1303,7 @@ sse_encode_bool(isPrekey, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35, port: port_);
             
             },
             codec: 
@@ -1510,7 +1329,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36, port: port_);
             
             },
             codec: 
@@ -1536,7 +1355,7 @@ sse_encode_String(address, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(keyPackage, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37, port: port_);
             
             },
             codec: 
@@ -1562,7 +1381,7 @@ sse_encode_String(keyPackage, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 43, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38, port: port_);
             
             },
             codec: 
@@ -1588,7 +1407,7 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(deviceId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 44, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 39, port: port_);
             
             },
             codec: 
@@ -1614,7 +1433,7 @@ sse_encode_u_32(deviceId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hrp, serializer);
 sse_encode_String(data, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 45)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40)!;
             
             },
             codec: 
@@ -1641,7 +1460,7 @@ sse_encode_String(data, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 46, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41, port: port_);
             
             },
             codec: 
@@ -1668,7 +1487,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 47, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42, port: port_);
             
             },
             codec: 
@@ -1696,7 +1515,7 @@ sse_encode_String(content, serializer);
 sse_encode_String(ptext, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
 sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 48, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 43, port: port_);
             
             },
             codec: 
@@ -1723,7 +1542,7 @@ sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mnemonicWords, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_opt_box_autoadd_u_32(pos, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 49, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 44, port: port_);
             
             },
             codec: 
@@ -1748,7 +1567,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(password, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 50, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 45, port: port_);
             
             },
             codec: 
@@ -1773,7 +1592,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 51, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 46, port: port_);
             
             },
             codec: 
@@ -1798,7 +1617,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 52, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 47, port: port_);
             
             },
             codec: 
@@ -1823,7 +1642,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 48, port: port_);
             
             },
             codec: 
@@ -1848,7 +1667,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 54, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 49, port: port_);
             
             },
             codec: 
@@ -1873,7 +1692,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 55, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 50, port: port_);
             
             },
             codec: 
@@ -1898,7 +1717,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 56, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 51, port: port_);
             
             },
             codec: 
@@ -1924,7 +1743,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 57, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 52, port: port_);
             
             },
             codec: 
@@ -1949,7 +1768,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 58, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53, port: port_);
             
             },
             codec: 
@@ -1974,7 +1793,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 59, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 54, port: port_);
             
             },
             codec: 
@@ -1999,7 +1818,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 60, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 55, port: port_);
             
             },
             codec: 
@@ -2024,7 +1843,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 56, port: port_);
             
             },
             codec: 
@@ -2045,36 +1864,11 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<(bool,BigInt)> crateApiCashuV1GetBalance({required String mint })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_record_bool_u_64,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetBalanceConstMeta,
-            argValues: [mint],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetBalanceConstMeta => const TaskConstMeta(
-            debugName: "get_balance",
-            argNames: ["mint"],
-        );
-        
-
 @override Future<String> crateApiCashuGetBalances()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 57, port: port_);
             
             },
             codec: 
@@ -2095,36 +1889,11 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<String> crateApiCashuV1GetBalances()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetBalancesConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetBalancesConstMeta => const TaskConstMeta(
-            debugName: "get_balances",
-            argNames: [],
-        );
-        
-
 @override String crateApiNostrGetBech32PrikeyByHex({required String hex })  { return handler.executeSync(SyncTask(
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 58)!;
             
             },
             codec: 
@@ -2149,7 +1918,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 59)!;
             
             },
             codec: 
@@ -2174,7 +1943,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 60, port: port_);
             
             },
             codec: 
@@ -2195,37 +1964,12 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
-@override Future<List<CashuTransaction>> crateApiCashuV1GetCashuPendingTransactions()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_cashu_transaction,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetCashuPendingTransactionsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetCashuPendingTransactionsConstMeta => const TaskConstMeta(
-            debugName: "get_cashu_pending_transactions",
-            argNames: [],
-        );
-        
-
 @override Future<List<Transaction>> crateApiCashuGetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
             
             },
             codec: 
@@ -2246,32 +1990,6 @@ sse_encode_usize(limit, serializer);
         );
         
 
-@override Future<List<CashuTransaction>> crateApiCashuV1GetCashuTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
-sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_cashu_transaction,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetCashuTransactionsWithOffsetConstMeta,
-            argValues: [offset, limit],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetCashuTransactionsWithOffsetConstMeta => const TaskConstMeta(
-            debugName: "get_cashu_transactions_with_offset",
-            argNames: ["offset", "limit"],
-        );
-        
-
 @override Future<String> crateApiNostrGetEncryptEvent({required String senderKeys , required String receiverPubkey , required String content , String? reply })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
@@ -2279,7 +1997,7 @@ sse_encode_usize(limit, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
 sse_encode_opt_String(reply, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
             
             },
             codec: 
@@ -2305,7 +2023,7 @@ sse_encode_opt_String(reply, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
             
             },
             codec: 
@@ -2331,7 +2049,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64, port: port_);
             
             },
             codec: 
@@ -2357,7 +2075,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65, port: port_);
             
             },
             codec: 
@@ -2383,7 +2101,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66, port: port_);
             
             },
             codec: 
@@ -2408,7 +2126,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67)!;
             
             },
             codec: 
@@ -2433,7 +2151,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68)!;
             
             },
             codec: 
@@ -2458,7 +2176,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(prikey, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69)!;
             
             },
             codec: 
@@ -2484,7 +2202,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
             
             },
             codec: 
@@ -2511,7 +2229,7 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrIdAdmin, serializer);
 sse_encode_String(nostrIdCommon, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
             
             },
             codec: 
@@ -2537,7 +2255,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
             
             },
             codec: 
@@ -2562,7 +2280,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
             
             },
             codec: 
@@ -2583,37 +2301,12 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<LNTransaction>> crateApiCashuV1GetLnPendingTransactions()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 83, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_ln_transaction,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetLnPendingTransactionsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetLnPendingTransactionsConstMeta => const TaskConstMeta(
-            debugName: "get_ln_pending_transactions",
-            argNames: [],
-        );
-        
-
 @override Future<List<Transaction>> crateApiCashuGetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
             
             },
             codec: 
@@ -2634,38 +2327,12 @@ sse_encode_usize(limit, serializer);
         );
         
 
-@override Future<List<LNTransaction>> crateApiCashuV1GetLnTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
-sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_ln_transaction,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetLnTransactionsWithOffsetConstMeta,
-            argValues: [offset, limit],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetLnTransactionsWithOffsetConstMeta => const TaskConstMeta(
-            debugName: "get_ln_transactions_with_offset",
-            argNames: ["offset", "limit"],
-        );
-        
-
 @override Future<Map<String, List<Uint8List>>> crateApiMlsGetMemberExtension({required String nostrId , required String groupId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
             
             },
             codec: 
@@ -2690,7 +2357,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76, port: port_);
             
             },
             codec: 
@@ -2711,61 +2378,11 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<Mint>> crateApiCashuV1GetMints()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 88, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_mint,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetMintsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetMintsConstMeta => const TaskConstMeta(
-            debugName: "get_mints",
-            argNames: [],
-        );
-        
-
-@override Future<List<TransactionV1>> crateApiCashuV1GetPendingTransactions()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetPendingTransactionsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetPendingTransactionsConstMeta => const TaskConstMeta(
-            debugName: "get_pending_transactions",
-            argNames: [],
-        );
-        
-
 @override Future<BigInt> crateApiCashuGetPendingTransactionsCount()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77, port: port_);
             
             },
             codec: 
@@ -2786,37 +2403,12 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuV1GetPendingTransactionsCount()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_u_64,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetPendingTransactionsCountConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetPendingTransactionsCountConstMeta => const TaskConstMeta(
-            debugName: "get_pending_transactions_count",
-            argNames: [],
-        );
-        
-
 @override Future<Uint8List> crateApiSignalGetPrekeyApi({required KeychatIdentityKeyPair keyPair , required int prekeyId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(prekeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78, port: port_);
             
             },
             codec: 
@@ -2843,7 +2435,7 @@ sse_encode_u_32(prekeyId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
             
             },
             codec: 
@@ -2870,7 +2462,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80, port: port_);
             
             },
             codec: 
@@ -2896,7 +2488,7 @@ sse_encode_String(deviceId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedKeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81, port: port_);
             
             },
             codec: 
@@ -2917,63 +2509,12 @@ sse_encode_u_32(signedKeyId, serializer);
         );
         
 
-@override Future<List<TransactionV1>> crateApiCashuV1GetTransactions()  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 96, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetTransactionsConstMeta,
-            argValues: [],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetTransactionsConstMeta => const TaskConstMeta(
-            debugName: "get_transactions",
-            argNames: [],
-        );
-        
-
-@override Future<List<TransactionV1>> crateApiCashuV1GetTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
-sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1GetTransactionsWithOffsetConstMeta,
-            argValues: [offset, limit],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1GetTransactionsWithOffsetConstMeta => const TaskConstMeta(
-            debugName: "get_transactions_with_offset",
-            argNames: ["offset", "limit"],
-        );
-        
-
 @override Future<Uint8List> crateApiMlsGetTreeHash({required String nostrId , required String groupId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
             
             },
             codec: 
@@ -3002,7 +2543,7 @@ sse_encode_list_String(receiverPubkeys, serializer);
 sse_encode_String(content, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 83, port: port_);
             
             },
             codec: 
@@ -3030,7 +2571,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
 sse_encode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(mintAmounts, serializer);
 sse_encode_usize(mintNumber, serializer);
 sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(unit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
             
             },
             codec: 
@@ -3057,7 +2598,7 @@ sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueI
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(phrase, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_opt_box_autoadd_u_32(account, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
             
             },
             codec: 
@@ -3085,7 +2626,7 @@ sse_encode_opt_box_autoadd_u_32(account, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_u_32(offset, serializer);
 sse_encode_u_32(count, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
             
             },
             codec: 
@@ -3110,7 +2651,7 @@ sse_encode_u_32(count, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
             
             },
             codec: 
@@ -3137,7 +2678,7 @@ sse_encode_u_32(count, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(regId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 88, port: port_);
             
             },
             codec: 
@@ -3158,16 +2699,16 @@ sse_encode_u_32(regId, serializer);
         );
         
 
-@override Future<List<String>> crateApiCashuInitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
+@override Future<List<Mint>> crateApiCashuInitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_16(prepareSatsOnceTime, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_String,
+          decodeSuccessData: sse_decode_list_mint,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3183,38 +2724,13 @@ sse_encode_u_32(regId, serializer);
         );
         
 
-@override Future<List<Mint>> crateApiCashuV1InitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_16(prepareSatsOnceTime, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_mint,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1InitCashuConstMeta,
-            argValues: [prepareSatsOnceTime],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1InitCashuConstMeta => const TaskConstMeta(
-            debugName: "init_cashu",
-            argNames: ["prepareSatsOnceTime"],
-        );
-        
-
 @override Future<void> crateApiCashuInitDb({required String dbpath , required String words , required bool dev })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
 sse_encode_String(words, serializer);
 sse_encode_bool(dev, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
             
             },
             codec: 
@@ -3235,39 +2751,12 @@ sse_encode_bool(dev, serializer);
         );
         
 
-@override Future<void> crateApiCashuV1InitDb({required String dbpath , String? words , required bool dev })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
-sse_encode_opt_String(words, serializer);
-sse_encode_bool(dev, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1InitDbConstMeta,
-            argValues: [dbpath, words, dev],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1InitDbConstMeta => const TaskConstMeta(
-            debugName: "init_db",
-            argNames: ["dbpath", "words", "dev"],
-        );
-        
-
 @override Future<void> crateApiSignalInitKeypair({required KeychatIdentityKeyPair keyPair , required int regId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(regId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
             
             },
             codec: 
@@ -3293,7 +2782,7 @@ sse_encode_u_32(regId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_String(nostrId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
             
             },
             codec: 
@@ -3318,7 +2807,7 @@ sse_encode_String(nostrId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93, port: port_);
             
             },
             codec: 
@@ -3345,7 +2834,7 @@ sse_encode_String(nostrId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(welcome, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94, port: port_);
             
             },
             codec: 
@@ -3372,7 +2861,7 @@ sse_encode_list_prim_u_8_loose(welcome, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_box_autoadd_u_64(amount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95, port: port_);
             
             },
             codec: 
@@ -3393,38 +2882,11 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         );
         
 
-@override Future<TransactionV1> crateApiCashuV1Melt({required String invoice , required String activeMint , BigInt? amount })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
-sse_encode_String(activeMint, serializer);
-sse_encode_opt_box_autoadd_u_64(amount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 114, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1MeltConstMeta,
-            argValues: [invoice, activeMint, amount],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1MeltConstMeta => const TaskConstMeta(
-            debugName: "melt",
-            argNames: ["invoice", "activeMint", "amount"],
-        );
-        
-
 @override Future<void> crateApiCashuMergeProofs({required BigInt thershold })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(thershold, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 96, port: port_);
             
             },
             codec: 
@@ -3445,13 +2907,38 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         );
         
 
+@override Future<MintInfo> crateApiCashuTypesMintInfoDefault()  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_mint_info,
+          decodeErrorData: null,
+        )
+        ,
+            constMeta: kCrateApiCashuTypesMintInfoDefaultConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuTypesMintInfoDefaultConstMeta => const TaskConstMeta(
+            debugName: "mint_info_default",
+            argNames: [],
+        );
+        
+
 @override Future<Transaction> crateApiCashuMintToken({required BigInt amount , required String quoteId , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(quoteId, serializer);
 sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 116, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
             
             },
             codec: 
@@ -3472,38 +2959,11 @@ sse_encode_String(activeMint, serializer);
         );
         
 
-@override Future<TransactionV1> crateApiCashuV1MintToken({required BigInt amount , required String hash , required String activeMint })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_String(hash, serializer);
-sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1MintTokenConstMeta,
-            argValues: [amount, hash, activeMint],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1MintTokenConstMeta => const TaskConstMeta(
-            debugName: "mint_token",
-            argNames: ["amount", "hash", "activeMint"],
-        );
-        
-
 @override Future<void> crateApiCashuMultiReceive({required List<String> stamps })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_String(stamps, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
             
             },
             codec: 
@@ -3531,7 +2991,7 @@ sse_encode_String(activeMint, serializer);
 sse_encode_String(relay, serializer);
 sse_encode_String(secret, serializer);
 sse_encode_opt_String(lud16, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
             
             },
             codec: 
@@ -3556,7 +3016,7 @@ sse_encode_opt_String(lud16, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(request, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
             
             },
             codec: 
@@ -3583,7 +3043,7 @@ sse_encode_opt_String(lud16, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
             
             },
             codec: 
@@ -3610,7 +3070,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
             
             },
             codec: 
@@ -3637,7 +3097,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
             
             },
             codec: 
@@ -3662,7 +3122,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
             
             },
             codec: 
@@ -3687,7 +3147,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
             
             },
             codec: 
@@ -3713,7 +3173,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(keyPackageHex, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
             
             },
             codec: 
@@ -3740,7 +3200,7 @@ sse_encode_String(keyPackageHex, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
             
             },
             codec: 
@@ -3766,7 +3226,7 @@ sse_encode_String(data, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
             
             },
             codec: 
@@ -3791,7 +3251,7 @@ sse_encode_String(mint, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
             
             },
             codec: 
@@ -3825,7 +3285,7 @@ sse_encode_list_prim_u_8_loose(bobSignedPublic, serializer);
 sse_encode_list_prim_u_8_loose(bobSigedSig, serializer);
 sse_encode_u_32(bobPrekeyId, serializer);
 sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
             
             },
             codec: 
@@ -3850,7 +3310,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
             
             },
             codec: 
@@ -3871,38 +3331,13 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
         );
         
 
-@override Future<List<TransactionV1>> crateApiCashuV1ReceiveToken({required String encodedToken })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_list_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1ReceiveTokenConstMeta,
-            argValues: [encodedToken],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1ReceiveTokenConstMeta => const TaskConstMeta(
-            debugName: "receive_token",
-            argNames: ["encodedToken"],
-        );
-        
-
 @override Future<String> crateApiMlsRemoveMembers({required String nostrId , required String groupId , required List<Uint8List> members })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_list_prim_u_8_strict(members, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
             
             },
             codec: 
@@ -3927,7 +3362,7 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 114, port: port_);
             
             },
             codec: 
@@ -3948,37 +3383,12 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
         );
         
 
-@override Future<String?> crateApiCashuV1RemoveMint({required String url })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 135, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_opt_String,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1RemoveMintConstMeta,
-            argValues: [url],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1RemoveMintConstMeta => const TaskConstMeta(
-            debugName: "remove_mint",
-            argNames: ["url"],
-        );
-        
-
 @override Future<void> crateApiCashuRemoveTransactions({required BigInt unixTimestampLe , required TransactionStatus status })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampLe, serializer);
 sse_encode_transaction_status(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
             
             },
             codec: 
@@ -3999,38 +3409,12 @@ sse_encode_transaction_status(status, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuV1RemoveTransactions({required BigInt unixTimestampMsLe , required TransactionStatusV1 kind })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampMsLe, serializer);
-sse_encode_transaction_status_v_1(kind, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_u_64,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1RemoveTransactionsConstMeta,
-            argValues: [unixTimestampMsLe, kind],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1RemoveTransactionsConstMeta => const TaskConstMeta(
-            debugName: "remove_transactions",
-            argNames: ["unixTimestampMsLe", "kind"],
-        );
-        
-
 @override Future<String> crateApiCashuRequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 138, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 116, port: port_);
             
             },
             codec: 
@@ -4051,38 +3435,12 @@ sse_encode_String(activeMint, serializer);
         );
         
 
-@override Future<TransactionV1> crateApiCashuV1RequestMint({required BigInt amount , required String activeMint })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 139, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1RequestMintConstMeta,
-            argValues: [amount, activeMint],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1RequestMintConstMeta => const TaskConstMeta(
-            debugName: "request_mint",
-            argNames: ["amount", "activeMint"],
-        );
-        
-
 @override Future<(BigInt,BigInt)> crateApiCashuRestore({required String mintUrl , String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mintUrl, serializer);
 sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 140, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
             
             },
             codec: 
@@ -4103,39 +3461,12 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<(BigInt,BigInt)> crateApiCashuV1Restore({required String mint , String? words , required BigInt sleepmsAfterCheckABatch })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-sse_encode_opt_String(words, serializer);
-sse_encode_u_64(sleepmsAfterCheckABatch, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 141, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_record_u_64_usize,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1RestoreConstMeta,
-            argValues: [mint, words, sleepmsAfterCheckABatch],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1RestoreConstMeta => const TaskConstMeta(
-            debugName: "restore",
-            argNames: ["mint", "words", "sleepmsAfterCheckABatch"],
-        );
-        
-
 @override Future<void> crateApiMlsSelfCommit({required String nostrId , required String groupId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 142, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
             
             },
             codec: 
@@ -4161,7 +3492,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 143, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
             
             },
             codec: 
@@ -4188,7 +3519,7 @@ sse_encode_String(groupId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(extensions, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 144, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
             
             },
             codec: 
@@ -4215,7 +3546,7 @@ sse_encode_list_prim_u_8_loose(extensions, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 145, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
             
             },
             codec: 
@@ -4236,38 +3567,11 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<TransactionV1> crateApiCashuV1Send({required BigInt amount , required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_String(activeMint, serializer);
-sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 146, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1SendConstMeta,
-            argValues: [amount, activeMint, info],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1SendConstMeta => const TaskConstMeta(
-            debugName: "send",
-            argNames: ["amount", "activeMint", "info"],
-        );
-        
-
 @override Future<Transaction> crateApiCashuSendAll({required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 147, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
             
             },
             codec: 
@@ -4288,39 +3592,13 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<TransactionV1> crateApiCashuV1SendAll({required String activeMint , String? info })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(activeMint, serializer);
-sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 148, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1SendAllConstMeta,
-            argValues: [activeMint, info],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1SendAllConstMeta => const TaskConstMeta(
-            debugName: "send_all",
-            argNames: ["activeMint", "info"],
-        );
-        
-
 @override Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_list_String(mints, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 149, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
             
             },
             codec: 
@@ -4341,39 +3619,12 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<TransactionV1> crateApiCashuV1SendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_list_String(mints, serializer);
-sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 150, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_transaction_v_1,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1SendStampConstMeta,
-            argValues: [amount, mints, info],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1SendStampConstMeta => const TaskConstMeta(
-            debugName: "send_stamp",
-            argNames: ["amount", "mints", "info"],
-        );
-        
-
 @override Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 151, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
             
             },
             codec: 
@@ -4398,7 +3649,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 152, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
             
             },
             codec: 
@@ -4419,36 +3670,11 @@ sse_encode_String(address, serializer);
         );
         
 
-@override Future<bool> crateApiCashuV1SetMnemonic({String? words })  { return handler.executeNormal(NormalTask(
-            callFfi: (port_) {
-              
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 153, port: port_);
-            
-            },
-            codec: 
-        SseCodec(
-          decodeSuccessData: sse_decode_bool,
-          decodeErrorData: sse_decode_AnyhowException,
-        )
-        ,
-            constMeta: kCrateApiCashuV1SetMnemonicConstMeta,
-            argValues: [words],
-            apiImpl: this,
-        )); }
-
-
-        TaskConstMeta get kCrateApiCashuV1SetMnemonicConstMeta => const TaskConstMeta(
-            debugName: "set_mnemonic",
-            argNames: ["words"],
-        );
-        
-
 @override Future<String> crateApiNostrSha1Hash({required String data })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 154, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
             
             },
             codec: 
@@ -4473,7 +3699,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 155, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
             
             },
             codec: 
@@ -4498,7 +3724,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 156, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
             
             },
             codec: 
@@ -4527,7 +3753,7 @@ sse_encode_String(content, serializer);
 sse_encode_u_64(createdAt, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_list_list_String(tags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 157, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
             
             },
             codec: 
@@ -4553,7 +3779,7 @@ sse_encode_list_list_String(tags, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(privateKey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 158, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
             
             },
             codec: 
@@ -4580,7 +3806,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(prekeyId, serializer);
 sse_encode_list_prim_u_8_loose(record, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 159, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
             
             },
             codec: 
@@ -4607,7 +3833,7 @@ sse_encode_list_prim_u_8_loose(record, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedKeyId, serializer);
 sse_encode_list_prim_u_8_loose(record, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 160, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
             
             },
             codec: 
@@ -4635,7 +3861,7 @@ sse_encode_list_prim_u_8_loose(record, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
 sse_encode_String(aliceAddr, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 161, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
             
             },
             codec: 
@@ -4666,7 +3892,7 @@ sse_encode_opt_String(description, serializer);
 sse_encode_opt_list_String(adminPubkeysHex, serializer);
 sse_encode_opt_list_String(groupRelays, serializer);
 sse_encode_opt_String(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 162, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
             
             },
             codec: 
@@ -4692,7 +3918,7 @@ sse_encode_opt_String(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(mintNumber, serializer);
 sse_encode_usize(mintCount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 163, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 135, port: port_);
             
             },
             codec: 
@@ -4717,7 +3943,7 @@ sse_encode_usize(mintCount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(json, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 164, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
             
             },
             codec: 
@@ -4745,7 +3971,7 @@ sse_encode_usize(mintCount, serializer);
 sse_encode_String(sig, serializer);
 sse_encode_String(content, serializer);
 sse_encode_bool(hash, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 165, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
             
             },
             codec: 
@@ -4826,6 +4052,9 @@ return MultiMintWalletImpl.frbInternalDcoDecode(raw as List<dynamic>); }
 @protected Map<String, String> dco_decode_Map_String_String_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return Map.fromEntries(dco_decode_list_record_string_string(raw).map((e) => MapEntry(e.$1, e.$2))); }
 
+@protected Map<String, bool> dco_decode_Map_String_bool_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return Map.fromEntries(dco_decode_list_record_string_bool(raw).map((e) => MapEntry(e.$1, e.$2))); }
+
 @protected Map<String, List<Uint8List>> dco_decode_Map_String_list_list_prim_u_8_strict_None(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return Map.fromEntries(dco_decode_list_record_string_list_list_prim_u_8_strict(raw).map((e) => MapEntry(e.$1, e.$2))); }
 
@@ -4874,9 +4103,6 @@ return dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAuto
 @protected bool dco_decode_box_autoadd_bool(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as bool; }
 
-@protected CashuTransaction dco_decode_box_autoadd_cashu_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return dco_decode_cashu_transaction(raw); }
-
 @protected KeychatIdentityKey dco_decode_box_autoadd_keychat_identity_key(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return dco_decode_keychat_identity_key(raw); }
 
@@ -4889,9 +4115,6 @@ return dco_decode_keychat_protocol_address(raw); }
 @protected KeychatSignalSession dco_decode_box_autoadd_keychat_signal_session(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return dco_decode_keychat_signal_session(raw); }
 
-@protected LNTransaction dco_decode_box_autoadd_ln_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return dco_decode_ln_transaction(raw); }
-
 @protected MintInfo dco_decode_box_autoadd_mint_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return dco_decode_mint_info(raw); }
 
@@ -4900,20 +4123,6 @@ return raw as int; }
 
 @protected BigInt dco_decode_box_autoadd_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return dco_decode_u_64(raw); }
-
-@protected CashuTransaction dco_decode_cashu_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
-                return CashuTransaction(id: dco_decode_String(arr[0]),
-status: dco_decode_transaction_status_v_1(arr[1]),
-io: dco_decode_transaction_direction_v_1(arr[2]),
-info: dco_decode_opt_String(arr[3]),
-time: dco_decode_u_64(arr[4]),
-amount: dco_decode_u_64(arr[5]),
-fee: dco_decode_opt_box_autoadd_u_64(arr[6]),
-mint: dco_decode_String(arr[7]),
-token: dco_decode_String(arr[8]),
-unit: dco_decode_opt_String(arr[9]),); }
 
 @protected CommitResult dco_decode_commit_result(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -4950,9 +4159,6 @@ status: dco_decode_list_prim_u_8_strict(arr[4]),); }
 @protected int dco_decode_i_32(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as int; }
 
-@protected PlatformInt64 dco_decode_i_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return dcoDecodeI64(raw); }
-
 @protected InvoiceInfo dco_decode_invoice_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 6) throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
@@ -4963,21 +4169,8 @@ memo: dco_decode_opt_String(arr[3]),
 mint: dco_decode_opt_String(arr[4]),
 status: dco_decode_invoice_status(arr[5]),); }
 
-@protected InvoiceInfoV1 dco_decode_invoice_info_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 6) throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
-                return InvoiceInfoV1(amount: dco_decode_u_64(arr[0]),
-expiryTs: dco_decode_u_64(arr[1]),
-hash: dco_decode_String(arr[2]),
-memo: dco_decode_opt_String(arr[3]),
-mint: dco_decode_opt_String(arr[4]),
-status: dco_decode_invoice_status_v_1(arr[5]),); }
-
 @protected InvoiceStatus dco_decode_invoice_status(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return InvoiceStatus.values[raw as int]; }
-
-@protected InvoiceStatusV1 dco_decode_invoice_status_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return InvoiceStatusV1.values[raw as int]; }
 
 @protected KeyPackageResult dco_decode_key_package_result(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5018,9 +4211,6 @@ aliceAddresses: dco_decode_opt_String(arr[6]),); }
 @protected List<String> dco_decode_list_String(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_String).toList(); }
 
-@protected List<CashuTransaction> dco_decode_list_cashu_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_cashu_transaction).toList(); }
-
 @protected List<Contact> dco_decode_list_contact(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_contact).toList(); }
 
@@ -5030,14 +4220,8 @@ return (raw as List<dynamic>).map(dco_decode_list_String).toList(); }
 @protected List<Uint8List> dco_decode_list_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_list_prim_u_8_strict).toList(); }
 
-@protected List<LNTransaction> dco_decode_list_ln_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_ln_transaction).toList(); }
-
 @protected List<Mint> dco_decode_list_mint(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_mint).toList(); }
-
-@protected List<PaymentMethod> dco_decode_list_payment_method(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_payment_method).toList(); }
 
 @protected List<int> dco_decode_list_prim_u_8_loose(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as List<int>; }
@@ -5047,6 +4231,9 @@ return raw as Uint8List; }
 
 @protected List<(MintUrl,Amount)> dco_decode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount).toList(); }
+
+@protected List<(String,bool)> dco_decode_list_record_string_bool(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+return (raw as List<dynamic>).map(dco_decode_record_string_bool).toList(); }
 
 @protected List<(String,List<Uint8List>)> dco_decode_list_record_string_list_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_record_string_list_list_prim_u_8_strict).toList(); }
@@ -5065,23 +4252,6 @@ return (raw as List<dynamic>).map(dco_decode_secp_256_k_1_account).toList(); }
 
 @protected List<Transaction> dco_decode_list_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_transaction).toList(); }
-
-@protected List<TransactionV1> dco_decode_list_transaction_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return (raw as List<dynamic>).map(dco_decode_transaction_v_1).toList(); }
-
-@protected LNTransaction dco_decode_ln_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 10) throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
-                return LNTransaction(status: dco_decode_transaction_status_v_1(arr[0]),
-io: dco_decode_transaction_direction_v_1(arr[1]),
-info: dco_decode_opt_String(arr[2]),
-time: dco_decode_u_64(arr[3]),
-amount: dco_decode_u_64(arr[4]),
-fee: dco_decode_opt_box_autoadd_u_64(arr[5]),
-mint: dco_decode_String(arr[6]),
-pr: dco_decode_String(arr[7]),
-hash: dco_decode_String(arr[8]),
-unit: dco_decode_opt_String(arr[9]),); }
 
 @protected MessageInType dco_decode_message_in_type(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return MessageInType.values[raw as int]; }
@@ -5110,7 +4280,7 @@ description: dco_decode_opt_String(arr[3]),
 descriptionLong: dco_decode_opt_String(arr[4]),
 motd: dco_decode_opt_String(arr[5]),
 contact: dco_decode_list_contact(arr[6]),
-nuts: dco_decode_nuts(arr[7]),); }
+nuts: dco_decode_Map_String_bool_None(arr[7]),); }
 
 @protected NostrEvent dco_decode_nostr_event(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5122,23 +4292,6 @@ kind: dco_decode_u_16(arr[3]),
 tags: dco_decode_list_list_String(arr[4]),
 content: dco_decode_String(arr[5]),
 sig: dco_decode_String(arr[6]),); }
-
-@protected NutSupported dco_decode_nut_supported(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 1) throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-                return NutSupported(supported: dco_decode_bool(arr[0]),); }
-
-@protected Nuts dco_decode_nuts(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 8) throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
-                return Nuts(nut04: dco_decode_payment_method_settings(arr[0]),
-nut05: dco_decode_payment_method_settings(arr[1]),
-nut07: dco_decode_nut_supported(arr[2]),
-nut08: dco_decode_nut_supported(arr[3]),
-nut09: dco_decode_nut_supported(arr[4]),
-nut10: dco_decode_nut_supported(arr[5]),
-nut11: dco_decode_nut_supported(arr[6]),
-nut12: dco_decode_nut_supported(arr[7]),); }
 
 @protected String? dco_decode_opt_String(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_String(raw); }
@@ -5173,33 +4326,12 @@ return raw == null ? null : dco_decode_list_list_String(raw); }
 @protected Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_list_prim_u_8_strict(raw); }
 
-@protected PaymentMethod dco_decode_payment_method(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-                return PaymentMethod(method: dco_decode_String(arr[0]),
-unit: dco_decode_String(arr[1]),
-minAmount: dco_decode_i_64(arr[2]),
-maxAmount: dco_decode_i_64(arr[3]),); }
-
-@protected PaymentMethodSettings dco_decode_payment_method_settings(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 2) throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-                return PaymentMethodSettings(methods: dco_decode_list_payment_method(arr[0]),
-disabled: dco_decode_bool(arr[1]),); }
-
 @protected (MintUrl,Amount) dco_decode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
             if (arr.length != 2) {
                 throw Exception('Expected 2 elements, got ${arr.length}');
             }
             return (dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(arr[0]),dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(arr[1]),); }
-
-@protected (bool,BigInt) dco_decode_record_bool_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-            if (arr.length != 2) {
-                throw Exception('Expected 2 elements, got ${arr.length}');
-            }
-            return (dco_decode_bool(arr[0]),dco_decode_u_64(arr[1]),); }
 
 @protected (Uint8List,Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5221,6 +4353,13 @@ final arr = raw as List<dynamic>;
                 throw Exception('Expected 3 elements, got ${arr.length}');
             }
             return (dco_decode_list_prim_u_8_strict(arr[0]),dco_decode_String(arr[1]),dco_decode_opt_list_String(arr[2]),); }
+
+@protected (String,bool) dco_decode_record_string_bool(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 2) {
+                throw Exception('Expected 2 elements, got ${arr.length}');
+            }
+            return (dco_decode_String(arr[0]),dco_decode_bool(arr[1]),); }
 
 @protected (String,List<Uint8List>) dco_decode_record_string_list_list_prim_u_8_strict(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -5285,20 +4424,6 @@ final arr = raw as List<dynamic>;
             }
             return (dco_decode_u_64(arr[0]),dco_decode_u_64(arr[1]),dco_decode_u_64(arr[2]),); }
 
-@protected (BigInt,BigInt) dco_decode_record_u_64_usize(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-            if (arr.length != 2) {
-                throw Exception('Expected 2 elements, got ${arr.length}');
-            }
-            return (dco_decode_u_64(arr[0]),dco_decode_usize(arr[1]),); }
-
-@protected (BigInt,BigInt) dco_decode_record_usize_usize(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-            if (arr.length != 2) {
-                throw Exception('Expected 2 elements, got ${arr.length}');
-            }
-            return (dco_decode_usize(arr[0]),dco_decode_usize(arr[1]),); }
-
 @protected (BigInt,BigInt,BigInt) dco_decode_record_usize_usize_usize(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
             if (arr.length != 3) {
@@ -5333,14 +4458,6 @@ amount: dco_decode_u_64(arr[1]),
 unit: dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(arr[2]),
 memo: dco_decode_opt_String(arr[3]),); }
 
-@protected TokenInfoV1 dco_decode_token_info_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-final arr = raw as List<dynamic>;
-                if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-                return TokenInfoV1(mint: dco_decode_String(arr[0]),
-amount: dco_decode_u_64(arr[1]),
-unit: dco_decode_opt_String(arr[2]),
-memo: dco_decode_opt_String(arr[3]),); }
-
 @protected Transaction dco_decode_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 11) throw Exception('unexpected arr length: expect 11 but see ${arr.length}');
@@ -5359,24 +4476,11 @@ metadata: dco_decode_Map_String_String_None(arr[10]),); }
 @protected TransactionDirection dco_decode_transaction_direction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return TransactionDirection.values[raw as int]; }
 
-@protected TransactionDirectionV1 dco_decode_transaction_direction_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionDirectionV1.values[raw as int]; }
-
 @protected TransactionKind dco_decode_transaction_kind(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return TransactionKind.values[raw as int]; }
 
 @protected TransactionStatus dco_decode_transaction_status(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return TransactionStatus.values[raw as int]; }
-
-@protected TransactionStatusV1 dco_decode_transaction_status_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return TransactionStatusV1.values[raw as int]; }
-
-@protected TransactionV1 dco_decode_transaction_v_1(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-switch (raw[0]) {
-                case 0: return TransactionV1_Cashu(dco_decode_box_autoadd_cashu_transaction(raw[1]),);
-case 1: return TransactionV1_LN(dco_decode_box_autoadd_ln_transaction(raw[1]),);
-                default: throw Exception("unreachable");
-            } }
 
 @protected int dco_decode_u_16(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as int; }
@@ -5434,6 +4538,10 @@ return MultiMintWalletImpl.frbInternalSseDecode(sse_decode_usize(deserializer), 
 var inner = sse_decode_list_record_string_string(deserializer);
         return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
 
+@protected Map<String, bool> sse_decode_Map_String_bool_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var inner = sse_decode_list_record_string_bool(deserializer);
+        return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
+
 @protected Map<String, List<Uint8List>> sse_decode_Map_String_list_list_prim_u_8_strict_None(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_list_record_string_list_list_prim_u_8_strict(deserializer);
         return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2))); }
@@ -5485,9 +4593,6 @@ return (sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAut
 @protected bool sse_decode_box_autoadd_bool(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_bool(deserializer)); }
 
-@protected CashuTransaction sse_decode_box_autoadd_cashu_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return (sse_decode_cashu_transaction(deserializer)); }
-
 @protected KeychatIdentityKey sse_decode_box_autoadd_keychat_identity_key(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_keychat_identity_key(deserializer)); }
 
@@ -5500,9 +4605,6 @@ return (sse_decode_keychat_protocol_address(deserializer)); }
 @protected KeychatSignalSession sse_decode_box_autoadd_keychat_signal_session(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_keychat_signal_session(deserializer)); }
 
-@protected LNTransaction sse_decode_box_autoadd_ln_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return (sse_decode_ln_transaction(deserializer)); }
-
 @protected MintInfo sse_decode_box_autoadd_mint_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_mint_info(deserializer)); }
 
@@ -5511,19 +4613,6 @@ return (sse_decode_u_32(deserializer)); }
 
 @protected BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_u_64(deserializer)); }
-
-@protected CashuTransaction sse_decode_cashu_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_id = sse_decode_String(deserializer);
-var var_status = sse_decode_transaction_status_v_1(deserializer);
-var var_io = sse_decode_transaction_direction_v_1(deserializer);
-var var_info = sse_decode_opt_String(deserializer);
-var var_time = sse_decode_u_64(deserializer);
-var var_amount = sse_decode_u_64(deserializer);
-var var_fee = sse_decode_opt_box_autoadd_u_64(deserializer);
-var var_mint = sse_decode_String(deserializer);
-var var_token = sse_decode_String(deserializer);
-var var_unit = sse_decode_opt_String(deserializer);
-return CashuTransaction(id: var_id, status: var_status, io: var_io, info: var_info, time: var_time, amount: var_amount, fee: var_fee, mint: var_mint, token: var_token, unit: var_unit); }
 
 @protected CommitResult sse_decode_commit_result(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_sender = sse_decode_String(deserializer);
@@ -5557,9 +4646,6 @@ return GroupExtensionResult(name: var_name, description: var_description, adminP
 @protected int sse_decode_i_32(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return deserializer.buffer.getInt32(); }
 
-@protected PlatformInt64 sse_decode_i_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return deserializer.buffer.getPlatformInt64(); }
-
 @protected InvoiceInfo sse_decode_invoice_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_amount = sse_decode_u_64(deserializer);
 var var_expiryTs = sse_decode_u_64(deserializer);
@@ -5569,22 +4655,9 @@ var var_mint = sse_decode_opt_String(deserializer);
 var var_status = sse_decode_invoice_status(deserializer);
 return InvoiceInfo(amount: var_amount, expiryTs: var_expiryTs, hash: var_hash, memo: var_memo, mint: var_mint, status: var_status); }
 
-@protected InvoiceInfoV1 sse_decode_invoice_info_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_amount = sse_decode_u_64(deserializer);
-var var_expiryTs = sse_decode_u_64(deserializer);
-var var_hash = sse_decode_String(deserializer);
-var var_memo = sse_decode_opt_String(deserializer);
-var var_mint = sse_decode_opt_String(deserializer);
-var var_status = sse_decode_invoice_status_v_1(deserializer);
-return InvoiceInfoV1(amount: var_amount, expiryTs: var_expiryTs, hash: var_hash, memo: var_memo, mint: var_mint, status: var_status); }
-
 @protected InvoiceStatus sse_decode_invoice_status(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
         return InvoiceStatus.values[inner]; }
-
-@protected InvoiceStatusV1 sse_decode_invoice_status_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var inner = sse_decode_i_32(deserializer);
-        return InvoiceStatusV1.values[inner]; }
 
 @protected KeyPackageResult sse_decode_key_package_result(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_keyPackage = sse_decode_String(deserializer);
@@ -5625,14 +4698,6 @@ return KeychatSignalSession(aliceSenderRatchetKey: var_aliceSenderRatchetKey, ad
         return ans_;
          }
 
-@protected List<CashuTransaction> sse_decode_list_cashu_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-        var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <CashuTransaction>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_cashu_transaction(deserializer)); }
-        return ans_;
-         }
-
 @protected List<Contact> sse_decode_list_contact(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
@@ -5657,27 +4722,11 @@ return KeychatSignalSession(aliceSenderRatchetKey: var_aliceSenderRatchetKey, ad
         return ans_;
          }
 
-@protected List<LNTransaction> sse_decode_list_ln_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-        var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <LNTransaction>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_ln_transaction(deserializer)); }
-        return ans_;
-         }
-
 @protected List<Mint> sse_decode_list_mint(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
         var len_ = sse_decode_i_32(deserializer);
         var ans_ = <Mint>[];
         for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_mint(deserializer)); }
-        return ans_;
-         }
-
-@protected List<PaymentMethod> sse_decode_list_payment_method(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-        var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <PaymentMethod>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_payment_method(deserializer)); }
         return ans_;
          }
 
@@ -5694,6 +4743,14 @@ var len_ = sse_decode_i_32(deserializer);
         var len_ = sse_decode_i_32(deserializer);
         var ans_ = <(MintUrl,Amount)>[];
         for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(deserializer)); }
+        return ans_;
+         }
+
+@protected List<(String,bool)> sse_decode_list_record_string_bool(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+
+        var len_ = sse_decode_i_32(deserializer);
+        var ans_ = <(String,bool)>[];
+        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_record_string_bool(deserializer)); }
         return ans_;
          }
 
@@ -5745,27 +4802,6 @@ var len_ = sse_decode_i_32(deserializer);
         return ans_;
          }
 
-@protected List<TransactionV1> sse_decode_list_transaction_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-        var len_ = sse_decode_i_32(deserializer);
-        var ans_ = <TransactionV1>[];
-        for (var idx_ = 0; idx_ < len_; ++idx_) { ans_.add(sse_decode_transaction_v_1(deserializer)); }
-        return ans_;
-         }
-
-@protected LNTransaction sse_decode_ln_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_status = sse_decode_transaction_status_v_1(deserializer);
-var var_io = sse_decode_transaction_direction_v_1(deserializer);
-var var_info = sse_decode_opt_String(deserializer);
-var var_time = sse_decode_u_64(deserializer);
-var var_amount = sse_decode_u_64(deserializer);
-var var_fee = sse_decode_opt_box_autoadd_u_64(deserializer);
-var var_mint = sse_decode_String(deserializer);
-var var_pr = sse_decode_String(deserializer);
-var var_hash = sse_decode_String(deserializer);
-var var_unit = sse_decode_opt_String(deserializer);
-return LNTransaction(status: var_status, io: var_io, info: var_info, time: var_time, amount: var_amount, fee: var_fee, mint: var_mint, pr: var_pr, hash: var_hash, unit: var_unit); }
-
 @protected MessageInType sse_decode_message_in_type(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
         return MessageInType.values[inner]; }
@@ -5790,7 +4826,7 @@ var var_description = sse_decode_opt_String(deserializer);
 var var_descriptionLong = sse_decode_opt_String(deserializer);
 var var_motd = sse_decode_opt_String(deserializer);
 var var_contact = sse_decode_list_contact(deserializer);
-var var_nuts = sse_decode_nuts(deserializer);
+var var_nuts = sse_decode_Map_String_bool_None(deserializer);
 return MintInfo(name: var_name, version: var_version, pubkey: var_pubkey, description: var_description, descriptionLong: var_descriptionLong, motd: var_motd, contact: var_contact, nuts: var_nuts); }
 
 @protected NostrEvent sse_decode_nostr_event(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -5802,21 +4838,6 @@ var var_tags = sse_decode_list_list_String(deserializer);
 var var_content = sse_decode_String(deserializer);
 var var_sig = sse_decode_String(deserializer);
 return NostrEvent(id: var_id, pubkey: var_pubkey, createdAt: var_createdAt, kind: var_kind, tags: var_tags, content: var_content, sig: var_sig); }
-
-@protected NutSupported sse_decode_nut_supported(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_supported = sse_decode_bool(deserializer);
-return NutSupported(supported: var_supported); }
-
-@protected Nuts sse_decode_nuts(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_nut04 = sse_decode_payment_method_settings(deserializer);
-var var_nut05 = sse_decode_payment_method_settings(deserializer);
-var var_nut07 = sse_decode_nut_supported(deserializer);
-var var_nut08 = sse_decode_nut_supported(deserializer);
-var var_nut09 = sse_decode_nut_supported(deserializer);
-var var_nut10 = sse_decode_nut_supported(deserializer);
-var var_nut11 = sse_decode_nut_supported(deserializer);
-var var_nut12 = sse_decode_nut_supported(deserializer);
-return Nuts(nut04: var_nut04, nut05: var_nut05, nut07: var_nut07, nut08: var_nut08, nut09: var_nut09, nut10: var_nut10, nut11: var_nut11, nut12: var_nut12); }
 
 @protected String? sse_decode_opt_String(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -5917,26 +4938,9 @@ return Nuts(nut04: var_nut04, nut05: var_nut05, nut07: var_nut07, nut08: var_nut
             }
              }
 
-@protected PaymentMethod sse_decode_payment_method(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_method = sse_decode_String(deserializer);
-var var_unit = sse_decode_String(deserializer);
-var var_minAmount = sse_decode_i_64(deserializer);
-var var_maxAmount = sse_decode_i_64(deserializer);
-return PaymentMethod(method: var_method, unit: var_unit, minAmount: var_minAmount, maxAmount: var_maxAmount); }
-
-@protected PaymentMethodSettings sse_decode_payment_method_settings(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_methods = sse_decode_list_payment_method(deserializer);
-var var_disabled = sse_decode_bool(deserializer);
-return PaymentMethodSettings(methods: var_methods, disabled: var_disabled); }
-
 @protected (MintUrl,Amount) sse_decode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(deserializer);
 var var_field1 = sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(deserializer);
-return (var_field0, var_field1); }
-
-@protected (bool,BigInt) sse_decode_record_bool_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_field0 = sse_decode_bool(deserializer);
-var var_field1 = sse_decode_u_64(deserializer);
 return (var_field0, var_field1); }
 
 @protected (Uint8List,Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -5956,6 +4960,11 @@ var var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
 var var_field1 = sse_decode_String(deserializer);
 var var_field2 = sse_decode_opt_list_String(deserializer);
 return (var_field0, var_field1, var_field2); }
+
+@protected (String,bool) sse_decode_record_string_bool(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_String(deserializer);
+var var_field1 = sse_decode_bool(deserializer);
+return (var_field0, var_field1); }
 
 @protected (String,List<Uint8List>) sse_decode_record_string_list_list_prim_u_8_strict(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_String(deserializer);
@@ -6006,16 +5015,6 @@ var var_field1 = sse_decode_u_64(deserializer);
 var var_field2 = sse_decode_u_64(deserializer);
 return (var_field0, var_field1, var_field2); }
 
-@protected (BigInt,BigInt) sse_decode_record_u_64_usize(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_field0 = sse_decode_u_64(deserializer);
-var var_field1 = sse_decode_usize(deserializer);
-return (var_field0, var_field1); }
-
-@protected (BigInt,BigInt) sse_decode_record_usize_usize(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_field0 = sse_decode_usize(deserializer);
-var var_field1 = sse_decode_usize(deserializer);
-return (var_field0, var_field1); }
-
 @protected (BigInt,BigInt,BigInt) sse_decode_record_usize_usize_usize(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_usize(deserializer);
 var var_field1 = sse_decode_usize(deserializer);
@@ -6046,13 +5045,6 @@ var var_unit = sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bri
 var var_memo = sse_decode_opt_String(deserializer);
 return TokenInfo(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
 
-@protected TokenInfoV1 sse_decode_token_info_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var var_mint = sse_decode_String(deserializer);
-var var_amount = sse_decode_u_64(deserializer);
-var var_unit = sse_decode_opt_String(deserializer);
-var var_memo = sse_decode_opt_String(deserializer);
-return TokenInfoV1(mint: var_mint, amount: var_amount, unit: var_unit, memo: var_memo); }
-
 @protected Transaction sse_decode_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_id = sse_decode_String(deserializer);
 var var_mintUrl = sse_decode_String(deserializer);
@@ -6071,10 +5063,6 @@ return Transaction(id: var_id, mintUrl: var_mintUrl, io: var_io, kind: var_kind,
 var inner = sse_decode_i_32(deserializer);
         return TransactionDirection.values[inner]; }
 
-@protected TransactionDirectionV1 sse_decode_transaction_direction_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var inner = sse_decode_i_32(deserializer);
-        return TransactionDirectionV1.values[inner]; }
-
 @protected TransactionKind sse_decode_transaction_kind(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
         return TransactionKind.values[inner]; }
@@ -6082,18 +5070,6 @@ var inner = sse_decode_i_32(deserializer);
 @protected TransactionStatus sse_decode_transaction_status(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var inner = sse_decode_i_32(deserializer);
         return TransactionStatus.values[inner]; }
-
-@protected TransactionStatusV1 sse_decode_transaction_status_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-var inner = sse_decode_i_32(deserializer);
-        return TransactionStatusV1.values[inner]; }
-
-@protected TransactionV1 sse_decode_transaction_v_1(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-            var tag_ = sse_decode_i_32(deserializer);
-            switch (tag_) { case 0: var var_field0 = sse_decode_box_autoadd_cashu_transaction(deserializer);
-return TransactionV1_Cashu(var_field0);case 1: var var_field0 = sse_decode_box_autoadd_ln_transaction(deserializer);
-return TransactionV1_LN(var_field0); default: throw UnimplementedError(''); }
-             }
 
 @protected int sse_decode_u_16(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return deserializer.buffer.getUint16(); }
@@ -6151,6 +5127,9 @@ sse_encode_usize((self as MultiMintWalletImpl).frbInternalSseEncode(move: false)
 @protected void sse_encode_Map_String_String_None(Map<String, String> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_record_string_string(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
 
+@protected void sse_encode_Map_String_bool_None(Map<String, bool> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_list_record_string_bool(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
+
 @protected void sse_encode_Map_String_list_list_prim_u_8_strict_None(Map<String, List<Uint8List>> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_list_record_string_list_list_prim_u_8_strict(self.entries.map((e) => (e.key, e.value)).toList(), serializer); }
 
@@ -6198,9 +5177,6 @@ sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueI
 @protected void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_bool(self, serializer); }
 
-@protected void sse_encode_box_autoadd_cashu_transaction(CashuTransaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_cashu_transaction(self, serializer); }
-
 @protected void sse_encode_box_autoadd_keychat_identity_key(KeychatIdentityKey self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_keychat_identity_key(self, serializer); }
 
@@ -6213,9 +5189,6 @@ sse_encode_keychat_protocol_address(self, serializer); }
 @protected void sse_encode_box_autoadd_keychat_signal_session(KeychatSignalSession self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_keychat_signal_session(self, serializer); }
 
-@protected void sse_encode_box_autoadd_ln_transaction(LNTransaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_ln_transaction(self, serializer); }
-
 @protected void sse_encode_box_autoadd_mint_info(MintInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_mint_info(self, serializer); }
 
@@ -6224,19 +5197,6 @@ sse_encode_u_32(self, serializer); }
 
 @protected void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_64(self, serializer); }
-
-@protected void sse_encode_cashu_transaction(CashuTransaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_String(self.id, serializer);
-sse_encode_transaction_status_v_1(self.status, serializer);
-sse_encode_transaction_direction_v_1(self.io, serializer);
-sse_encode_opt_String(self.info, serializer);
-sse_encode_u_64(self.time, serializer);
-sse_encode_u_64(self.amount, serializer);
-sse_encode_opt_box_autoadd_u_64(self.fee, serializer);
-sse_encode_String(self.mint, serializer);
-sse_encode_String(self.token, serializer);
-sse_encode_opt_String(self.unit, serializer);
- }
 
 @protected void sse_encode_commit_result(CommitResult self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.sender, serializer);
@@ -6269,9 +5229,6 @@ sse_encode_list_prim_u_8_strict(self.status, serializer);
 @protected void sse_encode_i_32(int self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 serializer.buffer.putInt32(self); }
 
-@protected void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-serializer.buffer.putPlatformInt64(self); }
-
 @protected void sse_encode_invoice_info(InvoiceInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_64(self.amount, serializer);
 sse_encode_u_64(self.expiryTs, serializer);
@@ -6281,19 +5238,7 @@ sse_encode_opt_String(self.mint, serializer);
 sse_encode_invoice_status(self.status, serializer);
  }
 
-@protected void sse_encode_invoice_info_v_1(InvoiceInfoV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_u_64(self.amount, serializer);
-sse_encode_u_64(self.expiryTs, serializer);
-sse_encode_String(self.hash, serializer);
-sse_encode_opt_String(self.memo, serializer);
-sse_encode_opt_String(self.mint, serializer);
-sse_encode_invoice_status_v_1(self.status, serializer);
- }
-
 @protected void sse_encode_invoice_status(InvoiceStatus self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.index, serializer); }
-
-@protected void sse_encode_invoice_status_v_1(InvoiceStatusV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
 @protected void sse_encode_key_package_result(KeyPackageResult self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6331,10 +5276,6 @@ sse_encode_opt_String(self.aliceAddresses, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_String(item, serializer); } }
 
-@protected void sse_encode_list_cashu_transaction(List<CashuTransaction> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_cashu_transaction(item, serializer); } }
-
 @protected void sse_encode_list_contact(List<Contact> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_contact(item, serializer); } }
@@ -6347,17 +5288,9 @@ sse_encode_i_32(self.length, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_list_prim_u_8_strict(item, serializer); } }
 
-@protected void sse_encode_list_ln_transaction(List<LNTransaction> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_ln_transaction(item, serializer); } }
-
 @protected void sse_encode_list_mint(List<Mint> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_mint(item, serializer); } }
-
-@protected void sse_encode_list_payment_method(List<PaymentMethod> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_payment_method(item, serializer); } }
 
 @protected void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
@@ -6370,6 +5303,10 @@ sse_encode_i_32(self.length, serializer);
 @protected void sse_encode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(List<(MintUrl,Amount)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(item, serializer); } }
+
+@protected void sse_encode_list_record_string_bool(List<(String,bool)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_i_32(self.length, serializer);
+        for (final item in self) { sse_encode_record_string_bool(item, serializer); } }
 
 @protected void sse_encode_list_record_string_list_list_prim_u_8_strict(List<(String,List<Uint8List>)> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.length, serializer);
@@ -6395,23 +5332,6 @@ sse_encode_i_32(self.length, serializer);
 sse_encode_i_32(self.length, serializer);
         for (final item in self) { sse_encode_transaction(item, serializer); } }
 
-@protected void sse_encode_list_transaction_v_1(List<TransactionV1> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.length, serializer);
-        for (final item in self) { sse_encode_transaction_v_1(item, serializer); } }
-
-@protected void sse_encode_ln_transaction(LNTransaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_transaction_status_v_1(self.status, serializer);
-sse_encode_transaction_direction_v_1(self.io, serializer);
-sse_encode_opt_String(self.info, serializer);
-sse_encode_u_64(self.time, serializer);
-sse_encode_u_64(self.amount, serializer);
-sse_encode_opt_box_autoadd_u_64(self.fee, serializer);
-sse_encode_String(self.mint, serializer);
-sse_encode_String(self.pr, serializer);
-sse_encode_String(self.hash, serializer);
-sse_encode_opt_String(self.unit, serializer);
- }
-
 @protected void sse_encode_message_in_type(MessageInType self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
@@ -6435,7 +5355,7 @@ sse_encode_opt_String(self.description, serializer);
 sse_encode_opt_String(self.descriptionLong, serializer);
 sse_encode_opt_String(self.motd, serializer);
 sse_encode_list_contact(self.contact, serializer);
-sse_encode_nuts(self.nuts, serializer);
+sse_encode_Map_String_bool_None(self.nuts, serializer);
  }
 
 @protected void sse_encode_nostr_event(NostrEvent self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6446,21 +5366,6 @@ sse_encode_u_16(self.kind, serializer);
 sse_encode_list_list_String(self.tags, serializer);
 sse_encode_String(self.content, serializer);
 sse_encode_String(self.sig, serializer);
- }
-
-@protected void sse_encode_nut_supported(NutSupported self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_bool(self.supported, serializer);
- }
-
-@protected void sse_encode_nuts(Nuts self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_payment_method_settings(self.nut04, serializer);
-sse_encode_payment_method_settings(self.nut05, serializer);
-sse_encode_nut_supported(self.nut07, serializer);
-sse_encode_nut_supported(self.nut08, serializer);
-sse_encode_nut_supported(self.nut09, serializer);
-sse_encode_nut_supported(self.nut10, serializer);
-sse_encode_nut_supported(self.nut11, serializer);
-sse_encode_nut_supported(self.nut12, serializer);
  }
 
 @protected void sse_encode_opt_String(String? self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6551,26 +5456,9 @@ sse_encode_nut_supported(self.nut12, serializer);
                 }
                  }
 
-@protected void sse_encode_payment_method(PaymentMethod self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_String(self.method, serializer);
-sse_encode_String(self.unit, serializer);
-sse_encode_i_64(self.minAmount, serializer);
-sse_encode_i_64(self.maxAmount, serializer);
- }
-
-@protected void sse_encode_payment_method_settings(PaymentMethodSettings self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_list_payment_method(self.methods, serializer);
-sse_encode_bool(self.disabled, serializer);
- }
-
 @protected void sse_encode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount((MintUrl,Amount) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(self.$1, serializer);
 sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(self.$2, serializer);
- }
-
-@protected void sse_encode_record_bool_u_64((bool,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_bool(self.$1, serializer);
-sse_encode_u_64(self.$2, serializer);
  }
 
 @protected void sse_encode_record_list_prim_u_8_strict_list_prim_u_8_strict((Uint8List,Uint8List) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6589,6 +5477,11 @@ sse_encode_opt_list_String(self.$4, serializer);
 sse_encode_list_prim_u_8_strict(self.$1, serializer);
 sse_encode_String(self.$2, serializer);
 sse_encode_opt_list_String(self.$3, serializer);
+ }
+
+@protected void sse_encode_record_string_bool((String,bool) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_String(self.$1, serializer);
+sse_encode_bool(self.$2, serializer);
  }
 
 @protected void sse_encode_record_string_list_list_prim_u_8_strict((String,List<Uint8List>) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6640,16 +5533,6 @@ sse_encode_u_64(self.$2, serializer);
 sse_encode_u_64(self.$3, serializer);
  }
 
-@protected void sse_encode_record_u_64_usize((BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_u_64(self.$1, serializer);
-sse_encode_usize(self.$2, serializer);
- }
-
-@protected void sse_encode_record_usize_usize((BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_usize(self.$1, serializer);
-sse_encode_usize(self.$2, serializer);
- }
-
 @protected void sse_encode_record_usize_usize_usize((BigInt,BigInt,BigInt) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_usize(self.$1, serializer);
 sse_encode_usize(self.$2, serializer);
@@ -6680,13 +5563,6 @@ sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generate
 sse_encode_opt_String(self.memo, serializer);
  }
 
-@protected void sse_encode_token_info_v_1(TokenInfoV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_String(self.mint, serializer);
-sse_encode_u_64(self.amount, serializer);
-sse_encode_opt_String(self.unit, serializer);
-sse_encode_opt_String(self.memo, serializer);
- }
-
 @protected void sse_encode_transaction(Transaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.id, serializer);
 sse_encode_String(self.mintUrl, serializer);
@@ -6704,22 +5580,11 @@ sse_encode_Map_String_String_None(self.metadata, serializer);
 @protected void sse_encode_transaction_direction(TransactionDirection self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
-@protected void sse_encode_transaction_direction_v_1(TransactionDirectionV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.index, serializer); }
-
 @protected void sse_encode_transaction_kind(TransactionKind self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
 
 @protected void sse_encode_transaction_status(TransactionStatus self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_i_32(self.index, serializer); }
-
-@protected void sse_encode_transaction_status_v_1(TransactionStatusV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_i_32(self.index, serializer); }
-
-@protected void sse_encode_transaction_v_1(TransactionV1 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-switch (self) { case TransactionV1_Cashu(field0: final field0): sse_encode_i_32(0, serializer); sse_encode_box_autoadd_cashu_transaction(field0, serializer);
-case TransactionV1_LN(field0: final field0): sse_encode_i_32(1, serializer); sse_encode_box_autoadd_ln_transaction(field0, serializer);
-  } }
 
 @protected void sse_encode_u_16(int self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 serializer.buffer.putUint16(self); }

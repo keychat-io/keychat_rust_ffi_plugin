@@ -12,15 +12,15 @@ use std::sync::Mutex as StdMutex;
 use std::sync::MutexGuard as StdMutexGuard;
 use tokio::runtime::{Builder, Runtime};
 
-pub use cashu_wallet::types::{
-    CashuTransaction, LNTransaction, Mint, MintInfo, Transaction as TransactionV1,
-    TransactionDirection as TransactionDirectionV1, TransactionKind as TransactionKindV1,
-    TransactionStatus as TransactionStatusV1,
+use cashu_wallet::types::{
+    CashuTransaction, LNTransaction, Mint as MintV1, MintInfo as MintInfoV1,
+    Transaction as TransactionV1, TransactionDirection as TransactionDirectionV1,
+    TransactionKind as TransactionKindV1, TransactionStatus as TransactionStatusV1,
 };
 
-pub use cashu_wallet_sqlite::LitePool;
-pub type Wallet = cashu_wallet::UnitedWallet<LitePool>;
-pub use cashu_wallet;
+use cashu_wallet_sqlite::LitePool;
+type Wallet = cashu_wallet::UnitedWallet<LitePool>;
+use cashu_wallet;
 
 #[frb(ignore)]
 pub struct State {
@@ -33,7 +33,7 @@ pub struct State {
 #[path = "api_cashu.check.rs"]
 mod check;
 #[path = "api_cashu_v1.types.rs"]
-pub mod types;
+mod types;
 // use types::*;
 
 impl State {
@@ -72,6 +72,7 @@ lazy_static! {
         StdMutex::new(State::new().expect("failed to create tokio runtime"));
 }
 
+// the only pub fn that v2 can call
 pub fn cashu_v1_init_send_all(
     dbpath: String,
     words: Option<String>,
@@ -93,7 +94,7 @@ pub fn cashu_v1_init_send_all(
     Ok(tokens)
 }
 
-pub fn init_db(dbpath: String, words: Option<String>, dev: bool) -> anyhow::Result<()> {
+fn init_db(dbpath: String, words: Option<String>, dev: bool) -> anyhow::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
 
     let mut mnemonic = None;
@@ -153,7 +154,7 @@ pub fn init_db(dbpath: String, words: Option<String>, dev: bool) -> anyhow::Resu
     })
 }
 
-pub fn close_db() -> anyhow::Result<bool> {
+fn close_db() -> anyhow::Result<bool> {
     let state = State::lock()?;
     if state.wallet.is_none() {
         return Ok(false);
@@ -165,7 +166,7 @@ pub fn close_db() -> anyhow::Result<bool> {
     Ok(true)
 }
 
-pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
+fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<MintV1>> {
     let mut state = State::lock()?;
     state.sats = prepare_sats_once_time;
 
@@ -320,14 +321,14 @@ async fn load_mints_from_database_background(
 // ignore for test
 // add by 2.0.0-dev.9
 #[frb(ignore)]
-pub fn get_mnemonic_info() -> anyhow::Result<Option<String>> {
+fn get_mnemonic_info() -> anyhow::Result<Option<String>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let mi = w.mnemonic().map(|m| m.pubkey().to_string());
     Ok(mi)
 }
 
-pub fn set_mnemonic(words: Option<String>) -> anyhow::Result<bool> {
+fn set_mnemonic(words: Option<String>) -> anyhow::Result<bool> {
     let mut mnemonic = None;
     if let Some(s) = words {
         let mi = MnemonicInfo::with_words(&s)?;
@@ -351,7 +352,7 @@ pub fn set_mnemonic(words: Option<String>) -> anyhow::Result<bool> {
     has
 }
 
-pub fn get_mints() -> anyhow::Result<Vec<Mint>> {
+fn get_mints() -> anyhow::Result<Vec<MintV1>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -360,7 +361,7 @@ pub fn get_mints() -> anyhow::Result<Vec<Mint>> {
     Ok(mints)
 }
 
-pub fn add_mint(url: String) -> anyhow::Result<bool> {
+fn add_mint(url: String) -> anyhow::Result<bool> {
     let u: cashu_wallet::Url = url.parse()?;
 
     let state = State::lock()?;
@@ -373,7 +374,7 @@ pub fn add_mint(url: String) -> anyhow::Result<bool> {
     Ok(result)
 }
 
-pub fn remove_mint(url: String) -> anyhow::Result<Option<String>> {
+fn remove_mint(url: String) -> anyhow::Result<Option<String>> {
     let u: cashu_wallet::Url = url.parse()?;
 
     let state = State::lock()?;
@@ -389,7 +390,7 @@ pub fn remove_mint(url: String) -> anyhow::Result<Option<String>> {
 }
 
 // ? direct use map?
-pub fn get_balances() -> anyhow::Result<String> {
+fn get_balances() -> anyhow::Result<String> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -404,7 +405,7 @@ pub fn get_balances() -> anyhow::Result<String> {
     Ok(js)
 }
 
-pub fn get_balance(mint: String) -> anyhow::Result<(bool, u64)> {
+fn get_balance(mint: String) -> anyhow::Result<(bool, u64)> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let mint_url: cashu_wallet::Url = mint.parse()?;
@@ -428,7 +429,7 @@ pub fn get_balance(mint: String) -> anyhow::Result<(bool, u64)> {
     Ok((is_charge, v))
 }
 
-pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<TransactionV1>> {
+fn receive_token(encoded_token: String) -> anyhow::Result<Vec<TransactionV1>> {
     let token: Token = encoded_token.parse()?;
     let token = token.into_v3()?;
 
@@ -456,7 +457,7 @@ pub fn receive_token(encoded_token: String) -> anyhow::Result<Vec<TransactionV1>
 }
 
 #[frb(ignore)]
-pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
+fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     let u: cashu_wallet::Url = mint.parse()?;
 
     let state = State::lock()?;
@@ -469,7 +470,7 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     Ok(a)
 }
 
-pub fn send_stamp(
+fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
@@ -526,11 +527,7 @@ pub fn send_stamp(
     tx
 }
 
-pub fn send(
-    amount: u64,
-    active_mint: String,
-    info: Option<String>,
-) -> anyhow::Result<TransactionV1> {
+fn send(amount: u64, active_mint: String, info: Option<String>) -> anyhow::Result<TransactionV1> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -542,7 +539,7 @@ pub fn send(
 
 use cashu_wallet::wallet::MintUrl;
 #[frb(ignore)]
-pub fn __send(
+fn __send(
     state: &mut StdMutexGuard<'static, State>,
     amount: u64,
     mint_url: &MintUrl,
@@ -661,14 +658,14 @@ pub fn __send(
     Ok(tx)
 }
 
-pub fn send_all(active_mint: String, info: Option<String>) -> anyhow::Result<TransactionV1> {
+fn send_all(active_mint: String, info: Option<String>) -> anyhow::Result<TransactionV1> {
     let mint_url: cashu_wallet::Url = active_mint.parse()?;
     let mut state = State::lock()?;
     __send_all(&mut state, &mint_url, info)
 }
 
 #[frb(ignore)]
-pub fn __send_all(
+fn __send_all(
     state: &mut StdMutexGuard<'static, State>,
     mint_url: &MintUrl,
     info: Option<String>,
@@ -765,7 +762,7 @@ pub fn __send_all(
     Ok(tx)
 }
 
-pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<TransactionV1> {
+fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<TransactionV1> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -788,7 +785,7 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transact
     Ok(tx)
 }
 
-pub fn mint_token(amount: u64, hash: String, active_mint: String) -> anyhow::Result<TransactionV1> {
+fn mint_token(amount: u64, hash: String, active_mint: String) -> anyhow::Result<TransactionV1> {
     if amount == 0 {
         bail!("can't mint amount 0");
     }
@@ -812,7 +809,7 @@ pub fn mint_token(amount: u64, hash: String, active_mint: String) -> anyhow::Res
     Ok(tx)
 }
 
-pub fn melt(
+fn melt(
     invoice: String,
     active_mint: String,
     amount: Option<u64>,
@@ -839,7 +836,7 @@ pub fn melt(
     Ok(tx)
 }
 
-pub fn get_transactions() -> anyhow::Result<Vec<TransactionV1>> {
+fn get_transactions() -> anyhow::Result<Vec<TransactionV1>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -847,10 +844,7 @@ pub fn get_transactions() -> anyhow::Result<Vec<TransactionV1>> {
     Ok(tx)
 }
 
-pub fn get_transactions_with_offset(
-    offset: usize,
-    limit: usize,
-) -> anyhow::Result<Vec<TransactionV1>> {
+fn get_transactions_with_offset(offset: usize, limit: usize) -> anyhow::Result<Vec<TransactionV1>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -862,7 +856,7 @@ pub fn get_transactions_with_offset(
     Ok(tx)
 }
 
-pub fn get_cashu_transactions_with_offset(
+fn get_cashu_transactions_with_offset(
     offset: usize,
     limit: usize,
 ) -> anyhow::Result<Vec<CashuTransaction>> {
@@ -886,7 +880,7 @@ pub fn get_cashu_transactions_with_offset(
     Ok(txs)
 }
 
-pub fn get_ln_transactions_with_offset(
+fn get_ln_transactions_with_offset(
     offset: usize,
     limit: usize,
 ) -> anyhow::Result<Vec<LNTransaction>> {
@@ -910,7 +904,7 @@ pub fn get_ln_transactions_with_offset(
     Ok(txs)
 }
 
-pub fn get_pending_transactions() -> anyhow::Result<Vec<TransactionV1>> {
+fn get_pending_transactions() -> anyhow::Result<Vec<TransactionV1>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -918,7 +912,7 @@ pub fn get_pending_transactions() -> anyhow::Result<Vec<TransactionV1>> {
     Ok(tx)
 }
 
-pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<LNTransaction>> {
+fn get_ln_pending_transactions() -> anyhow::Result<Vec<LNTransaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -932,7 +926,7 @@ pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<LNTransaction>> {
     Ok(txs)
 }
 
-pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>> {
+fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -947,7 +941,7 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<CashuTransaction>>
 }
 
 /// remove transaction.time() <= unix_timestamp_ms_le and kind is the status
-pub fn remove_transactions(
+fn remove_transactions(
     unix_timestamp_ms_le: u64,
     kind: TransactionStatusV1,
 ) -> anyhow::Result<u64> {
@@ -962,7 +956,7 @@ pub fn remove_transactions(
     Ok(tx)
 }
 
-pub fn get_pending_transactions_count() -> anyhow::Result<u64> {
+fn get_pending_transactions_count() -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
@@ -970,7 +964,7 @@ pub fn get_pending_transactions_count() -> anyhow::Result<u64> {
     Ok(tx.len() as _)
 }
 
-pub fn check_pending() -> anyhow::Result<(usize, usize)> {
+fn check_pending() -> anyhow::Result<(usize, usize)> {
     let mut state = State::lock()?;
     try_load_mints(&mut state, false).ok();
     let w = state.get_wallet()?;
@@ -979,7 +973,7 @@ pub fn check_pending() -> anyhow::Result<(usize, usize)> {
     Ok(upc_all)
 }
 
-pub fn check_transaction(id: String) -> anyhow::Result<TransactionV1> {
+fn check_transaction(id: String) -> anyhow::Result<TransactionV1> {
     let mut state = State::lock()?;
     try_load_mints(&mut state, false).ok();
     let w = state.get_wallet()?;
@@ -1015,7 +1009,7 @@ pub fn check_transaction(id: String) -> anyhow::Result<TransactionV1> {
 }
 
 /// (spents, pendings, all)
-pub fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
+fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
     let mut state = State::lock()?;
     try_load_mints(&mut state, true).ok();
 
@@ -1028,7 +1022,7 @@ pub fn check_proofs() -> anyhow::Result<(usize, usize, usize)> {
     Ok(spa)
 }
 
-pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfoV1> {
+fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfoV1> {
     let token: Token = encoded_token.parse()?;
     let token = token.into_v3()?;
 
@@ -1046,7 +1040,7 @@ pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfoV1> {
 }
 
 /// sleepms_after_check_a_batch for (code: 429): {"detail":"Rate limit exceeded."}
-pub fn restore(
+fn restore(
     mint: String,
     words: Option<String>,
     sleepms_after_check_a_batch: u64,
@@ -1085,18 +1079,18 @@ pub fn restore(
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TokenInfoV1 {
-    // pub encoded_token: String,
+struct TokenInfoV1 {
+    //  encoded_token: String,
     pub mint: String,
     pub amount: u64,
     pub unit: Option<String>,
     pub memo: Option<String>,
 }
 
-pub use cashu_wallet::cashu::lightning_invoice::{
+use cashu_wallet::cashu::lightning_invoice::{
     Bolt11Invoice as Invoice, Bolt11InvoiceDescription as InvoiceDescription,
 };
-pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV1> {
+fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV1> {
     let encoded_invoice = encoded_invoice.replace("lightning:", "");
     let invoice: Invoice = encoded_invoice.parse()?;
 
@@ -1134,7 +1128,7 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV1> 
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct InvoiceInfoV1 {
+struct InvoiceInfoV1 {
     // pub bolt11: String,
     pub amount: u64,
     pub expiry_ts: u64,
@@ -1144,7 +1138,7 @@ pub struct InvoiceInfoV1 {
     pub status: InvoiceStatusV1,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum InvoiceStatusV1 {
+enum InvoiceStatusV1 {
     Paid,
     Unpaid,
     Expired,

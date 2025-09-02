@@ -33,6 +33,8 @@ pub struct State {
 pub mod types;
 pub use types::*;
 
+use crate::api_cashu_v1;
+
 impl State {
     fn new() -> anyhow::Result<Self> {
         let this = Self {
@@ -82,6 +84,13 @@ impl State {
 lazy_static! {
     static ref STATE: StdMutex<State> =
         StdMutex::new(State::new().expect("failed to create tokio runtime"));
+}
+
+pub fn cashu_v1_init_send_all(
+    dbpath: String,
+    words: Option<String>,
+) -> anyhow::Result<Vec<String>> {
+    api_cashu_v1::cashu_v1_init_send_all(dbpath, words)
 }
 
 pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> {
@@ -148,15 +157,92 @@ pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> 
     })
 }
 
-pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<String>> {
+pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<Mint>> {
     let mut state = State::lock()?;
     state.sats = prepare_sats_once_time;
 
     let w = state.get_wallet()?;
-    let mints = state.rt.block_on(w.localstore.get_mints())?;
-    // mints.values_mut().for_each(|v| *v = None);
-    let only_keys: Vec<String> = mints.into_keys().map(|k| k.to_string()).collect();
-    Ok(only_keys)
+    let mut mints = Vec::new();
+    let result = state.rt.block_on(w.localstore.get_mints())?;
+    for (k, v) in result {
+        if let Some(v) = v {
+            let mint_info = MintInfo {
+                name: v.name.unwrap_or_default(),
+                version: v.version.map(|v| v.to_string()).unwrap_or_default(),
+                pubkey: v.pubkey.map(|v| v.to_string()),
+                description: v.description,
+                description_long: v.description_long,
+                motd: v.motd,
+                contact: v
+                    .contact
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(|contact_info| Contact {
+                        method: contact_info.method,
+                        info: contact_info.info,
+                    })
+                    .collect(),
+                nuts: {
+                    let mut nuts_map = HashMap::new();
+                    // Check each nut and add to map if supported
+                    if !v.nuts.nut04.methods.is_empty() || !v.nuts.nut04.disabled {
+                        nuts_map.insert("nut04".to_string(), true);
+                    }
+                    if !v.nuts.nut05.methods.is_empty() || !v.nuts.nut05.disabled {
+                        nuts_map.insert("nut05".to_string(), true);
+                    }
+                    if v.nuts.nut07.supported {
+                        nuts_map.insert("nut07".to_string(), true);
+                    }
+                    if v.nuts.nut08.supported {
+                        nuts_map.insert("nut08".to_string(), true);
+                    }
+                    if v.nuts.nut09.supported {
+                        nuts_map.insert("nut09".to_string(), true);
+                    }
+                    if v.nuts.nut10.supported {
+                        nuts_map.insert("nut10".to_string(), true);
+                    }
+                    if v.nuts.nut11.supported {
+                        nuts_map.insert("nut11".to_string(), true);
+                    }
+                    if v.nuts.nut12.supported {
+                        nuts_map.insert("nut12".to_string(), true);
+                    }
+                    if v.nuts.nut14.supported {
+                        nuts_map.insert("nut14".to_string(), true);
+                    }
+                    if !v.nuts.nut15.methods.is_empty() {
+                        nuts_map.insert("nut15".to_string(), true);
+                    }
+                    if !v.nuts.nut17.supported.is_empty() {
+                        nuts_map.insert("nut17".to_string(), true);
+                    }
+                    if v.nuts.nut19.ttl.is_some() || !v.nuts.nut19.cached_endpoints.is_empty() {
+                        nuts_map.insert("nut19".to_string(), true);
+                    }
+                    if v.nuts.nut20.supported {
+                        nuts_map.insert("nut20".to_string(), true);
+                    }
+                    if v.nuts.nut21.is_some() {
+                        nuts_map.insert("nut21".to_string(), true);
+                    }
+                    if v.nuts.nut22.is_some() {
+                        nuts_map.insert("nut22".to_string(), true);
+                    }
+                    nuts_map
+                },
+            };
+            let mint = Mint {
+                url: k.to_string(),
+                active: true,
+                time: v.time.unwrap_or(0),
+                info: Some(mint_info),
+            };
+            mints.push(mint);
+        }
+    }
+    Ok(mints)
 }
 
 #[frb(ignore)]
@@ -1117,25 +1203,45 @@ pub fn get_pending_transactions_count() -> anyhow::Result<u64> {
     Ok(tx)
 }
 
-pub fn check_transaction(id: String) -> anyhow::Result<()> {
+pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
     let id = TransactionId::from_str(&id)?;
     let tx = state.rt.block_on(async {
-        let tx = w
+        let mut tx = w
             .localstore
             .get_transaction(id)
             .await?
-            .ok_or(cdk_common::Error::TransactionNotFound)?;
+            .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
 
         if tx.direction != cdk_common::wallet::TransactionDirection::Outgoing {
-            return Err(cdk_common::Error::InvalidTransactionDirection);
+            return Err(anyhow::anyhow!("Invalid transaction direction"));
         }
-        let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await;
-        let wallet = wallet.unwrap();
+        let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
+        if tx.status == cdk_common::wallet::TransactionStatus::Pending {
+            let _check = wallet.check_proofs_tx_spent_state().await?;
+            tx = w
+                .localstore
+                .get_transaction(id)
+                .await?
+                .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+        }
 
-        wallet.revert_transaction(id).await
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        Ok(tx_new)
     })?;
 
     Ok(tx)

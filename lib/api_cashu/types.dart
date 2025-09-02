@@ -9,7 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
             // These functions are ignored because they are not marked as `pub`: `get_keys`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
 
             
@@ -37,6 +37,90 @@ static Future<MnemonicInfo>  withWords({required String words })=>RustLib.instan
                     
                 }
                 
+
+class Contact  {
+                final String method;
+final String info;
+
+                const Contact({required this.method ,required this.info ,});
+
+                static Future<Contact>  default_()=>RustLib.instance.api.crateApiCashuTypesContactDefault();
+
+
+                
+
+                
+        @override
+        int get hashCode => method.hashCode^info.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is Contact &&
+                runtimeType == other.runtimeType
+                && method == other.method&& info == other.info;
+        
+            }
+
+class Mint  {
+                final String url;
+final bool active;
+final BigInt time;
+final MintInfo? info;
+
+                const Mint({required this.url ,required this.active ,required this.time ,this.info ,});
+
+                
+                
+
+                
+        @override
+        int get hashCode => url.hashCode^active.hashCode^time.hashCode^info.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is Mint &&
+                runtimeType == other.runtimeType
+                && url == other.url&& active == other.active&& time == other.time&& info == other.info;
+        
+            }
+
+class MintInfo  {
+                final String name;
+final String version;
+final String? pubkey;
+final String? description;
+final String? descriptionLong;
+final String? motd;
+final List<Contact> contact;
+final Map<String, bool> nuts;
+
+                const MintInfo({required this.name ,required this.version ,this.pubkey ,this.description ,this.descriptionLong ,this.motd ,required this.contact ,required this.nuts ,});
+
+                static Future<MintInfo>  default_()=>RustLib.instance.api.crateApiCashuTypesMintInfoDefault();
+
+
+                
+
+                
+        @override
+        int get hashCode => name.hashCode^version.hashCode^pubkey.hashCode^description.hashCode^descriptionLong.hashCode^motd.hashCode^contact.hashCode^nuts.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is MintInfo &&
+                runtimeType == other.runtimeType
+                && name == other.name&& version == other.version&& pubkey == other.pubkey&& description == other.description&& descriptionLong == other.descriptionLong&& motd == other.motd&& contact == other.contact&& nuts == other.nuts;
+        
+            }
 
 class Transaction  {
                 final String id;

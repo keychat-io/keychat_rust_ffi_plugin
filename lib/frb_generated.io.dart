@@ -6,7 +6,6 @@
 import 'api_cashu.dart';
 import 'api_cashu/types.dart';
 import 'api_cashu_v1.dart';
-import 'api_cashu_v1/types.dart';
 import 'api_mls.dart';
 import 'api_mls/types.dart';
 import 'api_nostr.dart';
@@ -65,6 +64,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Map<String, String> dco_decode_Map_String_String_None(dynamic raw);
 
+@protected Map<String, bool> dco_decode_Map_String_bool_None(dynamic raw);
+
 @protected Map<String, List<Uint8List>> dco_decode_Map_String_list_list_prim_u_8_strict_None(dynamic raw);
 
 @protected Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(dynamic raw);
@@ -95,8 +96,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected bool dco_decode_box_autoadd_bool(dynamic raw);
 
-@protected CashuTransaction dco_decode_box_autoadd_cashu_transaction(dynamic raw);
-
 @protected KeychatIdentityKey dco_decode_box_autoadd_keychat_identity_key(dynamic raw);
 
 @protected KeychatIdentityKeyPair dco_decode_box_autoadd_keychat_identity_key_pair(dynamic raw);
@@ -105,15 +104,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected KeychatSignalSession dco_decode_box_autoadd_keychat_signal_session(dynamic raw);
 
-@protected LNTransaction dco_decode_box_autoadd_ln_transaction(dynamic raw);
-
 @protected MintInfo dco_decode_box_autoadd_mint_info(dynamic raw);
 
 @protected int dco_decode_box_autoadd_u_32(dynamic raw);
 
 @protected BigInt dco_decode_box_autoadd_u_64(dynamic raw);
-
-@protected CashuTransaction dco_decode_cashu_transaction(dynamic raw);
 
 @protected CommitResult dco_decode_commit_result(dynamic raw);
 
@@ -127,15 +122,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected int dco_decode_i_32(dynamic raw);
 
-@protected PlatformInt64 dco_decode_i_64(dynamic raw);
-
 @protected InvoiceInfo dco_decode_invoice_info(dynamic raw);
 
-@protected InvoiceInfoV1 dco_decode_invoice_info_v_1(dynamic raw);
-
 @protected InvoiceStatus dco_decode_invoice_status(dynamic raw);
-
-@protected InvoiceStatusV1 dco_decode_invoice_status_v_1(dynamic raw);
 
 @protected KeyPackageResult dco_decode_key_package_result(dynamic raw);
 
@@ -149,25 +138,21 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<String> dco_decode_list_String(dynamic raw);
 
-@protected List<CashuTransaction> dco_decode_list_cashu_transaction(dynamic raw);
-
 @protected List<Contact> dco_decode_list_contact(dynamic raw);
 
 @protected List<List<String>> dco_decode_list_list_String(dynamic raw);
 
 @protected List<Uint8List> dco_decode_list_list_prim_u_8_strict(dynamic raw);
 
-@protected List<LNTransaction> dco_decode_list_ln_transaction(dynamic raw);
-
 @protected List<Mint> dco_decode_list_mint(dynamic raw);
-
-@protected List<PaymentMethod> dco_decode_list_payment_method(dynamic raw);
 
 @protected List<int> dco_decode_list_prim_u_8_loose(dynamic raw);
 
 @protected Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
 @protected List<(MintUrl,Amount)> dco_decode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(dynamic raw);
+
+@protected List<(String,bool)> dco_decode_list_record_string_bool(dynamic raw);
 
 @protected List<(String,List<Uint8List>)> dco_decode_list_record_string_list_list_prim_u_8_strict(dynamic raw);
 
@@ -181,10 +166,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<Transaction> dco_decode_list_transaction(dynamic raw);
 
-@protected List<TransactionV1> dco_decode_list_transaction_v_1(dynamic raw);
-
-@protected LNTransaction dco_decode_ln_transaction(dynamic raw);
-
 @protected MessageInType dco_decode_message_in_type(dynamic raw);
 
 @protected MessageResult dco_decode_message_result(dynamic raw);
@@ -194,10 +175,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected MintInfo dco_decode_mint_info(dynamic raw);
 
 @protected NostrEvent dco_decode_nostr_event(dynamic raw);
-
-@protected NutSupported dco_decode_nut_supported(dynamic raw);
-
-@protected Nuts dco_decode_nuts(dynamic raw);
 
 @protected String? dco_decode_opt_String(dynamic raw);
 
@@ -221,19 +198,15 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
 
-@protected PaymentMethod dco_decode_payment_method(dynamic raw);
-
-@protected PaymentMethodSettings dco_decode_payment_method_settings(dynamic raw);
-
 @protected (MintUrl,Amount) dco_decode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(dynamic raw);
-
-@protected (bool,BigInt) dco_decode_record_bool_u_64(dynamic raw);
 
 @protected (Uint8List,Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
 @protected (Uint8List,String?,String,List<String>?) dco_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(dynamic raw);
 
 @protected (Uint8List,String,List<String>?) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
+
+@protected (String,bool) dco_decode_record_string_bool(dynamic raw);
 
 @protected (String,List<Uint8List>) dco_decode_record_string_list_list_prim_u_8_strict(dynamic raw);
 
@@ -253,10 +226,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (BigInt,BigInt,BigInt) dco_decode_record_u_64_u_64_u_64(dynamic raw);
 
-@protected (BigInt,BigInt) dco_decode_record_u_64_usize(dynamic raw);
-
-@protected (BigInt,BigInt) dco_decode_record_usize_usize(dynamic raw);
-
 @protected (BigInt,BigInt,BigInt) dco_decode_record_usize_usize_usize(dynamic raw);
 
 @protected Secp256k1Account dco_decode_secp_256_k_1_account(dynamic raw);
@@ -265,21 +234,13 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected TokenInfo dco_decode_token_info(dynamic raw);
 
-@protected TokenInfoV1 dco_decode_token_info_v_1(dynamic raw);
-
 @protected Transaction dco_decode_transaction(dynamic raw);
 
 @protected TransactionDirection dco_decode_transaction_direction(dynamic raw);
 
-@protected TransactionDirectionV1 dco_decode_transaction_direction_v_1(dynamic raw);
-
 @protected TransactionKind dco_decode_transaction_kind(dynamic raw);
 
 @protected TransactionStatus dco_decode_transaction_status(dynamic raw);
-
-@protected TransactionStatusV1 dco_decode_transaction_status_v_1(dynamic raw);
-
-@protected TransactionV1 dco_decode_transaction_v_1(dynamic raw);
 
 @protected int dco_decode_u_16(dynamic raw);
 
@@ -317,6 +278,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Map<String, String> sse_decode_Map_String_String_None(SseDeserializer deserializer);
 
+@protected Map<String, bool> sse_decode_Map_String_bool_None(SseDeserializer deserializer);
+
 @protected Map<String, List<Uint8List>> sse_decode_Map_String_list_list_prim_u_8_strict_None(SseDeserializer deserializer);
 
 @protected Map<String, BigInt?> sse_decode_Map_String_opt_box_autoadd_u_64_None(SseDeserializer deserializer);
@@ -347,8 +310,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected bool sse_decode_box_autoadd_bool(SseDeserializer deserializer);
 
-@protected CashuTransaction sse_decode_box_autoadd_cashu_transaction(SseDeserializer deserializer);
-
 @protected KeychatIdentityKey sse_decode_box_autoadd_keychat_identity_key(SseDeserializer deserializer);
 
 @protected KeychatIdentityKeyPair sse_decode_box_autoadd_keychat_identity_key_pair(SseDeserializer deserializer);
@@ -357,15 +318,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected KeychatSignalSession sse_decode_box_autoadd_keychat_signal_session(SseDeserializer deserializer);
 
-@protected LNTransaction sse_decode_box_autoadd_ln_transaction(SseDeserializer deserializer);
-
 @protected MintInfo sse_decode_box_autoadd_mint_info(SseDeserializer deserializer);
 
 @protected int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
 
 @protected BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
-
-@protected CashuTransaction sse_decode_cashu_transaction(SseDeserializer deserializer);
 
 @protected CommitResult sse_decode_commit_result(SseDeserializer deserializer);
 
@@ -379,15 +336,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected int sse_decode_i_32(SseDeserializer deserializer);
 
-@protected PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
-
 @protected InvoiceInfo sse_decode_invoice_info(SseDeserializer deserializer);
 
-@protected InvoiceInfoV1 sse_decode_invoice_info_v_1(SseDeserializer deserializer);
-
 @protected InvoiceStatus sse_decode_invoice_status(SseDeserializer deserializer);
-
-@protected InvoiceStatusV1 sse_decode_invoice_status_v_1(SseDeserializer deserializer);
 
 @protected KeyPackageResult sse_decode_key_package_result(SseDeserializer deserializer);
 
@@ -401,25 +352,21 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<String> sse_decode_list_String(SseDeserializer deserializer);
 
-@protected List<CashuTransaction> sse_decode_list_cashu_transaction(SseDeserializer deserializer);
-
 @protected List<Contact> sse_decode_list_contact(SseDeserializer deserializer);
 
 @protected List<List<String>> sse_decode_list_list_String(SseDeserializer deserializer);
 
 @protected List<Uint8List> sse_decode_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
-@protected List<LNTransaction> sse_decode_list_ln_transaction(SseDeserializer deserializer);
-
 @protected List<Mint> sse_decode_list_mint(SseDeserializer deserializer);
-
-@protected List<PaymentMethod> sse_decode_list_payment_method(SseDeserializer deserializer);
 
 @protected List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer);
 
 @protected Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
 @protected List<(MintUrl,Amount)> sse_decode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(SseDeserializer deserializer);
+
+@protected List<(String,bool)> sse_decode_list_record_string_bool(SseDeserializer deserializer);
 
 @protected List<(String,List<Uint8List>)> sse_decode_list_record_string_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
@@ -433,10 +380,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected List<Transaction> sse_decode_list_transaction(SseDeserializer deserializer);
 
-@protected List<TransactionV1> sse_decode_list_transaction_v_1(SseDeserializer deserializer);
-
-@protected LNTransaction sse_decode_ln_transaction(SseDeserializer deserializer);
-
 @protected MessageInType sse_decode_message_in_type(SseDeserializer deserializer);
 
 @protected MessageResult sse_decode_message_result(SseDeserializer deserializer);
@@ -446,10 +389,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected MintInfo sse_decode_mint_info(SseDeserializer deserializer);
 
 @protected NostrEvent sse_decode_nostr_event(SseDeserializer deserializer);
-
-@protected NutSupported sse_decode_nut_supported(SseDeserializer deserializer);
-
-@protected Nuts sse_decode_nuts(SseDeserializer deserializer);
 
 @protected String? sse_decode_opt_String(SseDeserializer deserializer);
 
@@ -473,19 +412,15 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
 
-@protected PaymentMethod sse_decode_payment_method(SseDeserializer deserializer);
-
-@protected PaymentMethodSettings sse_decode_payment_method_settings(SseDeserializer deserializer);
-
 @protected (MintUrl,Amount) sse_decode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(SseDeserializer deserializer);
-
-@protected (bool,BigInt) sse_decode_record_bool_u_64(SseDeserializer deserializer);
 
 @protected (Uint8List,Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
 @protected (Uint8List,String?,String,List<String>?) sse_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(SseDeserializer deserializer);
 
 @protected (Uint8List,String,List<String>?) sse_decode_record_list_prim_u_8_strict_string_opt_list_string(SseDeserializer deserializer);
+
+@protected (String,bool) sse_decode_record_string_bool(SseDeserializer deserializer);
 
 @protected (String,List<Uint8List>) sse_decode_record_string_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
@@ -505,10 +440,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (BigInt,BigInt,BigInt) sse_decode_record_u_64_u_64_u_64(SseDeserializer deserializer);
 
-@protected (BigInt,BigInt) sse_decode_record_u_64_usize(SseDeserializer deserializer);
-
-@protected (BigInt,BigInt) sse_decode_record_usize_usize(SseDeserializer deserializer);
-
 @protected (BigInt,BigInt,BigInt) sse_decode_record_usize_usize_usize(SseDeserializer deserializer);
 
 @protected Secp256k1Account sse_decode_secp_256_k_1_account(SseDeserializer deserializer);
@@ -517,21 +448,13 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected TokenInfo sse_decode_token_info(SseDeserializer deserializer);
 
-@protected TokenInfoV1 sse_decode_token_info_v_1(SseDeserializer deserializer);
-
 @protected Transaction sse_decode_transaction(SseDeserializer deserializer);
 
 @protected TransactionDirection sse_decode_transaction_direction(SseDeserializer deserializer);
 
-@protected TransactionDirectionV1 sse_decode_transaction_direction_v_1(SseDeserializer deserializer);
-
 @protected TransactionKind sse_decode_transaction_kind(SseDeserializer deserializer);
 
 @protected TransactionStatus sse_decode_transaction_status(SseDeserializer deserializer);
-
-@protected TransactionStatusV1 sse_decode_transaction_status_v_1(SseDeserializer deserializer);
-
-@protected TransactionV1 sse_decode_transaction_v_1(SseDeserializer deserializer);
 
 @protected int sse_decode_u_16(SseDeserializer deserializer);
 
@@ -569,6 +492,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_Map_String_String_None(Map<String, String> self, SseSerializer serializer);
 
+@protected void sse_encode_Map_String_bool_None(Map<String, bool> self, SseSerializer serializer);
+
 @protected void sse_encode_Map_String_list_list_prim_u_8_strict_None(Map<String, List<Uint8List>> self, SseSerializer serializer);
 
 @protected void sse_encode_Map_String_opt_box_autoadd_u_64_None(Map<String, BigInt?> self, SseSerializer serializer);
@@ -599,8 +524,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer);
 
-@protected void sse_encode_box_autoadd_cashu_transaction(CashuTransaction self, SseSerializer serializer);
-
 @protected void sse_encode_box_autoadd_keychat_identity_key(KeychatIdentityKey self, SseSerializer serializer);
 
 @protected void sse_encode_box_autoadd_keychat_identity_key_pair(KeychatIdentityKeyPair self, SseSerializer serializer);
@@ -609,15 +532,11 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_box_autoadd_keychat_signal_session(KeychatSignalSession self, SseSerializer serializer);
 
-@protected void sse_encode_box_autoadd_ln_transaction(LNTransaction self, SseSerializer serializer);
-
 @protected void sse_encode_box_autoadd_mint_info(MintInfo self, SseSerializer serializer);
 
 @protected void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
 
 @protected void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
-
-@protected void sse_encode_cashu_transaction(CashuTransaction self, SseSerializer serializer);
 
 @protected void sse_encode_commit_result(CommitResult self, SseSerializer serializer);
 
@@ -631,15 +550,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_i_32(int self, SseSerializer serializer);
 
-@protected void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
-
 @protected void sse_encode_invoice_info(InvoiceInfo self, SseSerializer serializer);
 
-@protected void sse_encode_invoice_info_v_1(InvoiceInfoV1 self, SseSerializer serializer);
-
 @protected void sse_encode_invoice_status(InvoiceStatus self, SseSerializer serializer);
-
-@protected void sse_encode_invoice_status_v_1(InvoiceStatusV1 self, SseSerializer serializer);
 
 @protected void sse_encode_key_package_result(KeyPackageResult self, SseSerializer serializer);
 
@@ -653,25 +566,21 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
-@protected void sse_encode_list_cashu_transaction(List<CashuTransaction> self, SseSerializer serializer);
-
 @protected void sse_encode_list_contact(List<Contact> self, SseSerializer serializer);
 
 @protected void sse_encode_list_list_String(List<List<String>> self, SseSerializer serializer);
 
 @protected void sse_encode_list_list_prim_u_8_strict(List<Uint8List> self, SseSerializer serializer);
 
-@protected void sse_encode_list_ln_transaction(List<LNTransaction> self, SseSerializer serializer);
-
 @protected void sse_encode_list_mint(List<Mint> self, SseSerializer serializer);
-
-@protected void sse_encode_list_payment_method(List<PaymentMethod> self, SseSerializer serializer);
 
 @protected void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer);
 
 @protected void sse_encode_list_prim_u_8_strict(Uint8List self, SseSerializer serializer);
 
 @protected void sse_encode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(List<(MintUrl,Amount)> self, SseSerializer serializer);
+
+@protected void sse_encode_list_record_string_bool(List<(String,bool)> self, SseSerializer serializer);
 
 @protected void sse_encode_list_record_string_list_list_prim_u_8_strict(List<(String,List<Uint8List>)> self, SseSerializer serializer);
 
@@ -685,10 +594,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_list_transaction(List<Transaction> self, SseSerializer serializer);
 
-@protected void sse_encode_list_transaction_v_1(List<TransactionV1> self, SseSerializer serializer);
-
-@protected void sse_encode_ln_transaction(LNTransaction self, SseSerializer serializer);
-
 @protected void sse_encode_message_in_type(MessageInType self, SseSerializer serializer);
 
 @protected void sse_encode_message_result(MessageResult self, SseSerializer serializer);
@@ -698,10 +603,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_mint_info(MintInfo self, SseSerializer serializer);
 
 @protected void sse_encode_nostr_event(NostrEvent self, SseSerializer serializer);
-
-@protected void sse_encode_nut_supported(NutSupported self, SseSerializer serializer);
-
-@protected void sse_encode_nuts(Nuts self, SseSerializer serializer);
 
 @protected void sse_encode_opt_String(String? self, SseSerializer serializer);
 
@@ -725,19 +626,15 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_opt_list_prim_u_8_strict(Uint8List? self, SseSerializer serializer);
 
-@protected void sse_encode_payment_method(PaymentMethod self, SseSerializer serializer);
-
-@protected void sse_encode_payment_method_settings(PaymentMethodSettings self, SseSerializer serializer);
-
 @protected void sse_encode_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount((MintUrl,Amount) self, SseSerializer serializer);
-
-@protected void sse_encode_record_bool_u_64((bool,BigInt) self, SseSerializer serializer);
 
 @protected void sse_encode_record_list_prim_u_8_strict_list_prim_u_8_strict((Uint8List,Uint8List) self, SseSerializer serializer);
 
 @protected void sse_encode_record_list_prim_u_8_strict_opt_string_string_opt_list_string((Uint8List,String?,String,List<String>?) self, SseSerializer serializer);
 
 @protected void sse_encode_record_list_prim_u_8_strict_string_opt_list_string((Uint8List,String,List<String>?) self, SseSerializer serializer);
+
+@protected void sse_encode_record_string_bool((String,bool) self, SseSerializer serializer);
 
 @protected void sse_encode_record_string_list_list_prim_u_8_strict((String,List<Uint8List>) self, SseSerializer serializer);
 
@@ -757,10 +654,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_record_u_64_u_64_u_64((BigInt,BigInt,BigInt) self, SseSerializer serializer);
 
-@protected void sse_encode_record_u_64_usize((BigInt,BigInt) self, SseSerializer serializer);
-
-@protected void sse_encode_record_usize_usize((BigInt,BigInt) self, SseSerializer serializer);
-
 @protected void sse_encode_record_usize_usize_usize((BigInt,BigInt,BigInt) self, SseSerializer serializer);
 
 @protected void sse_encode_secp_256_k_1_account(Secp256k1Account self, SseSerializer serializer);
@@ -769,21 +662,13 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_token_info(TokenInfo self, SseSerializer serializer);
 
-@protected void sse_encode_token_info_v_1(TokenInfoV1 self, SseSerializer serializer);
-
 @protected void sse_encode_transaction(Transaction self, SseSerializer serializer);
 
 @protected void sse_encode_transaction_direction(TransactionDirection self, SseSerializer serializer);
 
-@protected void sse_encode_transaction_direction_v_1(TransactionDirectionV1 self, SseSerializer serializer);
-
 @protected void sse_encode_transaction_kind(TransactionKind self, SseSerializer serializer);
 
 @protected void sse_encode_transaction_status(TransactionStatus self, SseSerializer serializer);
-
-@protected void sse_encode_transaction_status_v_1(TransactionStatusV1 self, SseSerializer serializer);
-
-@protected void sse_encode_transaction_v_1(TransactionV1 self, SseSerializer serializer);
 
 @protected void sse_encode_u_16(int self, SseSerializer serializer);
 

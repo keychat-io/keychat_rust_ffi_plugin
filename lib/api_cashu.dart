@@ -15,9 +15,11 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `get_wallet`, `get_wallet`, `lock`, `mnemonic`, `update_mnmonic`
 
 
-            Future<void>  initDb({required String dbpath , required String words , required bool dev }) => RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words, dev: dev);
+            Future<List<String>>  cashuV1InitSendAll({required String dbpath , String? words }) => RustLib.instance.api.crateApiCashuCashuV1InitSendAll(dbpath: dbpath, words: words);
 
-Future<List<String>>  initCashu({required int prepareSatsOnceTime }) => RustLib.instance.api.crateApiCashuInitCashu(prepareSatsOnceTime: prepareSatsOnceTime);
+Future<void>  initDb({required String dbpath , required String words , required bool dev }) => RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words, dev: dev);
+
+Future<List<Mint>>  initCashu({required int prepareSatsOnceTime }) => RustLib.instance.api.crateApiCashuInitCashu(prepareSatsOnceTime: prepareSatsOnceTime);
 
 Future<bool>  setMnemonic({String? words }) => RustLib.instance.api.crateApiCashuSetMnemonic(words: words);
 
@@ -86,7 +88,7 @@ Future<void>  removeTransactions({required BigInt unixTimestampLe , required Tra
 
 Future<BigInt>  getPendingTransactionsCount() => RustLib.instance.api.crateApiCashuGetPendingTransactionsCount();
 
-Future<void>  checkTransaction({required String id }) => RustLib.instance.api.crateApiCashuCheckTransaction(id: id);
+Future<Transaction>  checkTransaction({required String id }) => RustLib.instance.api.crateApiCashuCheckTransaction(id: id);
 
 /// (spents, pendings, all)
 Future<(BigInt,BigInt,BigInt)>  getAllProofsData() => RustLib.instance.api.crateApiCashuGetAllProofsData();

@@ -12,6 +12,10 @@ fn main() {
     // let migen_words = "mushroom venture grab fatigue excite solve onion include minute joy trade anxiety";
     println!("migen_words is {:?}", migen_words);
 
+    let tokens =
+        api::cashu_v1_init_send_all("rustest.db".to_string(), Some(migen_words.to_owned()));
+    println!("send all tokens {:?}", tokens);
+
     let init_db = api::init_db(DB_PATH.to_string(), migen_words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH, init_db);
 
@@ -38,11 +42,14 @@ fn main() {
     // let send = api::send_all(MINT_URL_MINIBITS.to_string());
     // println!("send token is {:?}", send);
 
-    // let send = api::send(2, MINT_URL_MINIBITS.to_string(), None);
+    // let send = api::send(1, MINT_URL_MINIBITS.to_string(), None);
     // println!("send token is {:?}", send);
 
-    let check_tx = api::check_pending();
-    println!("check_pending is {:?}", check_tx);
+    // let send = api::send(1, MINT_URL_MINIBITS.to_string(), None);
+    // println!("send token is {:?}", send);
+
+    // let check_tx = api::check_pending();
+    // println!("check_pending is {:?}", check_tx);
 
     // let check_proofs_tx: Result<(u64, u64, u64), anyhow::Error> = api::check_proofs();
     // println!("check_proofs is {:?}", check_proofs_tx);
@@ -52,10 +59,17 @@ fn main() {
     // println!("request_mint is {:?}", request_mint);
     // lnbc20n1p58vdq6pp5w46w0ve9rq40skwzlvk08774mtm44xymnrc3w5znymuj62zj6cssdqqcqzpuxqrwzqsp5hy7ltttz0fwgu8mpgnvn9re0638vye4ug97dr6zyxeppzukh784s9qxpqysgqxz8zzps2fyefmx8d9mq92m8xej9dy7s6kpg0x0lnxtlct30ml65rlkhwdw80ugefmeyl2jr484x4l255rc9f8nxche0lnnf6nhjwxucp4yq5my
 
-    let txs = api::get_ln_pending_transactions();
-    for tx in txs.unwrap() {
-        println!("tx {:?}", tx);
-    }
+    // let txs = api::get_all_transactions();
+    // for tx in txs.unwrap() {
+    //     println!("tx {:?}", tx);
+    // }
+
+    // let _remove = api::remove_transactions(1756795836, api::TransactionStatus::Pending);
+
+    let tx = api::check_transaction(
+        "b6b48cef5f376115eabc3e629273f3dc94a8e9f4b99666da5fe3ccb4336a92e9".to_string(),
+    );
+    println!("check_transaction is {:?}", tx);
 
     // let txs = api::get_cashu_pending_transactions();
     // for tx in txs.unwrap() {
@@ -96,10 +110,10 @@ fn main() {
     // let restore = api::restore(MINT_URL_MINIBITS.to_string(), None).unwrap();
     // println!("restore {:?}", restore);
 
-    // let txs = api::get_all_transactions();
-    // for tx in txs.unwrap() {
-    //     println!("tx {:?}", tx);
-    // }
+    let txs = api::get_all_transactions();
+    for tx in txs.unwrap() {
+        println!("tx {:?}", tx);
+    }
 
     // // test for get_cashu_transactions_with_offset
     // let cashu_txs = api::get_cashu_transactions_with_offset(0, 100);

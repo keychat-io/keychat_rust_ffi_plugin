@@ -83,22 +83,23 @@ pub struct _LNTransaction {
 }
 
 pub use cashu_wallet::types::{
-    Contact, Mint, MintInfo, NutSupported, Nuts, PaymentMethod, PaymentMethodSettings,
+    Contact as ContactV1, Mint as MintV1, MintInfo as MintInfoV1, NutSupported, Nuts,
+    PaymentMethod, PaymentMethodSettings,
 };
 
-#[frb(mirror(Mint))]
+#[frb(mirror(MintV1))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct _Mint {
     pub url: String,
     pub active: bool,
     pub time: u64,
-    pub info: Option<MintInfo>,
+    pub info: Option<MintInfoV1>,
 }
 
 /// NUT-06: Mint information
 // https://github.com/cashubtc/nuts/blob/main/06.md
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(MintInfo))]
+#[frb(mirror(MintInfoV1))]
 pub struct _MintInfo {
     pub name: String,
     pub version: String,
@@ -111,12 +112,12 @@ pub struct _MintInfo {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub motd: Option<String>,
     #[serde(default)]
-    pub contact: Vec<Contact>,
+    pub contact: Vec<ContactV1>,
     pub nuts: Nuts,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[frb(mirror(Contact))]
+#[frb(mirror(ContactV1))]
 pub struct _Contact {
     #[serde(default)]
     pub method: String,

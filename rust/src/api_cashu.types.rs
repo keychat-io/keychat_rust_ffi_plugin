@@ -43,79 +43,38 @@ pub enum _TransactionKind {
     LN,
 }
 
-// #[frb(mirror(TransactionV2))]
-// #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-// pub struct _TransactionV2 {
-//     pub mint_url: MintUrl,
-//     pub direction: TransactionDirectionV2,
-//     pub kind: TransactionKindV2,
-//     pub amount: Amount,
-//     pub fee: Amount,
-//     pub unit: CurrencyUnit,
-//     pub token: String,
-//     pub timestamp: u64,
-//     #[serde(default, skip_serializing_if = "Option::is_none")]
-//     pub memo: Option<String>,
-//     pub metadata: HashMap<String, String>,
-// }
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Mint {
+    pub url: String,
+    pub active: bool,
+    pub time: u64,
+    pub info: Option<MintInfo>,
+}
 
-// #[frb(mirror(MintUrl))]
-// #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-// pub struct _MintUrl(pub String);
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MintInfo {
+    pub name: String,
+    pub version: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pubkey: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description_long: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub motd: Option<String>,
+    #[serde(default)]
+    pub contact: Vec<Contact>,
+    pub nuts: HashMap<String, bool>,
+}
 
-// #[frb(mirror(Amount))]
-// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-// pub struct _Amount(pub u64);
-
-// #[frb(mirror(CurrencyUnit))]
-// #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-// pub enum _CurrencyUnit {
-//     /// Sat
-//     #[default]
-//     Sat,
-//     /// Msat
-//     Msat,
-//     /// Usd
-//     Usd,
-//     /// Euro
-//     Eur,
-//     /// Auth
-//     Auth,
-// }
-
-// #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-// pub struct Mint {
-//     pub url: String,
-//     pub active: bool,
-//     pub time: u64,
-//     pub info: Option<MintInfo>,
-// }
-
-// #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-// #[frb(mirror(MintInfo))]
-// pub struct MintInfo {
-//     pub name: String,
-//     pub version: String,
-//     #[serde(skip_serializing_if = "Option::is_none")]
-//     pub pubkey: Option<String>,
-//     #[serde(skip_serializing_if = "Option::is_none")]
-//     pub description: Option<String>,
-//     #[serde(skip_serializing_if = "Option::is_none")]
-//     pub description_long: Option<String>,
-//     #[serde(skip_serializing_if = "Option::is_none")]
-//     pub motd: Option<String>,
-//     #[serde(default)]
-//     pub contact: Vec<Contact>,
-//     pub nuts: HashMap<String, bool>,
-// }
-
-// #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-// pub struct Contact {
-//     #[serde(default)]
-//     pub method: String,
-//     #[serde(default)]
-//     pub info: String,
-// }
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Contact {
+    #[serde(default)]
+    pub method: String,
+    #[serde(default)]
+    pub info: String,
+}
 
 pub use bip39::Mnemonic;
 use bitcoin::bip32::Xpriv;
