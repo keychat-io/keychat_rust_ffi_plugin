@@ -86,11 +86,82 @@ lazy_static! {
         StdMutex::new(State::new().expect("failed to create tokio runtime"));
 }
 
+// for cashu v1 init db and send all
 pub fn cashu_v1_init_send_all(
     dbpath: String,
     words: Option<String>,
 ) -> anyhow::Result<Vec<String>> {
     api_cashu_v1::cashu_v1_init_send_all(dbpath, words)
+}
+
+// this is for init db and cashu once, only call once
+pub fn init_db_cashu_once(dbpath: String) -> anyhow::Result<()> {
+    init_db_once(dbpath)?;
+    init_cashu(32)?;
+    Ok(())
+}
+
+fn init_db_once(dbpath: String) -> anyhow::Result<()> {
+    std::env::set_var("RUST_BACKTRACE", "1");
+    let words = MnemonicInfo::generate_words(12)?;
+
+    let _ = set_mnemonic(Some(words.clone()));
+
+    let mi = MnemonicInfo::with_words(&words)?;
+    let seed = mi.mnemonic().to_seed("");
+
+    let mut state = State::lock()?;
+
+    let fut = async move {
+        let localstore: Arc<dyn WalletDatabase<Err = cdk_database::Error> + Send + Sync> =
+            Arc::new(WalletSqliteDatabase::new(&dbpath).await?);
+
+        let mut wallets: Vec<Wallet> = Vec::new();
+
+        let mints = localstore.get_mints().await?;
+        if mints.is_empty() {}
+
+        for (mint_url, mint_info) in mints {
+            let units = if let Some(mint_info) = mint_info {
+                mint_info.supported_units().into_iter().cloned().collect()
+            } else {
+                vec![CurrencyUnit::Sat]
+            };
+
+            for unit in units {
+                let mint_url_clone = mint_url.clone();
+                let builder = WalletBuilder::new()
+                    .mint_url(mint_url_clone.clone())
+                    .unit(unit)
+                    .localstore(localstore.clone())
+                    .seed(&seed);
+
+                let wallet = builder.build()?;
+
+                let wallet_clone = wallet.clone();
+
+                tokio::spawn(async move {
+                    if let Err(err) = wallet_clone.get_mint_info().await {
+                        error!(
+                            "Could not get mint quote for {}, {}",
+                            wallet_clone.mint_url, err
+                        );
+                    }
+                });
+
+                wallets.push(wallet);
+            }
+        }
+        let multi_mint_wallet = MultiMintWallet::new(localstore, Arc::new(seed), wallets);
+
+        Ok(multi_mint_wallet)
+    };
+
+    let result = state.rt.block_on(fut);
+
+    result.map(|w| {
+        state.wallet = Some(w);
+    })
 }
 
 pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> {
@@ -835,12 +906,9 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transact
         //     }
         // }
         // let request = quote.request;
-        // println!("request mint {:?}", quote.request);
         // let proofs = wallet.mint(&quote_id, SplitTarget::default(), None).await?;
-
         // let receive_amount = proofs.total_amount()?;
 
-        // debug!("Received {receive_amount} from mint {mint_url}");
         Ok(quote)
     })?;
     let tx = tx.1;
@@ -905,7 +973,7 @@ pub fn mint_token(
     Ok(tx_new)
 }
 
-/// this need call every init melt mint
+/// this need call every init melt mint, do not used in flutter
 pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;

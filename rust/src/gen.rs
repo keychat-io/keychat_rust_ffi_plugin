@@ -40,7 +40,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.10.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1285402745;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 393643309;
 
 // Section: executor
 
@@ -3480,6 +3480,41 @@ fn wire__crate__api_cashu__init_db_impl(
         },
     )
 }
+fn wire__crate__api_cashu__init_db_cashu_once_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "init_db_cashu_once",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_dbpath = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api_cashu::init_db_cashu_once(api_dbpath)?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api_signal__init_keypair_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -6553,92 +6588,93 @@ fn pde_ffi_dispatcher_primary_impl(
         88 => wire__crate__api_signal__init_impl(port, ptr, rust_vec_len, data_len),
         89 => wire__crate__api_cashu__init_cashu_impl(port, ptr, rust_vec_len, data_len),
         90 => wire__crate__api_cashu__init_db_impl(port, ptr, rust_vec_len, data_len),
-        91 => wire__crate__api_signal__init_keypair_impl(port, ptr, rust_vec_len, data_len),
-        92 => wire__crate__api_mls__init_mls_db_impl(port, ptr, rust_vec_len, data_len),
-        93 => wire__crate__api_signal__init_signal_db_impl(port, ptr, rust_vec_len, data_len),
-        94 => wire__crate__api_mls__join_mls_group_impl(port, ptr, rust_vec_len, data_len),
-        95 => wire__crate__api_cashu__melt_impl(port, ptr, rust_vec_len, data_len),
-        96 => wire__crate__api_cashu__merge_proofs_impl(port, ptr, rust_vec_len, data_len),
-        97 => wire__crate__api_cashu__types__mint_cashu_info_default_impl(
+        91 => wire__crate__api_cashu__init_db_cashu_once_impl(port, ptr, rust_vec_len, data_len),
+        92 => wire__crate__api_signal__init_keypair_impl(port, ptr, rust_vec_len, data_len),
+        93 => wire__crate__api_mls__init_mls_db_impl(port, ptr, rust_vec_len, data_len),
+        94 => wire__crate__api_signal__init_signal_db_impl(port, ptr, rust_vec_len, data_len),
+        95 => wire__crate__api_mls__join_mls_group_impl(port, ptr, rust_vec_len, data_len),
+        96 => wire__crate__api_cashu__melt_impl(port, ptr, rust_vec_len, data_len),
+        97 => wire__crate__api_cashu__merge_proofs_impl(port, ptr, rust_vec_len, data_len),
+        98 => wire__crate__api_cashu__types__mint_cashu_info_default_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        98 => wire__crate__api_cashu__mint_token_impl(port, ptr, rust_vec_len, data_len),
-        99 => wire__crate__api_cashu__multi_receive_impl(port, ptr, rust_vec_len, data_len),
-        100 => wire__crate__api_nostr__nip47_encode_uri_impl(port, ptr, rust_vec_len, data_len),
-        101 => wire__crate__api_nostr__nip47_parse_request_impl(port, ptr, rust_vec_len, data_len),
-        102 => {
+        99 => wire__crate__api_cashu__mint_token_impl(port, ptr, rust_vec_len, data_len),
+        100 => wire__crate__api_cashu__multi_receive_impl(port, ptr, rust_vec_len, data_len),
+        101 => wire__crate__api_nostr__nip47_encode_uri_impl(port, ptr, rust_vec_len, data_len),
+        102 => wire__crate__api_nostr__nip47_parse_request_impl(port, ptr, rust_vec_len, data_len),
+        103 => {
             wire__crate__api_mls__normal_member_commit_leave_impl(port, ptr, rust_vec_len, data_len)
         }
-        103 => wire__crate__api_mls__others_commit_normal_impl(port, ptr, rust_vec_len, data_len),
-        104 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
-        105 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
+        104 => wire__crate__api_mls__others_commit_normal_impl(port, ptr, rust_vec_len, data_len),
+        105 => wire__crate__api_mls__others_proposal_leave_impl(port, ptr, rust_vec_len, data_len),
+        106 => wire__crate__api_signal__parse_identity_from_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        106 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
+        107 => wire__crate__api_signal__parse_is_prekey_signal_message_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        107 => wire__crate__api_mls__parse_lifetime_from_key_package_impl(
+        108 => wire__crate__api_mls__parse_lifetime_from_key_package_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        108 => wire__crate__api_mls__parse_mls_msg_type_impl(port, ptr, rust_vec_len, data_len),
-        109 => wire__crate__api_cashu__prepare_one_proofs_impl(port, ptr, rust_vec_len, data_len),
-        110 => wire__crate__api_cashu__print_proofs_impl(port, ptr, rust_vec_len, data_len),
-        111 => wire__crate__api_signal__process_prekey_bundle_api_impl(
+        109 => wire__crate__api_mls__parse_mls_msg_type_impl(port, ptr, rust_vec_len, data_len),
+        110 => wire__crate__api_cashu__prepare_one_proofs_impl(port, ptr, rust_vec_len, data_len),
+        111 => wire__crate__api_cashu__print_proofs_impl(port, ptr, rust_vec_len, data_len),
+        112 => wire__crate__api_signal__process_prekey_bundle_api_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        112 => wire__crate__api_cashu__receive_token_impl(port, ptr, rust_vec_len, data_len),
-        113 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
-        114 => wire__crate__api_cashu__remove_mint_impl(port, ptr, rust_vec_len, data_len),
-        115 => wire__crate__api_cashu__remove_transactions_impl(port, ptr, rust_vec_len, data_len),
-        116 => wire__crate__api_cashu__request_mint_impl(port, ptr, rust_vec_len, data_len),
-        117 => wire__crate__api_cashu__restore_impl(port, ptr, rust_vec_len, data_len),
-        118 => wire__crate__api_mls__self_commit_impl(port, ptr, rust_vec_len, data_len),
-        119 => wire__crate__api_mls__self_leave_impl(port, ptr, rust_vec_len, data_len),
-        120 => wire__crate__api_mls__self_update_impl(port, ptr, rust_vec_len, data_len),
-        121 => wire__crate__api_cashu__send_impl(port, ptr, rust_vec_len, data_len),
-        122 => wire__crate__api_cashu__send_all_impl(port, ptr, rust_vec_len, data_len),
-        123 => wire__crate__api_cashu__send_stamp_impl(port, ptr, rust_vec_len, data_len),
-        124 => wire__crate__api_signal__session_contain_alice_addr_impl(
+        113 => wire__crate__api_cashu__receive_token_impl(port, ptr, rust_vec_len, data_len),
+        114 => wire__crate__api_mls__remove_members_impl(port, ptr, rust_vec_len, data_len),
+        115 => wire__crate__api_cashu__remove_mint_impl(port, ptr, rust_vec_len, data_len),
+        116 => wire__crate__api_cashu__remove_transactions_impl(port, ptr, rust_vec_len, data_len),
+        117 => wire__crate__api_cashu__request_mint_impl(port, ptr, rust_vec_len, data_len),
+        118 => wire__crate__api_cashu__restore_impl(port, ptr, rust_vec_len, data_len),
+        119 => wire__crate__api_mls__self_commit_impl(port, ptr, rust_vec_len, data_len),
+        120 => wire__crate__api_mls__self_leave_impl(port, ptr, rust_vec_len, data_len),
+        121 => wire__crate__api_mls__self_update_impl(port, ptr, rust_vec_len, data_len),
+        122 => wire__crate__api_cashu__send_impl(port, ptr, rust_vec_len, data_len),
+        123 => wire__crate__api_cashu__send_all_impl(port, ptr, rust_vec_len, data_len),
+        124 => wire__crate__api_cashu__send_stamp_impl(port, ptr, rust_vec_len, data_len),
+        125 => wire__crate__api_signal__session_contain_alice_addr_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        125 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
-        126 => wire__crate__api_nostr__sha1_hash_impl(port, ptr, rust_vec_len, data_len),
-        127 => wire__crate__api_nostr__sha256_hash_impl(port, ptr, rust_vec_len, data_len),
-        128 => wire__crate__api_nostr__sha256_hash_bytes_impl(port, ptr, rust_vec_len, data_len),
-        129 => wire__crate__api_nostr__sign_event_impl(port, ptr, rust_vec_len, data_len),
-        130 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
-        131 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
-        132 => {
+        126 => wire__crate__api_cashu__set_mnemonic_impl(port, ptr, rust_vec_len, data_len),
+        127 => wire__crate__api_nostr__sha1_hash_impl(port, ptr, rust_vec_len, data_len),
+        128 => wire__crate__api_nostr__sha256_hash_impl(port, ptr, rust_vec_len, data_len),
+        129 => wire__crate__api_nostr__sha256_hash_bytes_impl(port, ptr, rust_vec_len, data_len),
+        130 => wire__crate__api_nostr__sign_event_impl(port, ptr, rust_vec_len, data_len),
+        131 => wire__crate__api_nostr__sign_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        132 => wire__crate__api_signal__store_prekey_api_impl(port, ptr, rust_vec_len, data_len),
+        133 => {
             wire__crate__api_signal__store_signed_key_api_impl(port, ptr, rust_vec_len, data_len)
         }
-        133 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
-        134 => wire__crate__api_mls__update_group_context_extensions_impl(
+        134 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
+        135 => wire__crate__api_mls__update_group_context_extensions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        135 => wire__crate__api_cashu__validate_mint_number_impl(port, ptr, rust_vec_len, data_len),
-        136 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
-        137 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        136 => wire__crate__api_cashu__validate_mint_number_impl(port, ptr, rust_vec_len, data_len),
+        137 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
+        138 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

@@ -8,13 +8,15 @@ import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
-            // These functions are ignored because they are not marked as `pub`: `_send`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `mint_balances`, `new`
+            // These functions are ignored because they are not marked as `pub`: `_send`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `STATE`, `State`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `get_wallet`, `get_wallet`, `lock`, `mnemonic`, `update_mnmonic`
 
 
             Future<List<String>>  cashuV1InitSendAll({required String dbpath , String? words }) => RustLib.instance.api.crateApiCashuCashuV1InitSendAll(dbpath: dbpath, words: words);
+
+Future<void>  initDbCashuOnce({required String dbpath }) => RustLib.instance.api.crateApiCashuInitDbCashuOnce(dbpath: dbpath);
 
 Future<void>  initDb({required String dbpath , required String words , required bool dev }) => RustLib.instance.api.crateApiCashuInitDb(dbpath: dbpath, words: words, dev: dev);
 
@@ -61,7 +63,7 @@ Future<Transaction>  requestMint({required BigInt amount , required String activ
 /// don not used in flutter, and put it in check_pending
 Future<Transaction>  mintToken({required BigInt amount , required String quoteId , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, quoteId: quoteId, activeMint: activeMint);
 
-/// this need call every init melt mint
+/// this need call every init melt mint, do not used in flutter
 Future<BigInt>  checkAllMintQuotes() => RustLib.instance.api.crateApiCashuCheckAllMintQuotes();
 
 /// Checks pending proofs for spent status

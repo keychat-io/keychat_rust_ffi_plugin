@@ -8,15 +8,15 @@ const MINT_URL: &str = "https://8333.space:3338/";
 const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
-    // let migen_words = MnemonicInfo::generate_words(12).unwrap();
-    let words = "unaware awesome finish calm deputy doll roast own dumb liar afraid differ";
+    let words = MnemonicInfo::generate_words(12).unwrap();
+    // let words = "unaware awesome finish calm deputy doll roast own dumb liar afraid differ";
 
-    // let migen_words = "mushroom venture grab fatigue excite solve onion include minute joy trade anxiety";
-    println!("migen_words is {:?}", words);
+    // // let migen_words = "mushroom venture grab fatigue excite solve onion include minute joy trade anxiety";
+    // println!("migen_words is {:?}", words);
 
-    let tokens =
-        api::cashu_v1_init_send_all("ecash.db".to_string(), Some(words.to_owned()));
-    println!("send all tokens {:?}", tokens);
+    // let tokens =
+    //     api::cashu_v1_init_send_all("ecash.db".to_string(), Some(words.to_owned()));
+    // println!("send all tokens {:?}", tokens);
 
     // let words = "bunker feel away slide trip girl amazing resource veteran direct cotton blanket";
 
@@ -29,23 +29,26 @@ fn main() {
     let init_cashu = api::init_cashu(32);
     println!("init_cashu is {:?}", init_cashu);
 
-    if tokens.is_ok() {
-        for token in tokens.unwrap() {
-            let re = api::receive_token(token);
-            println!("receive token is {:?}", re);
-        }
-    }
+    // if tokens.is_ok() {
+    //     for token in tokens.unwrap() {
+    //         let re = api::receive_token(token);
+    //         println!("receive token is {:?}", re);
+    //     }
+    // }
     
+
+    // test for receive token
+    // let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhBGFzeEAxNmNiN2I4ZDBlYmEyN2RlZjM3MWU3ZDc5ZTFkOTI0MzA1ZGI2NmY1NWJkMGQyY2ZjNDQ0ZDhjMWUwZWU1ZjE2YWNYIQIE02vnQHZdc_R9ICwZeevzwLT60xC7fGTaOkTB4eF4b2Fko2FlWCBfLo0MSQYvgF_txSwQ3Z2pK2gEzriFowPn0gp8n9GuqWFzWCCSc_MnxZFodM57ueEWwhC3N2i3n347KzfEb-L1qa9y_mFyWCBVQT9VL_dEH9FKo6eMkUXBQew6-yMqkTheDj5K6klcPqRhYQFhc3hAM2U2N2E0ZTE2OTVlNDdhYWZiZjg5MjE5MTg4Y2E1MGMwYTFmZjE4NDI1YTkzNDFkYTFmZDhjODYwNmFhNzA1ZWFjWCECC9LTuz4_MOuitMLCxIuCqLsMN4-6hQivlSs7Phwjf3NhZKNhZVggSZ7BSlXLJOZyWcR8Zs7M1w1xN18HqRZcpLFD3mHUdS9hc1gg_x-Z5RwOE6Cgm_k3SvyW-ug5dhs6qBRs3XIZdnylQ_hhclggedxBShp_9snXpd9xzoJHDHyGBdc3RHjwjCoW5uaXf1U".trim();
+    // let re = api::receive_token(encoded_token_8338.to_string());
+    // println!("receive token is {:?}", re);
 
     // test fot get balances
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
     // return;
 
-    // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCFpGFhAmFzeEA4NTlhYWY3ZDc2ODlmNDAxYjA5ODAyM2VkODUxY2JlYzRhMTAwYTZiN2UyODAxN2M1MTMxMjMyYjE4MTM4NmE1YWNYIQJ79MIc8Q6WS1tHBYNt0VpeALFvKhYC8ss2aBq_nJQPAmFko2FlWCCLMJmoe1pRqB0COfeYF7J06Ino7OuoVMFpS2bKwG72zGFzWCD1Dl2mkKw3liNZ7XYXGMrqCJXuQB0UWm-uOKk7ij6vC2FyWCA3ujDzDRSKb5wSp4GPx6a7VYVFXL_w8qh--q3UkDjlLqRhYQJhc3hAYTQxMWUyODE3ODBkYTEyNDA5NDZlZTQzMWUyZGI1Y2I5ODE0ODNmZWY5YzljMWU5OTNlZTlmYTgxOTI2MmFkM2FjWCECZSA-jt4LEDUkXnwCPUpTgZiCw9O1ac_SKOwtu3Pa9WhhZKNhZVggzRXmkSThGDsNlnjWXKP3bMsmVPLzZgJsZsoy_OAyIRZhc1ggaKx9yYu05bjSRT8ov1kb3CJLa9aoa2zwYD3RK3K2SZFhclgghZRLcjz6KqoXS3GshgsyiKZ11NFgFGak3Fq7ohJiCROkYWECYXN4QGJmMTExYWZjYWU1YTIxMDNhYTBlMGZiYTVjYTM1ZmYyNmRlNzNmNTkyMjExYzUyZDZlZDdiZDJiYWU4ZGFlYTNhY1ghA2R3ueOAXvtIKBIJp2S1a7vsp6cxZodzaFJBTU0azxsyYWSjYWVYIOZKzYEjIlpUPELRNuNKYEuFlihj7HAltFpq4SXLBf4mYXNYICHZ9nNqnm-5oyFh9hSuuH_0ynnMrOqsLF1V4no8pRCgYXJYIELI3kNv9VNr4WLc7_PuDxvnx0-IP_lAxYd0ZgtvnbvxpGFhAmFzeEBkMmQ5YTNmNTYyYjBmNWExY2ZiZDdkNDJhYjhlMGEyZWE5ZjViODFlNDVmZTMxMjk0OGU5NmRhMmY1OTkwNTQ0YWNYIQJfNrCZGdWC27swbLLPiZeDa9dxoUrNUYCPpGpnCQTbsGFko2FlWCAtbw3KzH2pyyh96jbPzfds4daRQL-JnQZZzOGIqB9spGFzWCCuHdcthrK-mAoO8-IsCuDxTzmkiCBuk9JYsGUM67jXNmFyWCC2b6oxfRakvHSO4nygzqQshSlUcLuSliUqwdvYT6Ht2aRhYQJhc3hAZTRhYTdlNWU5OWQ0YTkyNTljYTQ5MGVhZTA3NzYzODMzZTA3NmQ3NTRkNGQ4NzllNDY1ZTliNTcxOGQzZmQ5ZWFjWCEDurTiAFW22YhpkGhu1y8FUHp3TGLs5TEH2JyahZoLe-9hZKNhZVggfzoCRnbEOw-yqaI8Zghf_ObHhu9ka2fLQP0jtMcwCw5hc1ggJE0jeIcmFThNY834fwTfJU7c3GZZtpLifIQAaINrvgphclggmVsnpwnwysguJDkh0BYZunASbkgaTnBtU908sIgcGc4".trim();
-    // let re = api::receive_token(encoded_token_8338.to_string());
-    // println!("receive token is {:?}", re);
+    let words = MnemonicInfo::generate_words(12).unwrap();
+    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
 
     // test for get mints
     // let mints = api::get_mints();
@@ -55,14 +58,27 @@ fn main() {
     // let send = api::send_all(MINT_URL_MINIBITS.to_string());
     // println!("send token is {:?}", send);
 
-    // let send = api::send(1, MINT_URL_MINIBITS.to_string(), None);
+    // let send = api::send_all(MINT_URL.to_string());
     // println!("send token is {:?}", send);
 
     // let send = api::send(1, MINT_URL_MINIBITS.to_string(), None);
     // println!("send token is {:?}", send);
 
-    // let check_tx = api::check_pending();
-    // println!("check_pending is {:?}", check_tx);
+    // let send = api::send(1, MINT_URL_MINIBITS.to_string(), None);
+    // println!("send token is {:?}", send);
+
+    let txs = api::get_ln_pending_transactions();
+    for tx in txs.unwrap() {
+        println!("ln tx pending {:?}", tx);
+    }
+
+    let txs = api::get_cashu_pending_transactions();
+    for tx in txs.unwrap() {
+        println!("cashu tx pending {:?}", tx);
+    }
+
+    let check_tx = api::check_pending();
+    println!("check_pending is {:?}", check_tx);
 
     // let check_proofs_tx: Result<(u64, u64, u64), anyhow::Error> = api::check_proofs();
     // println!("check_proofs is {:?}", check_proofs_tx);
@@ -79,15 +95,20 @@ fn main() {
 
     // let _remove = api::remove_transactions(1756795836, api::TransactionStatus::Pending);
 
-    let tx = api::check_transaction(
-        "b6b48cef5f376115eabc3e629273f3dc94a8e9f4b99666da5fe3ccb4336a92e9".to_string(),
-    );
-    println!("check_transaction is {:?}", tx);
+    // let tx = api::check_transaction(
+    //     "b6b48cef5f376115eabc3e629273f3dc94a8e9f4b99666da5fe3ccb4336a92e9".to_string(),
+    // );
+    // println!("check_transaction is {:?}", tx);
 
-    // let txs = api::get_cashu_pending_transactions();
-    // for tx in txs.unwrap() {
-    //     println!("tx pending {:?}", tx);
-    // }
+    let txs = api::get_ln_pending_transactions();
+    for tx in txs.unwrap() {
+        println!("ln tx pending {:?}", tx);
+    }
+
+    let txs = api::get_cashu_pending_transactions();
+    for tx in txs.unwrap() {
+        println!("cashu tx pending {:?}", tx);
+    }
 
     // test for check quote
     // let amounts = api::check_all_mint_quotes();
@@ -123,10 +144,10 @@ fn main() {
     // let restore = api::restore(MINT_URL_MINIBITS.to_string(), None).unwrap();
     // println!("restore {:?}", restore);
 
-    let txs = api::get_all_transactions();
-    for tx in txs.unwrap() {
-        println!("tx {:?}", tx);
-    }
+    // let txs = api::get_all_transactions();
+    // for tx in txs.unwrap() {
+    //     println!("tx {:?}", tx);
+    // }
 
     // // test for get_cashu_transactions_with_offset
     // let cashu_txs = api::get_cashu_transactions_with_offset(0, 100);
