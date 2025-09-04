@@ -38,7 +38,7 @@ fn main() {
     
 
     // test for receive token
-    // let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhBGFzeEAxNmNiN2I4ZDBlYmEyN2RlZjM3MWU3ZDc5ZTFkOTI0MzA1ZGI2NmY1NWJkMGQyY2ZjNDQ0ZDhjMWUwZWU1ZjE2YWNYIQIE02vnQHZdc_R9ICwZeevzwLT60xC7fGTaOkTB4eF4b2Fko2FlWCBfLo0MSQYvgF_txSwQ3Z2pK2gEzriFowPn0gp8n9GuqWFzWCCSc_MnxZFodM57ueEWwhC3N2i3n347KzfEb-L1qa9y_mFyWCBVQT9VL_dEH9FKo6eMkUXBQew6-yMqkTheDj5K6klcPqRhYQFhc3hAM2U2N2E0ZTE2OTVlNDdhYWZiZjg5MjE5MTg4Y2E1MGMwYTFmZjE4NDI1YTkzNDFkYTFmZDhjODYwNmFhNzA1ZWFjWCECC9LTuz4_MOuitMLCxIuCqLsMN4-6hQivlSs7Phwjf3NhZKNhZVggSZ7BSlXLJOZyWcR8Zs7M1w1xN18HqRZcpLFD3mHUdS9hc1gg_x-Z5RwOE6Cgm_k3SvyW-ug5dhs6qBRs3XIZdnylQ_hhclggedxBShp_9snXpd9xzoJHDHyGBdc3RHjwjCoW5uaXf1U".trim();
+    // let encoded_token_8338: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhBGFzeEA2YWM4MGExNTI0ZDQ4Y2RkOTBhYjIzMTkzNWI0YzgxZWNmZWEzZTg0NmI1MDVlNzM0MjMzZDhhNWM5NTdlOTI2YWNYIQJs59_-_747aI3JZzDXT-Ct5pmLM-hUm0kaGR7paTPSGGFko2FlWCARFE6PVaRqnGqQhJU1W7LlaKUJJxkVTzqWf5dAgYMb6mFzWCCqQ9aXX0Nt-DtMBQCKaSH_VCZvJhiDggaQ7qM53M7U5WFyWCDnz1i31hf0nrYneMwQjSUvsMK3G1VCEwYA1n3GE8vTnaRhYQFhc3hAZjFkNDA0ZTVlM2ZmOWE3MTY1ODgyNDM1NmVhMmJkNTY5OWY2OWNjZDkxOGU3YTczMDFmNWJiNmI2M2FjOGIzM2FjWCEC0so6IWiARRb-6Fk2SOuTKKQiG9hnBKyWgXZcwY7Zuy5hZKNhZVggRU4V2IfuDmpv_ulZ0AhCLa6A6lGsqKT6X3NlXQKBuyxhc1ggvMaH6mN8GE5FnNAYbaVJnlOfo07CBFQJsOWxA4HAqIhhclggCTbgnLg3SbEC8XRuccxZ83XawwlWhZAH-DH_pnRIFIg".trim();
     // let re = api::receive_token(encoded_token_8338.to_string());
     // println!("receive token is {:?}", re);
 
@@ -93,7 +93,7 @@ fn main() {
     //     println!("tx {:?}", tx);
     // }
 
-    // let _remove = api::remove_transactions(1756795836, api::TransactionStatus::Pending);
+    // let _remove = api::remove_transactions(1756981707, api::TransactionStatus::Pending);
 
     // let tx = api::check_transaction(
     //     "b6b48cef5f376115eabc3e629273f3dc94a8e9f4b99666da5fe3ccb4336a92e9".to_string(),
@@ -115,8 +115,8 @@ fn main() {
     // println!("check_all_mint_quotes {:?}", amounts);
 
     // test for melt
-    // let invoice = "lnbc30n1p52csftpp5jdjqw63kjlgkupl97awn23fj8hsqkm4cvckrrvg7ejxzu9zv66zqdqqcqzpuxqrwzqsp5sn07ddv5ggu37y7mgredgy6aucjs26jgd67gmw8fpvftug33vxts9qxpqysgqua8aj7u3yxm3atw5t7jjk4lnh3k7zvc3d04gs7y9mh4grk5ks7t3sj6z7srck3du5ezaec93a8q24cvghwhqffr9dcp7k8j6h5rljagpw7sq08".to_string();
-    // let _melt = api::melt(invoice, MINT_URL.to_string(), None);
+    let invoice = "lnbc50n1p5tju7dpp5qu6xmp4kufa5dqfgqppttawctny2trnfth080yxyyq5rl5rys9esdqqcqzpuxqrwzqsp5thzfau3t5my8l8ncvkfscet9qyxqzadhxdaruuvzruvw5w4jlxxq9qxpqysgqd2hp8uj9l0l3g7lu8np555rgqwgykzkf3wsl6rartuk6mpc59089h82qd3r66zuph7yv5wthpucdmaqjwl96cfcy4e06p6u4czplq4qqc7tser".to_string();
+    let _melt = api::melt(invoice, MINT_URL.to_string(), None);
 
     // test for send stamp
     // let stamp = api::send_stamp(1,  vec![MINT_URL_MINIBITS.to_string()], None);
@@ -144,10 +144,10 @@ fn main() {
     // let restore = api::restore(MINT_URL_MINIBITS.to_string(), None).unwrap();
     // println!("restore {:?}", restore);
 
-    // let txs = api::get_all_transactions();
-    // for tx in txs.unwrap() {
-    //     println!("tx {:?}", tx);
-    // }
+    let txs = api::get_all_transactions();
+    for tx in txs.unwrap() {
+        println!("tx {:?}", tx);
+    }
 
     // // test for get_cashu_transactions_with_offset
     // let cashu_txs = api::get_cashu_transactions_with_offset(0, 100);
