@@ -1305,9 +1305,6 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
             .await?
             .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
 
-        if tx.direction != cdk_common::wallet::TransactionDirection::Outgoing {
-            return Err(anyhow::anyhow!("Invalid transaction direction"));
-        }
         let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
         if tx.status == cdk_common::wallet::TransactionStatus::Pending {
             let _check = wallet.check_proofs_tx_spent_state().await?;
