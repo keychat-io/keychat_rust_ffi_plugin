@@ -13,18 +13,21 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MnemonicInfo>>
 abstract class MnemonicInfo implements RustOpaqueInterface {
   static Future<String> generateWords({required BigInt words}) =>
-      RustLib.instance.api.crateApiCashuTypesMnemonicInfoGenerateWords(words: words);
+      RustLib.instance.api
+          .crateApiCashuTypesMnemonicInfoGenerateWords(words: words);
 
   Future<void> mnemonic();
 
   // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
   static Future<MnemonicInfo> newInstance({required Mnemonic mnemonic}) =>
-      RustLib.instance.api.crateApiCashuTypesMnemonicInfoNew(mnemonic: mnemonic);
+      RustLib.instance.api
+          .crateApiCashuTypesMnemonicInfoNew(mnemonic: mnemonic);
 
   Future<void> pubkey();
 
   static Future<MnemonicInfo> withWords({required String words}) =>
-      RustLib.instance.api.crateApiCashuTypesMnemonicInfoWithWords(words: words);
+      RustLib.instance.api
+          .crateApiCashuTypesMnemonicInfoWithWords(words: words);
 }
 
 class CashuV1ToV2 {
@@ -42,7 +45,10 @@ class CashuV1ToV2 {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CashuV1ToV2 && runtimeType == other.runtimeType && tokens == other.tokens && counters == other.counters;
+      other is CashuV1ToV2 &&
+          runtimeType == other.runtimeType &&
+          tokens == other.tokens &&
+          counters == other.counters;
 }
 
 class ContactCashu {
@@ -54,7 +60,8 @@ class ContactCashu {
     required this.info,
   });
 
-  static Future<ContactCashu> default_() => RustLib.instance.api.crateApiCashuTypesContactCashuDefault();
+  static Future<ContactCashu> default_() =>
+      RustLib.instance.api.crateApiCashuTypesContactCashuDefault();
 
   @override
   int get hashCode => method.hashCode ^ info.hashCode;
@@ -62,7 +69,10 @@ class ContactCashu {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContactCashu && runtimeType == other.runtimeType && method == other.method && info == other.info;
+      other is ContactCashu &&
+          runtimeType == other.runtimeType &&
+          method == other.method &&
+          info == other.info;
 }
 
 class MintCashu {
@@ -79,7 +89,8 @@ class MintCashu {
   });
 
   @override
-  int get hashCode => url.hashCode ^ active.hashCode ^ time.hashCode ^ info.hashCode;
+  int get hashCode =>
+      url.hashCode ^ active.hashCode ^ time.hashCode ^ info.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -113,7 +124,8 @@ class MintCashuInfo {
     required this.nuts,
   });
 
-  static Future<MintCashuInfo> default_() => RustLib.instance.api.crateApiCashuTypesMintCashuInfoDefault();
+  static Future<MintCashuInfo> default_() =>
+      RustLib.instance.api.crateApiCashuTypesMintCashuInfoDefault();
 
   @override
   int get hashCode =>
