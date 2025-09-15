@@ -734,13 +734,14 @@ pub fn send_stamp(
         }
     }
 
+    debug!("send_stamp last try {} {}", amount, mints.join(","));
     // last try ?
     let mint_url = mints_first
         .iter()
         .chain(mints_second.iter())
         .next()
         .ok_or_else(|| cdk_common::Error::InsufficientFunds)?;
-    let tx = send(amount, mint_url.to_string(), info.clone())?;
+    let tx = _send(&mut state, amount, mint_url.to_string(), info.clone())?;
     Ok(tx)
 }
 
