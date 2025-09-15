@@ -12,7 +12,8 @@ fn main() {
     // test_prepare_proofs();
     // test_send_all();
     // test_send_stmap();
-    test_load_v2();
+    // test_load_v2();
+    // test_send();
 }
 
 fn test_load_v2() {
@@ -33,6 +34,25 @@ fn test_load_v2() {
     for tx in txs.unwrap() {
         println!("tx {:?}", tx);
     }
+}
+
+fn test_send() {
+    let words = "stairs slim wasp turn poem supply any suggest stove unknown flat enrich";
+    println!("generate_words is {:?}", words);
+    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
+    println!("init_db {}: {:?}", DB_PATH, init_db);
+    let init_cashu = api::init_cashu(32);
+    println!("init_cashu is {:?}", init_cashu);
+
+    // test fot get balances
+    let b1 = api::get_balances();
+    println!("get_balances before {:?}", b1);
+
+    let send = api::send(1, MINT_URL.to_string(), None);
+    println!("send token is {:?}", send);
+
+    let b2 = api::get_balances();
+    println!("get_balances after {:?}", b2);
 }
 
 fn test_send_all() {
@@ -65,7 +85,7 @@ fn test_send_stmap() {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
+    let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None);
     println!("send_stamp {:?}", stamp);
 
     let b2 = api::get_balances();
@@ -83,23 +103,27 @@ fn test_prepare_proofs() {
     println!("init_cashu is {:?}", init_cashu);
 
     // test for receive token
-    let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCDpGFhGCBhc3hANDRjYzY5Yjk1YmU3ZTM4ZmNlZjM4ZWY0ZDg5OTFjMzkxZGFiYTkzYTllY2VkNzUwOGZlNDI0NDg5YmZmN2UyNGFjWCEC_U2sEywtH5wMd3hpciH8_v2NJlLpY4MUzMQ_ZXkPI6phZKNhZVggJE4x8tIIhS2T9elh_AWKQgECO9HWEYnm7p_Ca32ttBFhc1ggc7TMQ5296UXNXkWwTz5damRNDgbIJIBseL0gA4nkWjZhclggtgwdDDIFuvxgmRV-ulhg-s7KNymMLsNO4sB4rbJbFWSkYWEQYXN4QDFkNWIyMTBiZDcwZmMwODI1MDQzOGEzOGFlM2VkNTM5YjlmZWQyYWVmN2JkMjU4Y2U0YmYzNGY5ODgzMGY0MzBhY1ghA3jXB1JglBgv8bTmVYhSCdWxIzP3xIbwOknBMseMT0NIYWSjYWVYIHpdimVI_X7t51_iK2GlEujX_BjaDFRTlKmlwlq6rZalYXNYIBsuvqX5-m3Viar4kt1OVngp_ZxcPxNXi_72WJQ8knggYXJYIP9WcF_JaFzveQuXAwnA9eB4BYtoNO00sO2y7ybw5TYFpGFhAmFzeEAxYmM4YWYyYzJiNjYyMTcwODcwNGJhNDg5ZDQzMDI5NjVjMjcwMTJlYmIzYjBjZTFkYWNmMmM5NTAwNDFkM2ExYWNYIQPTHQfk9CK16qGll5Qy0GYv7af4kRBCLwmFZbEYhe6dHmFko2FlWCCqR01m31q_Qqn119alZJcGuW5Eb5GYyaI4RsJUt55VdGFzWCAG6MIuqPg_oX_zziq1ZVzYGLrcj6yl5yd9WCY6BlrFvWFyWCAhDNtILk15GDBwor9021bC69lxVA4gw5eieDIUOO4gqA".trim();
-    let re = api::receive_token(encoded_token_8338.to_string());
+    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCDo2FhAmFzeEBmZmNmNzMzNjJiYmJlMGJiNzhlMmQ2OWViNTQyZDI1NDNmMGQ1ODBiYTE2MjdjMWNjNTBjNzlhZTM0NDFmZTE5YWNYIQIb24-O5cxyy8W7ajbSAR7u-YKRQeTj7f7tpXDvERJIFqNhYRBhc3hAZTU5OWQ1MmJkMDg1OTNmODg0MTg0ZTZlYmMwMmFkYzI5MDMyY2I4NGU5Yjg2ZWNhMzk1YzIyNWI0ZjZhMzg4N2FjWCEDtiQmeq_JArsInkvh2ZiMYqSs1fiDdKNN_3tq5Nr-eOujYWEYIGFzeEA0OTlmYTM0NzIyYjJlMDkxNWU4NzU4YjFmNzlhNmQyOTY5ZjU5OGIwZWMzYzgzZDg4Mjc5ODM3MjIxYTQzZTY2YWNYIQJkT2EG5zFWS4o6U9MY7qykLAahnqNYeawbSLs1hgvLmA".trim();
+    
+    let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
 
     // test fot get balances
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let prepare_one_proofs = api::prepare_one_proofs(32, MINT_URL_MINIBITS.to_string());
-    println!("prepare_one_proofs: {:?}", prepare_one_proofs);
-
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
+
+    let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None);
+    println!("send_stamp {:?}", stamp);
 
     // test fot get balances
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
+
+     // test for print proofs
+     let _ = api::print_proofs(MINT_URL.to_string());
 
     let txs = api::get_all_transactions();
     for tx in txs.unwrap() {

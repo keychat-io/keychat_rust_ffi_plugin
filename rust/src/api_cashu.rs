@@ -687,6 +687,63 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     Ok(a)
 }
 
+
+async fn prepare_one_proofs_back(wallet: &MultiMintWallet, thershold: u64, amount: u64, mint: String) -> anyhow::Result<u64> {
+    let denomination: u64 = 1;
+
+    if amount == 0 {
+        bail!("can't mint amount 0");
+    }
+    let unit = CurrencyUnit::from_str("sat")?;
+    let mint_url = MintUrl::from_str(&mint)?;
+
+    let mut count_before = 0u64;
+    let wallet = get_or_create_wallet(wallet, &mint_url, unit.clone()).await?;
+    let mut ps = wallet.get_unspent_proofs().await?;
+
+    ps.retain(|p| {
+        let is = *p.amount.as_ref() == denomination;
+        if is {
+            count_before += 1;
+        }
+        !is
+    });
+
+    // more than 10 no need prepare
+    if count_before >= thershold {
+        return  Ok(count_before);
+    }
+
+    if count_before * denomination < amount {
+        let rest_amount = amount - count_before * denomination;
+        let active_keyset_ids = wallet
+            .get_active_mint_keysets()
+            .await?
+            .into_iter()
+            .map(|keyset| keyset.id)
+            .collect();
+        let keyset_fees = wallet.get_keyset_fees().await?;
+        let selected = Wallet::select_proofs(
+            rest_amount.into(),
+            ps,
+            &active_keyset_ids,
+            &keyset_fees,
+            true,
+        )?;
+
+        wallet
+            .swap_denomination(
+                denomination.into(),
+                Some(rest_amount.into()),
+                selected.clone(),
+                false,
+            )
+            .await?;
+    };
+
+    Ok(count_before)
+}
+
 pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
@@ -855,7 +912,13 @@ fn _send(
             .map(|(_, amount)| *amount)
             .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
 
-        check_sufficient_funds(mint_amount?, amount.into())?;
+        let mint_amount = mint_amount?;
+        check_sufficient_funds(mint_amount.clone(), amount.into())?;
+        // prepare one proofs if less than 10, and set prepare amount to 32
+        if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
+            println!("need to prepare_one_proofs");
+            let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
+        }
         let prepared_send = wallet
             .prepare_send(amount.into(), SendOptions::default())
             .await?;
