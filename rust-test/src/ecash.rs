@@ -2,7 +2,7 @@
 // extern crate tracing;
 
 // use anyhow::bail;
-// use rust::api_cashu_v1::{self as api, cashu_wallet::wallet::MnemonicInfo};
+// use rust::api_cashu_v1::{self as api};
 
 // use api::*;
 
@@ -11,37 +11,37 @@
 // const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 // fn main() {
-//     let migen_words = MnemonicInfo::generate_words(12).unwrap();
-
-//     let r1 = api::init_db(DB_PATH.to_string(), Some(migen_words.to_owned()), false);
+//     // let migen_words = MnemonicInfo::generate_words(12).unwrap();
+//     let words = "crime common leopard humor invite muffin arrive tornado zone toast oak balcony";
+//     let r1 = api::init_db(DB_PATH.to_string(), Some(words.to_owned()), false);
 //     info!("init_db {}: {:?}", DB_PATH, r1);
 
 //     let _r1 = api::init_cashu(32);
 
-//     // let balance = api::get_balance(MINT_URL.to_string());
-//     // println!("get_balance: {:?}", balance);
+    // let balance = api::get_balance(MINT_URL.to_string());
+    // println!("get_balance: {:?}", balance);
 
-//     let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCBpGFhAmFzeEAxYjA1ZmU5OGFkNWIzOWRiYWY5NDcyMDhiYjFmZjNiM2RmY2NkMmNjZDA4MTUxZGU0OTE0NjlkNTZhNmY4MWM1YWNYIQJ7BAhOnPrZCod-_Ek8m7d2x2hW7KTQUvZJaHU4Ouja32Fko2FlWCA-gu3ReFJFN_YexxMVm5fYniQWNxl0EAqn4P0uuTDJRWFzWCC-GetR7X_FGrXT-bA3vmDVr8_afhGCMZiwCraQebhDKGFyWCD9Wh1R2ZQWtKf3HytqVw4ljx0mH0187uZi-WRNslZBNgs".trim();
-//     let r2 = api::receive_token(encoded_token_8338.to_string());
-//     println!("receive_token: {:?}", r2);
+    // let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCDpGFhAWFzeEA0MjY2ODcxNzkyM2VkYzA3ZGMwODk0NGNhNTlhYTU3N2U2ZTgwNmI1YmU2YmI0ODBlMTUyNjMzMDU4MTFjZGI3YWNYIQJ5lv6n3OeBVD0c8oXK5sPuHC2rTYsDStnBfxe_PDGwMGFko2FlWCDv6u4p5Z02z9dcQoqZUg_GIkz3NtfsgZBZg-wnsWHrNGFzWCD9h9-gUInuERd0BglQ_UQFhrJJd_TF6wbk-4P1wcsuwmFyWCANKZSPyatrPN3a_Grb7LiAkW1A-h8J8iwunq-bFkE1iaRhYQFhc3hAYTRlYjM3YzY2NjRhNzUzMzk0ZDk0OWZiOTM3ODUyMWU5ODQ4YmNjZWFjYzNlN2E1NTJmN2Q1MWI5OTRiMTc1OWFjWCEDkbxLaQWr5NTh-rNFjPKr7Ztl-heayyWvLde7LrFmqeFhZKNhZVgg-ZbdePbX6ypbxZRW82ZgAx7Iz-SRQfFqAI9eD1wYHPZhc1ggNxjVDddslVRleNntuLZcx-GwC0_6zwTMoFFTcqQxE2JhclggZm9hV0t3AFiOK_sQBbnaW7Zlzkeidz1sJhZRO3wdONWkYWEBYXN4QGRiNjBiNDFmOTlhOThmMjhmMzJlOGYxMTYwMmFiOTg1MTkyNGRlMGI3NjQ1N2RjOTQ2Y2MyODYyZDVmYjgwYWVhY1ghAnj-9SayXg5-duEJFqFUdDFCPUxxt_-N1277bKnnJ2MJYWSjYWVYIOzK9Fovw99jM8s4cnW5_8KUwc98bLNR6vH1YXWdbY9hYXNYIN9976MQWAgR1Z7QvniIgDi-Y6cMic9i7OrIU3F0PHD0YXJYIAeS5OezF6kTIwz3gZa9WLcQPq6ykYuxE5zR9MePVIUm".trim();
+    // let r2 = api::receive_token(encoded_token_8338.to_string());
+    // println!("receive_token: {:?}", r2);
 
-//     // let tokens = api::cashu_v1_init_send_all(DB_PATH.to_string(), Some(migen_words.to_owned()));
-//     // println!("send all tokens {:?}", tokens);
+    // let tokens = api::cashu_v1_init_send_all(DB_PATH.to_string(), Some(migen_words.to_owned()));
+    // println!("send all tokens {:?}", tokens);
 
-//     let balance = api::get_balance(MINT_URL.to_string());
-//     println!("get_balance: {:?}", balance);
+    // let balance = api::get_balance(MINT_URL_MINIBITS.to_string());
+    // println!("get_balance: {:?}", balance);
 
-//     // let balance = api::get_balances();
-//     // println!("get_balances: {:?}", balance);
+    // let balance = api::get_balances();
+    // println!("get_balances: {:?}", balance);
 
-//     // only balance great than 2 due to fee
-//     // if balance.unwrap().1 > 2 {
-//     //     let s = api::send_all(MINT_URL.to_string(), None);
-//     //     println!("send {:?}\n", s);
-//     // }
+    // only balance great than 2 due to fee
+    // if balance.unwrap().1 > 2 {
+    //     let s = api::send_all(MINT_URL.to_string(), None);
+    //     println!("send {:?}\n", s);
+    // }
 
-//     // let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
-//     // println!("try_get_wallet: {:?}", try_get_wallet);
+    // let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
+    // println!("try_get_wallet: {:?}", try_get_wallet);
 // }
 fn main() {}
 // fn main() {

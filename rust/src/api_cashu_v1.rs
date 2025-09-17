@@ -76,12 +76,13 @@ lazy_static! {
 pub fn cashu_v1_init_send_all(
     dbpath: String,
     _words: Option<String>,
-) -> anyhow::Result<Vec<String>> {
-    let words  = MnemonicInfo::generate_words(12)?;
+) -> anyhow::Result<(Vec<String>, String)> {
+    let words = MnemonicInfo::generate_words(12)?;
     init_db(dbpath, Some(words), false)?;
     init_cashu(32)?;
     check_proofs()?;
     check_pending()?;
+    let counters = get_all_counters()?;
     let mints = get_mints()?;
     let mut tokens: Vec<String> = Vec::new();
     for m in mints {
@@ -95,7 +96,7 @@ pub fn cashu_v1_init_send_all(
         }
     }
 
-    Ok(tokens)
+    Ok((tokens, counters))
 }
 
 fn init_db(dbpath: String, words: Option<String>, dev: bool) -> anyhow::Result<()> {
@@ -407,6 +408,43 @@ fn get_balances() -> anyhow::Result<String> {
     let js = serde_json::to_string(&bs)?;
 
     Ok(js)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct MintCounterRecord {
+    mint: String,
+    keysetid: String,
+    max_counter: u64,
+}
+fn get_all_counters() -> anyhow::Result<String> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let counters = state.rt.block_on(w.store().get_all_counters())?;
+    use std::collections::HashMap;
+
+    let mut map: HashMap<(String, String), u64> = HashMap::new();
+
+    for record in counters {
+        let key = (record.mint.clone(), record.keysetid.clone());
+        let counter = record.counter;
+
+        map.entry(key)
+            .and_modify(|max_counter| *max_counter = (*max_counter).max(counter))
+            .or_insert(counter);
+    }
+
+    let result: Vec<MintCounterRecord> = map
+        .into_iter()
+        .map(|((mint, keysetid), max_counter)| MintCounterRecord {
+            mint,
+            keysetid,
+            max_counter,
+        })
+        .collect();
+
+    let json = serde_json::to_string(&result)?;
+    Ok(json)
 }
 
 fn get_balance(mint: String) -> anyhow::Result<(bool, u64)> {

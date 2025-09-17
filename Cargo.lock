@@ -656,7 +656,7 @@ dependencies = [
 [[package]]
 name = "cashu-wallet"
 version = "0.2.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#13d0bde05869eb3e16ec29f689e5048db93dacda"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#aad7f953ae3f23cde8d514c8e9c2a931ec47189d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -683,7 +683,7 @@ dependencies = [
 [[package]]
 name = "cashu-wallet-sqlite"
 version = "0.1.0"
-source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#13d0bde05869eb3e16ec29f689e5048db93dacda"
+source = "git+https://github.com/keychat-io/cashu-wallet-rs.git?branch=bugfix2#aad7f953ae3f23cde8d514c8e9c2a931ec47189d"
 dependencies = [
  "anyhow",
  "async-trait",

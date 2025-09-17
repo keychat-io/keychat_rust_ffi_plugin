@@ -76,6 +76,12 @@ pub struct ContactCashu {
     pub info: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CashuV1ToV2 {
+    pub tokens: Vec<String>,
+    pub counters: String,
+}
+
 pub use bip39::Mnemonic;
 use bitcoin::bip32::Xpriv;
 

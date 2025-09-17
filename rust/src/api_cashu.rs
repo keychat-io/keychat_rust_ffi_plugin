@@ -1,5 +1,5 @@
 use anyhow::Ok;
-pub use cashu::{Amount, CurrencyUnit, MintInfo, MintUrl};
+pub use cashu::{Amount, CurrencyUnit, Id, KeySetInfo, MintInfo, MintUrl};
 pub use cdk::amount::{SplitTarget, MSAT_IN_SAT};
 use cdk::cdk_database;
 pub use cdk::lightning_invoice::{
@@ -90,8 +90,12 @@ lazy_static! {
 pub fn cashu_v1_init_send_all(
     dbpath: String,
     words: Option<String>,
-) -> anyhow::Result<Vec<String>> {
-    api_cashu_v1::cashu_v1_init_send_all(dbpath, words)
+) -> anyhow::Result<CashuV1ToV2> {
+    let re = api_cashu_v1::cashu_v1_init_send_all(dbpath, words)?;
+    Ok(CashuV1ToV2 {
+        tokens: re.0,
+        counters: re.1,
+    })
 }
 
 // this is for init db and cashu once, only call once
@@ -376,6 +380,56 @@ pub fn remove_mint(url: String) -> anyhow::Result<()> {
 
     Ok(())
 }
+#[derive(Debug, Serialize, Deserialize)]
+struct MintCounterRecord {
+    mint: String,
+    keysetid: String,
+    max_counter: u32,
+}
+
+pub fn add_counters(counters: String) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let records: Vec<MintCounterRecord> = serde_json::from_str(&counters)?;
+    let mut map: HashMap<String, Vec<KeySetInfo>> = HashMap::new();
+    let mut keysetid_to_counter: HashMap<Id, u32> = HashMap::new();
+
+    for record in records {
+        let id = Id::from_str(&record.keysetid).map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        let keyset_info = KeySetInfo {
+            id,
+            unit: CurrencyUnit::Sat,
+            active: true,
+            input_fee_ppk: 0,
+            final_expiry: None,
+        };
+        keysetid_to_counter.insert(id, record.max_counter);
+
+        map.entry(record.mint.clone())
+            .or_insert_with(Vec::new)
+            .push(keyset_info);
+    }
+    let _tx = state.rt.block_on(async {
+        for (mint_url, keyset_infos) in map {
+            let mint_url = MintUrl::from_str(&mint_url.trim())?;
+
+            if w.localstore.get_mint(mint_url.clone()).await?.is_none() {
+                w.localstore.add_mint(mint_url.clone(), None).await?;
+            }
+
+            w.localstore
+                .add_mint_keysets(mint_url.clone(), keyset_infos)
+                .await?;
+        }
+
+        for (id, counter) in keysetid_to_counter {
+            w.localstore.increment_keyset_counter(&id, counter).await?;
+        }
+        Ok(())
+    });
+
+    Ok(())
+}
 
 // ? direct use map?
 pub fn get_balances() -> anyhow::Result<String> {
@@ -557,7 +611,7 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
         let encoded_token = tokens.to_string();
 
         let amount = w.receive(&encoded_token, ReceiveOptions::default()).await;
-        println!("amount: {:?}", amount);
+        // println!("amount: {:?}", amount);
         Ok(())
     };
 
@@ -687,8 +741,12 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
     Ok(a)
 }
 
-
-async fn prepare_one_proofs_back(wallet: &MultiMintWallet, thershold: u64, amount: u64, mint: String) -> anyhow::Result<u64> {
+async fn prepare_one_proofs_back(
+    wallet: &MultiMintWallet,
+    thershold: u64,
+    amount: u64,
+    mint: String,
+) -> anyhow::Result<u64> {
     let denomination: u64 = 1;
 
     if amount == 0 {
@@ -711,7 +769,7 @@ async fn prepare_one_proofs_back(wallet: &MultiMintWallet, thershold: u64, amoun
 
     // more than 10 no need prepare
     if count_before >= thershold {
-        return  Ok(count_before);
+        return Ok(count_before);
     }
 
     if count_before * denomination < amount {

@@ -8,13 +8,13 @@ import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
-            // These functions are ignored because they are not marked as `pub`: `_send`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `STATE`, `State`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `initialize`
+            // These functions are ignored because they are not marked as `pub`: `_send`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`, `prepare_one_proofs_back`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `MintCounterRecord`, `STATE`, `State`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `get_wallet`, `get_wallet`, `lock`, `mnemonic`, `update_mnmonic`
 
 
-            Future<List<String>>  cashuV1InitSendAll({required String dbpath , String? words }) => RustLib.instance.api.crateApiCashuCashuV1InitSendAll(dbpath: dbpath, words: words);
+            Future<CashuV1ToV2>  cashuV1InitSendAll({required String dbpath , String? words }) => RustLib.instance.api.crateApiCashuCashuV1InitSendAll(dbpath: dbpath, words: words);
 
 Future<void>  initDbCashuOnce({required String dbpath }) => RustLib.instance.api.crateApiCashuInitDbCashuOnce(dbpath: dbpath);
 
@@ -29,6 +29,8 @@ Future<List<MintCashu>>  getMints() => RustLib.instance.api.crateApiCashuGetMint
 Future<void>  addMint({required String url }) => RustLib.instance.api.crateApiCashuAddMint(url: url);
 
 Future<void>  removeMint({required String url }) => RustLib.instance.api.crateApiCashuRemoveMint(url: url);
+
+Future<void>  addCounters({required String counters }) => RustLib.instance.api.crateApiCashuAddCounters(counters: counters);
 
 Future<String>  getBalances() => RustLib.instance.api.crateApiCashuGetBalances();
 

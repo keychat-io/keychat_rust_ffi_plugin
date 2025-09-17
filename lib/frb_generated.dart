@@ -72,7 +72,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
                   String get codegenVersion => '2.10.0';
 
                   @override
-                  int get rustContentHash => 393643309;
+                  int get rustContentHash => -1442858699;
 
                   static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
                     stem: 'keychat_rust_ffi_plugin',
@@ -93,6 +93,8 @@ Future<void> crateApiCashuTypesMnemonicInfoPubkey({required MnemonicInfo that })
 
 Future<MnemonicInfo> crateApiCashuTypesMnemonicInfoWithWords({required String words });
 
+Future<void> crateApiCashuAddCounters({required String counters });
+
 Future<AddMembersResult> crateApiMlsAddMembers({required String nostrId , required String groupId , required List<String> keyPackages });
 
 Future<void> crateApiCashuAddMint({required String url });
@@ -101,9 +103,9 @@ Future<void> crateApiMlsAdminCommitLeave({required String nostrId , required Str
 
 Future<Uint8List> crateApiMlsAdminProposalLeave({required String nostrId , required String groupId });
 
-Future<List<String>> crateApiCashuCashuV1InitSendAll({required String dbpath , String? words });
+Future<CashuV1ToV2> crateApiCashuCashuV1InitSendAll({required String dbpath , String? words });
 
-Future<List<String>> crateApiCashuV1CashuV1InitSendAll({required String dbpath , String? words });
+Future<(List<String>,String)> crateApiCashuV1CashuV1InitSendAll({required String dbpath , String? words });
 
 Future<BigInt> crateApiCashuCheckAllMintQuotes();
 
@@ -538,13 +540,38 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
         );
         
 
+@override Future<void> crateApiCashuAddCounters({required String counters })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(counters, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiCashuAddCountersConstMeta,
+            argValues: [counters],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiCashuAddCountersConstMeta => const TaskConstMeta(
+            debugName: "add_counters",
+            argNames: ["counters"],
+        );
+        
+
 @override Future<AddMembersResult> crateApiMlsAddMembers({required String nostrId , required String groupId , required List<String> keyPackages })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_String(keyPackages, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7, port: port_);
             
             },
             codec: 
@@ -569,7 +596,7 @@ sse_encode_list_String(keyPackages, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8, port: port_);
             
             },
             codec: 
@@ -595,7 +622,7 @@ sse_encode_list_String(keyPackages, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9, port: port_);
             
             },
             codec: 
@@ -621,7 +648,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10, port: port_);
             
             },
             codec: 
@@ -642,17 +669,17 @@ sse_encode_String(groupId, serializer);
         );
         
 
-@override Future<List<String>> crateApiCashuCashuV1InitSendAll({required String dbpath , String? words })  { return handler.executeNormal(NormalTask(
+@override Future<CashuV1ToV2> crateApiCashuCashuV1InitSendAll({required String dbpath , String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
 sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_String,
+          decodeSuccessData: sse_decode_cashu_v_1_to_v_2,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -668,17 +695,17 @@ sse_encode_opt_String(words, serializer);
         );
         
 
-@override Future<List<String>> crateApiCashuV1CashuV1InitSendAll({required String dbpath , String? words })  { return handler.executeNormal(NormalTask(
+@override Future<(List<String>,String)> crateApiCashuV1CashuV1InitSendAll({required String dbpath , String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
 sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12, port: port_);
             
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_list_String,
+          decodeSuccessData: sse_decode_record_list_string_string,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -698,7 +725,7 @@ sse_encode_opt_String(words, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13, port: port_);
             
             },
             codec: 
@@ -723,7 +750,7 @@ sse_encode_opt_String(words, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14, port: port_);
             
             },
             codec: 
@@ -748,7 +775,7 @@ sse_encode_opt_String(words, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15, port: port_);
             
             },
             codec: 
@@ -773,7 +800,7 @@ sse_encode_opt_String(words, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(id, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16, port: port_);
             
             },
             codec: 
@@ -798,7 +825,7 @@ sse_encode_opt_String(words, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17, port: port_);
             
             },
             codec: 
@@ -824,7 +851,7 @@ sse_encode_opt_String(words, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18, port: port_);
             
             },
             codec: 
@@ -855,7 +882,7 @@ sse_encode_String(content, serializer);
 sse_encode_opt_box_autoadd_u_64(expirationTimestamp, serializer);
 sse_encode_opt_box_autoadd_bool(timestampTweaked, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19, port: port_);
             
             },
             codec: 
@@ -880,7 +907,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20, port: port_);
             
             },
             codec: 
@@ -905,7 +932,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21, port: port_);
             
             },
             codec: 
@@ -932,7 +959,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(msg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22, port: port_);
             
             },
             codec: 
@@ -963,7 +990,7 @@ sse_encode_String(description, serializer);
 sse_encode_list_String(adminPubkeysHex, serializer);
 sse_encode_list_String(groupRelays, serializer);
 sse_encode_String(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23, port: port_);
             
             },
             codec: 
@@ -988,7 +1015,7 @@ sse_encode_String(status, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(prikey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24, port: port_);
             
             },
             codec: 
@@ -1014,7 +1041,7 @@ sse_encode_String(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(secretKey, serializer);
 sse_encode_list_prim_u_8_loose(message, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25, port: port_);
             
             },
             codec: 
@@ -1041,7 +1068,7 @@ sse_encode_list_prim_u_8_loose(message, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(publicKey, serializer);
 sse_encode_list_prim_u_8_loose(message, serializer);
 sse_encode_String(sig, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26, port: port_);
             
             },
             codec: 
@@ -1066,7 +1093,7 @@ sse_encode_String(sig, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(content, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27)!;
             
             },
             codec: 
@@ -1091,7 +1118,7 @@ sse_encode_String(sig, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28, port: port_);
             
             },
             codec: 
@@ -1116,7 +1143,7 @@ sse_encode_String(sig, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29, port: port_);
             
             },
             codec: 
@@ -1143,7 +1170,7 @@ sse_encode_String(sig, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30, port: port_);
             
             },
             codec: 
@@ -1169,7 +1196,7 @@ sse_encode_String(content, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(json, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31, port: port_);
             
             },
             codec: 
@@ -1196,7 +1223,7 @@ sse_encode_String(json, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiver, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32, port: port_);
             
             },
             codec: 
@@ -1223,7 +1250,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(msg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33, port: port_);
             
             },
             codec: 
@@ -1250,7 +1277,7 @@ sse_encode_String(msg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(secretKey, serializer);
 sse_encode_String(publicKey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34, port: port_);
             
             },
             codec: 
@@ -1279,7 +1306,7 @@ sse_encode_list_prim_u_8_loose(ciphertext, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
 sse_encode_u_32(roomId, serializer);
 sse_encode_bool(isPrekey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35, port: port_);
             
             },
             codec: 
@@ -1305,7 +1332,7 @@ sse_encode_bool(isPrekey, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36, port: port_);
             
             },
             codec: 
@@ -1331,7 +1358,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37, port: port_);
             
             },
             codec: 
@@ -1357,7 +1384,7 @@ sse_encode_String(address, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(keyPackage, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38, port: port_);
             
             },
             codec: 
@@ -1383,7 +1410,7 @@ sse_encode_String(keyPackage, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 39, port: port_);
             
             },
             codec: 
@@ -1409,7 +1436,7 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(deviceId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 39, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40, port: port_);
             
             },
             codec: 
@@ -1435,7 +1462,7 @@ sse_encode_u_32(deviceId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hrp, serializer);
 sse_encode_String(data, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41)!;
             
             },
             codec: 
@@ -1462,7 +1489,7 @@ sse_encode_String(data, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42, port: port_);
             
             },
             codec: 
@@ -1489,7 +1516,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 43, port: port_);
             
             },
             codec: 
@@ -1517,7 +1544,7 @@ sse_encode_String(content, serializer);
 sse_encode_String(ptext, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
 sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 43, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 44, port: port_);
             
             },
             codec: 
@@ -1544,7 +1571,7 @@ sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mnemonicWords, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_opt_box_autoadd_u_32(pos, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 44, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 45, port: port_);
             
             },
             codec: 
@@ -1569,7 +1596,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(password, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 45, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 46, port: port_);
             
             },
             codec: 
@@ -1594,7 +1621,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 46, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 47, port: port_);
             
             },
             codec: 
@@ -1619,7 +1646,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 47, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 48, port: port_);
             
             },
             codec: 
@@ -1644,7 +1671,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 48, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 49, port: port_);
             
             },
             codec: 
@@ -1669,7 +1696,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 49, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 50, port: port_);
             
             },
             codec: 
@@ -1694,7 +1721,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 50, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 51, port: port_);
             
             },
             codec: 
@@ -1719,7 +1746,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 51, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 52, port: port_);
             
             },
             codec: 
@@ -1745,7 +1772,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 52, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53, port: port_);
             
             },
             codec: 
@@ -1770,7 +1797,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 54, port: port_);
             
             },
             codec: 
@@ -1795,7 +1822,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 54, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 55, port: port_);
             
             },
             codec: 
@@ -1820,7 +1847,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 55, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 56, port: port_);
             
             },
             codec: 
@@ -1845,7 +1872,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 56, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 57, port: port_);
             
             },
             codec: 
@@ -1870,7 +1897,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 57, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 58, port: port_);
             
             },
             codec: 
@@ -1895,7 +1922,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 58)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 59)!;
             
             },
             codec: 
@@ -1920,7 +1947,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 59)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 60)!;
             
             },
             codec: 
@@ -1945,7 +1972,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 60, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
             
             },
             codec: 
@@ -1971,7 +1998,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
             
             },
             codec: 
@@ -1999,7 +2026,7 @@ sse_encode_usize(limit, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
 sse_encode_opt_String(reply, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
             
             },
             codec: 
@@ -2025,7 +2052,7 @@ sse_encode_opt_String(reply, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64, port: port_);
             
             },
             codec: 
@@ -2051,7 +2078,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65, port: port_);
             
             },
             codec: 
@@ -2077,7 +2104,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66, port: port_);
             
             },
             codec: 
@@ -2103,7 +2130,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67, port: port_);
             
             },
             codec: 
@@ -2128,7 +2155,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68)!;
             
             },
             codec: 
@@ -2153,7 +2180,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69)!;
             
             },
             codec: 
@@ -2178,7 +2205,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(prikey, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70)!;
             
             },
             codec: 
@@ -2204,7 +2231,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
             
             },
             codec: 
@@ -2231,7 +2258,7 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrIdAdmin, serializer);
 sse_encode_String(nostrIdCommon, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
             
             },
             codec: 
@@ -2257,7 +2284,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
             
             },
             codec: 
@@ -2282,7 +2309,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
             
             },
             codec: 
@@ -2308,7 +2335,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
             
             },
             codec: 
@@ -2334,7 +2361,7 @@ sse_encode_usize(limit, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76, port: port_);
             
             },
             codec: 
@@ -2359,7 +2386,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77, port: port_);
             
             },
             codec: 
@@ -2384,7 +2411,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78, port: port_);
             
             },
             codec: 
@@ -2410,7 +2437,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(prekeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
             
             },
             codec: 
@@ -2437,7 +2464,7 @@ sse_encode_u_32(prekeyId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80, port: port_);
             
             },
             codec: 
@@ -2464,7 +2491,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81, port: port_);
             
             },
             codec: 
@@ -2490,7 +2517,7 @@ sse_encode_String(deviceId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedKeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
             
             },
             codec: 
@@ -2516,7 +2543,7 @@ sse_encode_u_32(signedKeyId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 83, port: port_);
             
             },
             codec: 
@@ -2545,7 +2572,7 @@ sse_encode_list_String(receiverPubkeys, serializer);
 sse_encode_String(content, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 83, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
             
             },
             codec: 
@@ -2573,7 +2600,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
 sse_encode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(mintAmounts, serializer);
 sse_encode_usize(mintNumber, serializer);
 sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(unit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
             
             },
             codec: 
@@ -2600,7 +2627,7 @@ sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueI
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(phrase, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_opt_box_autoadd_u_32(account, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
             
             },
             codec: 
@@ -2628,7 +2655,7 @@ sse_encode_opt_box_autoadd_u_32(account, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_u_32(offset, serializer);
 sse_encode_u_32(count, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
             
             },
             codec: 
@@ -2653,7 +2680,7 @@ sse_encode_u_32(count, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 88, port: port_);
             
             },
             codec: 
@@ -2680,7 +2707,7 @@ sse_encode_u_32(count, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(regId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 88, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
             
             },
             codec: 
@@ -2705,7 +2732,7 @@ sse_encode_u_32(regId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_16(prepareSatsOnceTime, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
             
             },
             codec: 
@@ -2732,7 +2759,7 @@ sse_encode_u_32(regId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
 sse_encode_String(words, serializer);
 sse_encode_bool(dev, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
             
             },
             codec: 
@@ -2757,7 +2784,7 @@ sse_encode_bool(dev, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
             
             },
             codec: 
@@ -2783,7 +2810,7 @@ sse_encode_bool(dev, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(regId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93, port: port_);
             
             },
             codec: 
@@ -2809,7 +2836,7 @@ sse_encode_u_32(regId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_String(nostrId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94, port: port_);
             
             },
             codec: 
@@ -2834,7 +2861,7 @@ sse_encode_String(nostrId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95, port: port_);
             
             },
             codec: 
@@ -2861,7 +2888,7 @@ sse_encode_String(nostrId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(welcome, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 96, port: port_);
             
             },
             codec: 
@@ -2888,7 +2915,7 @@ sse_encode_list_prim_u_8_loose(welcome, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_box_autoadd_u_64(amount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 96, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
             
             },
             codec: 
@@ -2913,7 +2940,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(thershold, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
             
             },
             codec: 
@@ -2938,7 +2965,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
             
             },
             codec: 
@@ -2965,7 +2992,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(quoteId, serializer);
 sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
             
             },
             codec: 
@@ -2990,7 +3017,7 @@ sse_encode_String(activeMint, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_String(stamps, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
             
             },
             codec: 
@@ -3018,7 +3045,7 @@ sse_encode_String(activeMint, serializer);
 sse_encode_String(relay, serializer);
 sse_encode_String(secret, serializer);
 sse_encode_opt_String(lud16, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
             
             },
             codec: 
@@ -3043,7 +3070,7 @@ sse_encode_opt_String(lud16, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(request, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
             
             },
             codec: 
@@ -3070,7 +3097,7 @@ sse_encode_opt_String(lud16, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
             
             },
             codec: 
@@ -3097,7 +3124,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
             
             },
             codec: 
@@ -3124,7 +3151,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
             
             },
             codec: 
@@ -3149,7 +3176,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
             
             },
             codec: 
@@ -3174,7 +3201,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
             
             },
             codec: 
@@ -3200,7 +3227,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(keyPackageHex, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
             
             },
             codec: 
@@ -3227,7 +3254,7 @@ sse_encode_String(keyPackageHex, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
             
             },
             codec: 
@@ -3253,7 +3280,7 @@ sse_encode_String(data, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
             
             },
             codec: 
@@ -3278,7 +3305,7 @@ sse_encode_String(mint, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
             
             },
             codec: 
@@ -3312,7 +3339,7 @@ sse_encode_list_prim_u_8_loose(bobSignedPublic, serializer);
 sse_encode_list_prim_u_8_loose(bobSigedSig, serializer);
 sse_encode_u_32(bobPrekeyId, serializer);
 sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
             
             },
             codec: 
@@ -3337,7 +3364,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 114, port: port_);
             
             },
             codec: 
@@ -3364,7 +3391,7 @@ sse_encode_list_prim_u_8_loose(bobPrekeyPublic, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_list_prim_u_8_strict(members, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 114, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
             
             },
             codec: 
@@ -3389,7 +3416,7 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 116, port: port_);
             
             },
             codec: 
@@ -3415,7 +3442,7 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampLe, serializer);
 sse_encode_transaction_status(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 116, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
             
             },
             codec: 
@@ -3441,7 +3468,7 @@ sse_encode_transaction_status(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
             
             },
             codec: 
@@ -3467,7 +3494,7 @@ sse_encode_String(activeMint, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mintUrl, serializer);
 sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
             
             },
             codec: 
@@ -3493,7 +3520,7 @@ sse_encode_opt_String(words, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
             
             },
             codec: 
@@ -3519,7 +3546,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
             
             },
             codec: 
@@ -3546,7 +3573,7 @@ sse_encode_String(groupId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(extensions, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
             
             },
             codec: 
@@ -3573,7 +3600,7 @@ sse_encode_list_prim_u_8_loose(extensions, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
             
             },
             codec: 
@@ -3598,7 +3625,7 @@ sse_encode_opt_String(info, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
             
             },
             codec: 
@@ -3625,7 +3652,7 @@ sse_encode_opt_String(info, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_list_String(mints, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
             
             },
             codec: 
@@ -3651,7 +3678,7 @@ sse_encode_opt_String(info, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
             
             },
             codec: 
@@ -3676,7 +3703,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
             
             },
             codec: 
@@ -3701,7 +3728,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
             
             },
             codec: 
@@ -3726,7 +3753,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
             
             },
             codec: 
@@ -3751,7 +3778,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
             
             },
             codec: 
@@ -3780,7 +3807,7 @@ sse_encode_String(content, serializer);
 sse_encode_u_64(createdAt, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_list_list_String(tags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
             
             },
             codec: 
@@ -3806,7 +3833,7 @@ sse_encode_list_list_String(tags, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(privateKey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
             
             },
             codec: 
@@ -3833,7 +3860,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(prekeyId, serializer);
 sse_encode_list_prim_u_8_loose(record, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
             
             },
             codec: 
@@ -3860,7 +3887,7 @@ sse_encode_list_prim_u_8_loose(record, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedKeyId, serializer);
 sse_encode_list_prim_u_8_loose(record, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
             
             },
             codec: 
@@ -3888,7 +3915,7 @@ sse_encode_list_prim_u_8_loose(record, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
 sse_encode_String(aliceAddr, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 135, port: port_);
             
             },
             codec: 
@@ -3919,7 +3946,7 @@ sse_encode_opt_String(description, serializer);
 sse_encode_opt_list_String(adminPubkeysHex, serializer);
 sse_encode_opt_list_String(groupRelays, serializer);
 sse_encode_opt_String(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 135, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
             
             },
             codec: 
@@ -3945,7 +3972,7 @@ sse_encode_opt_String(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(mintNumber, serializer);
 sse_encode_usize(mintCount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
             
             },
             codec: 
@@ -3970,7 +3997,7 @@ sse_encode_usize(mintCount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(json, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 138, port: port_);
             
             },
             codec: 
@@ -3998,7 +4025,7 @@ sse_encode_usize(mintCount, serializer);
 sse_encode_String(sig, serializer);
 sse_encode_String(content, serializer);
 sse_encode_bool(hash, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 138, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 139, port: port_);
             
             },
             codec: 
@@ -4144,6 +4171,12 @@ return raw as int; }
 
 @protected BigInt dco_decode_box_autoadd_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return dco_decode_u_64(raw); }
+
+@protected CashuV1ToV2 dco_decode_cashu_v_1_to_v_2(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+                if (arr.length != 2) throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+                return CashuV1ToV2(tokens: dco_decode_list_String(arr[0]),
+counters: dco_decode_String(arr[1]),); }
 
 @protected CommitResult dco_decode_commit_result(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -4368,6 +4401,13 @@ final arr = raw as List<dynamic>;
                 throw Exception('Expected 3 elements, got ${arr.length}');
             }
             return (dco_decode_list_prim_u_8_strict(arr[0]),dco_decode_String(arr[1]),dco_decode_opt_list_String(arr[2]),); }
+
+@protected (List<String>,String) dco_decode_record_list_string_string(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 2) {
+                throw Exception('Expected 2 elements, got ${arr.length}');
+            }
+            return (dco_decode_list_String(arr[0]),dco_decode_String(arr[1]),); }
 
 @protected (String,bool) dco_decode_record_string_bool(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
@@ -4607,6 +4647,11 @@ return (sse_decode_u_32(deserializer)); }
 
 @protected BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_u_64(deserializer)); }
+
+@protected CashuV1ToV2 sse_decode_cashu_v_1_to_v_2(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_tokens = sse_decode_list_String(deserializer);
+var var_counters = sse_decode_String(deserializer);
+return CashuV1ToV2(tokens: var_tokens, counters: var_counters); }
 
 @protected CommitResult sse_decode_commit_result(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_sender = sse_decode_String(deserializer);
@@ -4938,6 +4983,11 @@ var var_field1 = sse_decode_String(deserializer);
 var var_field2 = sse_decode_opt_list_String(deserializer);
 return (var_field0, var_field1, var_field2); }
 
+@protected (List<String>,String) sse_decode_record_list_string_string(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_list_String(deserializer);
+var var_field1 = sse_decode_String(deserializer);
+return (var_field0, var_field1); }
+
 @protected (String,bool) sse_decode_record_string_bool(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_bool(deserializer);
@@ -5157,6 +5207,11 @@ sse_encode_u_32(self, serializer); }
 
 @protected void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_64(self, serializer); }
+
+@protected void sse_encode_cashu_v_1_to_v_2(CashuV1ToV2 self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_list_String(self.tokens, serializer);
+sse_encode_String(self.counters, serializer);
+ }
 
 @protected void sse_encode_commit_result(CommitResult self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.sender, serializer);
@@ -5425,6 +5480,11 @@ sse_encode_opt_list_String(self.$4, serializer);
 sse_encode_list_prim_u_8_strict(self.$1, serializer);
 sse_encode_String(self.$2, serializer);
 sse_encode_opt_list_String(self.$3, serializer);
+ }
+
+@protected void sse_encode_record_list_string_string((List<String>,String) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_list_String(self.$1, serializer);
+sse_encode_String(self.$2, serializer);
  }
 
 @protected void sse_encode_record_string_bool((String,bool) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs

@@ -106,6 +106,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected BigInt dco_decode_box_autoadd_u_64(dynamic raw);
 
+@protected CashuV1ToV2 dco_decode_cashu_v_1_to_v_2(dynamic raw);
+
 @protected CommitResult dco_decode_commit_result(dynamic raw);
 
 @protected CommitTypeResult dco_decode_commit_type_result(dynamic raw);
@@ -197,6 +199,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected (Uint8List,String?,String,List<String>?) dco_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(dynamic raw);
 
 @protected (Uint8List,String,List<String>?) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
+
+@protected (List<String>,String) dco_decode_record_list_string_string(dynamic raw);
 
 @protected (String,bool) dco_decode_record_string_bool(dynamic raw);
 
@@ -308,6 +312,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
 
+@protected CashuV1ToV2 sse_decode_cashu_v_1_to_v_2(SseDeserializer deserializer);
+
 @protected CommitResult sse_decode_commit_result(SseDeserializer deserializer);
 
 @protected CommitTypeResult sse_decode_commit_type_result(SseDeserializer deserializer);
@@ -399,6 +405,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected (Uint8List,String?,String,List<String>?) sse_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(SseDeserializer deserializer);
 
 @protected (Uint8List,String,List<String>?) sse_decode_record_list_prim_u_8_strict_string_opt_list_string(SseDeserializer deserializer);
+
+@protected (List<String>,String) sse_decode_record_list_string_string(SseDeserializer deserializer);
 
 @protected (String,bool) sse_decode_record_string_bool(SseDeserializer deserializer);
 
@@ -510,6 +518,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
 
+@protected void sse_encode_cashu_v_1_to_v_2(CashuV1ToV2 self, SseSerializer serializer);
+
 @protected void sse_encode_commit_result(CommitResult self, SseSerializer serializer);
 
 @protected void sse_encode_commit_type_result(CommitTypeResult self, SseSerializer serializer);
@@ -601,6 +611,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_record_list_prim_u_8_strict_opt_string_string_opt_list_string((Uint8List,String?,String,List<String>?) self, SseSerializer serializer);
 
 @protected void sse_encode_record_list_prim_u_8_strict_string_opt_list_string((Uint8List,String,List<String>?) self, SseSerializer serializer);
+
+@protected void sse_encode_record_list_string_string((List<String>,String) self, SseSerializer serializer);
 
 @protected void sse_encode_record_string_bool((String,bool) self, SseSerializer serializer);
 

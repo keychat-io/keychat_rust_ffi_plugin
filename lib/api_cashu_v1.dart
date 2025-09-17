@@ -7,12 +7,12 @@ import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
-            // These functions are ignored because they are not marked as `pub`: `__send_all`, `__send`, `add_mint`, `check_pending`, `check_proofs`, `check_transaction`, `close_db`, `decode_invoice`, `decode_token`, `get_balance`, `get_balances`, `get_cashu_pending_transactions`, `get_cashu_transactions_with_offset`, `get_ln_pending_transactions`, `get_ln_transactions_with_offset`, `get_mints`, `get_mnemonic_info`, `get_pending_transactions_count`, `get_pending_transactions`, `get_transactions_with_offset`, `get_transactions`, `init_cashu`, `init_db`, `load_mints_from_database_background`, `melt`, `mint_token`, `prepare_one_proofs`, `receive_token`, `remove_mint`, `remove_transactions`, `request_mint`, `restore`, `send_all`, `send_stamp`, `send`, `set_mnemonic`, `try_load_mints`
+            // These functions are ignored because they are not marked as `pub`: `__send_all`, `__send`, `add_mint`, `check_pending`, `check_proofs`, `check_transaction`, `close_db`, `decode_invoice`, `decode_token`, `get_all_counters`, `get_balance`, `get_balances`, `get_cashu_pending_transactions`, `get_cashu_transactions_with_offset`, `get_ln_pending_transactions`, `get_ln_transactions_with_offset`, `get_mints`, `get_mnemonic_info`, `get_pending_transactions_count`, `get_pending_transactions`, `get_transactions_with_offset`, `get_transactions`, `init_cashu`, `init_db`, `load_mints_from_database_background`, `melt`, `mint_token`, `prepare_one_proofs`, `receive_token`, `remove_mint`, `remove_transactions`, `request_mint`, `restore`, `send_all`, `send_stamp`, `send`, `set_mnemonic`, `try_load_mints`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `InvoiceInfoV1`, `InvoiceStatusV1`, `TokenInfoV1`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `initialize`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `fmt`, `initialize`
 
 
-            Future<List<String>>  cashuV1InitSendAll({required String dbpath , String? words }) => RustLib.instance.api.crateApiCashuV1CashuV1InitSendAll(dbpath: dbpath, words: words);
+            Future<(List<String>,String)>  cashuV1InitSendAll({required String dbpath , String? words }) => RustLib.instance.api.crateApiCashuV1CashuV1InitSendAll(dbpath: dbpath, words: words);
 
             
             
