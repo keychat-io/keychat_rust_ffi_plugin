@@ -13,8 +13,8 @@ fn main() {
     // test_send_all();
     // test_send_stmap();
     // test_load_v2();
-    // test_send();
-    test_receive();
+    test_send();
+    // test_receive();
     // test_restore();
     // test_v1_counters();
 }
@@ -75,7 +75,7 @@ fn test_send() {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send = api::send(1, MINT_URL_MINIBITS.to_string(), None);
+    let send = api::send(2, MINT_URL.to_string(), None);
     println!("send token is {:?}", send);
 
     let b2 = api::get_balances();
