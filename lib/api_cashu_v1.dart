@@ -10,7 +10,5 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `InvoiceInfoV1`, `InvoiceStatusV1`, `TokenInfoV1`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `fmt`, `initialize`
 
-Future<(List<String>, String)> cashuV1InitSendAll(
-        {required String dbpath, String? words}) =>
-    RustLib.instance.api
-        .crateApiCashuV1CashuV1InitSendAll(dbpath: dbpath, words: words);
+Future<(List<String>, String)> cashuV1InitSendAll({required String dbpath, String? words}) =>
+    RustLib.instance.api.crateApiCashuV1CashuV1InitSendAll(dbpath: dbpath, words: words);

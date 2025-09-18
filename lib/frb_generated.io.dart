@@ -25,72 +25,57 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     required super.portManager,
   });
 
-  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_AmountPtr => wire
-      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmountPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_AmountPtr =>
+      wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmountPtr;
 
-  CrossPlatformFinalizerArg
-      get rust_arc_decrement_strong_count_CurrencyUnitPtr => wire
-          ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnitPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_CurrencyUnitPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnitPtr;
 
-  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MintUrlPtr => wire
-      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrlPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MintUrlPtr =>
+      wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrlPtr;
 
-  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MnemonicPtr => wire
-      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MnemonicPtr =>
+      wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicPtr;
 
-  CrossPlatformFinalizerArg
-      get rust_arc_decrement_strong_count_MnemonicInfoPtr => wire
-          ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfoPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MnemonicInfoPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfoPtr;
 
-  CrossPlatformFinalizerArg
-      get rust_arc_decrement_strong_count_MultiMintWalletPtr => wire
-          ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWalletPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MultiMintWalletPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWalletPtr;
 
-  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire
-      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWalletPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr =>
+      wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWalletPtr;
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw);
 
   @protected
-  Amount
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
-          dynamic raw);
+  Amount dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(dynamic raw);
 
   @protected
-  CurrencyUnit
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
-          dynamic raw);
+  CurrencyUnit dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
+      dynamic raw);
 
   @protected
-  MintUrl
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
-          dynamic raw);
+  MintUrl dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(dynamic raw);
 
   @protected
-  MnemonicInfo
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          dynamic raw);
+  MnemonicInfo dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      dynamic raw);
 
   @protected
-  Wallet
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
-          dynamic raw);
+  Wallet dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(dynamic raw);
 
   @protected
-  Mnemonic
-      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
-          dynamic raw);
+  Mnemonic dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(dynamic raw);
 
   @protected
-  MnemonicInfo
-      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          dynamic raw);
+  MnemonicInfo dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      dynamic raw);
 
   @protected
-  MultiMintWallet
-      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
-          dynamic raw);
+  MultiMintWallet dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
+      dynamic raw);
 
   @protected
   Map<String, String> dco_decode_Map_String_String_None(dynamic raw);
@@ -99,47 +84,31 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Map<String, bool> dco_decode_Map_String_bool_None(dynamic raw);
 
   @protected
-  Map<String, List<Uint8List>>
-      dco_decode_Map_String_list_list_prim_u_8_strict_None(dynamic raw);
+  Map<String, List<Uint8List>> dco_decode_Map_String_list_list_prim_u_8_strict_None(dynamic raw);
 
   @protected
-  Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(
-      dynamic raw);
+  Map<String, BigInt?> dco_decode_Map_String_opt_box_autoadd_u_64_None(dynamic raw);
 
   @protected
-  Amount
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
-          dynamic raw);
+  Amount dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(dynamic raw);
 
   @protected
-  CurrencyUnit
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
-          dynamic raw);
+  CurrencyUnit dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(dynamic raw);
 
   @protected
-  MintUrl
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
-          dynamic raw);
+  MintUrl dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(dynamic raw);
 
   @protected
-  Mnemonic
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
-          dynamic raw);
+  Mnemonic dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(dynamic raw);
 
   @protected
-  MnemonicInfo
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          dynamic raw);
+  MnemonicInfo dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(dynamic raw);
 
   @protected
-  MultiMintWallet
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
-          dynamic raw);
+  MultiMintWallet dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(dynamic raw);
 
   @protected
-  Wallet
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
-          dynamic raw);
+  Wallet dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(dynamic raw);
 
   @protected
   String dco_decode_String(dynamic raw);
@@ -157,16 +126,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   KeychatIdentityKey dco_decode_box_autoadd_keychat_identity_key(dynamic raw);
 
   @protected
-  KeychatIdentityKeyPair dco_decode_box_autoadd_keychat_identity_key_pair(
-      dynamic raw);
+  KeychatIdentityKeyPair dco_decode_box_autoadd_keychat_identity_key_pair(dynamic raw);
 
   @protected
-  KeychatProtocolAddress dco_decode_box_autoadd_keychat_protocol_address(
-      dynamic raw);
+  KeychatProtocolAddress dco_decode_box_autoadd_keychat_protocol_address(dynamic raw);
 
   @protected
-  KeychatSignalSession dco_decode_box_autoadd_keychat_signal_session(
-      dynamic raw);
+  KeychatSignalSession dco_decode_box_autoadd_keychat_signal_session(dynamic raw);
 
   @protected
   MintCashuInfo dco_decode_box_autoadd_mint_cashu_info(dynamic raw);
@@ -249,12 +215,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<(String, bool)> dco_decode_list_record_string_bool(dynamic raw);
 
   @protected
-  List<(String, List<Uint8List>)>
-      dco_decode_list_record_string_list_list_prim_u_8_strict(dynamic raw);
+  List<(String, List<Uint8List>)> dco_decode_list_record_string_list_list_prim_u_8_strict(dynamic raw);
 
   @protected
-  List<(String, BigInt?)> dco_decode_list_record_string_opt_box_autoadd_u_64(
-      dynamic raw);
+  List<(String, BigInt?)> dco_decode_list_record_string_opt_box_autoadd_u_64(dynamic raw);
 
   @protected
   List<(String, String)> dco_decode_list_record_string_string(dynamic raw);
@@ -287,12 +251,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool? dco_decode_opt_box_autoadd_bool(dynamic raw);
 
   @protected
-  KeychatIdentityKey? dco_decode_opt_box_autoadd_keychat_identity_key(
-      dynamic raw);
+  KeychatIdentityKey? dco_decode_opt_box_autoadd_keychat_identity_key(dynamic raw);
 
   @protected
-  KeychatSignalSession? dco_decode_opt_box_autoadd_keychat_signal_session(
-      dynamic raw);
+  KeychatSignalSession? dco_decode_opt_box_autoadd_keychat_signal_session(dynamic raw);
 
   @protected
   MintCashuInfo? dco_decode_opt_box_autoadd_mint_cashu_info(dynamic raw);
@@ -320,20 +282,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
-  (Uint8List, Uint8List)
-      dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
+  (Uint8List, Uint8List) dco_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
-  (Uint8List, String?, String, List<String>?)
-      dco_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
-          dynamic raw);
+  (Uint8List, String?, String, List<String>?) dco_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
+      dynamic raw);
 
   @protected
-  (
-    Uint8List,
-    String,
-    List<String>?
-  ) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
+  (Uint8List, String, List<String>?) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
 
   @protected
   (List<String>, String) dco_decode_record_list_string_string(dynamic raw);
@@ -342,8 +298,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (String, bool) dco_decode_record_string_bool(dynamic raw);
 
   @protected
-  (String, List<Uint8List>) dco_decode_record_string_list_list_prim_u_8_strict(
-      dynamic raw);
+  (String, List<Uint8List>) dco_decode_record_string_list_list_prim_u_8_strict(dynamic raw);
 
   @protected
   (String, BigInt?) dco_decode_record_string_opt_box_autoadd_u_64(dynamic raw);
@@ -355,18 +310,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (String, int) dco_decode_record_string_u_32(dynamic raw);
 
   @protected
-  (int, Uint8List, Uint8List)
-      dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
-          dynamic raw);
+  (int, Uint8List, Uint8List) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
-  (
-    int,
-    Uint8List,
-    Uint8List,
-    Uint8List
-  ) dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(
-      dynamic raw);
+  (int, Uint8List, Uint8List, Uint8List)
+      dco_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(dynamic raw);
 
   @protected
   (BigInt, BigInt) dco_decode_record_u_64_u_64(dynamic raw);
@@ -423,96 +371,74 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
-  Amount
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
-          SseDeserializer deserializer);
-
-  @protected
-  CurrencyUnit
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
-          SseDeserializer deserializer);
-
-  @protected
-  MintUrl
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
-          SseDeserializer deserializer);
-
-  @protected
-  MnemonicInfo
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          SseDeserializer deserializer);
-
-  @protected
-  Wallet
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
-          SseDeserializer deserializer);
-
-  @protected
-  Mnemonic
-      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
-          SseDeserializer deserializer);
-
-  @protected
-  MnemonicInfo
-      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          SseDeserializer deserializer);
-
-  @protected
-  MultiMintWallet
-      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
-          SseDeserializer deserializer);
-
-  @protected
-  Map<String, String> sse_decode_Map_String_String_None(
+  Amount sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
       SseDeserializer deserializer);
 
   @protected
-  Map<String, bool> sse_decode_Map_String_bool_None(
+  CurrencyUnit sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
       SseDeserializer deserializer);
 
   @protected
-  Map<String, List<Uint8List>>
-      sse_decode_Map_String_list_list_prim_u_8_strict_None(
-          SseDeserializer deserializer);
-
-  @protected
-  Map<String, BigInt?> sse_decode_Map_String_opt_box_autoadd_u_64_None(
+  MintUrl sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
       SseDeserializer deserializer);
 
   @protected
-  Amount
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
-          SseDeserializer deserializer);
+  MnemonicInfo sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      SseDeserializer deserializer);
 
   @protected
-  CurrencyUnit
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
-          SseDeserializer deserializer);
+  Wallet sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
+      SseDeserializer deserializer);
 
   @protected
-  MintUrl
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
-          SseDeserializer deserializer);
+  Mnemonic sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
+      SseDeserializer deserializer);
 
   @protected
-  Mnemonic
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
-          SseDeserializer deserializer);
+  MnemonicInfo sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      SseDeserializer deserializer);
 
   @protected
-  MnemonicInfo
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          SseDeserializer deserializer);
+  MultiMintWallet sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
+      SseDeserializer deserializer);
 
   @protected
-  MultiMintWallet
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
-          SseDeserializer deserializer);
+  Map<String, String> sse_decode_Map_String_String_None(SseDeserializer deserializer);
 
   @protected
-  Wallet
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
-          SseDeserializer deserializer);
+  Map<String, bool> sse_decode_Map_String_bool_None(SseDeserializer deserializer);
+
+  @protected
+  Map<String, List<Uint8List>> sse_decode_Map_String_list_list_prim_u_8_strict_None(SseDeserializer deserializer);
+
+  @protected
+  Map<String, BigInt?> sse_decode_Map_String_opt_box_autoadd_u_64_None(SseDeserializer deserializer);
+
+  @protected
+  Amount sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(SseDeserializer deserializer);
+
+  @protected
+  CurrencyUnit sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
+      SseDeserializer deserializer);
+
+  @protected
+  MintUrl sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
+      SseDeserializer deserializer);
+
+  @protected
+  Mnemonic sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
+      SseDeserializer deserializer);
+
+  @protected
+  MnemonicInfo sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      SseDeserializer deserializer);
+
+  @protected
+  MultiMintWallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
+      SseDeserializer deserializer);
+
+  @protected
+  Wallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(SseDeserializer deserializer);
 
   @protected
   String sse_decode_String(SseDeserializer deserializer);
@@ -527,24 +453,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_box_autoadd_bool(SseDeserializer deserializer);
 
   @protected
-  KeychatIdentityKey sse_decode_box_autoadd_keychat_identity_key(
-      SseDeserializer deserializer);
+  KeychatIdentityKey sse_decode_box_autoadd_keychat_identity_key(SseDeserializer deserializer);
 
   @protected
-  KeychatIdentityKeyPair sse_decode_box_autoadd_keychat_identity_key_pair(
-      SseDeserializer deserializer);
+  KeychatIdentityKeyPair sse_decode_box_autoadd_keychat_identity_key_pair(SseDeserializer deserializer);
 
   @protected
-  KeychatProtocolAddress sse_decode_box_autoadd_keychat_protocol_address(
-      SseDeserializer deserializer);
+  KeychatProtocolAddress sse_decode_box_autoadd_keychat_protocol_address(SseDeserializer deserializer);
 
   @protected
-  KeychatSignalSession sse_decode_box_autoadd_keychat_signal_session(
-      SseDeserializer deserializer);
+  KeychatSignalSession sse_decode_box_autoadd_keychat_signal_session(SseDeserializer deserializer);
 
   @protected
-  MintCashuInfo sse_decode_box_autoadd_mint_cashu_info(
-      SseDeserializer deserializer);
+  MintCashuInfo sse_decode_box_autoadd_mint_cashu_info(SseDeserializer deserializer);
 
   @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
@@ -568,8 +489,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   DecryptedMessage sse_decode_decrypted_message(SseDeserializer deserializer);
 
   @protected
-  GroupExtensionResult sse_decode_group_extension_result(
-      SseDeserializer deserializer);
+  GroupExtensionResult sse_decode_group_extension_result(SseDeserializer deserializer);
 
   @protected
   int sse_decode_i_32(SseDeserializer deserializer);
@@ -584,34 +504,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   KeyPackageResult sse_decode_key_package_result(SseDeserializer deserializer);
 
   @protected
-  KeychatIdentityKey sse_decode_keychat_identity_key(
-      SseDeserializer deserializer);
+  KeychatIdentityKey sse_decode_keychat_identity_key(SseDeserializer deserializer);
 
   @protected
-  KeychatIdentityKeyPair sse_decode_keychat_identity_key_pair(
-      SseDeserializer deserializer);
+  KeychatIdentityKeyPair sse_decode_keychat_identity_key_pair(SseDeserializer deserializer);
 
   @protected
-  KeychatProtocolAddress sse_decode_keychat_protocol_address(
-      SseDeserializer deserializer);
+  KeychatProtocolAddress sse_decode_keychat_protocol_address(SseDeserializer deserializer);
 
   @protected
-  KeychatSignalSession sse_decode_keychat_signal_session(
-      SseDeserializer deserializer);
+  KeychatSignalSession sse_decode_keychat_signal_session(SseDeserializer deserializer);
 
   @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
-  List<ContactCashu> sse_decode_list_contact_cashu(
-      SseDeserializer deserializer);
+  List<ContactCashu> sse_decode_list_contact_cashu(SseDeserializer deserializer);
 
   @protected
   List<List<String>> sse_decode_list_list_String(SseDeserializer deserializer);
 
   @protected
-  List<Uint8List> sse_decode_list_list_prim_u_8_strict(
-      SseDeserializer deserializer);
+  List<Uint8List> sse_decode_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   List<MintCashu> sse_decode_list_mint_cashu(SseDeserializer deserializer);
@@ -628,25 +542,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           SseDeserializer deserializer);
 
   @protected
-  List<(String, bool)> sse_decode_list_record_string_bool(
-      SseDeserializer deserializer);
+  List<(String, bool)> sse_decode_list_record_string_bool(SseDeserializer deserializer);
 
   @protected
-  List<(String, List<Uint8List>)>
-      sse_decode_list_record_string_list_list_prim_u_8_strict(
-          SseDeserializer deserializer);
+  List<(String, List<Uint8List>)> sse_decode_list_record_string_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
-  List<(String, BigInt?)> sse_decode_list_record_string_opt_box_autoadd_u_64(
-      SseDeserializer deserializer);
+  List<(String, BigInt?)> sse_decode_list_record_string_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
   @protected
-  List<(String, String)> sse_decode_list_record_string_string(
-      SseDeserializer deserializer);
+  List<(String, String)> sse_decode_list_record_string_string(SseDeserializer deserializer);
 
   @protected
-  List<Secp256k1Account> sse_decode_list_secp_256_k_1_account(
-      SseDeserializer deserializer);
+  List<Secp256k1Account> sse_decode_list_secp_256_k_1_account(SseDeserializer deserializer);
 
   @protected
   List<Transaction> sse_decode_list_transaction(SseDeserializer deserializer);
@@ -673,16 +581,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer);
 
   @protected
-  KeychatIdentityKey? sse_decode_opt_box_autoadd_keychat_identity_key(
-      SseDeserializer deserializer);
+  KeychatIdentityKey? sse_decode_opt_box_autoadd_keychat_identity_key(SseDeserializer deserializer);
 
   @protected
-  KeychatSignalSession? sse_decode_opt_box_autoadd_keychat_signal_session(
-      SseDeserializer deserializer);
+  KeychatSignalSession? sse_decode_opt_box_autoadd_keychat_signal_session(SseDeserializer deserializer);
 
   @protected
-  MintCashuInfo? sse_decode_opt_box_autoadd_mint_cashu_info(
-      SseDeserializer deserializer);
+  MintCashuInfo? sse_decode_opt_box_autoadd_mint_cashu_info(SseDeserializer deserializer);
 
   @protected
   int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer);
@@ -694,8 +599,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String>? sse_decode_opt_list_String(SseDeserializer deserializer);
 
   @protected
-  List<List<String>>? sse_decode_opt_list_list_String(
-      SseDeserializer deserializer);
+  List<List<String>>? sse_decode_opt_list_list_String(SseDeserializer deserializer);
 
   @protected
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -708,46 +612,37 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
-  (Uint8List, Uint8List)
-      sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(
-          SseDeserializer deserializer);
+  (Uint8List, Uint8List) sse_decode_record_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
-  (Uint8List, String?, String, List<String>?)
-      sse_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
-          SseDeserializer deserializer);
-
-  @protected
-  (Uint8List, String, List<String>?)
-      sse_decode_record_list_prim_u_8_strict_string_opt_list_string(
-          SseDeserializer deserializer);
-
-  @protected
-  (List<String>, String) sse_decode_record_list_string_string(
+  (Uint8List, String?, String, List<String>?) sse_decode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
       SseDeserializer deserializer);
+
+  @protected
+  (Uint8List, String, List<String>?) sse_decode_record_list_prim_u_8_strict_string_opt_list_string(
+      SseDeserializer deserializer);
+
+  @protected
+  (List<String>, String) sse_decode_record_list_string_string(SseDeserializer deserializer);
 
   @protected
   (String, bool) sse_decode_record_string_bool(SseDeserializer deserializer);
 
   @protected
-  (String, List<Uint8List>) sse_decode_record_string_list_list_prim_u_8_strict(
-      SseDeserializer deserializer);
+  (String, List<Uint8List>) sse_decode_record_string_list_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
-  (String, BigInt?) sse_decode_record_string_opt_box_autoadd_u_64(
-      SseDeserializer deserializer);
+  (String, BigInt?) sse_decode_record_string_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
   @protected
-  (String, String) sse_decode_record_string_string(
-      SseDeserializer deserializer);
+  (String, String) sse_decode_record_string_string(SseDeserializer deserializer);
 
   @protected
   (String, int) sse_decode_record_string_u_32(SseDeserializer deserializer);
 
   @protected
-  (int, Uint8List, Uint8List)
-      sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
-          SseDeserializer deserializer);
+  (int, Uint8List, Uint8List) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
+      SseDeserializer deserializer);
 
   @protected
   (
@@ -755,23 +650,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint8List,
     Uint8List,
     Uint8List
-  ) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(
-      SseDeserializer deserializer);
+  ) sse_decode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   (BigInt, BigInt) sse_decode_record_u_64_u_64(SseDeserializer deserializer);
 
   @protected
-  (BigInt, BigInt, BigInt) sse_decode_record_usize_usize_usize(
-      SseDeserializer deserializer);
+  (BigInt, BigInt, BigInt) sse_decode_record_usize_usize_usize(SseDeserializer deserializer);
 
   @protected
-  Secp256k1Account sse_decode_secp_256_k_1_account(
-      SseDeserializer deserializer);
+  Secp256k1Account sse_decode_secp_256_k_1_account(SseDeserializer deserializer);
 
   @protected
-  Secp256k1SimpleAccount sse_decode_secp_256_k_1_simple_account(
-      SseDeserializer deserializer);
+  Secp256k1SimpleAccount sse_decode_secp_256_k_1_simple_account(SseDeserializer deserializer);
 
   @protected
   TokenInfo sse_decode_token_info(SseDeserializer deserializer);
@@ -780,8 +671,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Transaction sse_decode_transaction(SseDeserializer deserializer);
 
   @protected
-  TransactionDirection sse_decode_transaction_direction(
-      SseDeserializer deserializer);
+  TransactionDirection sse_decode_transaction_direction(SseDeserializer deserializer);
 
   @protected
   TransactionKind sse_decode_transaction_kind(SseDeserializer deserializer);
@@ -814,106 +704,86 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BigInt sse_decode_usize(SseDeserializer deserializer);
 
   @protected
-  void sse_encode_AnyhowException(
-      AnyhowException self, SseSerializer serializer);
+  void sse_encode_AnyhowException(AnyhowException self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
-          Amount self, SseSerializer serializer);
+  void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
+      Amount self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
-          CurrencyUnit self, SseSerializer serializer);
+  void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
+      CurrencyUnit self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
-          MintUrl self, SseSerializer serializer);
+  void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
+      MintUrl self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          MnemonicInfo self, SseSerializer serializer);
+  void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      MnemonicInfo self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
-          Wallet self, SseSerializer serializer);
+  void sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
+      Wallet self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
-          Mnemonic self, SseSerializer serializer);
+  void sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
+      Mnemonic self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          MnemonicInfo self, SseSerializer serializer);
+  void sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      MnemonicInfo self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
-          MultiMintWallet self, SseSerializer serializer);
+  void sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
+      MultiMintWallet self, SseSerializer serializer);
 
   @protected
-  void sse_encode_Map_String_String_None(
-      Map<String, String> self, SseSerializer serializer);
+  void sse_encode_Map_String_String_None(Map<String, String> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_Map_String_bool_None(
-      Map<String, bool> self, SseSerializer serializer);
+  void sse_encode_Map_String_bool_None(Map<String, bool> self, SseSerializer serializer);
 
   @protected
   void sse_encode_Map_String_list_list_prim_u_8_strict_None(
       Map<String, List<Uint8List>> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_Map_String_opt_box_autoadd_u_64_None(
-      Map<String, BigInt?> self, SseSerializer serializer);
+  void sse_encode_Map_String_opt_box_autoadd_u_64_None(Map<String, BigInt?> self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
-          Amount self, SseSerializer serializer);
+  void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
+      Amount self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
-          CurrencyUnit self, SseSerializer serializer);
+  void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
+      CurrencyUnit self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
-          MintUrl self, SseSerializer serializer);
+  void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
+      MintUrl self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
-          Mnemonic self, SseSerializer serializer);
+  void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
+      Mnemonic self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
-          MnemonicInfo self, SseSerializer serializer);
+  void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+      MnemonicInfo self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
-          MultiMintWallet self, SseSerializer serializer);
+  void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
+      MultiMintWallet self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
-          Wallet self, SseSerializer serializer);
+  void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
+      Wallet self, SseSerializer serializer);
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
-  void sse_encode_add_members_result(
-      AddMembersResult self, SseSerializer serializer);
+  void sse_encode_add_members_result(AddMembersResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_bool(bool self, SseSerializer serializer);
@@ -922,24 +792,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_keychat_identity_key(
-      KeychatIdentityKey self, SseSerializer serializer);
+  void sse_encode_box_autoadd_keychat_identity_key(KeychatIdentityKey self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_keychat_identity_key_pair(
-      KeychatIdentityKeyPair self, SseSerializer serializer);
+  void sse_encode_box_autoadd_keychat_identity_key_pair(KeychatIdentityKeyPair self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_keychat_protocol_address(
-      KeychatProtocolAddress self, SseSerializer serializer);
+  void sse_encode_box_autoadd_keychat_protocol_address(KeychatProtocolAddress self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_keychat_signal_session(
-      KeychatSignalSession self, SseSerializer serializer);
+  void sse_encode_box_autoadd_keychat_signal_session(KeychatSignalSession self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_mint_cashu_info(
-      MintCashuInfo self, SseSerializer serializer);
+  void sse_encode_box_autoadd_mint_cashu_info(MintCashuInfo self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
@@ -954,19 +819,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_commit_result(CommitResult self, SseSerializer serializer);
 
   @protected
-  void sse_encode_commit_type_result(
-      CommitTypeResult self, SseSerializer serializer);
+  void sse_encode_commit_type_result(CommitTypeResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_contact_cashu(ContactCashu self, SseSerializer serializer);
 
   @protected
-  void sse_encode_decrypted_message(
-      DecryptedMessage self, SseSerializer serializer);
+  void sse_encode_decrypted_message(DecryptedMessage self, SseSerializer serializer);
 
   @protected
-  void sse_encode_group_extension_result(
-      GroupExtensionResult self, SseSerializer serializer);
+  void sse_encode_group_extension_result(GroupExtensionResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
@@ -978,50 +840,40 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_invoice_status(InvoiceStatus self, SseSerializer serializer);
 
   @protected
-  void sse_encode_key_package_result(
-      KeyPackageResult self, SseSerializer serializer);
+  void sse_encode_key_package_result(KeyPackageResult self, SseSerializer serializer);
 
   @protected
-  void sse_encode_keychat_identity_key(
-      KeychatIdentityKey self, SseSerializer serializer);
+  void sse_encode_keychat_identity_key(KeychatIdentityKey self, SseSerializer serializer);
 
   @protected
-  void sse_encode_keychat_identity_key_pair(
-      KeychatIdentityKeyPair self, SseSerializer serializer);
+  void sse_encode_keychat_identity_key_pair(KeychatIdentityKeyPair self, SseSerializer serializer);
 
   @protected
-  void sse_encode_keychat_protocol_address(
-      KeychatProtocolAddress self, SseSerializer serializer);
+  void sse_encode_keychat_protocol_address(KeychatProtocolAddress self, SseSerializer serializer);
 
   @protected
-  void sse_encode_keychat_signal_session(
-      KeychatSignalSession self, SseSerializer serializer);
+  void sse_encode_keychat_signal_session(KeychatSignalSession self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_contact_cashu(
-      List<ContactCashu> self, SseSerializer serializer);
+  void sse_encode_list_contact_cashu(List<ContactCashu> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_list_String(
-      List<List<String>> self, SseSerializer serializer);
+  void sse_encode_list_list_String(List<List<String>> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_list_prim_u_8_strict(
-      List<Uint8List> self, SseSerializer serializer);
+  void sse_encode_list_list_prim_u_8_strict(List<Uint8List> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_mint_cashu(
-      List<MintCashu> self, SseSerializer serializer);
+  void sse_encode_list_mint_cashu(List<MintCashu> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_prim_u_8_strict(
-      Uint8List self, SseSerializer serializer);
+  void sse_encode_list_prim_u_8_strict(Uint8List self, SseSerializer serializer);
 
   @protected
   void
@@ -1029,28 +881,23 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           List<(MintUrl, Amount)> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_record_string_bool(
-      List<(String, bool)> self, SseSerializer serializer);
+  void sse_encode_list_record_string_bool(List<(String, bool)> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_record_string_list_list_prim_u_8_strict(
       List<(String, List<Uint8List>)> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_record_string_opt_box_autoadd_u_64(
-      List<(String, BigInt?)> self, SseSerializer serializer);
+  void sse_encode_list_record_string_opt_box_autoadd_u_64(List<(String, BigInt?)> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_record_string_string(
-      List<(String, String)> self, SseSerializer serializer);
+  void sse_encode_list_record_string_string(List<(String, String)> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_secp_256_k_1_account(
-      List<Secp256k1Account> self, SseSerializer serializer);
+  void sse_encode_list_secp_256_k_1_account(List<Secp256k1Account> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_transaction(
-      List<Transaction> self, SseSerializer serializer);
+  void sse_encode_list_transaction(List<Transaction> self, SseSerializer serializer);
 
   @protected
   void sse_encode_message_in_type(MessageInType self, SseSerializer serializer);
@@ -1074,16 +921,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer);
 
   @protected
-  void sse_encode_opt_box_autoadd_keychat_identity_key(
-      KeychatIdentityKey? self, SseSerializer serializer);
+  void sse_encode_opt_box_autoadd_keychat_identity_key(KeychatIdentityKey? self, SseSerializer serializer);
 
   @protected
-  void sse_encode_opt_box_autoadd_keychat_signal_session(
-      KeychatSignalSession? self, SseSerializer serializer);
+  void sse_encode_opt_box_autoadd_keychat_signal_session(KeychatSignalSession? self, SseSerializer serializer);
 
   @protected
-  void sse_encode_opt_box_autoadd_mint_cashu_info(
-      MintCashuInfo? self, SseSerializer serializer);
+  void sse_encode_opt_box_autoadd_mint_cashu_info(MintCashuInfo? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer);
@@ -1095,12 +939,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_list_String(List<String>? self, SseSerializer serializer);
 
   @protected
-  void sse_encode_opt_list_list_String(
-      List<List<String>>? self, SseSerializer serializer);
+  void sse_encode_opt_list_list_String(List<List<String>>? self, SseSerializer serializer);
 
   @protected
-  void sse_encode_opt_list_prim_u_8_strict(
-      Uint8List? self, SseSerializer serializer);
+  void sse_encode_opt_list_prim_u_8_strict(Uint8List? self, SseSerializer serializer);
 
   @protected
   void
@@ -1113,62 +955,49 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_record_list_prim_u_8_strict_opt_string_string_opt_list_string(
-      (Uint8List, String?, String, List<String>?) self,
-      SseSerializer serializer);
+      (Uint8List, String?, String, List<String>?) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_list_prim_u_8_strict_string_opt_list_string(
       (Uint8List, String, List<String>?) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_list_string_string(
-      (List<String>, String) self, SseSerializer serializer);
+  void sse_encode_record_list_string_string((List<String>, String) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_string_bool(
-      (String, bool) self, SseSerializer serializer);
+  void sse_encode_record_string_bool((String, bool) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_string_list_list_prim_u_8_strict(
-      (String, List<Uint8List>) self, SseSerializer serializer);
+  void sse_encode_record_string_list_list_prim_u_8_strict((String, List<Uint8List>) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_string_opt_box_autoadd_u_64(
-      (String, BigInt?) self, SseSerializer serializer);
+  void sse_encode_record_string_opt_box_autoadd_u_64((String, BigInt?) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_string_string(
-      (String, String) self, SseSerializer serializer);
+  void sse_encode_record_string_string((String, String) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_string_u_32(
-      (String, int) self, SseSerializer serializer);
+  void sse_encode_record_string_u_32((String, int) self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict(
       (int, Uint8List, Uint8List) self, SseSerializer serializer);
 
   @protected
-  void
-      sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(
-          (int, Uint8List, Uint8List, Uint8List) self,
-          SseSerializer serializer);
+  void sse_encode_record_u_32_list_prim_u_8_strict_list_prim_u_8_strict_list_prim_u_8_strict(
+      (int, Uint8List, Uint8List, Uint8List) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_u_64_u_64(
-      (BigInt, BigInt) self, SseSerializer serializer);
+  void sse_encode_record_u_64_u_64((BigInt, BigInt) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_record_usize_usize_usize(
-      (BigInt, BigInt, BigInt) self, SseSerializer serializer);
+  void sse_encode_record_usize_usize_usize((BigInt, BigInt, BigInt) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_secp_256_k_1_account(
-      Secp256k1Account self, SseSerializer serializer);
+  void sse_encode_secp_256_k_1_account(Secp256k1Account self, SseSerializer serializer);
 
   @protected
-  void sse_encode_secp_256_k_1_simple_account(
-      Secp256k1SimpleAccount self, SseSerializer serializer);
+  void sse_encode_secp_256_k_1_simple_account(Secp256k1SimpleAccount self, SseSerializer serializer);
 
   @protected
   void sse_encode_token_info(TokenInfo self, SseSerializer serializer);
@@ -1177,16 +1006,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_transaction(Transaction self, SseSerializer serializer);
 
   @protected
-  void sse_encode_transaction_direction(
-      TransactionDirection self, SseSerializer serializer);
+  void sse_encode_transaction_direction(TransactionDirection self, SseSerializer serializer);
 
   @protected
-  void sse_encode_transaction_kind(
-      TransactionKind self, SseSerializer serializer);
+  void sse_encode_transaction_kind(TransactionKind self, SseSerializer serializer);
 
   @protected
-  void sse_encode_transaction_status(
-      TransactionStatus self, SseSerializer serializer);
+  void sse_encode_transaction_status(TransactionStatus self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_16(int self, SseSerializer serializer);
@@ -1216,19 +1042,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 // Section: wire_class
 
 class RustLibWire implements BaseWire {
-  factory RustLibWire.fromExternalLibrary(ExternalLibrary lib) =>
-      RustLibWire(lib.ffiDynamicLibrary);
+  factory RustLibWire.fromExternalLibrary(ExternalLibrary lib) => RustLibWire(lib.ffiDynamicLibrary);
 
   /// Holds the symbol lookup function.
-  final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-      _lookup;
+  final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  RustLibWire(ffi.DynamicLibrary dynamicLibrary)
-      : _lookup = dynamicLibrary.lookup;
+  RustLibWire(ffi.DynamicLibrary dynamicLibrary) : _lookup = dynamicLibrary.lookup;
 
-  void
-      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
+  void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
@@ -1243,8 +1065,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmountPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
+  void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmount(
@@ -1259,8 +1080,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAmountPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
+  void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
@@ -1275,8 +1095,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnitPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
+  void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(
@@ -1291,8 +1110,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnitPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
+  void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
@@ -1307,8 +1125,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrlPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
+  void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrl(
@@ -1323,8 +1140,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMintUrlPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
+  void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
@@ -1339,8 +1155,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
+  void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonic(
@@ -1355,8 +1170,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+  void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
@@ -1371,8 +1185,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfoPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
+  void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfo(
@@ -1387,8 +1200,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMnemonicInfoPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
+  void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
@@ -1403,8 +1215,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWalletPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
+  void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(
@@ -1419,8 +1230,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWalletPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
+  void rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
@@ -1435,8 +1245,7 @@ class RustLibWire implements BaseWire {
       _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWalletPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void
-      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
+  void rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
     ffi.Pointer<ffi.Void> ptr,
   ) {
     return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
