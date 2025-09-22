@@ -84,6 +84,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Wallet dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(dynamic raw);
 
+@protected Set<String> dco_decode_Set_String_None(dynamic raw);
+
 @protected String dco_decode_String(dynamic raw);
 
 @protected AddMembersResult dco_decode_add_members_result(dynamic raw);
@@ -200,7 +202,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (Uint8List,String,List<String>?) dco_decode_record_list_prim_u_8_strict_string_opt_list_string(dynamic raw);
 
-@protected (List<String>,String) dco_decode_record_list_string_string(dynamic raw);
+@protected (List<String>,Set<String>) dco_decode_record_list_string_set_string_none(dynamic raw);
+
+@protected (List<String>,String,Set<String>) dco_decode_record_list_string_string_set_string_none(dynamic raw);
 
 @protected (String,bool) dco_decode_record_string_bool(dynamic raw);
 
@@ -289,6 +293,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected MultiMintWallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(SseDeserializer deserializer);
 
 @protected Wallet sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(SseDeserializer deserializer);
+
+@protected Set<String> sse_decode_Set_String_None(SseDeserializer deserializer);
 
 @protected String sse_decode_String(SseDeserializer deserializer);
 
@@ -406,7 +412,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected (Uint8List,String,List<String>?) sse_decode_record_list_prim_u_8_strict_string_opt_list_string(SseDeserializer deserializer);
 
-@protected (List<String>,String) sse_decode_record_list_string_string(SseDeserializer deserializer);
+@protected (List<String>,Set<String>) sse_decode_record_list_string_set_string_none(SseDeserializer deserializer);
+
+@protected (List<String>,String,Set<String>) sse_decode_record_list_string_string_set_string_none(SseDeserializer deserializer);
 
 @protected (String,bool) sse_decode_record_string_bool(SseDeserializer deserializer);
 
@@ -495,6 +503,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMultiMintWallet(MultiMintWallet self, SseSerializer serializer);
 
 @protected void sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(Wallet self, SseSerializer serializer);
+
+@protected void sse_encode_Set_String_None(Set<String> self, SseSerializer serializer);
 
 @protected void sse_encode_String(String self, SseSerializer serializer);
 
@@ -612,7 +622,9 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_record_list_prim_u_8_strict_string_opt_list_string((Uint8List,String,List<String>?) self, SseSerializer serializer);
 
-@protected void sse_encode_record_list_string_string((List<String>,String) self, SseSerializer serializer);
+@protected void sse_encode_record_list_string_set_string_none((List<String>,Set<String>) self, SseSerializer serializer);
+
+@protected void sse_encode_record_list_string_string_set_string_none((List<String>,String,Set<String>) self, SseSerializer serializer);
 
 @protected void sse_encode_record_string_bool((String,bool) self, SseSerializer serializer);
 

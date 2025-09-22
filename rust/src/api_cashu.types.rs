@@ -2,7 +2,7 @@ use flutter_rust_bridge::frb;
 // use strum::{AsRefStr, Display, EnumIs, EnumString, IntoStaticStr};
 pub use cashu::{Amount, CurrencyUnit, MintUrl};
 pub use cdk_common::wallet::{TransactionDirection, TransactionKind, TransactionStatus};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Transaction {
@@ -80,6 +80,7 @@ pub struct ContactCashu {
 pub struct CashuV1ToV2 {
     pub tokens: Vec<String>,
     pub counters: String,
+    pub unavailable_mints: HashSet<String>,
 }
 
 pub use bip39::Mnemonic;

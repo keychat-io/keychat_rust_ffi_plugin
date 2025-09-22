@@ -40,7 +40,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.10.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1442858699;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -224612865;
 
 // Section: executor
 
@@ -524,13 +524,13 @@ fn wire__crate__api_cashu_v1__cashu_v1_init_send_all_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_dbpath = <String>::sse_decode(&mut deserializer);
-            let api__words = <Option<String>>::sse_decode(&mut deserializer);
+            let api_words = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok =
-                            crate::api_cashu_v1::cashu_v1_init_send_all(api_dbpath, api__words)?;
+                            crate::api_cashu_v1::cashu_v1_init_send_all(api_dbpath, api_words)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -5153,6 +5153,45 @@ fn wire__crate__api_signal__store_signed_key_api_impl(
         },
     )
 }
+fn wire__crate__api_cashu_v1__try_unreachable_mints_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "try_unreachable_mints",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_dbpath = <String>::sse_decode(&mut deserializer);
+            let api_words = <Option<String>>::sse_decode(&mut deserializer);
+            let api_mints = <Vec<String>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api_cashu_v1::try_unreachable_mints(
+                            api_dbpath, api_words, api_mints,
+                        )?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api_signal__update_alice_addr_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -5544,6 +5583,14 @@ impl SseDecode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpa
     }
 }
 
+impl SseDecode for std::collections::HashSet<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <Vec<String>>::sse_decode(deserializer);
+        return inner.into_iter().collect();
+    }
+}
+
 impl SseDecode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -5576,9 +5623,12 @@ impl SseDecode for crate::api_cashu::types::CashuV1ToV2 {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_tokens = <Vec<String>>::sse_decode(deserializer);
         let mut var_counters = <String>::sse_decode(deserializer);
+        let mut var_unavailableMints =
+            <std::collections::HashSet<String>>::sse_decode(deserializer);
         return crate::api_cashu::types::CashuV1ToV2 {
             tokens: var_tokens,
             counters: var_counters,
+            unavailable_mints: var_unavailableMints,
         };
     }
 }
@@ -6181,12 +6231,22 @@ impl SseDecode for (Vec<u8>, String, Option<Vec<String>>) {
     }
 }
 
-impl SseDecode for (Vec<String>, String) {
+impl SseDecode for (Vec<String>, std::collections::HashSet<String>) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <Vec<String>>::sse_decode(deserializer);
+        let mut var_field1 = <std::collections::HashSet<String>>::sse_decode(deserializer);
+        return (var_field0, var_field1);
+    }
+}
+
+impl SseDecode for (Vec<String>, String, std::collections::HashSet<String>) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_field0 = <Vec<String>>::sse_decode(deserializer);
         let mut var_field1 = <String>::sse_decode(deserializer);
-        return (var_field0, var_field1);
+        let mut var_field2 = <std::collections::HashSet<String>>::sse_decode(deserializer);
+        return (var_field0, var_field1, var_field2);
     }
 }
 
@@ -6722,16 +6782,19 @@ fn pde_ffi_dispatcher_primary_impl(
         134 => {
             wire__crate__api_signal__store_signed_key_api_impl(port, ptr, rust_vec_len, data_len)
         }
-        135 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
-        136 => wire__crate__api_mls__update_group_context_extensions_impl(
+        135 => {
+            wire__crate__api_cashu_v1__try_unreachable_mints_impl(port, ptr, rust_vec_len, data_len)
+        }
+        136 => wire__crate__api_signal__update_alice_addr_impl(port, ptr, rust_vec_len, data_len),
+        137 => wire__crate__api_mls__update_group_context_extensions_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        137 => wire__crate__api_cashu__validate_mint_number_impl(port, ptr, rust_vec_len, data_len),
-        138 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
-        139 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
+        138 => wire__crate__api_cashu__validate_mint_number_impl(port, ptr, rust_vec_len, data_len),
+        139 => wire__crate__api_nostr__verify_event_impl(port, ptr, rust_vec_len, data_len),
+        140 => wire__crate__api_nostr__verify_schnorr_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -6859,6 +6922,7 @@ impl flutter_rust_bridge::IntoDart for crate::api_cashu::types::CashuV1ToV2 {
         [
             self.tokens.into_into_dart().into_dart(),
             self.counters.into_into_dart().into_dart(),
+            self.unavailable_mints.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -7566,6 +7630,13 @@ impl SseEncode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpa
     }
 }
 
+impl SseEncode for std::collections::HashSet<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<String>>::sse_encode(self.into_iter().collect(), serializer);
+    }
+}
+
 impl SseEncode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -7593,6 +7664,7 @@ impl SseEncode for crate::api_cashu::types::CashuV1ToV2 {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<String>>::sse_encode(self.tokens, serializer);
         <String>::sse_encode(self.counters, serializer);
+        <std::collections::HashSet<String>>::sse_encode(self.unavailable_mints, serializer);
     }
 }
 
@@ -8065,11 +8137,20 @@ impl SseEncode for (Vec<u8>, String, Option<Vec<String>>) {
     }
 }
 
-impl SseEncode for (Vec<String>, String) {
+impl SseEncode for (Vec<String>, std::collections::HashSet<String>) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<String>>::sse_encode(self.0, serializer);
+        <std::collections::HashSet<String>>::sse_encode(self.1, serializer);
+    }
+}
+
+impl SseEncode for (Vec<String>, String, std::collections::HashSet<String>) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<String>>::sse_encode(self.0, serializer);
         <String>::sse_encode(self.1, serializer);
+        <std::collections::HashSet<String>>::sse_encode(self.2, serializer);
     }
 }
 

@@ -95,6 +95,7 @@ pub fn cashu_v1_init_send_all(
     Ok(CashuV1ToV2 {
         tokens: re.0,
         counters: re.1,
+        unavailable_mints: re.2,
     })
 }
 

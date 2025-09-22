@@ -41,15 +41,16 @@ static Future<MnemonicInfo>  withWords({required String words })=>RustLib.instan
 class CashuV1ToV2  {
                 final List<String> tokens;
 final String counters;
+final Set<String> unavailableMints;
 
-                const CashuV1ToV2({required this.tokens ,required this.counters ,});
+                const CashuV1ToV2({required this.tokens ,required this.counters ,required this.unavailableMints ,});
 
                 
                 
 
                 
         @override
-        int get hashCode => tokens.hashCode^counters.hashCode;
+        int get hashCode => tokens.hashCode^counters.hashCode^unavailableMints.hashCode;
         
 
                 
@@ -58,7 +59,7 @@ final String counters;
             identical(this, other) ||
             other is CashuV1ToV2 &&
                 runtimeType == other.runtimeType
-                && tokens == other.tokens&& counters == other.counters;
+                && tokens == other.tokens&& counters == other.counters&& unavailableMints == other.unavailableMints;
         
             }
 

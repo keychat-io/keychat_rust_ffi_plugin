@@ -7,6 +7,7 @@ use cashu_wallet::wallet::Token;
 use cashu_wallet::wallet::WalletError;
 use cashu_wallet::wallet::CURRENCY_UNIT_SAT;
 use cashu_wallet_sqlite::StoreError;
+use std::collections::HashSet;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::MutexGuard as StdMutexGuard;
@@ -76,7 +77,7 @@ lazy_static! {
 pub fn cashu_v1_init_send_all(
     dbpath: String,
     words: Option<String>,
-) -> anyhow::Result<(Vec<String>, String)> {
+) -> anyhow::Result<(Vec<String>, String, HashSet<String>)> {
     // let words = MnemonicInfo::generate_words(12)?;
     init_db(dbpath, words, false)?;
     init_cashu(32)?;
@@ -85,18 +86,68 @@ pub fn cashu_v1_init_send_all(
     let counters = get_all_counters()?;
     let mints = get_mints()?;
     let mut tokens: Vec<String> = Vec::new();
+    let mut unavailable_mints = std::collections::HashSet::new();
     for m in mints {
         let url = m.url;
-        let (is_charge, amount) = get_balance(url.clone())?;
+        let (is_charge, amount) = match get_balance(url.clone()) {
+            Ok(result) => result,
+            Err(e) => {
+                warn!("Failed to get balance for mint '{}': {}", url, e);
+                unavailable_mints.insert(url.clone());
+                continue;
+            }
+        };
+
         debug!("is_charge, amount {}, {}", is_charge, amount);
 
         if (!is_charge && amount > 0) || amount > 2 {
-            let tx = send_all(url, None)?;
-            tokens.push(tx.content().to_string());
+            match send_all(url.clone(), None) {
+                Ok(tx) => tokens.push(tx.content().to_string()),
+                Err(e) => {
+                    warn!("Failed to send all for mint '{}': {}", url, e);
+                    unavailable_mints.insert(url.clone());
+                    continue;
+                }
+            }
         }
     }
 
-    Ok((tokens, counters))
+    Ok((tokens, counters, unavailable_mints))
+}
+
+pub fn try_unreachable_mints(
+    dbpath: String,
+    words: Option<String>,
+    mints: Vec<String>,
+) -> anyhow::Result<(Vec<String>, HashSet<String>)> {
+    init_db(dbpath, words, false)?;
+    init_cashu(32)?;
+    let mut tokens: Vec<String> = Vec::new();
+    let mut unavailable_mints = std::collections::HashSet::new();
+    for m in mints {
+        let (is_charge, amount) = match get_balance(m.clone()) {
+            Ok(result) => result,
+            Err(e) => {
+                warn!("Failed to get balance for mint '{}': {}", m, e);
+                unavailable_mints.insert(m.clone());
+                continue;
+            }
+        };
+
+        debug!("is_charge, amount {}, {}", is_charge, amount);
+
+        if (!is_charge && amount > 0) || amount > 2 {
+            match send_all(m.clone(), None) {
+                Ok(tx) => tokens.push(tx.content().to_string()),
+                Err(e) => {
+                    warn!("Failed to send all for mint '{}': {}", m, e);
+                    unavailable_mints.insert(m.clone());
+                    continue;
+                }
+            }
+        }
+    }
+    Ok((tokens, unavailable_mints))
 }
 
 fn init_db(dbpath: String, words: Option<String>, dev: bool) -> anyhow::Result<()> {
