@@ -83,6 +83,12 @@ pub struct CashuV1ToV2 {
     pub unavailable_mints: HashSet<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CashuProofsV1ToV2 {
+    pub counters: String,
+    pub proofs: String,
+}
+
 pub use bip39::Mnemonic;
 use bitcoin::bip32::Xpriv;
 

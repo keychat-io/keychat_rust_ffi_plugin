@@ -3,24 +3,65 @@ extern crate tracing;
 
 use rust::api_cashu::{self as api, MnemonicInfo};
 
+const DB_PATH_OLD: &str = "rustest-old.db";
 const DB_PATH: &str = "rustest-new.db";
 const DB_PATH_V2: &str = "ecash_v2.db";
 const MINT_URL: &str = "https://8333.space:3338/";
 const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
-    // test_prepare_proofs();
-    // test_send_all();
-    // test_send_stmap();
-    // test_load_v2();
-    test_send();
-    // test_receive();
-    // test_restore();
-    // test_v1_counters();
+    // let words = &MnemonicInfo::generate_words(12).unwrap();
+    let words = "blossom safe divert benefit curious fragile use extra sleep media electric help";
+    // test_prepare_proofs(words);
+    // test_send_all(words);
+    // test_send_stmap(words);
+    // test_load_v2(words);
+    test_send(words);
+    // test_v1_receive(words);
+    // test_cashu_v1_init_proofs(words);
+    // test_init_v1_and_get_poorfs_to_v2(words);
+    // test_get_balance(words);
+    // test_receive(words);
+    // test_restore(words);
+    // test_v1_counters(words);
 }
 
-fn test_load_v2() {
-    let words = "culture ignore divide assault cost deposit exercise drill flee deer office sun";
+fn test_v1_receive(words: &str) {
+    // let words = MnemonicInfo::generate_words(12).unwrap();
+    println!("generate_words is {:?}", words);
+    let tokens = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCEpGFhAmFzeEBiY2U1ZDQzODA3ZmM1MjYxNjZjZjFhMDg2YzZjYWFhY2RlZTAzM2U1Y2IzMTM2NzIxZmViYjE4Nzc2Mjg5NmI5YWNYIQL1nJXZnttqzgjwLpjzoWQaWMr2BZuAPwpjwkGSpuXzTGFko2FlWCC1ZC_dY8rrUtrOLH2Geg_1CN-ylW6P4vvyrezTRc2sCWFzWCAmov6RSZaJSaMUf7yplHprzWW-UazlT5gC2vmG42i7DGFyWCABUGJB_tmN7dzkGeEOubMnfweKShyldiknkFFmvk4YpaRhYQFhc3hAMmZmNDVhNzhmYWRmZDVjOTA2ZjZjODI2MzdhMzQ5ZmEzZjczOWE1ODA5OTNmYjFmODAxMGQ4OGMwNDMyYjJlNmFjWCEDJEd8OExy8RJBYCbBAXUdywiH4UxlgfaAiaKLDefGe4FhZKNhZVggBhgUl2mbjjbPaUswhFkMq49r474mYX02GP34GIcn8TFhc1gg23JmIwoJ6aFVPXBeSVbBATNUlXXY8APhnHiXpOErl5RhclggHA4ncyyXlqTAyipEEUU555nXNLSGIb_LDRJeSvXZRMCkYWEBYXN4QDczYTY2MDMzNWE1ZTMwYjkyZjEyNjg5ZWRiYTBlMzNmMGRkMjcwNDVkYmMwMTNiY2ZlY2UyYjA0MzA0ZTI3OTJhY1ghAtQSe4KORauulJVvDsuJnRIRNJNNhS8a9grF_98LyxYUYWSjYWVYIGbLdloMNKhF126EP-3vuPOr8sUr4BXuQVFDS-LQnSEIYXNYIOPiMyFeooWXdTWlOVoh7bgVzWkdpcfD1oZJOr71JJ8BYXJYIMDM_nnE-PIEzu_ohHy8Adga2tQhyJq5hGTSup8v4dyApGFhAWFzeEA3YTUwMmE1YWRmMjI2NjM2N2VmYTA0NWFmMTAwNzBjOTkzNjE4MjM2ZTUyOTQ1M2RlNmRkM2Y0YzYxYTRmYjg1YWNYIQPWka9OV2Fk7qWZJWwYi3RR4ijrEkWnQHmFTh_96RGifmFko2FlWCCiGtKAArg9mkLPcxwgCbDNAyC5xmv4bSknrDKiabw5T2FzWCClGVrgki1P9F5hCkr3Hd3XdshAVHeTWJjeWYmq04KSR2FyWCBg_m2VnIXxT7D6G01Hzg9grOT4C04pzrRhplhtS8F7wA".to_string();
+    let re = api::cashu_v1_init_test(DB_PATH_OLD.to_string(), Some(words.to_string()), tokens);
+}
+
+fn test_cashu_v1_init_proofs(words: &str) {
+    println!("generate_words is {:?}", words);
+    let re = api::cashu_v1_init_proofs(DB_PATH_OLD.to_string(), Some(words.to_string()));
+    println!("test_cashu_v1_init_proofs: {:?}", re);
+}
+
+fn test_init_v1_and_get_poorfs_to_v2(words: &str) {
+    println!("generate_words is {:?}", words);
+    let _re = api::init_v1_and_get_poorfs_to_v2(
+        DB_PATH_OLD.to_string(),
+        DB_PATH.to_string(),
+        words.to_string(),
+    );
+    // need to init db again!
+    // let b = api::get_balances();
+    // println!("get_balances before {:?}", b);
+}
+
+fn test_get_balance(words: &str) {
+    println!("generate_words is {:?}", words);
+    let _init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
+    let _init_cashu = api::init_cashu(32);
+
+    // test fot get balances
+    let b1 = api::get_balances();
+    println!("get_balances before {:?}", b1);
+}
+
+fn test_load_v2(words: &str) {
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH_V2.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH_V2, init_db);
@@ -40,8 +81,7 @@ fn test_load_v2() {
 }
 
 // this is my ios, v1 to v2 restore will have some errors
-fn test_restore() {
-    let words = "";
+fn test_restore(words: &str) {
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH_V2, init_db);
@@ -63,8 +103,7 @@ fn test_restore() {
     // }
 }
 
-fn test_send() {
-    let words = "crime common leopard humor invite muffin arrive tornado zone toast oak balcony";
+fn test_send(words: &str) {
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH, init_db);
@@ -75,15 +114,14 @@ fn test_send() {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send = api::send(2, MINT_URL.to_string(), None);
+    let send = api::send(1, MINT_URL.to_string(), None);
     println!("send token is {:?}", send);
 
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
 }
 
-fn test_send_all() {
-    let words = "learn filter taxi catch fan call fiscal critic pond bless walk bid";
+fn test_send_all(words: &str) {
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH, init_db);
@@ -94,14 +132,13 @@ fn test_send_all() {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send_all = api::send_all(MINT_URL_MINIBITS.to_string());
+    let send_all = api::send_all(MINT_URL.to_string());
     println!("send_all is {:?}", send_all);
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
 }
 
-fn test_send_stmap() {
-    let words = "stairs slim wasp turn poem supply any suggest stove unknown flat enrich";
+fn test_send_stmap(words: &str) {
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH, init_db);
@@ -119,9 +156,9 @@ fn test_send_stmap() {
     println!("get_balances after {:?}", b2);
 }
 
-fn test_receive() {
+fn test_receive(words: &str) {
     // let words = MnemonicInfo::generate_words(12).unwrap();
-    let words = "crime common leopard humor invite muffin arrive tornado zone toast oak balcony";
+    // let words = "harsh city pave response hotel jelly midnight venue borrow loan act gun";
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH, init_db);
@@ -133,7 +170,7 @@ fn test_receive() {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhAmFzeEA0Yjg2OTRlMmE1NDY2ZjNkOTI2ZWYzY2FkYmNlMTkzNmY5NTQ2Nzg4OGI5N2RmYmQ1ZmI2OWQ5OWRhZTcxNjllYWNYIQN11qMp6ozF62G2TJXM47srMOGOLDC_wVIVnuy81sb7DGFko2FlWCAw66mJXrCUj5CdJVS7WAd09y8_w-ik2hD998DaTK5g32FzWCBXHX1yKKS1pKko5HOQ12RQH5pxneUgc-RojQ8c_G6592FyWCAcOx3_LV21oy95lzJB3pCFUjSLo78xCDaeRqLq-QDzEaRhYQFhc3hANTQyZTE2MjlkNTY5Y2U4ZTEyYTU5YjU4ZmE1ODQyNTlkMmFlNzkwNmJmYjc5MjFhNGRiM2Y2ZTU5ZDgwNGQ4NWFjWCEDH27USW8ey0N5yCxaEaAuz_KQ2EIBpJKxN29OKooxrIBhZKNhZVggshHA_hO3cjyWl8SczMqeIksXIhgts2f-jP6D9aNWlk9hc1gg337zHybwkjHF5ZJdGIJjaHH35HrwOFda5X80elmgXIZhclggddAtJHW8uGyj6e_abcPn4Rd1TlBOyfNiUVFjc_lgG3I".trim();
+    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhAWFzeEBmOWQ3ZjMzMjNmNmY4MGNhMDBlNjE2MDNlZWYzNTQ3MWQ5ODVhNzE5ZmI4MjlkZWU2NDkxOTllZjQ4MGQ3ZTY2YWNYIQItP9V0w39K5HIWXpDb1JUbLJWqyT7tR65m5Vb_qhdHymFko2FlWCAYZQOM_NTj6vjoUVIOAXYWNklIEbIkBP-CPbL_L89Dp2FzWCDXvpWMO2qiYYykObVRYBnb76iBOHtF_KRNmjMp65fSRmFyWCAR74KRwMkK2-RQhcYu0KUAQntTdeDqgQ9LnOIyVlN8DaRhYQFhc3hAZmM2NGM2NDg1YjYwNzUzNWUyYjViY2RmZDU3YjRiMDMzZmM3OTE0MWVhNTY3ZDkzYzFhNGU1Y2MxYWI3Yzk0ZGFjWCECMPsoZVAF3G9sDGjrwAPP4hNN-Lb-_0wnlsoSYyrerPthZKNhZVgg59-6mqDJZgUSW2-bRTLUlHsdNmAIxskhDiG9BJ8LUNphc1ggOBeEr7FRrq_LM0brzYy30Sc2zO6Ggf4bouuWSuEBCzRhclgg_E6Y71kWPfCV0EsAEh-6lv5pCDPgQJ8m3nIjV9v9U-A".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
@@ -143,11 +180,11 @@ fn test_receive() {
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    // let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
 }
 
-fn test_prepare_proofs() {
-    let words = "stairs slim wasp turn poem supply any suggest stove unknown flat enrich";
+fn test_prepare_proofs(words: &str) {
+    // let words = "stairs slim wasp turn poem supply any suggest stove unknown flat enrich";
     // let words = MnemonicInfo::generate_words(12).unwrap();
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
@@ -184,9 +221,8 @@ fn test_prepare_proofs() {
     }
 }
 
-fn test_v1_counters() {
-    let words = MnemonicInfo::generate_words(12).unwrap();
-    let words = "crime common leopard humor invite muffin arrive tornado zone toast oak balcony";
+fn test_v1_counters(words: &str) {
+    // let words = MnemonicInfo::generate_words(12).unwrap();
     println!("generate_words is {:?}", words);
     let tokens = api::cashu_v1_init_send_all("rustest.db".to_string(), Some(words.to_owned()));
     println!("get_all_counters: {:?}", tokens);

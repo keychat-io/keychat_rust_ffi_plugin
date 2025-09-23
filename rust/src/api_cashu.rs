@@ -11,6 +11,7 @@ use cdk::wallet::types::WalletKey;
 use cdk::wallet::ReceiveOptions;
 pub use cdk::wallet::{MultiMintWallet, SendOptions, Wallet, WalletBuilder};
 pub use cdk::Bolt11Invoice;
+use cdk_common::common::ProofInfo;
 use cdk_common::database::WalletDatabase;
 pub use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus};
 use cdk_sqlite::WalletSqliteDatabase;
@@ -99,6 +100,40 @@ pub fn cashu_v1_init_send_all(
     })
 }
 
+//cashu_init_test
+pub fn cashu_v1_init_test(
+    dbpath: String,
+    words: Option<String>,
+    tokens: String,
+) -> anyhow::Result<()> {
+    let _re = api_cashu_v1::cashu_init_test(dbpath, words, tokens)?;
+    Ok(())
+}
+// for cashu v1 init db and send all
+pub fn cashu_v1_init_proofs(
+    dbpath: String,
+    words: Option<String>,
+) -> anyhow::Result<CashuProofsV1ToV2> {
+    let re = api_cashu_v1::cashu_v1_init_proofs(dbpath, words)?;
+    Ok(CashuProofsV1ToV2 {
+        proofs: re.0,
+        counters: re.1,
+    })
+}
+
+pub fn init_v1_and_get_poorfs_to_v2(
+    dbpath_old: String,
+    dbpath_new: String,
+    words: String,
+) -> anyhow::Result<()> {
+    let re = api_cashu_v1::cashu_v1_init_proofs(dbpath_old, Some(words.clone()))?;
+    init_db(dbpath_new, words, false)?;
+    init_cashu(32)?;
+    add_counters(re.1)?;
+    add_proofs_from_v1(re.0)?;
+    Ok(())
+}
+
 // this is for init db and cashu once, only call once
 pub fn init_db_cashu_once(dbpath: String) -> anyhow::Result<()> {
     init_db_once(dbpath)?;
@@ -127,11 +162,14 @@ fn init_db_once(dbpath: String) -> anyhow::Result<()> {
         if mints.is_empty() {}
 
         for (mint_url, mint_info) in mints {
-            let units = if let Some(mint_info) = mint_info {
+            let mut units = if let Some(mint_info) = mint_info {
                 mint_info.supported_units().into_iter().cloned().collect()
             } else {
                 vec![CurrencyUnit::Sat]
             };
+            if units.is_empty() {
+                units.push(CurrencyUnit::Sat);
+            }
 
             for unit in units {
                 let mint_url_clone = mint_url.clone();
@@ -190,11 +228,14 @@ pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> 
         if mints.is_empty() {}
 
         for (mint_url, mint_info) in mints {
-            let units = if let Some(mint_info) = mint_info {
+            let mut units = if let Some(mint_info) = mint_info {
                 mint_info.supported_units().into_iter().cloned().collect()
             } else {
                 vec![CurrencyUnit::Sat]
             };
+            if units.is_empty() {
+                units.push(CurrencyUnit::Sat);
+            }
 
             for unit in units {
                 let mint_url_clone = mint_url.clone();
@@ -220,7 +261,6 @@ pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> 
                 wallets.push(wallet);
             }
         }
-        // println!("wallets is {:?}", wallets);
         let multi_mint_wallet = MultiMintWallet::new(localstore, Arc::new(seed), wallets);
 
         Ok(multi_mint_wallet)
@@ -430,6 +470,31 @@ pub fn add_counters(counters: String) -> anyhow::Result<()> {
     });
 
     Ok(())
+}
+
+fn add_proofs_from_v1(proofs: String) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let proofs: Vec<ProofInfo> = serde_json::from_str(&proofs)?;
+    if proofs.is_empty() {
+        warn!("The proofs vector is empty.");
+        return Ok(());
+    }
+    Ok(state
+        .rt
+        .block_on(w.localstore.update_proofs(proofs, vec![]))?)
+}
+
+fn add_proofs(proofs: Vec<ProofInfo>) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    if proofs.is_empty() {
+        warn!("The proofs vector is empty.");
+        return Ok(());
+    }
+    Ok(state
+        .rt
+        .block_on(w.localstore.update_proofs(proofs, vec![]))?)
 }
 
 // ? direct use map?

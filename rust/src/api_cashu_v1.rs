@@ -7,6 +7,7 @@ use cashu_wallet::wallet::Token;
 use cashu_wallet::wallet::WalletError;
 use cashu_wallet::wallet::CURRENCY_UNIT_SAT;
 use cashu_wallet_sqlite::StoreError;
+use cdk_common::common::ProofInfo;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
@@ -14,9 +15,9 @@ use std::sync::MutexGuard as StdMutexGuard;
 use tokio::runtime::{Builder, Runtime};
 
 use cashu_wallet::types::{
-    CashuTransaction, LNTransaction, Mint as MintV1, MintInfo as MintInfoV1,
-    Transaction as TransactionV1, TransactionDirection as TransactionDirectionV1,
-    TransactionKind as TransactionKindV1, TransactionStatus as TransactionStatusV1,
+    CashuTransaction, LNTransaction, Mint as MintV1, Transaction as TransactionV1,
+    TransactionDirection as TransactionDirectionV1, TransactionKind as TransactionKindV1,
+    TransactionStatus as TransactionStatusV1,
 };
 
 use cashu_wallet_sqlite::LitePool;
@@ -73,7 +74,23 @@ lazy_static! {
         StdMutex::new(State::new().expect("failed to create tokio runtime"));
 }
 
-// the only pub fn that v2 can call
+// this is for test
+pub fn cashu_init_test(
+    dbpath: String,
+    words: Option<String>,
+    tokens: String,
+) -> anyhow::Result<()> {
+    // let words = MnemonicInfo::generate_words(12)?;
+    init_db(dbpath, words, false)?;
+    init_cashu(32)?;
+    let re = receive_token(tokens)?;
+    println!("receive_token re: {:?}", re);
+    let balance = get_balances()?;
+    println!("get_balances re: {:?}", balance);
+    Ok(())
+}
+
+// may be not used again
 pub fn cashu_v1_init_send_all(
     dbpath: String,
     words: Option<String>,
@@ -115,6 +132,20 @@ pub fn cashu_v1_init_send_all(
     Ok((tokens, counters, unavailable_mints))
 }
 
+//try use this one
+pub fn cashu_v1_init_proofs(
+    dbpath: String,
+    words: Option<String>,
+) -> anyhow::Result<(String, String)> {
+    init_db(dbpath, words, false)?;
+    init_cashu(32)?;
+    check_proofs()?;
+    check_pending()?;
+    let counters = get_all_counters()?;
+    let proofs = get_all_proofs_from_v1()?;
+    Ok((serde_json::to_string(&proofs)?, counters))
+}
+
 pub fn try_unreachable_mints(
     dbpath: String,
     words: Option<String>,
@@ -148,6 +179,57 @@ pub fn try_unreachable_mints(
         }
     }
     Ok((tokens, unavailable_mints))
+}
+
+use std::str::FromStr;
+fn get_all_proofs_from_v1() -> anyhow::Result<Vec<ProofInfo>> {
+    let state: StdMutexGuard<'static, State> = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let proofs_map = state.rt.block_on(w.store().get_all_proofs())?;
+    let mut added: Vec<ProofInfo> = Vec::new();
+    for (mint_with_unit, proofs_extended) in proofs_map {
+        let mint_url = mint_with_unit.mint();
+
+        for proof in proofs_extended {
+            let proof_new = cashu::Proof {
+                amount: cashu::Amount::from(proof.raw.amount.to_u64()),
+                keyset_id: cashu::Id::from_bytes(&proof.raw.keyset_id.to_bytes()?)?,
+                secret: cashu::secret::Secret::new(proof.raw.secret.as_str()),
+                c: cashu::PublicKey::from_hex(&proof.raw.c.to_hex())?,
+                // witness: Some(serde_json::from_str::<cashu::Witness>(&serde_json::to_string(&proof.raw.witness)?)?),
+                witness: match proof.raw.witness {
+                    Some(witness) => Some(serde_json::from_str::<cashu::Witness>(
+                        &serde_json::to_string(&witness)?,
+                    )?),
+                    None => {
+                        warn!("Witness is None for proof");
+                        None
+                    }
+                },
+                dleq: match proof.raw.dleq {
+                    Some(dleq) => Some(serde_json::from_str::<cashu::ProofDleq>(
+                        &serde_json::to_string(&dleq)?,
+                    )?),
+                    None => {
+                        warn!("dleq is None for proof");
+                        None
+                    }
+                },
+            };
+            let unit = proof.unit.unwrap_or_else(|| "SAT".to_string());
+            let currency_unit = cashu::CurrencyUnit::from_str(&unit)?;
+            let proof_info = ProofInfo::new(
+                proof_new,
+                cashu::MintUrl::from_str(mint_url)?,
+                cashu::State::Unspent,
+                currency_unit,
+            )?;
+            added.push(proof_info);
+        }
+    }
+
+    Ok(added)
 }
 
 fn init_db(dbpath: String, words: Option<String>, dev: bool) -> anyhow::Result<()> {
