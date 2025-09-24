@@ -125,13 +125,14 @@ pub fn init_v1_and_get_poorfs_to_v2(
     dbpath_old: String,
     dbpath_new: String,
     words: String,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<(String, Vec<String>)> {
     let re = api_cashu_v1::cashu_v1_init_proofs(dbpath_old, Some(words.clone()))?;
     init_db(dbpath_new.clone(), words.clone(), false)?;
     init_cashu(32)?;
-    add_counters(re.1)?;
+    let counters = re.1;
+    let mints = add_counters(counters.clone())?;
     add_proofs_from_v1(re.0)?;
-    Ok(())
+    Ok((counters, mints))
 }
 
 // this is for init db and cashu once, only call once
@@ -428,13 +429,14 @@ struct MintCounterRecord {
     max_counter: u32,
 }
 
-pub fn add_counters(counters: String) -> anyhow::Result<()> {
+pub fn add_counters(counters: String) -> anyhow::Result<Vec<String>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
     let records: Vec<MintCounterRecord> = serde_json::from_str(&counters)?;
     let mut map: HashMap<String, Vec<KeySetInfo>> = HashMap::new();
     let mut keysetid_to_counter: HashMap<Id, u32> = HashMap::new();
+    let mut mints = Vec::new();
 
     for record in records {
         let id = Id::from_str(&record.keysetid).map_err(|e| anyhow::anyhow!(e.to_string()))?;
@@ -453,16 +455,22 @@ pub fn add_counters(counters: String) -> anyhow::Result<()> {
     }
     let _tx = state.rt.block_on(async {
         for (mint_url, keyset_infos) in map {
-            let mint_url = MintUrl::from_str(&mint_url.trim())?;
-            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            wallet.get_mint_info().await?;
+            let mint = MintUrl::from_str(&mint_url.trim())?;
+            let wallet = get_or_create_wallet(w, &mint, unit.clone()).await?;
+            if wallet.get_mint_info().await.is_ok() {
+                mints.push(mint_url.clone());
+            } else {
+                let tmp = format!("{}-failure", mint_url);
+                mints.push(tmp);
+                warn!("Failed to get mint info for {}", mint_url);
+            }
 
             // if w.localstore.get_mint(mint_url.clone()).await?.is_none() {
             //     w.localstore.add_mint(mint_url.clone(), None).await?;
             // }
 
             w.localstore
-                .add_mint_keysets(mint_url.clone(), keyset_infos)
+                .add_mint_keysets(mint.clone(), keyset_infos)
                 .await?;
         }
 
@@ -472,7 +480,7 @@ pub fn add_counters(counters: String) -> anyhow::Result<()> {
         Ok(())
     });
 
-    Ok(())
+    Ok(mints)
 }
 
 fn add_proofs_from_v1(proofs: String) -> anyhow::Result<()> {

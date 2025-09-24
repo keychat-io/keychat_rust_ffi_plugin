@@ -93,7 +93,7 @@ Future<void> crateApiCashuTypesMnemonicInfoPubkey({required MnemonicInfo that })
 
 Future<MnemonicInfo> crateApiCashuTypesMnemonicInfoWithWords({required String words });
 
-Future<void> crateApiCashuAddCounters({required String counters });
+Future<List<String>> crateApiCashuAddCounters({required String counters });
 
 Future<AddMembersResult> crateApiMlsAddMembers({required String nostrId , required String groupId , required List<String> keyPackages });
 
@@ -281,7 +281,7 @@ Future<void> crateApiMlsInitMlsDb({required String dbPath , required String nost
 
 Future<void> crateApiSignalInitSignalDb({required String dbPath });
 
-Future<void> crateApiCashuInitV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words });
+Future<(String,List<String>)> crateApiCashuInitV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words });
 
 Future<void> crateApiMlsJoinMlsGroup({required String nostrId , required String groupId , required List<int> welcome });
 
@@ -552,7 +552,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
         );
         
 
-@override Future<void> crateApiCashuAddCounters({required String counters })  { return handler.executeNormal(NormalTask(
+@override Future<List<String>> crateApiCashuAddCounters({required String counters })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(counters, serializer);
@@ -561,7 +561,7 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr;
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_list_String,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -3000,7 +3000,7 @@ sse_encode_String(nostrId, serializer);
         );
         
 
-@override Future<void> crateApiCashuInitV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words })  { return handler.executeNormal(NormalTask(
+@override Future<(String,List<String>)> crateApiCashuInitV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpathOld, serializer);
@@ -3011,7 +3011,7 @@ sse_encode_String(words, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_record_string_list_string,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4612,6 +4612,13 @@ final arr = raw as List<dynamic>;
             }
             return (dco_decode_String(arr[0]),dco_decode_list_list_prim_u_8_strict(arr[1]),); }
 
+@protected (String,List<String>) dco_decode_record_string_list_string(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+            if (arr.length != 2) {
+                throw Exception('Expected 2 elements, got ${arr.length}');
+            }
+            return (dco_decode_String(arr[0]),dco_decode_list_String(arr[1]),); }
+
 @protected (String,BigInt?) dco_decode_record_string_opt_box_autoadd_u_64(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
             if (arr.length != 2) {
@@ -5203,6 +5210,11 @@ var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_list_list_prim_u_8_strict(deserializer);
 return (var_field0, var_field1); }
 
+@protected (String,List<String>) sse_decode_record_string_list_string(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_field0 = sse_decode_String(deserializer);
+var var_field1 = sse_decode_list_String(deserializer);
+return (var_field0, var_field1); }
+
 @protected (String,BigInt?) sse_decode_record_string_opt_box_autoadd_u_64(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_field0 = sse_decode_String(deserializer);
 var var_field1 = sse_decode_opt_box_autoadd_u_64(deserializer);
@@ -5715,6 +5727,11 @@ sse_encode_bool(self.$2, serializer);
 @protected void sse_encode_record_string_list_list_prim_u_8_strict((String,List<Uint8List>) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.$1, serializer);
 sse_encode_list_list_prim_u_8_strict(self.$2, serializer);
+ }
+
+@protected void sse_encode_record_string_list_string((String,List<String>) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_String(self.$1, serializer);
+sse_encode_list_String(self.$2, serializer);
  }
 
 @protected void sse_encode_record_string_opt_box_autoadd_u_64((String,BigInt?) self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs

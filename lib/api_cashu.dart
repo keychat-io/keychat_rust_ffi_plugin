@@ -20,7 +20,7 @@ Future<void>  cashuV1InitTest({required String dbpath , String? words , required
 
 Future<CashuProofsV1ToV2>  cashuV1InitProofs({required String dbpath , String? words }) => RustLib.instance.api.crateApiCashuCashuV1InitProofs(dbpath: dbpath, words: words);
 
-Future<void>  initV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words }) => RustLib.instance.api.crateApiCashuInitV1AndGetPoorfsToV2(dbpathOld: dbpathOld, dbpathNew: dbpathNew, words: words);
+Future<(String,List<String>)>  initV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words }) => RustLib.instance.api.crateApiCashuInitV1AndGetPoorfsToV2(dbpathOld: dbpathOld, dbpathNew: dbpathNew, words: words);
 
 Future<void>  initDbCashuOnce({required String dbpath }) => RustLib.instance.api.crateApiCashuInitDbCashuOnce(dbpath: dbpath);
 
@@ -36,7 +36,7 @@ Future<void>  addMint({required String url }) => RustLib.instance.api.crateApiCa
 
 Future<void>  removeMint({required String url }) => RustLib.instance.api.crateApiCashuRemoveMint(url: url);
 
-Future<void>  addCounters({required String counters }) => RustLib.instance.api.crateApiCashuAddCounters(counters: counters);
+Future<List<String>>  addCounters({required String counters }) => RustLib.instance.api.crateApiCashuAddCounters(counters: counters);
 
 Future<String>  getBalances() => RustLib.instance.api.crateApiCashuGetBalances();
 

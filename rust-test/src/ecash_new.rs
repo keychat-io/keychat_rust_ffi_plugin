@@ -41,11 +41,12 @@ fn test_cashu_v1_init_proofs(words: &str) {
 
 fn test_init_v1_and_get_poorfs_to_v2(words: &str) {
     println!("generate_words is {:?}", words);
-    let _re = api::init_v1_and_get_poorfs_to_v2(
+    let re = api::init_v1_and_get_poorfs_to_v2(
         DB_PATH_OLD.to_string(),
         DB_PATH.to_string(),
         words.to_string(),
     );
+    println!("test_init_v1_and_get_poorfs_to_v2: {:?}", re);
     // let mints = api::get_mints();
     // println!("get_mints {:?}", mints);
     // // need to init db again!
