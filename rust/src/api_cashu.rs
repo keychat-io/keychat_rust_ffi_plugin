@@ -15,7 +15,7 @@ use cdk_common::common::ProofInfo;
 use cdk_common::database::WalletDatabase;
 pub use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus};
 use cdk_sqlite::WalletSqliteDatabase;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::str::FromStr;
@@ -486,14 +486,27 @@ pub fn add_counters(counters: String) -> anyhow::Result<Vec<String>> {
 fn add_proofs_from_v1(proofs: String) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
     let proofs: Vec<ProofInfo> = serde_json::from_str(&proofs)?;
+    let mut mints = HashSet::new();
+    for p in proofs.clone() {
+        mints.insert(p.mint_url);
+    }
     if proofs.is_empty() {
         warn!("The proofs vector is empty.");
         return Ok(());
     }
-    Ok(state
-        .rt
-        .block_on(w.localstore.update_proofs(proofs, vec![]))?)
+
+    let _tx = state.rt.block_on(async {
+        for mint_url in mints {
+            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+            wallet.get_mint_info().await?;
+        }
+
+        w.localstore.update_proofs(proofs, vec![]).await?;
+        Ok(())
+    });
+    Ok(())
 }
 
 fn add_proofs(proofs: Vec<ProofInfo>) -> anyhow::Result<()> {
