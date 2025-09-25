@@ -347,7 +347,7 @@ Future<Transaction> crateApiCashuSend({required BigInt amount , required String 
 
 Future<Transaction> crateApiCashuSendAll({required String mint });
 
-Future<Transaction?> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
+Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
 
 Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address });
 
@@ -3848,7 +3848,7 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<Transaction?> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -3859,7 +3859,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_opt_box_autoadd_transaction,
+          decodeSuccessData: sse_decode_transaction,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4398,9 +4398,6 @@ return dco_decode_keychat_signal_session(raw); }
 @protected MintCashuInfo dco_decode_box_autoadd_mint_cashu_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return dco_decode_mint_cashu_info(raw); }
 
-@protected Transaction dco_decode_box_autoadd_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return dco_decode_transaction(raw); }
-
 @protected int dco_decode_box_autoadd_u_32(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw as int; }
 
@@ -4600,9 +4597,6 @@ return raw == null ? null : dco_decode_box_autoadd_keychat_signal_session(raw); 
 
 @protected MintCashuInfo? dco_decode_opt_box_autoadd_mint_cashu_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_box_autoadd_mint_cashu_info(raw); }
-
-@protected Transaction? dco_decode_opt_box_autoadd_transaction(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
-return raw == null ? null : dco_decode_box_autoadd_transaction(raw); }
 
 @protected int? dco_decode_opt_box_autoadd_u_32(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return raw == null ? null : dco_decode_box_autoadd_u_32(raw); }
@@ -4905,9 +4899,6 @@ return (sse_decode_keychat_signal_session(deserializer)); }
 @protected MintCashuInfo sse_decode_box_autoadd_mint_cashu_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_mint_cashu_info(deserializer)); }
 
-@protected Transaction sse_decode_box_autoadd_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-return (sse_decode_transaction(deserializer)); }
-
 @protected int sse_decode_box_autoadd_u_32(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 return (sse_decode_u_32(deserializer)); }
 
@@ -5182,15 +5173,6 @@ return NostrEvent(id: var_id, pubkey: var_pubkey, createdAt: var_createdAt, kind
 
             if (sse_decode_bool(deserializer)) {
                 return (sse_decode_box_autoadd_mint_cashu_info(deserializer));
-            } else {
-                return null;
-            }
-             }
-
-@protected Transaction? sse_decode_opt_box_autoadd_transaction(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-            if (sse_decode_bool(deserializer)) {
-                return (sse_decode_box_autoadd_transaction(deserializer));
             } else {
                 return null;
             }
@@ -5497,9 +5479,6 @@ sse_encode_keychat_signal_session(self, serializer); }
 @protected void sse_encode_box_autoadd_mint_cashu_info(MintCashuInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_mint_cashu_info(self, serializer); }
 
-@protected void sse_encode_box_autoadd_transaction(Transaction self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-sse_encode_transaction(self, serializer); }
-
 @protected void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_u_32(self, serializer); }
 
@@ -5720,14 +5699,6 @@ sse_encode_String(self.sig, serializer);
                 sse_encode_bool(self != null, serializer);
                 if (self != null) {
                     sse_encode_box_autoadd_mint_cashu_info(self, serializer);
-                }
-                 }
-
-@protected void sse_encode_opt_box_autoadd_transaction(Transaction? self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
-
-                sse_encode_bool(self != null, serializer);
-                if (self != null) {
-                    sse_encode_box_autoadd_transaction(self, serializer);
                 }
                  }
 

@@ -104,8 +104,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected MintCashuInfo dco_decode_box_autoadd_mint_cashu_info(dynamic raw);
 
-@protected Transaction dco_decode_box_autoadd_transaction(dynamic raw);
-
 @protected int dco_decode_box_autoadd_u_32(dynamic raw);
 
 @protected BigInt dco_decode_box_autoadd_u_64(dynamic raw);
@@ -187,8 +185,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected KeychatSignalSession? dco_decode_opt_box_autoadd_keychat_signal_session(dynamic raw);
 
 @protected MintCashuInfo? dco_decode_opt_box_autoadd_mint_cashu_info(dynamic raw);
-
-@protected Transaction? dco_decode_opt_box_autoadd_transaction(dynamic raw);
 
 @protected int? dco_decode_opt_box_autoadd_u_32(dynamic raw);
 
@@ -322,8 +318,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected MintCashuInfo sse_decode_box_autoadd_mint_cashu_info(SseDeserializer deserializer);
 
-@protected Transaction sse_decode_box_autoadd_transaction(SseDeserializer deserializer);
-
 @protected int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
 
 @protected BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
@@ -405,8 +399,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected KeychatSignalSession? sse_decode_opt_box_autoadd_keychat_signal_session(SseDeserializer deserializer);
 
 @protected MintCashuInfo? sse_decode_opt_box_autoadd_mint_cashu_info(SseDeserializer deserializer);
-
-@protected Transaction? sse_decode_opt_box_autoadd_transaction(SseDeserializer deserializer);
 
 @protected int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer);
 
@@ -540,8 +532,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected void sse_encode_box_autoadd_mint_cashu_info(MintCashuInfo self, SseSerializer serializer);
 
-@protected void sse_encode_box_autoadd_transaction(Transaction self, SseSerializer serializer);
-
 @protected void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
 
 @protected void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
@@ -623,8 +613,6 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_opt_box_autoadd_keychat_signal_session(KeychatSignalSession? self, SseSerializer serializer);
 
 @protected void sse_encode_opt_box_autoadd_mint_cashu_info(MintCashuInfo? self, SseSerializer serializer);
-
-@protected void sse_encode_opt_box_autoadd_transaction(Transaction? self, SseSerializer serializer);
 
 @protected void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer);
 

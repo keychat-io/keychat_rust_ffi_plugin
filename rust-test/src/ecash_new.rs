@@ -165,7 +165,7 @@ fn test_send_stmap(words: &str) {
     for _i in 0..4 {
         let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
         println!("send_stamp {:?}", stamp);
-        stamps.push(stamp.unwrap().unwrap().token);
+        stamps.push(stamp.unwrap().token);
     }
 
     let b2 = api::get_balances();

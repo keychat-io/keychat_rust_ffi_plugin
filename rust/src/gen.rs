@@ -6413,19 +6413,6 @@ impl SseDecode for Option<crate::api_cashu::types::MintCashuInfo> {
     }
 }
 
-impl SseDecode for Option<crate::api_cashu::types::Transaction> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        if (<bool>::sse_decode(deserializer)) {
-            return Some(<crate::api_cashu::types::Transaction>::sse_decode(
-                deserializer,
-            ));
-        } else {
-            return None;
-        }
-    }
-}
-
 impl SseDecode for Option<u32> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -8396,16 +8383,6 @@ impl SseEncode for Option<crate::api_cashu::types::MintCashuInfo> {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <crate::api_cashu::types::MintCashuInfo>::sse_encode(value, serializer);
-        }
-    }
-}
-
-impl SseEncode for Option<crate::api_cashu::types::Transaction> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <bool>::sse_encode(self.is_some(), serializer);
-        if let Some(value) = self {
-            <crate::api_cashu::types::Transaction>::sse_encode(value, serializer);
         }
     }
 }

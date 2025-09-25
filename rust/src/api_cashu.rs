@@ -956,7 +956,7 @@ pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
-) -> anyhow::Result<Option<Transaction>> {
+) -> anyhow::Result<Transaction> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -994,7 +994,7 @@ pub fn send_stamp(
             match tokio::time::timeout(Duration::from_secs(3), fut).await {
                 std::result::Result::Ok(std::result::Result::Ok(tx)) => {
                     debug!("send_stamp success {} {}", mint_url, amount);
-                    return Ok(Some(tx));
+                    return Ok(tx);
                 }
                 std::result::Result::Ok(std::result::Result::Err(e)) => {
                     debug!("send_stamp error mint={} amount={} err={:?}", mint_url, amount, e);
@@ -1002,13 +1002,12 @@ pub fn send_stamp(
                 }
                 std::result::Result::Err(_) => {
                     debug!("send_stamp timeout mint={} amount={}", mint_url, amount);
-                    last_err = Some(anyhow::anyhow!("timeout {}", mint_url));
+                    last_err = Some(anyhow::anyhow!("connection timeout for {}", mint_url));
                 }
             }
         }
 
-        error!("The last eror is {:?}", last_err);
-        return Ok(None);
+        Err(last_err.unwrap_or_else(|| anyhow::anyhow!("No available mints")))
     })
 }
 

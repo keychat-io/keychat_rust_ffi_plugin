@@ -56,7 +56,7 @@ Future<void>  printProofs({required String mint }) => RustLib.instance.api.crate
 
 Future<BigInt>  prepareOneProofs({required BigInt amount , required String mint }) => RustLib.instance.api.crateApiCashuPrepareOneProofs(amount: amount, mint: mint);
 
-Future<Transaction?>  sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
+Future<Transaction>  sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
 
 /// Helper function to get a wallet from the multi-mint wallet
 Future<Wallet>  getWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit }) => RustLib.instance.api.crateApiCashuGetWalletByIndex(multiMintWallet: multiMintWallet, mintAmounts: mintAmounts, mintNumber: mintNumber, unit: unit);
