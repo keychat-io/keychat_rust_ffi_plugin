@@ -17,10 +17,12 @@ pub use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus};
 use cdk_sqlite::WalletSqliteDatabase;
 use std::collections::{BTreeMap, HashSet};
 use std::collections::HashMap;
+use std::error::Error;
 use std::fmt::Debug;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex as StdMutex, MutexGuard as StdMutexGuard};
 use tokio::runtime::{Builder, Runtime};
+use tokio::time::{timeout, Duration};
 
 #[frb(ignore)]
 pub struct State {
@@ -892,62 +894,122 @@ async fn prepare_one_proofs_back(
     Ok(count_before)
 }
 
+// pub fn send_stamp(
+//     amount: u64,
+//     mints: Vec<String>,
+//     info: Option<String>,
+// ) -> anyhow::Result<Transaction> {
+//     if amount == 0 {
+//         bail!("can't send amount 0");
+//     }
+
+//     let mut state = State::lock()?;
+//     let w = state.get_wallet()?;
+//     let unit = CurrencyUnit::from_str("sat")?;
+
+//     let bs = state.rt.block_on(w.get_balances(&unit))?;
+
+//     let mut mints_first = Vec::new();
+//     let mut mints_second = Vec::new();
+//     for (k, _v) in bs.into_iter().filter(|(_k, _v)| *_v >= amount.into()) {
+//         // let mint_url: MintUrl = k;
+//         let k_str = k.to_string();
+//         if mints
+//             .iter()
+//             .any(|m| m.trim_end_matches('/') == k_str.trim_end_matches('/'))
+//         {
+//             mints_first.push(k);
+//         } else {
+//             mints_second.push(k);
+//         }
+//     }
+
+//     for mint_url in mints_first.iter().chain(mints_second.iter()) {
+//         let tx = _send(&mut state, amount, mint_url.to_string(), info.clone());
+//         debug!("send_stamp {} {} got: {:?}", mint_url, amount, tx);
+
+//         if tx.is_err() && get_wallet(mint_url.clone(), unit.clone()).is_err() {
+//             error!(
+//                 "send_stamp {} {} failed: {:?}",
+//                 mint_url.to_string(),
+//                 amount,
+//                 tx
+//             );
+//             continue;
+//         } else {
+//             return tx;
+//         }
+//     }
+
+//     debug!("send_stamp last try {} {}", amount, mints.join(","));
+//     // last try ?
+//     let mint_url = mints_first
+//         .iter()
+//         .chain(mints_second.iter())
+//         .next()
+//         .ok_or_else(|| cdk_common::Error::InsufficientFunds)?;
+//     let tx = _send(&mut state, amount, mint_url.to_string(), info.clone())?;
+//     Ok(tx)
+// }
+
 pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<Option<Transaction>> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
 
     let mut state = State::lock()?;
-    let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
 
-    let bs = state.rt.block_on(w.get_balances(&unit))?;
+    let rt = state.rt.clone();
 
-    let mut mints_first = Vec::new();
-    let mut mints_second = Vec::new();
-    for (k, _v) in bs.into_iter().filter(|(_k, _v)| *_v >= amount.into()) {
-        // let mint_url: MintUrl = k;
-        let k_str = k.to_string();
-        if mints
-            .iter()
-            .any(|m| m.trim_end_matches('/') == k_str.trim_end_matches('/'))
-        {
-            mints_first.push(k);
-        } else {
-            mints_second.push(k);
+    let balances = {
+        let w = state.get_wallet()?;
+        rt.block_on(w.get_balances(&unit))?
+    };
+
+    rt.block_on(async {
+        let mut mints_first = Vec::new();
+        let mut mints_second = Vec::new();
+        for (k, _v) in balances.into_iter().filter(|(_, v)| *v >= amount.into()) {
+            let k_str = k.to_string();
+            if mints
+                .iter()
+                .any(|m| m.trim_end_matches('/') == k_str.trim_end_matches('/'))
+            {
+                mints_first.push(k);
+            } else {
+                mints_second.push(k);
+            }
         }
-    }
 
-    for mint_url in mints_first.iter().chain(mints_second.iter()) {
-        let tx = _send(&mut state, amount, mint_url.to_string(), info.clone());
-        debug!("send_stamp {} {} got: {:?}", mint_url, amount, tx);
+        let mut last_err: Option<anyhow::Error> = None;
 
-        if tx.is_err() && get_wallet(mint_url.clone(), unit.clone()).is_err() {
-            error!(
-                "send_stamp {} {} failed: {:?}",
-                mint_url.to_string(),
-                amount,
-                tx
-            );
-            continue;
-        } else {
-            return tx;
+        for mint_url in mints_first.iter().chain(mints_second.iter()) {
+            let mint_str = mint_url.to_string();
+            let fut = _send_one(&mut state, amount, mint_str.clone(), info.clone());
+            match tokio::time::timeout(Duration::from_secs(3), fut).await {
+                std::result::Result::Ok(std::result::Result::Ok(tx)) => {
+                    debug!("send_stamp success {} {}", mint_url, amount);
+                    return Ok(Some(tx));
+                }
+                std::result::Result::Ok(std::result::Result::Err(e)) => {
+                    debug!("send_stamp error mint={} amount={} err={:?}", mint_url, amount, e);
+                    last_err = Some(e);
+                }
+                std::result::Result::Err(_) => {
+                    debug!("send_stamp timeout mint={} amount={}", mint_url, amount);
+                    last_err = Some(anyhow::anyhow!("timeout {}", mint_url));
+                }
+            }
         }
-    }
 
-    debug!("send_stamp last try {} {}", amount, mints.join(","));
-    // last try ?
-    let mint_url = mints_first
-        .iter()
-        .chain(mints_second.iter())
-        .next()
-        .ok_or_else(|| cdk_common::Error::InsufficientFunds)?;
-    let tx = _send(&mut state, amount, mint_url.to_string(), info.clone())?;
-    Ok(tx)
+        error!("The last eror is {:?}", last_err);
+        return Ok(None);
+    })
 }
 
 async fn mint_balances(
@@ -1031,6 +1093,58 @@ pub fn send(
     }
     let mut state = State::lock()?;
     _send(&mut state, amount, active_mint, None)
+}
+
+async fn _send_one(
+    state: &mut StdMutexGuard<'static, State>,
+    amount: u64,
+    active_mint: String,
+    _info: Option<String>,
+) -> anyhow::Result<Transaction> {
+    if amount == 0 {
+        bail!("can't send amount 0");
+    }
+    let unit = CurrencyUnit::from_str("sat")?;
+    let w = state.get_wallet()?;
+
+    let mints_amounts = mint_balances(w, &unit).await;
+        // Get wallet either by mint URL or by index
+    let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await?;
+
+    // Find the mint amount for the selected wallet to check if we have sufficient funds
+    let mint_url = &wallet.mint_url;
+    let mint_amount = mints_amounts?
+        .iter()
+        .find(|(url, _)| url == mint_url)
+        .map(|(_, amount)| *amount)
+        .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
+
+    let mint_amount = mint_amount?;
+    check_sufficient_funds(mint_amount.clone(), amount.into())?;
+    // prepare one proofs if less than 10, and set prepare amount to 32
+    if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
+        println!("need to prepare_one_proofs");
+        let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
+    }
+    let prepared_send = wallet
+        .prepare_send(amount.into(), SendOptions::default())
+        .await?;
+    let tx = wallet.send(prepared_send, None).await?;
+
+    let tx_new = Transaction {
+        id: tx.id().to_string(),
+        mint_url: tx.mint_url.to_string(),
+        io: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        status: tx.status,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    };
+    Ok(tx_new)
 }
 
 fn _send(
@@ -1381,6 +1495,41 @@ pub fn get_cashu_transactions_with_offset(
     Ok(txs_new)
 }
 
+pub fn get_transactions_with_offset(
+    offset: usize,
+    limit: usize,
+) -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state.rt.block_on(w.list_transactions_with_kind_offset(
+        offset,
+        limit,
+        [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
+        None,
+    ))?;
+
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
+}
+
 pub fn get_ln_transactions_with_offset(
     offset: usize,
     limit: usize,
@@ -1455,6 +1604,35 @@ pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
 
     let txs = state.rt.block_on(
         w.list_pending_transactions_with_kind([TransactionKind::Cashu].as_slice(), None),
+    )?;
+
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
+}
+
+pub fn get_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state.rt.block_on(
+        w.list_pending_transactions_with_kind([TransactionKind::Cashu, TransactionKind::LN].as_slice(), None),
     )?;
 
     let mut txs_new = Vec::new();

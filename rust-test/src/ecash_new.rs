@@ -14,12 +14,12 @@ fn main() {
     let words = "whale install write age truth belt feed before devote trip lunch remember";
     // test_prepare_proofs(words);
     // test_send_all(words);
-    // test_send_stmap(words);
+    test_send_stmap(words);
     // test_load_v2(words);
     // test_send(words);
     // test_v1_receive(words);
     // test_cashu_v1_init_proofs(words);
-    test_init_v1_and_get_poorfs_to_v2(words);
+    // test_init_v1_and_get_poorfs_to_v2(words);
     // test_get_balance(words);
     // test_receive(words);
     // test_restore(words);
@@ -159,8 +159,14 @@ fn test_send_stmap(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None);
-    println!("send_stamp {:?}", stamp);
+   
+
+    let mut stamps = vec![];
+    for _i in 0..4 {
+        let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
+        println!("send_stamp {:?}", stamp);
+        stamps.push(stamp.unwrap().unwrap().token);
+    }
 
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
@@ -180,7 +186,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "".trim();
+    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhBGFzeEAyYWMyNzg1MjY2MDdkYmNkZDcwYjc3NTExOWZhYzI1MmM5YjViYjRlNmFjZWIxNDUzYWM0OWYxNDk0NjI1NzA2YWNYIQMG8S24lyQEzZfA5KefKD7BGcSQbPrSFTRWVrUJy6YrMWFko2FlWCAidO0ht4RSU3r1DxV0TlQD9zhhuyYc07wl0kkhTB4p_GFzWCA_HHsfmmELLjYis25fQSNTEirn5MNz9jQHfZcz92aDoGFyWCBsmrDpqN-Semn8V7_y7Gl1Tigr2A60RDgnihxt1Ou2IqRhYQFhc3hAMTI4MjYyYTYxODI1YjkxMzQwYWQwZjhjNWFmOWVlYTQyYzkyZGRmMWIwY2ZhMGMyNWRhNGE4ZTY3ZTE4ODU4ZmFjWCEC7xGxUPe7u84Q02rQL8F52FxLXrKFswmYxSG5qvZIoQRhZKNhZVggZ4YQ6dGvDeLYMUOosqfYbgGocPquWl8bdAzQaTC4qyNhc1ggymXPXw3AbgnwIKwyAzfrcIrhXrW_EwzKPds6IXR9Nf5hclgglxSVhEr2oZ-QAfLxBhLOXNALbUCsyH81KAN_O04ez2E".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
