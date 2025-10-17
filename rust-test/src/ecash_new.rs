@@ -10,15 +10,15 @@ const MINT_URL: &str = "https://8333.space:3338/";
 const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
-    // let words = &MnemonicInfo::generate_words(12).unwrap();
-    let words = "whale install write age truth belt feed before devote trip lunch remember";
+    let words = &MnemonicInfo::generate_words(12).unwrap();
+    let words = "butter neck bulk balcony moral slow bench weasel foot next civil six";
     // test_prepare_proofs(words);
-    // test_send_all(words);
-    test_send_stmap(words);
+    test_send_all(words);
+    // test_send_stmap(words);
     // test_load_v2(words);
     // test_send(words);
     // test_v1_receive(words);
-    // test_cashu_v1_init_proofs(words);
+    //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
     // test_get_balance(words);
     // test_receive(words);
@@ -29,7 +29,7 @@ fn main() {
 fn test_v1_receive(words: &str) {
     // let words = MnemonicInfo::generate_words(12).unwrap();
     println!("generate_words is {:?}", words);
-    let tokens = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhAmFzeEA1NmEyNmY3NGJkZDEwMWUzOTdiZTg0MTdmNDkxMjQxZDQzOTU2YTcxYTRkMmVjYjMzYjZlMzY5MGIyNzg0MTU0YWNYIQNpoElFt-GBsEqkoFvraDh4CX_KduiqHJS7bApYTK3xYWFko2FlWCAd8yAufDDERTqtlhlvNyCM7jBeSbEyda0os95sOZHSGGFzWCA1cHfbI8JtmrfEM7lkHENYT7WHaibElHzfAl4ofBn18GFyWCCquZHnwmPhrMsDmXkFJ5m7Rfw7QMcQLaHFV-cHcToR9aRhYQFhc3hAYjMyYmQ2OWJkYWYyNjY4ZDMwMDBlYmNhYWZjMmI0Y2VjYTY5MzMzOWZkZGMwYTIzZmI2ZjAzNzZhZWRhMzk1NWFjWCECJQd5IKA7IJnlSXl9RuSIUEMRM_DVZ2se5cqeFHcWFBphZKNhZVggctmXT2d6XpkfKgMPa4PJwkYbBBhEM0UILM7vciVYP6thc1gg7x287V1Ur8frEvlHhKA_kwSX9B2mD0gJ0cYsdsAylQVhclggTDQs8W0CMLaZZPG9T7tU_RwwYygZgl56OifKn6iyEQQ=".to_string();
+    let tokens = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhBGFzeEBiMTNmYWZjZGIzZjQ5ZGI2MDU3YzkwNGEwOTFkNTQ1MjAzNWYwYjdmMjdkNDcxMTVhNDRkZTAwYjNmMTY0MjliYWNYIQIebPW9UT61eo89nffr-TlsON2h_eXVRGFYTXKwGQzmIGFko2FlWCAd6W9rr76AtxlL6TxiYBrD9N1ZZHilcJFN54o6f8aW0WFzWCDV3bpDa4vkw2c4iaj9rsjrvb1cBhsBkR55fVjPNGpixmFyWCB06n1JlhhGHxI44KYSZ7ITza9BNPIcCXCuqOgNpd3EEqRhYQFhc3hANjVjMjVmOTQ1OGFlZjYwNmU5YTRhNDI4MzE5YmU3MWUyNDQ5OWNjMmZiZTlmZDRmOWRhNDFhMjBjYWI0ODFjNGFjWCEDvz8bwqKrbeqIwWFK_V40zlkRhsP8nHFy4xBN4YtpUM5hZKNhZVggtD_-iOulgov4-lxU6-iTATonbZ9TbrYYKJ9Wa_WtN61hc1ggwDBuh8HlPZH6cH5p_FkDJmh228uGAsZqNEJvkW4VXx1hclgg53BqogKFktsO6xF1kmJ4qlHJKdfyY7_ggtc1SWT8UjU=".to_string();
     let re = api::cashu_v1_init_test(DB_PATH_OLD.to_string(), Some(words.to_string()), tokens);
 }
 
@@ -94,15 +94,15 @@ fn test_load_v2(words: &str) {
 fn test_restore(words: &str) {
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
-    println!("init_db {}: {:?}", DB_PATH_V2, init_db);
+    println!("init_db {}: {:?}", DB_PATH, init_db);
     let init_cashu = api::init_cashu(32);
     println!("init_cashu is {:?}", init_cashu);
 
     let restore = api::restore(MINT_URL_MINIBITS.to_string(), Some(words.to_string()));
     println!("restore {:?}", restore);
 
-    let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
-    println!("restore {:?}", restore);
+    // let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
+    // println!("restore {:?}", restore);
 
     let b1 = api::get_balances();
     println!("get_balances after {:?}", b1);
@@ -124,7 +124,7 @@ fn test_send(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send = api::send(6, MINT_URL_MINIBITS.to_string(), None);
+    let send = api::send(2, MINT_URL_MINIBITS.to_string(), None);
     println!("send token is {:?}", send);
 
     let b2 = api::get_balances();
@@ -142,7 +142,7 @@ fn test_send_all(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send_all = api::send_all(MINT_URL_MINIBITS.to_string());
+    let send_all = api::send_all(MINT_URL.to_string());
     println!("send_all is {:?}", send_all);
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
@@ -158,8 +158,6 @@ fn test_send_stmap(words: &str) {
     // test fot get balances
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
-
-   
 
     let mut stamps = vec![];
     for _i in 0..4 {
@@ -186,7 +184,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhBGFzeEAyYWMyNzg1MjY2MDdkYmNkZDcwYjc3NTExOWZhYzI1MmM5YjViYjRlNmFjZWIxNDUzYWM0OWYxNDk0NjI1NzA2YWNYIQMG8S24lyQEzZfA5KefKD7BGcSQbPrSFTRWVrUJy6YrMWFko2FlWCAidO0ht4RSU3r1DxV0TlQD9zhhuyYc07wl0kkhTB4p_GFzWCA_HHsfmmELLjYis25fQSNTEirn5MNz9jQHfZcz92aDoGFyWCBsmrDpqN-Semn8V7_y7Gl1Tigr2A60RDgnihxt1Ou2IqRhYQFhc3hAMTI4MjYyYTYxODI1YjkxMzQwYWQwZjhjNWFmOWVlYTQyYzkyZGRmMWIwY2ZhMGMyNWRhNGE4ZTY3ZTE4ODU4ZmFjWCEC7xGxUPe7u84Q02rQL8F52FxLXrKFswmYxSG5qvZIoQRhZKNhZVggZ4YQ6dGvDeLYMUOosqfYbgGocPquWl8bdAzQaTC4qyNhc1ggymXPXw3AbgnwIKwyAzfrcIrhXrW_EwzKPds6IXR9Nf5hclgglxSVhEr2oZ-QAfLxBhLOXNALbUCsyH81KAN_O04ez2E".trim();
+    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCo2FhAWFzeEAwMDc4NjllNzQ0MDYzZGVjYmY3Mzg5MWM5Y2QzNjMxNjgzMmQyM2ViNTJhZGIzMjRjZTAzNDBlYTdmMGU5ZmQwYWNYIQP27l67r21UEiqgyVb08EHQjlp9oR-sZ7Uu7bQ49Wx-eaNhYQFhc3hAN2NkNmEzZGM4YjA0YWFkYjgwMWFjZjI2ZjY2ZjlhYTQxZWEzMDVhNzJjMWUwY2U3M2VlYTAzZWYxNzA5Y2ZiZWFjWCECTTkZFaoN1BYDzTsfTrlPsD9H72zINHkJAtCm-AGUGpA".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);

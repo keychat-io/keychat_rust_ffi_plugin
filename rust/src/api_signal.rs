@@ -484,6 +484,7 @@ pub fn decrypt_signal(
     result
 }
 
+// do not used again
 pub fn session_contain_alice_addr(
     key_pair: KeychatIdentityKeyPair,
     address: String,
@@ -524,6 +525,7 @@ pub fn session_contain_alice_addr(
     result
 }
 
+// do not used again
 pub fn update_alice_addr(
     key_pair: KeychatIdentityKeyPair,
     address: String,
@@ -628,6 +630,7 @@ pub fn delete_session(
     result
 }
 
+// do not used again
 pub fn get_all_alice_addrs(key_pair: KeychatIdentityKeyPair) -> Result<Vec<String>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {

@@ -15,14 +15,12 @@ use cdk_common::common::ProofInfo;
 use cdk_common::database::WalletDatabase;
 pub use cdk_common::wallet::{TransactionId, TransactionKind, TransactionStatus};
 use cdk_sqlite::WalletSqliteDatabase;
-use std::collections::{BTreeMap, HashSet};
-use std::collections::HashMap;
-use std::error::Error;
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt::Debug;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex as StdMutex, MutexGuard as StdMutexGuard};
 use tokio::runtime::{Builder, Runtime};
-use tokio::time::{timeout, Duration};
+use tokio::time::Duration;
 
 #[frb(ignore)]
 pub struct State {
@@ -134,6 +132,10 @@ pub fn init_v1_and_get_poorfs_to_v2(
     let counters = re.1;
     let mints = add_counters(counters.clone())?;
     add_proofs_from_v1(re.0)?;
+    for mint in &mints {
+        let restore = restore(mint.to_string(), Some(words.clone()))?;
+        println!("restore mint {} re: {:?}", mint, restore);
+    }
     Ok((counters, mints))
 }
 
@@ -997,7 +999,10 @@ pub fn send_stamp(
                     return Ok(tx);
                 }
                 std::result::Result::Ok(std::result::Result::Err(e)) => {
-                    debug!("send_stamp error mint={} amount={} err={:?}", mint_url, amount, e);
+                    debug!(
+                        "send_stamp error mint={} amount={} err={:?}",
+                        mint_url, amount, e
+                    );
                     last_err = Some(e);
                 }
                 std::result::Result::Err(_) => {
@@ -1107,7 +1112,7 @@ async fn _send_one(
     let w = state.get_wallet()?;
 
     let mints_amounts = mint_balances(w, &unit).await;
-        // Get wallet either by mint URL or by index
+    // Get wallet either by mint URL or by index
     let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await?;
 
     // Find the mint amount for the selected wallet to check if we have sufficient funds
@@ -1122,7 +1127,6 @@ async fn _send_one(
     check_sufficient_funds(mint_amount.clone(), amount.into())?;
     // prepare one proofs if less than 10, and set prepare amount to 32
     if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
-        println!("need to prepare_one_proofs");
         let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
     }
     let prepared_send = wallet
@@ -1177,7 +1181,6 @@ fn _send(
         check_sufficient_funds(mint_amount.clone(), amount.into())?;
         // prepare one proofs if less than 10, and set prepare amount to 32
         if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
-            println!("need to prepare_one_proofs");
             let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
         }
         let prepared_send = wallet
@@ -1630,9 +1633,10 @@ pub fn get_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let txs = state.rt.block_on(
-        w.list_pending_transactions_with_kind([TransactionKind::Cashu, TransactionKind::LN].as_slice(), None),
-    )?;
+    let txs = state.rt.block_on(w.list_pending_transactions_with_kind(
+        [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
+        None,
+    ))?;
 
     let mut txs_new = Vec::new();
     for tx in txs {

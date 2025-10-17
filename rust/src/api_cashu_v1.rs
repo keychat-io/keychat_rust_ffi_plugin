@@ -8,7 +8,7 @@ use cashu_wallet::wallet::WalletError;
 use cashu_wallet::wallet::CURRENCY_UNIT_SAT;
 use cashu_wallet_sqlite::StoreError;
 use cdk_common::common::ProofInfo;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::MutexGuard as StdMutexGuard;
@@ -87,6 +87,25 @@ pub fn cashu_init_test(
     println!("receive_token re: {:?}", re);
     let balance = get_balances()?;
     println!("get_balances re: {:?}", balance);
+    // let mut cashus = Vec::new();
+    // for _i in 0..4 {
+    //     let send = send_stamp(
+    //         1,
+    //         vec!["https://8333.space:3338/".to_string()],
+    //         None,
+    //     )?;
+    //     println!("send_stamp re: {:?}", send);
+    //     cashus.push(send.content().to_string());
+    //     // let re = receive_token(send.content().to_string())?;
+    //     // println!("receive_token re: {:?}", re);
+    // }
+    // multi_receive(cashus)?;
+    let send1 = send(1, "https://8333.space:3338/".to_string(), None)?;
+    println!("send re: {:?}", send1);
+    let send2 = send(1, "https://8333.space:3338/".to_string(), None)?;
+    println!("send re: {:?}", send2);
+    let balance = get_balances()?;
+    println!("get_balances re: {:?}", balance);
     Ok(())
 }
 
@@ -137,13 +156,189 @@ pub fn cashu_v1_init_proofs(
     dbpath: String,
     words: Option<String>,
 ) -> anyhow::Result<(String, String)> {
-    init_db(dbpath, words, false)?;
+    init_db(dbpath, words.clone(), false)?;
     init_cashu(32)?;
+    check_proofs()?;
+    check_pending()?;
+    // let mints = get_mints()?;
+    // debug!("cashu_v1_init_proofs mints: {:?}", mints);
+    // for mint in &mints {
+    //     debug!("cashu_v1_init_proofs restore mint: {:?}", mint);
+    //     restore(mint.url.clone(), words.clone(), 10)?;
+    // }
+    let txs_pending = get_cashu_pending_transactions()?;
+    let mut mint_txs: HashMap<String, Vec<CashuTransaction>> = HashMap::new();
+    for tx in &txs_pending {
+        let mint = tx.mint.clone();
+        mint_txs.entry(mint).or_default().push(tx.clone());
+    }
+
+    for (mint, txs) in &mint_txs {
+        debug!(
+            "cashu_v1_init_proofs pending mint: {}, txs: {:?}",
+            mint, txs
+        );
+        let (is_charge, amount) = match get_balance(mint.clone()) {
+            Ok(result) => result,
+            Err(e) => {
+                warn!("Failed to get balance for mint '{}': {}", mint.clone(), e);
+                continue;
+            }
+        };
+        // this is the only 1 amount with fee tx, need special handle
+        // only fee && none-fee,
+        // if fee and len==1, need add send 1 (get_balance > 1) to two txs then multi-receive,  if fee and len>1, need driect multi-receive
+        // if none-fee, for tx in txs, then receive one by one
+        if is_charge && txs.len() == 1 && txs[0].amount == 1 {
+            debug!("is_charge && txs.len() == 1 && txs[0].amount == 1");
+            // need add send amount 1 to self multi-receive
+            if amount > 1 {
+                match send_stamp(1, vec![mint.clone()], None) {
+                    Ok(tx) => {
+                        debug!("send_stamp to self ok, token: {:?}", tx.content());
+                        let cashus = vec![tx.content().to_string(), txs[0].token.clone()];
+                        // multi-receive
+                        match multi_receive(cashus) {
+                            Ok(received) => {
+                                for t in received {
+                                    debug!("receive_token to self ok, amount: {:?}", t.amount());
+                                }
+                            }
+                            Err(e) => {
+                                warn!("receive_token to self failed: {}", e);
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        warn!("send_stamp to self failed: {}", e);
+                    }
+                }
+            } else {
+                warn!("not enough balance to send 1 to self");
+            }
+        }
+        if is_charge && txs.len() == 1 && txs[0].amount > 1 {
+            debug!("is_charge && txs.len() == 1 && txs[0].amount > 1");
+            match receive_token(txs[0].token.clone()) {
+                Ok(received) => {
+                    for t in received {
+                        debug!("receive_token pending tx ok, amount: {:?}", t.amount());
+                    }
+                }
+                Err(e) => {
+                    warn!("receive_token pending tx failed: {}", e);
+                    continue;
+                }
+            }
+        }
+        if is_charge && txs.len() > 1 {
+            debug!("is_charge && txs.len() > 1");
+            let mut cashus = Vec::new();
+            // need multi-receive
+            for tx in txs {
+                debug!("pending mint multi txs token: {:?}", tx.token);
+                cashus.push(tx.token.clone());
+            }
+            match multi_receive(cashus) {
+                Ok(received) => {
+                    for t in received {
+                        debug!("receive_token to self ok, amount: {:?}", t.amount());
+                    }
+                }
+                Err(e) => {
+                    warn!("receive_token to self failed: {}", e);
+                }
+            }
+        }
+        if !is_charge {
+            debug!("none is charge");
+            // try receive pending txs first
+            for tx in txs {
+                if tx.status == TransactionStatusV1::Pending {
+                    match receive_token(tx.token.clone()) {
+                        Ok(received) => {
+                            for t in received {
+                                debug!("receive_token pending tx ok, amount: {:?}", t.amount());
+                            }
+                        }
+                        Err(e) => {
+                            warn!("receive_token pending tx failed: {}", e);
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+    }
     check_proofs()?;
     check_pending()?;
     let counters = get_all_counters()?;
     let proofs = get_all_proofs_from_v1()?;
     Ok((serde_json::to_string(&proofs)?, counters))
+}
+
+fn multi_receive(cashus: Vec<String>) -> anyhow::Result<Vec<TransactionV1>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let mut all_tokens = Vec::new();
+    let mut mint_url: Option<cashu_wallet::Url> = None;
+    let mut unit = None;
+    for token_str in cashus {
+        let tokens: cashu_wallet::wallet::Token = token_str
+            .parse()
+            .map_err(|e| format_err!(format!("cashu tokens decode: {}", e)))?;
+        let tokens = tokens.into_v3()?;
+
+        if mint_url.is_none() {
+            mint_url = tokens.token.iter().map(|t| t.mint.clone()).next();
+            unit = tokens.unit;
+        }
+
+        all_tokens.extend(tokens.token.clone());
+    }
+    let proofs = all_tokens
+        .into_iter()
+        .flat_map(|t| t.proofs)
+        .collect::<Vec<_>>();
+
+    let mint_url = mint_url.ok_or_else(|| format_err!("no mint url"))?;
+    let wallet = w.get_wallet_optional(&mint_url)?.unwrap();
+
+    let fut = async move {
+        let proofs_states = wallet.check_proofs(&proofs).await?.states;
+
+        let unspents = proofs_states
+            .iter()
+            .enumerate()
+            .filter(|p| p.1.state == cashu_wallet::cashu::nuts::State::Unspent)
+            .map(|p| p.0)
+            .collect::<Vec<_>>();
+
+        let proofs_unspent = proofs
+            .iter()
+            .enumerate()
+            .filter(|(idx, _)| unspents.contains(idx))
+            .map(|ip| ip.1)
+            .cloned()
+            .collect();
+
+        let token_v3 = cashu_wallet::wallet::TokenV3Generic::new(
+            mint_url,
+            proofs_unspent,
+            None::<String>,
+            unit.into(),
+        )?;
+
+        let token = cashu_wallet::wallet::Token::TokenV3(token_v3);
+        let mut txs = vec![];
+        w.receive_tokens_full_limit_unit(&token.into(), &mut txs, &[CURRENCY_UNIT_SAT])
+            .await
+            .map(|_| txs)
+    };
+    let txs = state.rt.block_on(fut)?;
+    debug!("multi_receive txs: {:?}", txs);
+
+    Ok(txs)
 }
 
 pub fn try_unreachable_mints(
@@ -183,7 +378,7 @@ pub fn try_unreachable_mints(
 
 use std::str::FromStr;
 fn get_all_proofs_from_v1() -> anyhow::Result<Vec<ProofInfo>> {
-    let state: StdMutexGuard<'static, State> = State::lock()?;
+    let state = State::lock()?;
     let w = state.get_wallet()?;
 
     let proofs_map = state.rt.block_on(w.store().get_all_proofs())?;
@@ -1284,12 +1479,6 @@ fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfoV1> {
     };
 
     let ts = (invoice.duration_since_epoch() + invoice.expiry_time()).as_millis();
-    // println!(
-    //     "{:?}+{:?}={}",
-    //     invoice.duration_since_epoch(),
-    //     invoice.expiry_time(),
-    //     ts
-    // );
 
     Ok(InvoiceInfoV1 {
         // bolt11: encoded_invoice,
