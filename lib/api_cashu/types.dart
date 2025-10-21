@@ -7,243 +7,224 @@ import '../frb_generated.dart';
 import '../lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `get_keys`
+
+            // These functions are ignored because they are not marked as `pub`: `get_keys`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MnemonicInfo>>
-abstract class MnemonicInfo implements RustOpaqueInterface {
-  static Future<String> generateWords({required BigInt words}) =>
-      RustLib.instance.api.crateApiCashuTypesMnemonicInfoGenerateWords(words: words);
 
-  Future<void> mnemonic();
+            
+
+            
+                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MnemonicInfo>>
+                abstract class MnemonicInfo implements RustOpaqueInterface {
+                    static Future<String>  generateWords({required BigInt words })=>RustLib.instance.api.crateApiCashuTypesMnemonicInfoGenerateWords(words: words);
+
+
+ Future<void>  mnemonic();
+
 
   // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
-  static Future<MnemonicInfo> newInstance({required Mnemonic mnemonic}) =>
-      RustLib.instance.api.crateApiCashuTypesMnemonicInfoNew(mnemonic: mnemonic);
+static Future<MnemonicInfo>  newInstance({required Mnemonic mnemonic })=>RustLib.instance.api.crateApiCashuTypesMnemonicInfoNew(mnemonic: mnemonic);
 
-  Future<void> pubkey();
 
-  static Future<MnemonicInfo> withWords({required String words}) =>
-      RustLib.instance.api.crateApiCashuTypesMnemonicInfoWithWords(words: words);
-}
+ Future<void>  pubkey();
 
-class CashuProofsV1ToV2 {
-  final String counters;
-  final String proofs;
 
-  const CashuProofsV1ToV2({
-    required this.counters,
-    required this.proofs,
-  });
+static Future<MnemonicInfo>  withWords({required String words })=>RustLib.instance.api.crateApiCashuTypesMnemonicInfoWithWords(words: words);
 
-  @override
-  int get hashCode => counters.hashCode ^ proofs.hashCode;
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CashuProofsV1ToV2 &&
-          runtimeType == other.runtimeType &&
-          counters == other.counters &&
-          proofs == other.proofs;
-}
 
-class CashuV1ToV2 {
-  final List<String> tokens;
-  final String counters;
-  final Set<String> unavailableMints;
+                    
+                }
+                
 
-  const CashuV1ToV2({
-    required this.tokens,
-    required this.counters,
-    required this.unavailableMints,
-  });
+class CashuProofsV1ToV2  {
+                final String counters;
+final String proofs;
 
-  @override
-  int get hashCode => tokens.hashCode ^ counters.hashCode ^ unavailableMints.hashCode;
+                const CashuProofsV1ToV2({required this.counters ,required this.proofs ,});
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CashuV1ToV2 &&
-          runtimeType == other.runtimeType &&
-          tokens == other.tokens &&
-          counters == other.counters &&
-          unavailableMints == other.unavailableMints;
-}
+                
+                
 
-class ContactCashu {
-  final String method;
-  final String info;
+                
+        @override
+        int get hashCode => counters.hashCode^proofs.hashCode;
+        
 
-  const ContactCashu({
-    required this.method,
-    required this.info,
-  });
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is CashuProofsV1ToV2 &&
+                runtimeType == other.runtimeType
+                && counters == other.counters&& proofs == other.proofs;
+        
+            }
 
-  static Future<ContactCashu> default_() => RustLib.instance.api.crateApiCashuTypesContactCashuDefault();
+class CashuV1ToV2  {
+                final List<String> tokens;
+final String counters;
+final Set<String> unavailableMints;
 
-  @override
-  int get hashCode => method.hashCode ^ info.hashCode;
+                const CashuV1ToV2({required this.tokens ,required this.counters ,required this.unavailableMints ,});
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ContactCashu && runtimeType == other.runtimeType && method == other.method && info == other.info;
-}
+                
+                
 
-class MintCashu {
-  final String url;
-  final bool active;
-  final BigInt time;
-  final MintCashuInfo? info;
+                
+        @override
+        int get hashCode => tokens.hashCode^counters.hashCode^unavailableMints.hashCode;
+        
 
-  const MintCashu({
-    required this.url,
-    required this.active,
-    required this.time,
-    this.info,
-  });
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is CashuV1ToV2 &&
+                runtimeType == other.runtimeType
+                && tokens == other.tokens&& counters == other.counters&& unavailableMints == other.unavailableMints;
+        
+            }
 
-  @override
-  int get hashCode => url.hashCode ^ active.hashCode ^ time.hashCode ^ info.hashCode;
+class ContactCashu  {
+                final String method;
+final String info;
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is MintCashu &&
-          runtimeType == other.runtimeType &&
-          url == other.url &&
-          active == other.active &&
-          time == other.time &&
-          info == other.info;
-}
+                const ContactCashu({required this.method ,required this.info ,});
 
-class MintCashuInfo {
-  final String name;
-  final String version;
-  final String? pubkey;
-  final String? description;
-  final String? descriptionLong;
-  final String? motd;
-  final List<ContactCashu> contact;
-  final Map<String, bool> nuts;
+                static Future<ContactCashu>  default_()=>RustLib.instance.api.crateApiCashuTypesContactCashuDefault();
 
-  const MintCashuInfo({
-    required this.name,
-    required this.version,
-    this.pubkey,
-    this.description,
-    this.descriptionLong,
-    this.motd,
-    required this.contact,
-    required this.nuts,
-  });
 
-  static Future<MintCashuInfo> default_() => RustLib.instance.api.crateApiCashuTypesMintCashuInfoDefault();
+                
 
-  @override
-  int get hashCode =>
-      name.hashCode ^
-      version.hashCode ^
-      pubkey.hashCode ^
-      description.hashCode ^
-      descriptionLong.hashCode ^
-      motd.hashCode ^
-      contact.hashCode ^
-      nuts.hashCode;
+                
+        @override
+        int get hashCode => method.hashCode^info.hashCode;
+        
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is MintCashuInfo &&
-          runtimeType == other.runtimeType &&
-          name == other.name &&
-          version == other.version &&
-          pubkey == other.pubkey &&
-          description == other.description &&
-          descriptionLong == other.descriptionLong &&
-          motd == other.motd &&
-          contact == other.contact &&
-          nuts == other.nuts;
-}
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is ContactCashu &&
+                runtimeType == other.runtimeType
+                && method == other.method&& info == other.info;
+        
+            }
 
-class Transaction {
-  final String id;
-  final String mintUrl;
-  final TransactionDirection io;
-  final TransactionKind kind;
-  final BigInt amount;
-  final BigInt fee;
-  final String? unit;
-  final String token;
-  final TransactionStatus status;
-  final BigInt timestamp;
-  final Map<String, String> metadata;
+class MintCashu  {
+                final String url;
+final bool active;
+final BigInt time;
+final MintCashuInfo? info;
 
-  const Transaction({
-    required this.id,
-    required this.mintUrl,
-    required this.io,
-    required this.kind,
-    required this.amount,
-    required this.fee,
-    this.unit,
-    required this.token,
-    required this.status,
-    required this.timestamp,
-    required this.metadata,
-  });
+                const MintCashu({required this.url ,required this.active ,required this.time ,this.info ,});
 
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      mintUrl.hashCode ^
-      io.hashCode ^
-      kind.hashCode ^
-      amount.hashCode ^
-      fee.hashCode ^
-      unit.hashCode ^
-      token.hashCode ^
-      status.hashCode ^
-      timestamp.hashCode ^
-      metadata.hashCode;
+                
+                
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Transaction &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          mintUrl == other.mintUrl &&
-          io == other.io &&
-          kind == other.kind &&
-          amount == other.amount &&
-          fee == other.fee &&
-          unit == other.unit &&
-          token == other.token &&
-          status == other.status &&
-          timestamp == other.timestamp &&
-          metadata == other.metadata;
-}
+                
+        @override
+        int get hashCode => url.hashCode^active.hashCode^time.hashCode^info.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is MintCashu &&
+                runtimeType == other.runtimeType
+                && url == other.url&& active == other.active&& time == other.time&& info == other.info;
+        
+            }
+
+class MintCashuInfo  {
+                final String name;
+final String version;
+final String? pubkey;
+final String? description;
+final String? descriptionLong;
+final String? motd;
+final List<ContactCashu> contact;
+final Map<String, bool> nuts;
+
+                const MintCashuInfo({required this.name ,required this.version ,this.pubkey ,this.description ,this.descriptionLong ,this.motd ,required this.contact ,required this.nuts ,});
+
+                static Future<MintCashuInfo>  default_()=>RustLib.instance.api.crateApiCashuTypesMintCashuInfoDefault();
+
+
+                
+
+                
+        @override
+        int get hashCode => name.hashCode^version.hashCode^pubkey.hashCode^description.hashCode^descriptionLong.hashCode^motd.hashCode^contact.hashCode^nuts.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is MintCashuInfo &&
+                runtimeType == other.runtimeType
+                && name == other.name&& version == other.version&& pubkey == other.pubkey&& description == other.description&& descriptionLong == other.descriptionLong&& motd == other.motd&& contact == other.contact&& nuts == other.nuts;
+        
+            }
+
+class Transaction  {
+                final String id;
+final String mintUrl;
+final TransactionDirection io;
+final TransactionKind kind;
+final BigInt amount;
+final BigInt fee;
+final String? unit;
+final String token;
+final TransactionStatus status;
+final BigInt timestamp;
+final Map<String, String> metadata;
+
+                const Transaction({required this.id ,required this.mintUrl ,required this.io ,required this.kind ,required this.amount ,required this.fee ,this.unit ,required this.token ,required this.status ,required this.timestamp ,required this.metadata ,});
+
+                
+                
+
+                
+        @override
+        int get hashCode => id.hashCode^mintUrl.hashCode^io.hashCode^kind.hashCode^amount.hashCode^fee.hashCode^unit.hashCode^token.hashCode^status.hashCode^timestamp.hashCode^metadata.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is Transaction &&
+                runtimeType == other.runtimeType
+                && id == other.id&& mintUrl == other.mintUrl&& io == other.io&& kind == other.kind&& amount == other.amount&& fee == other.fee&& unit == other.unit&& token == other.token&& status == other.status&& timestamp == other.timestamp&& metadata == other.metadata;
+        
+            }
 
 enum TransactionDirection {
-  incoming,
-  outgoing,
-  split,
-  ;
-}
+                    incoming,
+outgoing,
+split,
+                    ;
+                    
+                }
 
 enum TransactionKind {
-  cashu,
-  ln,
-  ;
-}
+                    cashu,
+ln,
+                    ;
+                    
+                }
 
 enum TransactionStatus {
-  pending,
-  success,
-  failed,
-  expired,
-  ;
-}
+                    pending,
+success,
+failed,
+expired,
+                    ;
+                    
+                }
+            

@@ -576,7 +576,14 @@ async fn get_or_create_wallet(
     }
 }
 
-pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
+pub fn send_all(mint: String)  -> anyhow::Result<Transaction> {
+    let _merge = merge_proofs(10)?;
+    let tx = _send_all(mint)?;
+    Ok(tx)
+}
+
+
+pub fn _send_all(mint: String) -> anyhow::Result<Transaction> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -849,8 +856,19 @@ async fn prepare_one_proofs_back(
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&mint)?;
 
-    let mut count_before = 0u64;
+    
     let wallet = get_or_create_wallet(wallet, &mint_url, unit.clone()).await?;
+
+    let ps0 = wallet.get_unspent_proofs().await?;
+    let count_before0 = ps0.iter() .filter(|p| *p.amount.as_ref() == denomination).count() as u64;
+    // more than 10, no need prepare
+    if count_before0 >= thershold {
+        return Ok(count_before0);
+    }
+
+    let mut count_before = 0u64;
+    // first check proofs state, but this will take more time
+    let _check = wallet.check_all_pending_proofs().await?;
     let mut ps = wallet.get_unspent_proofs().await?;
 
     ps.retain(|p| {
@@ -861,15 +879,10 @@ async fn prepare_one_proofs_back(
         !is
     });
 
-    // more than 10 no need prepare
-    if count_before >= thershold {
-        return Ok(count_before);
-    }
-
     if count_before * denomination < amount {
         let rest_amount = amount - count_before * denomination;
         let active_keyset_ids = wallet
-            .get_active_mint_keysets()
+            .get_active_mint_keysets() 
             .await?
             .into_iter()
             .map(|keyset| keyset.id)
@@ -993,7 +1006,7 @@ pub fn send_stamp(
         for mint_url in mints_first.iter().chain(mints_second.iter()) {
             let mint_str = mint_url.to_string();
             let fut = _send_one(&mut state, amount, mint_str.clone(), info.clone());
-            match tokio::time::timeout(Duration::from_secs(3), fut).await {
+            match tokio::time::timeout(Duration::from_secs(30), fut).await {
                 std::result::Result::Ok(std::result::Result::Ok(tx)) => {
                     debug!("send_stamp success {} {}", mint_url, amount);
                     return Ok(tx);

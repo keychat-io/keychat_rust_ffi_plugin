@@ -185,10 +185,10 @@ pub fn cashu_v1_init_proofs(
                 continue;
             }
         };
-        // this is the only 1 amount with fee tx, need special handle
         // only fee && none-fee,
         // if fee and len==1, need add send 1 (get_balance > 1) to two txs then multi-receive,  if fee and len>1, need driect multi-receive
         // if none-fee, for tx in txs, then receive one by one
+        // this is the only 1 amount with fee tx, need special handle
         if is_charge && txs.len() == 1 && txs[0].amount == 1 {
             debug!("is_charge && txs.len() == 1 && txs[0].amount == 1");
             // need add send amount 1 to self multi-receive
