@@ -583,7 +583,7 @@ pub fn send_all(mint: String)  -> anyhow::Result<Transaction> {
 }
 
 
-pub fn _send_all(mint: String) -> anyhow::Result<Transaction> {
+fn _send_all(mint: String) -> anyhow::Result<Transaction> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
