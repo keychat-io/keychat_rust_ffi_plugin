@@ -576,12 +576,11 @@ async fn get_or_create_wallet(
     }
 }
 
-pub fn send_all(mint: String)  -> anyhow::Result<Transaction> {
+pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
     let _merge = merge_proofs(10)?;
     let tx = _send_all(mint)?;
     Ok(tx)
 }
-
 
 fn _send_all(mint: String) -> anyhow::Result<Transaction> {
     let state = State::lock()?;
@@ -628,7 +627,7 @@ fn _send_all(mint: String) -> anyhow::Result<Transaction> {
 }
 
 /// default set 20
-pub fn merge_proofs(thershold: u64) -> anyhow::Result<()> {
+pub fn merge_proofs(threshold: u64) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
@@ -657,7 +656,7 @@ pub fn merge_proofs(thershold: u64) -> anyhow::Result<()> {
 
                 // For each denomination with count > 20, merge to minimal outputs
                 for (_amt, group) in groups.into_iter() {
-                    if group.len() as u64 >= thershold {
+                    if group.len() as u64 >= threshold {
                         debug!("need merge");
                         // Default target merges to least number of power-of-two outputs
                         let _ = wallet
@@ -712,7 +711,7 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
         let encoded_token = tokens.to_string();
 
         let amount = w.receive(&encoded_token, ReceiveOptions::default()).await;
-        // println!("amount: {:?}", amount);
+        debug!("amount: {:?}", amount);
         Ok(())
     };
 
@@ -786,20 +785,45 @@ pub fn print_proofs(mint: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
+pub fn prepare_one_proofs(mint: String) -> anyhow::Result<u64> {
     let denomination: u64 = 1;
+    let threshold: u64 = 10;
+    let amount: u64 = 32;
 
     let state = State::lock()?;
     let w = state.get_wallet()?;
-    if amount == 0 {
-        bail!("can't mint amount 0");
-    }
+
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&mint)?;
 
     let a = state.rt.block_on(async {
-        let mut count_before = 0u64;
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+        let mints_amounts = mint_balances(w, &unit).await?;
+        let mint_url = &wallet.mint_url;
+        let mint_amount = mints_amounts
+            .iter()
+            .find(|(url, _)| url == mint_url)
+            .map(|(_, amount)| *amount)
+            .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
+        let mint_amount = mint_amount?;
+        // if balance less then include equal 32, return directly 0
+        if *mint_amount.as_ref() <= amount {
+            debug!("balance less then 32 amount");
+            return Ok(0);
+        }
+        let ps0 = wallet.get_unspent_proofs().await?;
+        let count_before0 = ps0
+            .iter()
+            .filter(|p| *p.amount.as_ref() == denomination)
+            .count() as u64;
+        // more than 10, no need execute prepare
+        if count_before0 >= threshold {
+            debug!("have enough denomination proofs, no need to prepare");
+            return Ok(count_before0);
+        }
+        let mut count_before = 0u64;
+        // first check proofs state, but this will take more time
+        let _check = wallet.check_all_pending_proofs().await?;
         let mut ps = wallet.get_unspent_proofs().await?;
 
         ps.retain(|p| {
@@ -836,7 +860,7 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
                 )
                 .await?;
         }
-        Ok(count_before)
+        Ok(32 - count_before)
     })?;
 
     Ok(a)
@@ -844,7 +868,7 @@ pub fn prepare_one_proofs(amount: u64, mint: String) -> anyhow::Result<u64> {
 
 async fn prepare_one_proofs_back(
     wallet: &MultiMintWallet,
-    thershold: u64,
+    threshold: u64,
     amount: u64,
     mint: String,
 ) -> anyhow::Result<u64> {
@@ -856,13 +880,15 @@ async fn prepare_one_proofs_back(
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&mint)?;
 
-    
     let wallet = get_or_create_wallet(wallet, &mint_url, unit.clone()).await?;
 
     let ps0 = wallet.get_unspent_proofs().await?;
-    let count_before0 = ps0.iter() .filter(|p| *p.amount.as_ref() == denomination).count() as u64;
+    let count_before0 = ps0
+        .iter()
+        .filter(|p| *p.amount.as_ref() == denomination)
+        .count() as u64;
     // more than 10, no need prepare
-    if count_before0 >= thershold {
+    if count_before0 >= threshold {
         return Ok(count_before0);
     }
 
@@ -882,7 +908,7 @@ async fn prepare_one_proofs_back(
     if count_before * denomination < amount {
         let rest_amount = amount - count_before * denomination;
         let active_keyset_ids = wallet
-            .get_active_mint_keysets() 
+            .get_active_mint_keysets()
             .await?
             .into_iter()
             .map(|keyset| keyset.id)
@@ -971,7 +997,7 @@ pub fn send_stamp(
     amount: u64,
     mints: Vec<String>,
     info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<SendStampsResult> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -1009,7 +1035,11 @@ pub fn send_stamp(
             match tokio::time::timeout(Duration::from_secs(30), fut).await {
                 std::result::Result::Ok(std::result::Result::Ok(tx)) => {
                     debug!("send_stamp success {} {}", mint_url, amount);
-                    return Ok(tx);
+                    let result = SendStampsResult {
+                        tx: tx.0,
+                        is_need_split: tx.1,
+                    };
+                    return Ok(result);
                 }
                 std::result::Result::Ok(std::result::Result::Err(e)) => {
                     debug!(
@@ -1117,7 +1147,7 @@ async fn _send_one(
     amount: u64,
     active_mint: String,
     _info: Option<String>,
-) -> anyhow::Result<Transaction> {
+) -> anyhow::Result<(Transaction, bool)> {
     if amount == 0 {
         bail!("can't send amount 0");
     }
@@ -1139,13 +1169,15 @@ async fn _send_one(
     let mint_amount = mint_amount?;
     check_sufficient_funds(mint_amount.clone(), amount.into())?;
     // prepare one proofs if less than 10, and set prepare amount to 32
-    if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
-        let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
-    }
+    // if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
+    //     let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
+    // }
     let prepared_send = wallet
         .prepare_send(amount.into(), SendOptions::default())
         .await?;
     let tx = wallet.send(prepared_send, None).await?;
+    let ps = wallet.get_unspent_proofs().await?;
+    let stamp_cnts = ps.iter().filter(|p| *p.amount.as_ref() == 1).count() as u64;
 
     let tx_new = Transaction {
         id: tx.id().to_string(),
@@ -1160,7 +1192,7 @@ async fn _send_one(
         timestamp: tx.timestamp,
         metadata: tx.metadata,
     };
-    Ok(tx_new)
+    Ok((tx_new, stamp_cnts < 10))
 }
 
 fn _send(

@@ -11,17 +11,17 @@ const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
-    let words = "blanket dog eight because humble attitude powder virus swear margin cause fix";
+    let words = "today talk cheap laptop better donate forward train beauty subway enjoy meat";
     // test_prepare_proofs(words);
     // test_send_all(words);
     // test_merge_proofs(words);
-    // test_send_stmap(words);
+    test_send_stmap(words);
     // test_load_v2(words);
     // test_send(words);
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    test_get_balance(words);
+    // test_get_balance(words);
     // test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
@@ -167,7 +167,7 @@ fn test_send_all(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send_all = api::send_all(MINT_URL.to_string());
+    let send_all = api::send_all(MINT_URL_MINIBITS.to_string());
     println!("send_all is {:?}", send_all);
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
@@ -191,8 +191,14 @@ fn test_send_stmap(words: &str) {
     //     stamps.push(stamp.unwrap().token);
     // }
 
-    let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None);
+    let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
     println!("send_stamp {:?}", stamp);
+    let is_need_split = stamp.unwrap().is_need_split;
+    if is_need_split {
+        println!("need split proofs first");
+        let pp = api::prepare_one_proofs(MINT_URL_MINIBITS.to_string());
+        println!("send_stamp after split {:?}", pp);
+    }
 
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
@@ -212,7 +218,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCFpGFhEGFzeEAyYmNjZDY2MDU5N2ZiMWY4MWU5YTgxZTE2MmEyMGM1YTc3MGM0NzU1MjYyMGY2NzM0N2NjYjM3ZWY5ZTU2M2Q2YWNYIQMPcIT3eIU0qgmQa9c8vaIxmyycETucl0gX0kMh3ociPGFko2FlWCCyRgplUuS-R-v4ni3E9FnorbQ2zXEoBDI22F1V0APX_2FzWCA9yfC2IIMx5GlGsMyFEwX57IBH3c3TOReMjqxLjMsmjGFyWCDPYFoTDKBNJ9-sQrhrAIwWqg2nQ4Op8uOQ6AC7xxz0faRhYQhhc3hAMTMwODFmMWY3OTBkNzI4NjhjZGViN2Q4ZTcxM2VlMWVjMDJjOTQ1NDU0MTY4ODc1NmFjMmExNGYwYjIyMDVhMGFjWCED83nHQJBVaBklb0Je1Cfp_hBSSwi-TokAT-G3GKhH4qBhZKNhZVgg4Y_kqq4XAr_k4j-PFqk_GyHiEsh8fXYnU_WksZOJOKxhc1ggy8Nc4yxcsTUW94cIYVHHAMtQZaA3I29RrFpdUVAQms1hclggIOrcX7HJF07ZUyiUuvfNVXARWNA3UR2_vP_NwSaZ-6-kYWEEYXN4QDhlM2I1OTgwODFjZTVkMjM3OTQwZTI1OWU0YmEyMjBmNTZjNzkxZTEzNjcyMjJkNjhhMWI4NWYxMjg3MTY0NDFhY1ghAkMGrxQL16uXFMxhViT-ur3LJ7LtbYA609KNMIv85UKAYWSjYWVYILbD4S-RKuaM8PVixPIWRGRB7WQyNoaWnK-3yhmqnKcaYXNYIMBu2eOxFTqYNFLxHoulDktZwjMNtAHAMl6wHOofqBJHYXJYIJc3Ppt1BnT1EylZCWpcqa8yqDwUBZusRnppHhlj_YZjpGFhBGFzeEBjN2FiMWU2MWI1NjZkYjQ1MGQxODM0OTBmNmMzZDk5YjRlMWExMTRjZjhhZTUwZWQ5Yzk2MDAxZWI0ZmMwMGJmYWNYIQIVOfARPcdxVAWVTlv7v7liNxTxZc7CfcmZZBV6nYJGymFko2FlWCAc7mX-JYjg3VT8TtDwM0DtNk1E3VsHRxWpqaVPLWjy5mFzWCBWW61JF3ckWvYXV3EeINF8ffGGidNGxlLLFThqJiLxMmFyWCBUYV3ZcUBhbGVwi4BfJ4-N3a4-E34xcFJjKK-NssARwqRhYQJhc3hAY2I0MDBiZWUyMjc1Y2RkZDdjMzAwMjJhNWZhM2RmZWZmY2ZhZDI2OGI1NDIxMDE2NjUyNGI1N2YzMTcwN2Y0ZmFjWCEDEhABUofJXUSVuoQwkz_r2uzzx2fR83o8LUT7CyRdngZhZKNhZVggxvRooaI_BYIfKqYCEIb-3ew_lGjhidAeSAdm8MS7-Zthc1ggdSlvQK_Ii3oInv3kmLc-r_7-5-a4a4JzJRbFPSZ1iXNhclggVBvTL3uhwtOHGFyvYgDYLnIexeU6yXcjvLwLTfqq6p8".trim();
+    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhGCBhc3hAMjEzZTFjZWZkYjk4YTIxMmQzNjhmODYxY2IyNWM4ZWQ0N2UxMWQ4ZWEyMDJjM2Y3NzViNzY4ZjkyZGUzZjE0ZWFjWCEDqiSECZupiCPSmBoa8-E_R2wGyHvryN8f1cJFPcaCitJhZKNhZVgg7PCrUMLTDePYNlBAY4tmx5K0ie1sNwtIuU6G1TLI9ulhc1gghHoc1q6j9BpoaX17TulzxVcPUsy9GQtWbxaz3mdxGblhclggpvyumhwYurxrkB8xf6BY6MgQzjKMlVPD7I-TfI_qhwKkYWEBYXN4QDRjZTIyODY0OWNkODNlYWU1NTEwMDU2MTRhZjM4OTcxY2VkMWMwMmNkN2E5ODNiM2YwZGVlOTkxYWUzNWE1YWNhY1ghAr7CEQ1cqCk1BPkq-gy0SNiupCjpN0Sug9or4dnSxvP7YWSjYWVYIBksLcurF6WdcaFrb_KvhxWjfeU8-7Pls5RqHpCDkuNYYXNYIJBlKZG7Toz4cU95840hct7VUZfzjR9KFRSos4mrecATYXJYID8RYx97njFMc0k-OPwKxre_YcRryuiGsP5bSk9cZdOA".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);

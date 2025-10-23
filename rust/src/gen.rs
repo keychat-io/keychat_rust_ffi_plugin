@@ -4023,12 +4023,12 @@ fn wire__crate__api_cashu__merge_proofs_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_thershold = <u64>::sse_decode(&mut deserializer);
+            let api_threshold = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::merge_proofs(api_thershold)?;
+                        let output_ok = crate::api_cashu::merge_proofs(api_threshold)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -4519,13 +4519,12 @@ fn wire__crate__api_cashu__prepare_one_proofs_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_amount = <u64>::sse_decode(&mut deserializer);
             let api_mint = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok = crate::api_cashu::prepare_one_proofs(api_amount, api_mint)?;
+                        let output_ok = crate::api_cashu::prepare_one_proofs(api_mint)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -6658,6 +6657,18 @@ impl SseDecode for crate::api_nostr::Secp256k1SimpleAccount {
     }
 }
 
+impl SseDecode for crate::api_cashu::types::SendStampsResult {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_tx = <crate::api_cashu::types::Transaction>::sse_decode(deserializer);
+        let mut var_isNeedSplit = <bool>::sse_decode(deserializer);
+        return crate::api_cashu::types::SendStampsResult {
+            tx: var_tx,
+            is_need_split: var_isNeedSplit,
+        };
+    }
+}
+
 impl SseDecode for crate::api_cashu::TokenInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -7700,6 +7711,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api_nostr::Secp256k1SimpleAccount>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api_cashu::types::SendStampsResult {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.tx.into_into_dart().into_dart(),
+            self.is_need_split.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api_cashu::types::SendStampsResult
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api_cashu::types::SendStampsResult>
+    for crate::api_cashu::types::SendStampsResult
+{
+    fn into_into_dart(self) -> crate::api_cashu::types::SendStampsResult {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api_cashu::TokenInfo {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -8593,6 +8625,14 @@ impl SseEncode for crate::api_nostr::Secp256k1SimpleAccount {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.pubkey, serializer);
         <String>::sse_encode(self.prikey, serializer);
+    }
+}
+
+impl SseEncode for crate::api_cashu::types::SendStampsResult {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <crate::api_cashu::types::Transaction>::sse_encode(self.tx, serializer);
+        <bool>::sse_encode(self.is_need_split, serializer);
     }
 }
 

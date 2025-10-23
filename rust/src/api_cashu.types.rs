@@ -84,6 +84,12 @@ pub struct CashuV1ToV2 {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SendStampsResult {
+    pub tx: Transaction,
+    pub is_need_split: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CashuProofsV1ToV2 {
     pub counters: String,
     pub proofs: String,

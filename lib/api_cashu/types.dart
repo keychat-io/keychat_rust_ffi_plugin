@@ -9,7 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
             // These functions are ignored because they are not marked as `pub`: `get_keys`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
 
             
@@ -168,6 +168,30 @@ final Map<String, bool> nuts;
             other is MintCashuInfo &&
                 runtimeType == other.runtimeType
                 && name == other.name&& version == other.version&& pubkey == other.pubkey&& description == other.description&& descriptionLong == other.descriptionLong&& motd == other.motd&& contact == other.contact&& nuts == other.nuts;
+        
+            }
+
+class SendStampsResult  {
+                final Transaction tx;
+final bool isNeedSplit;
+
+                const SendStampsResult({required this.tx ,required this.isNeedSplit ,});
+
+                
+                
+
+                
+        @override
+        int get hashCode => tx.hashCode^isNeedSplit.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is SendStampsResult &&
+                runtimeType == other.runtimeType
+                && tx == other.tx&& isNeedSplit == other.isNeedSplit;
         
             }
 

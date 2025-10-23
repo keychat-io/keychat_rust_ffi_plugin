@@ -232,6 +232,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Secp256k1SimpleAccount dco_decode_secp_256_k_1_simple_account(dynamic raw);
 
+@protected SendStampsResult dco_decode_send_stamps_result(dynamic raw);
+
 @protected TokenInfo dco_decode_token_info(dynamic raw);
 
 @protected Transaction dco_decode_transaction(dynamic raw);
@@ -446,6 +448,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected Secp256k1SimpleAccount sse_decode_secp_256_k_1_simple_account(SseDeserializer deserializer);
 
+@protected SendStampsResult sse_decode_send_stamps_result(SseDeserializer deserializer);
+
 @protected TokenInfo sse_decode_token_info(SseDeserializer deserializer);
 
 @protected Transaction sse_decode_transaction(SseDeserializer deserializer);
@@ -659,6 +663,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_secp_256_k_1_account(Secp256k1Account self, SseSerializer serializer);
 
 @protected void sse_encode_secp_256_k_1_simple_account(Secp256k1SimpleAccount self, SseSerializer serializer);
+
+@protected void sse_encode_send_stamps_result(SendStampsResult self, SseSerializer serializer);
 
 @protected void sse_encode_token_info(TokenInfo self, SseSerializer serializer);
 

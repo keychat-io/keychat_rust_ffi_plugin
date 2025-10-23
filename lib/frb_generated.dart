@@ -293,7 +293,7 @@ Future<void> crateApiMlsJoinMlsGroup({required String nostrId , required String 
 
 Future<Transaction> crateApiCashuMelt({required String invoice , required String activeMint , BigInt? amount });
 
-Future<void> crateApiCashuMergeProofs({required BigInt thershold });
+Future<void> crateApiCashuMergeProofs({required BigInt threshold });
 
 Future<MintCashuInfo> crateApiCashuTypesMintCashuInfoDefault();
 
@@ -319,7 +319,7 @@ Future<BigInt> crateApiMlsParseLifetimeFromKeyPackage({required String nostrId ,
 
 Future<MessageInType> crateApiMlsParseMlsMsgType({required String nostrId , required String groupId , required String data });
 
-Future<BigInt> crateApiCashuPrepareOneProofs({required BigInt amount , required String mint });
+Future<BigInt> crateApiCashuPrepareOneProofs({required String mint });
 
 Future<void> crateApiCashuPrintProofs({required String mint });
 
@@ -347,7 +347,7 @@ Future<Transaction> crateApiCashuSend({required BigInt amount , required String 
 
 Future<Transaction> crateApiCashuSendAll({required String mint });
 
-Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
+Future<SendStampsResult> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info });
 
 Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address });
 
@@ -3138,10 +3138,10 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         );
         
 
-@override Future<void> crateApiCashuMergeProofs({required BigInt thershold })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiCashuMergeProofs({required BigInt threshold })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(thershold, serializer);
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(threshold, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
             
             },
@@ -3152,14 +3152,14 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
         )
         ,
             constMeta: kCrateApiCashuMergeProofsConstMeta,
-            argValues: [thershold],
+            argValues: [threshold],
             apiImpl: this,
         )); }
 
 
         TaskConstMeta get kCrateApiCashuMergeProofsConstMeta => const TaskConstMeta(
             debugName: "merge_proofs",
-            argNames: ["thershold"],
+            argNames: ["threshold"],
         );
         
 
@@ -3477,11 +3477,10 @@ sse_encode_String(data, serializer);
         );
         
 
-@override Future<BigInt> crateApiCashuPrepareOneProofs({required BigInt amount , required String mint })  { return handler.executeNormal(NormalTask(
+@override Future<BigInt> crateApiCashuPrepareOneProofs({required String mint })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
-            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
-sse_encode_String(mint, serializer);
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
             
             },
@@ -3492,14 +3491,14 @@ sse_encode_String(mint, serializer);
         )
         ,
             constMeta: kCrateApiCashuPrepareOneProofsConstMeta,
-            argValues: [amount, mint],
+            argValues: [mint],
             apiImpl: this,
         )); }
 
 
         TaskConstMeta get kCrateApiCashuPrepareOneProofsConstMeta => const TaskConstMeta(
             debugName: "prepare_one_proofs",
-            argNames: ["amount", "mint"],
+            argNames: ["mint"],
         );
         
 
@@ -3848,7 +3847,7 @@ sse_encode_opt_String(info, serializer);
         );
         
 
-@override Future<Transaction> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
+@override Future<SendStampsResult> crateApiCashuSendStamp({required BigInt amount , required List<String> mints , String? info })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
@@ -3859,7 +3858,7 @@ sse_encode_opt_String(info, serializer);
             },
             codec: 
         SseCodec(
-          decodeSuccessData: sse_decode_transaction,
+          decodeSuccessData: sse_decode_send_stamps_result,
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
@@ -4744,6 +4743,12 @@ final arr = raw as List<dynamic>;
                 return Secp256k1SimpleAccount(pubkey: dco_decode_String(arr[0]),
 prikey: dco_decode_String(arr[1]),); }
 
+@protected SendStampsResult dco_decode_send_stamps_result(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+                if (arr.length != 2) throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+                return SendStampsResult(tx: dco_decode_transaction(arr[0]),
+isNeedSplit: dco_decode_bool(arr[1]),); }
+
 @protected TokenInfo dco_decode_token_info(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 final arr = raw as List<dynamic>;
                 if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
@@ -5328,6 +5333,11 @@ var var_pubkey = sse_decode_String(deserializer);
 var var_prikey = sse_decode_String(deserializer);
 return Secp256k1SimpleAccount(pubkey: var_pubkey, prikey: var_prikey); }
 
+@protected SendStampsResult sse_decode_send_stamps_result(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_tx = sse_decode_transaction(deserializer);
+var var_isNeedSplit = sse_decode_bool(deserializer);
+return SendStampsResult(tx: var_tx, isNeedSplit: var_isNeedSplit); }
+
 @protected TokenInfo sse_decode_token_info(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 var var_mint = sse_decode_String(deserializer);
 var var_amount = sse_decode_u_64(deserializer);
@@ -5845,6 +5855,11 @@ sse_encode_opt_String(self.curve25519PkHex, serializer);
 @protected void sse_encode_secp_256_k_1_simple_account(Secp256k1SimpleAccount self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 sse_encode_String(self.pubkey, serializer);
 sse_encode_String(self.prikey, serializer);
+ }
+
+@protected void sse_encode_send_stamps_result(SendStampsResult self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_transaction(self.tx, serializer);
+sse_encode_bool(self.isNeedSplit, serializer);
  }
 
 @protected void sse_encode_token_info(TokenInfo self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs

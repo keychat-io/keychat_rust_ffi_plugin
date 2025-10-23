@@ -43,7 +43,7 @@ Future<String>  getBalances() => RustLib.instance.api.crateApiCashuGetBalances()
 Future<Transaction>  sendAll({required String mint }) => RustLib.instance.api.crateApiCashuSendAll(mint: mint);
 
 /// default set 20
-Future<void>  mergeProofs({required BigInt thershold }) => RustLib.instance.api.crateApiCashuMergeProofs(thershold: thershold);
+Future<void>  mergeProofs({required BigInt threshold }) => RustLib.instance.api.crateApiCashuMergeProofs(threshold: threshold);
 
 /// inner used, this is for receive stamps every multi times
 /// need diff mint url put in a like map<url, token>
@@ -54,9 +54,9 @@ Future<Transaction>  receiveToken({required String encodedToken }) => RustLib.in
 /// inner used
 Future<void>  printProofs({required String mint }) => RustLib.instance.api.crateApiCashuPrintProofs(mint: mint);
 
-Future<BigInt>  prepareOneProofs({required BigInt amount , required String mint }) => RustLib.instance.api.crateApiCashuPrepareOneProofs(amount: amount, mint: mint);
+Future<BigInt>  prepareOneProofs({required String mint }) => RustLib.instance.api.crateApiCashuPrepareOneProofs(mint: mint);
 
-Future<Transaction>  sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
+Future<SendStampsResult>  sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
 
 /// Helper function to get a wallet from the multi-mint wallet
 Future<Wallet>  getWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit }) => RustLib.instance.api.crateApiCashuGetWalletByIndex(multiMintWallet: multiMintWallet, mintAmounts: mintAmounts, mintNumber: mintNumber, unit: unit);
