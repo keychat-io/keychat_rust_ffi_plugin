@@ -15,13 +15,13 @@ fn main() {
     // test_prepare_proofs(words);
     // test_send_all(words);
     // test_merge_proofs(words);
-    test_send_stmap(words);
+    // test_send_stmap(words);
     // test_load_v2(words);
     // test_send(words);
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    // test_get_balance(words);
+    test_get_balance(words);
     // test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
@@ -72,7 +72,7 @@ fn test_get_balance(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL.to_string());
+    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
 }
 
 fn test_load_v2(words: &str) {
@@ -218,7 +218,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhGCBhc3hAMjEzZTFjZWZkYjk4YTIxMmQzNjhmODYxY2IyNWM4ZWQ0N2UxMWQ4ZWEyMDJjM2Y3NzViNzY4ZjkyZGUzZjE0ZWFjWCEDqiSECZupiCPSmBoa8-E_R2wGyHvryN8f1cJFPcaCitJhZKNhZVgg7PCrUMLTDePYNlBAY4tmx5K0ie1sNwtIuU6G1TLI9ulhc1gghHoc1q6j9BpoaX17TulzxVcPUsy9GQtWbxaz3mdxGblhclggpvyumhwYurxrkB8xf6BY6MgQzjKMlVPD7I-TfI_qhwKkYWEBYXN4QDRjZTIyODY0OWNkODNlYWU1NTEwMDU2MTRhZjM4OTcxY2VkMWMwMmNkN2E5ODNiM2YwZGVlOTkxYWUzNWE1YWNhY1ghAr7CEQ1cqCk1BPkq-gy0SNiupCjpN0Sug9or4dnSxvP7YWSjYWVYIBksLcurF6WdcaFrb_KvhxWjfeU8-7Pls5RqHpCDkuNYYXNYIJBlKZG7Toz4cU95840hct7VUZfzjR9KFRSos4mrecATYXJYID8RYx97njFMc0k-OPwKxre_YcRryuiGsP5bSk9cZdOA".trim();
+    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCMpGFhAWFzeEBhMWVhYTZmMmE5ZGY3YmYwNTM1Zjc4MWFjNTAzNTc5OTYwZjFiYWI1NmU4MmNkYjA1NjE2NDcxNGNiMjE0NjRhYWNYIQORASNLWTYGjcUM2gKG6Ha_nDbTw-ykH7ZcD14JaS600WFko2FlWCDW1UdZrJU2FP2huhMp91LH2beXwBOaJfvAAoX5HtjNGmFzWCDCaZbm2VGTkWun8IoBWFxGvdLtc9H8eWZEPuKD_8k9uGFyWCCtIYf37yl3P9Ynk4-ExFT_CN_UE9I7pHDMpweg-N_FUKRhYQFhc3hANzE5YTcwOWVjZjg0ZDJmY2U2YzFiNWQxZjhkZWFjMjBmY2NkOTQ4Njg1YTVlNzY4YzhlNTNiY2IwYjIwYTk0ZmFjWCEDZMOsv35CR3nweOLam0wfPnSg72dw7V01DnAvnPb5BXVhZKNhZVggTaLZ0yIRqlFyRQeOqsmlSdTzLiqjAeBjZgAwrZ6edmNhc1ggqnT_FdXXcpLdGXTm-EvmK5Ze_4WjQjxd77vN5w125othclggVMXaXCfK559yBkJ-fymLp0HfYKErlhPbbt1zHavf-B2kYWEEYXN4QDljZmQxOTg0MTE2MjhmM2E2ODZmZTA5NWEzOGVlMjA0NGQ5ZTZmNWM4M2EyZDBjMWZkZDRjMzRiYTJkODViNDlhY1ghAky7po6uDjRYcp-i6vbWIZfMImsK0GTFH9Vhnl8zes8XYWSjYWVYIBM5pVQ6ngpCkf2XVIql-buRBHKG4vXlKWpCoSBoLeTMYXNYIKLFn8bA8HxH-MsM8YM6ihb1pwBW1w30QBB3kymsAUpTYXJYIH6gAnidskhepTJRqCcu9ZKUsnr3stIszaraxcNLtA2OpGFhBGFzeEAwMDY1OTU4NWRlNWQ2ZmFmODE1YTBlNDFlNGQ0ZjRhZGU4YjVmNGY0ZGU1MTI0NmU0YjAxMWRjNzRlYmYwNmYyYWNYIQLKfklpnXffzy2xZ32Oo6g4Pqjb0jCirEFjoV7Hwuvz8GFko2FlWCAxNFLkFyoFsWYnscqozILuG4NXjNdwc4W4zcE0p5Zb_2FzWCAqNQ4dvvnXm3Fo1jbntQWb9mGPCO6G5vR5YVm5DowpAGFyWCBFpc0aiA3yyjA8ZJaV1dPIFu2IXV05EJ10yHa3-p6n7aRhYQFhc3hAMWRmYTMwNzg2ODgzNjMyYjM0MGVmOWIzZGQ5OGYzOWViODE3YmU5Yjk1YmI4NTcxZWMyYjVkZGQ4NzdkNWQ3MGFjWCECG25LyabCKmY6ykp_w4GZ86VGpIAHAEtulr9mdNh6LtRhZKNhZVggXd0PFoEDkj_ELaeOfy4W1X-eIWvSS9V4aNW5Td1WRtlhc1ggL89ZPJZJNi200v6QD9PJJIXkW_9nfWPZvNJzgCmZ61VhclggQAP8UZSrMQLdWmjL8linsNtwzp8c9pu4amSbZEKLBXakYWEIYXN4QDVjMDExM2E2MjYzNWQzYjY3YjMwYmQ1ZjZmNTg0ODgwMmYzYzU1YTMxZTgxMDQwNGI2YTViZWY0MGY0ZmVjYWZhY1ghAmY-lB4tOLRfOY5sMzdfgAS9RD_7Ad65_xAF64uZ63bVYWSjYWVYILs-sexg8jvVhiKOTHSaq7Hxpghh32KdSF6KPUTB4VCHYXNYIBd4XkMAordaM13ax3GAQVsONAI9EQLRKLNeoG-xI20JYXJYIOBOvrC-dAlDoAQqHMOfr1jLwYz325IYtIW-yWaoNCwJpGFhBGFzeEBlZjk2OGI5MzA0OGJiMWQ0N2I4MDQ0MGI5YTcwYzA0ZjU4Y2IxMmRiYjUwOWQyNzk4ZTI2MDRjMWI5ZWM5YmYzYWNYIQNrEkbvJxPwQLXhYV-SfxTWCiNnOtT5tz4OkTZdV4Z_hWFko2FlWCCxDijTwdR6qKB7zpdCA3hwLlPDZ9u_I3ibU6A77b5bp2FzWCD3yD_82LyzJN4xTiUb5CVvFKRLUnVfEXo921deHXeBrWFyWCCwiQFjq_DReHDcOClFZPvq5ZXbL1zCbtOKWX8Gyq0Qx6RhYQFhc3hANWJiODJlZGFiNmE5M2E3ZjYzMWNhODZhODZhZTI3ZWZmMzNkYmVhM2YxY2ExNTY0OTIwNjA2MTA4NTU2MzZiMGFjWCEDB2wjZmcGQ8nDo9eeWKewzFzWp01R5IA-CqIMBsp7W6ZhZKNhZVggmxHw2eV-ikxr9otT_nocMnDtbXSfa5WTSGM_MzJ0DNFhc1gg4H-GEoOFx5fJHYpyeJtubSY11uAkQOBXjfwjg-jZewhhclggLBXtGG6b7UEhHsqF0gBrQUOUl3KPsqIxy_jgDs5Ie2CkYWECYXN4QDE0MDY4OGIwZTU4MzYwY2JmYzYyMGMxNWY1OGI1MDI5ZjkwODhkODE3YTE5OGRjMjEwYWQ0MjZlYzViNGUzY2RhY1ghAjswtCZUfnIYN2IoaUjPCQO8qvHXHVVM9jFwoozZaNoSYWSjYWVYIB8Op_IbGlli1f5gPbXSu7OWXZqEhgSoqA6SHpsfdLKLYXNYIOS-xI71JKNbtViC9VUe3ubA8iTTbdBehMXzP8D3sWfOYXJYIPDoUZod5ooqE4AYsAySR5ENGNTc1jb5s0NxfAMKZqjLpGFhBGFzeEAxOGFiN2QwZDU4YjE2OWJmMGQ5ZjU4ZDIyOGU4NDQ3ODMzODA5NzJjZTlkODg0OWI4NDEyODcyOTM4M2ZlNzI3YWNYIQP18oyuGbv_yTM75HowZwVL_-sPYsvau3GIgOlypRl4tmFko2FlWCBuZpyK2u82ynryfahlFk4ZOom5tTKRnLjBZ-iTOu_tr2FzWCBENL4pfywiGixnS-vsk3R7eL3w-eEDFpLoprDPAf3-8GFyWCDnFd8nQbkuX_qjBVtOGFqHSBZFz3tfNeRGxlpcUEiQrKRhYQJhc3hAZjg2N2IwMzZlMWM5ZDNjOGM4NGYyY2MxZmVkODMwZjI4MmMwN2VkYjY0MmM2NGM2M2NhZGNiYWU1MzE5M2IxZmFjWCEDk06jBeU9CxF9ttf7xy5AbzXm9YvRnS1H1iSKamWn5TdhZKNhZVggWq9oaricwDSFlqTwTTl84i1u3OBiuEX5Hszuj-If4PJhc1ggyK5lpWLMmWEN5L0bFUInvLWdi2mWxT_uoTR5gCntCSFhclggaV7rzRPLrUhdi8NC_79lt5XMkEvMAPp7hDrcLLQ3HWWkYWECYXN4QDM3MjIwZGE2Y2I2OWM1NDQ1ZjQyYTZlNWYxOWFlYjQzMjdjNWUzNzU3Y2NiZDllNGRkMWI4OTY4NTNhNjdhNjlhY1ghA6M_WONaJ4uW1maWtkQO5F5lrOVTFd6PcA7Klg_AL2PSYWSjYWVYIEFEGkOs_0xgfRGdSwnuzYpYaWfxnvV1TLQ017U6nqrDYXNYIGXWM97yHn-wAW52Pzt-db5pklW2sV_MXamWeTVGGyOxYXJYIBHnpb4kjZTd0LRq1iTkusikIfeyBAGaseSZriYN1Pgw".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
@@ -228,7 +228,7 @@ fn test_receive(words: &str) {
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL.to_string());
+    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
 }
 
 fn test_prepare_proofs(words: &str) {
