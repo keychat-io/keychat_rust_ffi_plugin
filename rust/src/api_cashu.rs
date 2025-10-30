@@ -1240,6 +1240,18 @@ pub fn send(
     _send(&mut state, amount, active_mint, None)
 }
 
+use std::time::Instant;
+
+async fn time<F, T>(label: &str, fut: F) -> T
+where
+    F: std::future::Future<Output = T>,
+{
+    let t0 = Instant::now();
+    let out = fut.await;
+    println!("{} took {} ms", label, t0.elapsed().as_millis());
+    out
+}
+
 async fn _send_one(
     state: &mut StdMutexGuard<'static, State>,
     amount: u64,
@@ -1270,12 +1282,43 @@ async fn _send_one(
     // if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
     //     let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
     // }
-    let prepared_send = wallet
-        .prepare_send(amount.into(), SendOptions::default())
-        .await?;
-    let tx = wallet.send(prepared_send, None).await?;
+
     let ps = wallet.get_unspent_proofs().await?;
     let stamp_cnts = ps.iter().filter(|p| *p.amount.as_ref() == 1).count() as u64;
+
+    // add if have one stamp proof, then take it directly from prepare_send_one_with_enough, else use normal prepare_send
+    let mut use_send_one = false;
+    let prepared_send = if amount == 1 && stamp_cnts > 0 {
+        debug!("use prepare_send_one_with_enough");
+        match wallet
+            .prepare_send_one_with_enough(amount.into(), SendOptions::default())
+            .await
+        {
+            std::result::Result::Ok(p) => {
+                use_send_one = true;
+                p
+            }
+            Err(e) => {
+                debug!("prepare_send_one_with_enough failed, fallback: {}", e);
+                wallet
+                    .prepare_send(amount.into(), SendOptions::default())
+                    .await?
+            }
+        }
+    } else {
+        debug!("use normal prepare_send");
+        wallet
+            .prepare_send(amount.into(), SendOptions::default())
+            .await?
+    };
+
+    let tx = if use_send_one {
+        debug!("use send_one");
+        wallet.send_one(prepared_send, None).await?
+    } else {
+        debug!("use send");
+        wallet.send(prepared_send, None).await?
+    };
 
     let tx_new = Transaction {
         id: tx.id().to_string(),

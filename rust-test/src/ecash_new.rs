@@ -15,13 +15,13 @@ fn main() {
     // test_prepare_proofs(words);
     // test_send_all(words);
     // test_merge_proofs(words);
-    // test_send_stmap(words);
+    test_send_stmap(words);
     // test_load_v2(words);
     // test_send(words);
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    test_get_balance(words);
+    // test_get_balance(words);
     // test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
@@ -72,7 +72,7 @@ fn test_get_balance(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
 }
 
 fn test_load_v2(words: &str) {
@@ -184,21 +184,31 @@ fn test_send_stmap(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    // let mut stamps = vec![];
-    // for _i in 0..4 {
-    //     let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
-    //     println!("send_stamp {:?}", stamp);
-    //     stamps.push(stamp.unwrap().token);
-    // }
-
-    let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
-    println!("send_stamp {:?}", stamp);
-    let is_need_split = stamp.unwrap().is_need_split;
-    if is_need_split {
-        println!("need split proofs first");
-        let pp = api::prepare_one_proofs(MINT_URL_MINIBITS.to_string());
-        println!("send_stamp after split {:?}", pp);
+    let mut stamps = vec![];
+    for _i in 0..4 {
+        let start = std::time::Instant::now();
+        let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None);
+        let elapsed = start.elapsed();
+        println!(
+            "send_stamp took {} ms, result: {:?}",
+            elapsed.as_millis(),
+            stamp
+        );
+        stamps.push(stamp.unwrap().tx.token);
     }
+    println!("all stamps {:?}", stamps);
+
+    // test for multi receive stamps
+    let _ = api::multi_receive(stamps);
+
+    // let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
+    // println!("send_stamp {:?}", stamp);
+    // let is_need_split = stamp.unwrap().is_need_split;
+    // if is_need_split {
+    //     println!("need split proofs first");
+    //     let pp = api::prepare_one_proofs(MINT_URL_MINIBITS.to_string());
+    //     println!("send_stamp after split {:?}", pp);
+    // }
 
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
