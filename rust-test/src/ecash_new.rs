@@ -11,11 +11,13 @@ const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
-    let words = "today talk cheap laptop better donate forward train beauty subway enjoy meat";
+    println!("{}", words);
+    // let words = "today talk cheap laptop better donate forward train beauty subway enjoy meat";
+    test_check_proofs(&words);
     // test_prepare_proofs(words);
     // test_send_all(words);
     // test_merge_proofs(words);
-    test_send_stmap(words);
+    // test_send_stmap(words);
     // test_load_v2(words);
     // test_send(words);
     // test_v1_receive(words);
@@ -73,6 +75,25 @@ fn test_get_balance(words: &str) {
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL.to_string());
+}
+
+fn test_check_proofs(words: &str) {
+    println!("generate_words is {:?}", words);
+    let _init_db = api::init_db(DB_PATH_V2.to_string(), words.to_owned(), false);
+    let init_cashu = api::init_cashu(32);
+    println!("init_cashu is {:?}", init_cashu);
+
+    // test fot get balances
+    let b1 = api::get_balances();
+    println!("get_balances before {:?}", b1);
+    let mints = api::get_mints();
+    println!("get_mints {:?}", mints);
+
+    // test fot get balances
+    let _ = api::check_proofs();
+
+    // test for print proofs
+    // let _ = api::print_proofs(MINT_URL.to_string());
 }
 
 fn test_load_v2(words: &str) {

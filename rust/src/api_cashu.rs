@@ -823,7 +823,7 @@ fn prepare_one_proofs_old(mint: String) -> anyhow::Result<u64> {
         }
         let mut count_before = 0u64;
         // first check proofs state, but this will take more time
-        let _check = wallet.check_all_pending_proofs().await?;
+        // let _check = wallet.check_all_pending_proofs().await?;
         let mut ps = wallet.get_unspent_proofs().await?;
 
         ps.retain(|p| {
@@ -924,7 +924,7 @@ async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Resul
     }
     let mut count_before = 0u64;
     // first check proofs state, but this will take more time
-    let _check = wallet.check_all_pending_proofs().await?;
+    // let _check = wallet.check_all_pending_proofs().await?;
     let mut ps = wallet.get_unspent_proofs().await?;
 
     ps.retain(|p| {
@@ -992,7 +992,7 @@ async fn prepare_one_proofs_back(
 
     let mut count_before = 0u64;
     // first check proofs state, but this will take more time
-    let _check = wallet.check_all_pending_proofs().await?;
+    // let _check = wallet.check_all_pending_proofs().await?;
     let mut ps = wallet.get_unspent_proofs().await?;
 
     ps.retain(|p| {
@@ -1506,21 +1506,15 @@ pub fn check_proofs() -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
-    // let mint_url = MintUrl::from_str(&active_mint)?;
     let _tx = state.rt.block_on(async {
-        let mut check_map: HashMap<String, (u64, u64)> = HashMap::new();
         let mints = w.localstore.get_mints().await?;
         for (mint_url, _info) in mints {
+            debug!("check_proofs mint_url: {}", mint_url);
             let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            let check = wallet.check_all_pending_proofs().await?;
-            check_map.insert(mint_url.to_string(), (check.1, check.2));
+            wallet.check_proofs_from_mint().await?;
         }
-        Ok(check_map)
+        Ok(())
     })?;
-    // let cnt = tx
-    //     .values()
-    //     .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
-    // Ok((cnt.0, cnt.1, cnt.0 + cnt.1))
     Ok(())
 }
 
