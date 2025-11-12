@@ -1533,9 +1533,25 @@ pub fn check_pending() -> anyhow::Result<()> {
         }
         Ok(check_map)
     })?;
-    // let cnt = tx
-    //     .values()
-    //     .fold((0, 0), |(s0, s1), (v0, v1)| (s0 + v0, s1 + v1));
+
+    Ok(())
+}
+
+/// include ln and cashu, tx status
+pub fn check_single_pending(tx_id: String, mint_url: String) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let mint_url = MintUrl::from_str(&mint_url)?;
+    let _tx = state.rt.block_on(async {
+        let mut check_map = HashMap::new();
+        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+        let check = wallet
+            .check_proofs_single_tx_spent_state(tx_id.clone())
+            .await?;
+        check_map.insert(mint_url.to_string(), check);
+        Ok(check_map)
+    })?;
 
     Ok(())
 }
