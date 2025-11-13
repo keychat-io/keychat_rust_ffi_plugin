@@ -102,6 +102,10 @@ Future<void> checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 /// include ln and cashu, tx status
 Future<void> checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
+/// include ln and cashu, tx status
+Future<void> checkSinglePending({required String txId, required String mintUrl}) =>
+    RustLib.instance.api.crateApiCashuCheckSinglePending(txId: txId, mintUrl: mintUrl);
+
 Future<Transaction> melt({required String invoice, required String activeMint, BigInt? amount}) =>
     RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
 
