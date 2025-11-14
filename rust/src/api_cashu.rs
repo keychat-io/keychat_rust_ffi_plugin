@@ -1603,7 +1603,7 @@ pub fn melt(
         };
         // Process payment
         let quote = wallet.melt_quote(bolt11.to_string(), options).await?;
-        info!("{quote:?}");
+        info!("melt_quote {quote:?}");
 
         let melt = wallet.melt(&quote.id).await?;
         info!("Paid invoice: {}", melt.0.state);

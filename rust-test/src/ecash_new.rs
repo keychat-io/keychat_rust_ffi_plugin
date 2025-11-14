@@ -11,12 +11,12 @@ const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
-    println!("{}", words);
-    // let words = "";
+    // println!("{}", words);
+    let words = "escape rifle total slow fetch depart across only ordinary trust lucky home";
     // test_request_mint(words);
     // test_mint_state(words);
-    // test_melt(words);
-    test_check_proofs(&words);
+    test_melt(words);
+    // test_check_proofs(&words);
     // test_prepare_proofs(words);
     // test_send_all(words);
     // test_merge_proofs(words);
@@ -69,12 +69,6 @@ fn test_get_balance(words: &str) {
     // test fot get balances
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
-    let mints = api::get_mints();
-    println!("get_mints {:?}", mints);
-
-    // test fot get balances
-    let b1 = api::get_balances();
-    println!("get_balances before {:?}", b1);
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
@@ -96,7 +90,7 @@ fn test_check_proofs(words: &str) {
     println!("get_ln_pending_transactions before {:?}", txs);
 
     let _ = api::check_single_pending(
-        "c1a82c79d4cef3b5a62805c699a07a6f1b14eddce2d09b92f76923a22497f5e7".to_string(),
+        "55d32fba65cdf1ecf9c12672f55a3c8736d0ac03980015fc892625eac2274896".to_string(),
         "https://8333.space:3338".to_string(),
     );
 
@@ -129,14 +123,14 @@ fn test_load_v2(words: &str) {
 // this is my ios, v1 to v2 restore will have some errors
 fn test_restore(words: &str) {
     println!("generate_words is {:?}", words);
-    let init_db = api::init_db(DB_PATH_V2.to_string(), words.to_owned(), false);
+    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
     println!("init_db {}: {:?}", DB_PATH, init_db);
     let init_cashu = api::init_cashu(32);
     println!("init_cashu is {:?}", init_cashu);
 
     // api::check_pending_test();
 
-    let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
+    let restore = api::restore(MINT_URL_MINIBITS.to_string(), Some(words.to_string()));
     println!("restore {:?}", restore);
 
     // let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
@@ -262,7 +256,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCDpGFhCGFzeEBjMzdkNmUyOTYyNjRkMTA4MmU2OWI0MGJhYTNmNDQ3YjViYTA3ZDA0NjlkNzA3MjlmNmZkNjhmNzM5ZDhmMGEyYWNYIQMGvsscFv_vBnFC5tLtl8djH7tSb6lWnuY4OCrFxFZFuWFko2FlWCBYYfjZPut3bUDP5eel_zGJb89eE1v11cmWP8IFnAmNamFzWCCdlEAIZ05svGAccZw8ibxcIwewC9WXj3cpxO-tmOP-gGFyWCAcptXWRfVYr00GdbJ_uil9eLQk_PgSX4nU2ng6FxHvt6RhYQFhc3hAZTQwODU5OWEwYzc1NjE5MWY2YTdjNDJmNzE2YjExYjQ0NDIwOGVkNDI3ZWZlNDliMzBmZjIyZGUzZDEyNDdhMmFjWCECDW7OADtntrHEHkxIVCLIrn0RmyhQ6tI_T-yqXTwwBJhhZKNhZVgg4TN5OCwv0h4Q0ZAXaAKP7vOBv6iG7Dr5ZDsWCg4eJAphc1gg4M2LzfSX3UBBAk3smVorz2-gp-cGBqO-SzOe2fNy4AdhclggQ0q1_9LmF__d_C3cgAVFHaIpdh664SbQniEk7gKOZgqkYWEBYXN4QDU4ZWMxNDQ0ZjhkNWVlODE4NzFjY2JjMzdkNGFkMTU1YmM2NmYwNWJjOTY1Mzg4ZTdjZWQwN2E1NGIxZGQxNWNhY1ghAyxNknO8mQygVhkriGiTxAJJXlabnHDYpNUDWsb1RffMYWSjYWVYINUq-aKLVpnNKhbbwFALnsrD8thzqsPCnDwxPIQ7BjXoYXNYIDXh4wHvdDpoJZZBJS67w9Bct2BbwK9DcJhbSM-_blczYXJYIJZB-tGo3iVcp0_d1L_m5N9btwpUWhMi6d6xUFW2AGqE".trim();
+    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhCGFzeEA5MzY5MTIxYWEyZjEwNmZjOWJkMzdlZmQwMjUwNTAwMTdmZGZhODc2OWVlNmE4OGNjODA2ZThjNTAzYzY4YzJhYWNYIQN8WcfS4-ZaCRCg5FC_NvmsuC2bT5lzhA0XIHCrlqavSWFko2FlWCAXRfD4rIFkwtMxn3aqiLHpxfFe2hUxua4VtPYGlIqIvmFzWCDNKCuYxhWWSggPvzRXRQy9B3y6Eg0V_mbLuDNlPVGIpGFyWCCkLjAZZV-73CkXxOeySIU7xeSAcfHMictxXdRaPeBrmaRhYQRhc3hAN2M5OTFlYTNiZjIzM2IwMmQ2MjA5MGYyYmMzZjJmNWViMWI1YjBjM2FhOGI2MWQxNTRiM2JkYmVmYTFiODQyYWFjWCEDIaIWNax57OPFMA0ncu5mhmt8s9-7KRUDZQS1PxfUSFJhZKNhZVggnq5r2y3cK97k1huEIAQTXGIYQ4F4cQU6mfmLmhmnknlhc1gg4MMp3hrY0DrnnMW8KVPYuldTUMfjj1TDPhdm5H2kXSthclggLBj9OB97_qILsLSrL6bQ-Mskx85jiyn1_fBWIEW60BU=".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
@@ -334,7 +328,7 @@ fn test_melt(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let invoice = "lnbc210n1p53gqhdpp553glxpd6rsuwxveerv97s46stxeca7qqhpmkv3jmkdh660w9q0ssdqqcqzpuxqrwzqsp53s5cuae0mka2qyzsrt5l0f4lsf40p85a9dkclcdc66ap2d08x2lq9qxpqysgqe6s7vl3fzk8ztxzp3xjl8wps9swnczjhmdlqjxzyrg3cpap92xv5c8xarxgv3ethrjhjxr8smtf69tktg82vpxql760mqkd7l6g2emqplul27y".to_string();
+    let invoice = "lnbc3u1p53dk46pp5ddzw9sawhvlfqrpaal3fx8gn3vd583xcut7g86au5jxpkf9wuj4qdqqcqzzsxqyz5vqsp5egukcw4hesnzj8tu4pcukrwp9eqlnsmgnrea6q4ngc9spxnkflcq9qxpqysgqmxl93lr4e3zaeaa7psn2tp4jhjqlhzcpyshln7f5c6smqxc0xgujvvk6ar0uvfu6xuwpcn982a89vaam5p8j87sn4n59clm07p77e4gqk0jgra".to_string();
 
     // test for receive token
     let invoice = api::melt(invoice, MINT_URL_MINIBITS.to_string(), None);
