@@ -767,14 +767,16 @@ pub fn print_proofs(mint: String) -> anyhow::Result<()> {
     let fut = async move {
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let ps = wallet.get_unspent_proofs().await?;
+        // let ps = wallet.get_all_proofs().await?;
         println!("get_all_proofs len: {:?}", ps.len());
 
         for p in ps {
             println!(
-                "{}: {} {}",
+                "{}: {} {:?}",
                 p.amount.as_ref(),
                 p.keyset_id,
                 p.secret.to_string(),
+                // p.y()?,
             );
         }
         Ok(())
@@ -1528,7 +1530,7 @@ pub fn check_pending() -> anyhow::Result<()> {
         let mints = w.localstore.get_mints().await?;
         for (mint_url, _info) in mints {
             let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            let check = wallet.check_proofs_tx_spent_state().await?;
+            let check = wallet.check_pending_transactions_state().await?;
             check_map.insert(mint_url.to_string(), check);
         }
         Ok(check_map)
@@ -1547,7 +1549,7 @@ pub fn check_single_pending(tx_id: String, mint_url: String) -> anyhow::Result<(
         let mut check_map = HashMap::new();
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let check = wallet
-            .check_proofs_single_tx_spent_state(tx_id.clone())
+            .check_pending_transaction_state(tx_id.clone())
             .await?;
         check_map.insert(mint_url.to_string(), check);
         Ok(check_map)
@@ -1886,20 +1888,29 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
-    let id = TransactionId::from_str(&id)?;
+    let tx_id = TransactionId::from_str(&id)?;
     let tx = state.rt.block_on(async {
         let mut tx = w
             .localstore
-            .get_transaction(id)
+            .get_transaction(tx_id)
             .await?
             .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
 
         let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
         if tx.status == cdk_common::wallet::TransactionStatus::Pending {
-            let _check = wallet.check_proofs_tx_spent_state().await?;
+            let _check = wallet.check_pending_transaction_state(id.clone()).await?;
             tx = w
                 .localstore
-                .get_transaction(id)
+                .get_transaction(tx_id)
+                .await?
+                .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+        }
+
+        if tx.status == cdk_common::wallet::TransactionStatus::Failed {
+            let _check = wallet.check_failed_transaction(id).await?;
+            tx = w
+                .localstore
+                .get_transaction(tx_id)
                 .await?
                 .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
         }
