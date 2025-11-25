@@ -1857,6 +1857,36 @@ pub fn get_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     Ok(txs_new)
 }
 
+pub fn get_failed_transactions() -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state.rt.block_on(w.list_failed_transactions_with_kind(
+        [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
+        None,
+    ))?;
+
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
+}
+
 /// remove transaction.time() <= unix_timestamp_le and kind is the status, timestamp must be second
 pub fn remove_transactions(
     unix_timestamp_le: u64,
