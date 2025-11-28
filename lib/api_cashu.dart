@@ -127,6 +127,8 @@ Future<List<Transaction>> getCashuPendingTransactions() =>
 
 Future<List<Transaction>> getPendingTransactions() => RustLib.instance.api.crateApiCashuGetPendingTransactions();
 
+Future<List<Transaction>> getFailedTransactions() => RustLib.instance.api.crateApiCashuGetFailedTransactions();
+
 /// remove transaction.time() <= unix_timestamp_le and kind is the status, timestamp must be second
 Future<void> removeTransactions({required BigInt unixTimestampLe, required TransactionStatus status}) =>
     RustLib.instance.api.crateApiCashuRemoveTransactions(unixTimestampLe: unixTimestampLe, status: status);
