@@ -13,7 +13,7 @@ fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
     // println!("{}", words);
     let words = "tenant interest tuna road stuff magnet punch item lizard flash describe endless";
-    // test_request_mint(words);
+    test_request_mint(words);
     // test_mint_state(words);
     // test_check_transaction(words);
     // test_get_txs(words);
@@ -29,8 +29,8 @@ fn main() {
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    // test_get_balance(words);
-    test_receive(words);
+    test_get_balance(words);
+    // test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
 }
@@ -72,6 +72,15 @@ fn test_get_balance(words: &str) {
     // test fot get balances
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
+
+    let mints = api::get_mints();
+    println!("get_mints {:?}", mints);
+
+    // let re = api::remove_mint(MINT_URL.to_string());
+    // println!("remove_mint {:?}", re);
+
+    let mints = api::get_mints();
+    println!("get_mints {:?}", mints);
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
@@ -146,11 +155,8 @@ fn test_restore(words: &str) {
 
     // api::check_pending_test();
 
-    let restore = api::restore(MINT_URL_MINIBITS.to_string(), Some(words.to_string()));
+    let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
     println!("restore {:?}", restore);
-
-    // let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
-    // println!("restore {:?}", restore);
 
     let b1 = api::get_balances();
     println!("get_balances after {:?}", b1);
@@ -272,7 +278,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCCpGFhAmFzeEA2N2I4YWYxMWFkYjdiNDY5ODkxMGEzNTcwNzQ0MDNkZGMwNTdkZmM3MGE4ZjdmN2RmNTQ2ZWI1ODNlZTJiMDY2YWNYIQPkeqMvTPa-D-JFsiybx_KD6h5D1jP3e8OL2T4Nlfpzg2Fko2FlWCAdaGQCdFdSAtQxKzgB3Eaa-QmKBGaxFeLMNcmSq9kzRGFzWCDstoGTkNxE0F9n9rADyEcXtmPY4kHvRNUouFyPLO4N4GFyWCCpdR-mYyGAbQjYQFBuf3NLu6wvNlmxo7p6pfj6mB4alqRhYQFhc3hAMGY5NzY0N2MxMDlmZDE3MTBiZjc5NDI5NDYxYjc0NzdlMDQwODFkMTMzM2ZmZjhmMDAzZjI1MDBlNjFiOWNhYWFjWCECnAdOiwPU7Tufc_0F7vIuRe1URel1eu8fBx9VEUPuhwhhZKNhZVggk9aovzkUpfA_deR5OSaWIjM_tqaTFY6ZvVe7zbuJtGBhc1gg6vIHdkuVrnAY38iWWPTkujNE3dJN2bYzUVgAwpcuBHdhclggXIYkMZ3kQWVHvWxEPIBoFOnrNi1mcZ9h05tfXc0tSLQ".trim();
+    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhAmFzeEBmY2FlMGY0ZDJkNzc2MGIzYTdlYzI0MDhmNjJmNjNkNWE3ODg4ZjAzNDU2ZWQ0YmY4ZTBkMGQ1ZjRiMDcxMDA3YWNYIQJT3-fgPQtatJUaZq_O1ivdcOX3n1TSdJty_1B8ETkNzWFko2FlWCCow186kSG_QWYW-7Nq8QY_s7LaDX4KkDQw8UT_kdvHwmFzWCA8muKM1ogdjM0ZLqZMckE-192YlFFp55Wu7XOlH2UqHWFyWCDrnbVrhOnr824IqQ_u7qNXsPWAepSinnksY1atMERzvqRhYQFhc3hANjFjOTBiYjk2OTAzZTE0NzNjZGJjN2FiZGYwNzkxN2RmNzZhY2U4ZTdiMWE2YzhiMzU2NDkzNjkwNzQ2MTk1MWFjWCECUqO3EQB6VhDblhTnRqKtxMtnt7tZVY3LUEE5CAWh95ZhZKNhZVggY3sbkKOGINAXowwo5sdaMO1cy6SUMrVRWuNfG_HeqEthc1ggvn2iVmgNBZvLpMxqUml9SlBAGFqHjbwfsuuRfr6QDAthclggek-NU1jGbqh6aPgN60jQ3rT83hr2R1G60Bw_OdrFJTc".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);

@@ -513,7 +513,7 @@ fn add_proofs_from_v1(proofs: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn add_proofs(proofs: Vec<ProofInfo>) -> anyhow::Result<()> {
+fn _add_proofs(proofs: Vec<ProofInfo>) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     if proofs.is_empty() {
@@ -787,7 +787,7 @@ pub fn print_proofs(mint: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn prepare_one_proofs_old(mint: String) -> anyhow::Result<u64> {
+fn _prepare_one_proofs_old(mint: String) -> anyhow::Result<u64> {
     let denomination: u64 = 1;
     let threshold: u64 = 10;
     let amount: u64 = 32;
@@ -966,7 +966,7 @@ async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Resul
     Ok(32 - count_before)
 }
 
-async fn prepare_one_proofs_back(
+async fn _prepare_one_proofs_back(
     wallet: &MultiMintWallet,
     threshold: u64,
     amount: u64,
@@ -1638,6 +1638,34 @@ pub fn get_all_transactions() -> anyhow::Result<Vec<Transaction>> {
     let w = state.get_wallet()?;
 
     let txs = state.rt.block_on(w.list_transactions(None))?;
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
+}
+
+pub fn get_pending_failed_transactions() -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state
+        .rt
+        .block_on(w.list_pending_failed_transactions(None))?;
     let mut txs_new = Vec::new();
     for tx in txs {
         let tx_new = Transaction {
