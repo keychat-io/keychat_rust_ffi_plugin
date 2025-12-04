@@ -13,12 +13,13 @@ fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
     // println!("{}", words);
     let words = "tenant interest tuna road stuff magnet punch item lizard flash describe endless";
-    test_request_mint(words);
+    // test_request_mint(words);
     // test_mint_state(words);
-    // test_check_transaction(words);
+    test_check_transaction(words);
     // test_get_txs(words);
     // test_mint_token(words);
     // test_melt(words);
+    // test_check_melt_quote_id(words);
     // test_check_proofs(&words);
     // test_prepare_proofs(words);
     // test_send_all(words);
@@ -29,7 +30,8 @@ fn main() {
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    test_get_balance(words);
+    // test_get_balance(words);
+    // test_split_32(words);
     // test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
@@ -73,14 +75,14 @@ fn test_get_balance(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let mints = api::get_mints();
-    println!("get_mints {:?}", mints);
+    // let mints = api::get_mints();
+    // println!("get_mints {:?}", mints);
 
     // let re = api::remove_mint(MINT_URL.to_string());
     // println!("remove_mint {:?}", re);
 
-    let mints = api::get_mints();
-    println!("get_mints {:?}", mints);
+    // let mints = api::get_mints();
+    // println!("get_mints {:?}", mints);
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
@@ -97,6 +99,19 @@ fn test_get_txs(words: &str) {
     for tx in txs.unwrap() {
         println!("tx {:?}", tx);
     }
+}
+
+//check_melt_quote_id
+fn test_check_melt_quote_id(words: &str) {
+    println!("generate_words is {:?}", words);
+    let _init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
+    let init_cashu = api::init_cashu(32);
+    println!("init_cashu is {:?}", init_cashu);
+
+    let quote_id = "VU3jzP1nVnqeaq_a_3HBQSKIQ2jFRTPG3NXtZ05C".to_string();
+
+    // test fot check_mint_quote_id
+    let _tx = api::check_melt_quote_id(quote_id, MINT_URL_MINIBITS.to_string());
 }
 
 fn test_check_proofs(words: &str) {
@@ -155,7 +170,7 @@ fn test_restore(words: &str) {
 
     // api::check_pending_test();
 
-    let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
+    let restore = api::restore(MINT_URL_MINIBITS.to_string(), Some(words.to_string()));
     println!("restore {:?}", restore);
 
     let b1 = api::get_balances();
@@ -264,6 +279,18 @@ fn test_send_stmap(words: &str) {
     println!("get_balances after {:?}", b2);
 }
 
+fn test_split_32(words: &str) {
+    println!("generate_words is {:?}", words);
+    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
+    println!("init_db {}: {:?}", DB_PATH, init_db);
+    let init_cashu = api::init_cashu(32);
+    println!("init_cashu is {:?}", init_cashu);
+
+    println!("need split proofs first");
+    let pp = api::prepare_one_proofs(MINT_URL_MINIBITS.to_string());
+    println!("send_stamp after split {:?}", pp);
+}
+
 fn test_receive(words: &str) {
     // let words = MnemonicInfo::generate_words(12).unwrap();
     // let words = "harsh city pave response hotel jelly midnight venue borrow loan act gun";
@@ -278,7 +305,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCCpGFhAmFzeEBmY2FlMGY0ZDJkNzc2MGIzYTdlYzI0MDhmNjJmNjNkNWE3ODg4ZjAzNDU2ZWQ0YmY4ZTBkMGQ1ZjRiMDcxMDA3YWNYIQJT3-fgPQtatJUaZq_O1ivdcOX3n1TSdJty_1B8ETkNzWFko2FlWCCow186kSG_QWYW-7Nq8QY_s7LaDX4KkDQw8UT_kdvHwmFzWCA8muKM1ogdjM0ZLqZMckE-192YlFFp55Wu7XOlH2UqHWFyWCDrnbVrhOnr824IqQ_u7qNXsPWAepSinnksY1atMERzvqRhYQFhc3hANjFjOTBiYjk2OTAzZTE0NzNjZGJjN2FiZGYwNzkxN2RmNzZhY2U4ZTdiMWE2YzhiMzU2NDkzNjkwNzQ2MTk1MWFjWCECUqO3EQB6VhDblhTnRqKtxMtnt7tZVY3LUEE5CAWh95ZhZKNhZVggY3sbkKOGINAXowwo5sdaMO1cy6SUMrVRWuNfG_HeqEthc1ggvn2iVmgNBZvLpMxqUml9SlBAGFqHjbwfsuuRfr6QDAthclggek-NU1jGbqh6aPgN60jQ3rT83hr2R1G60Bw_OdrFJTc".trim();
+    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCFpGFhEGFzeEBlYjhmNjg3NGEzNjRhNmQ0ZGMzMDVmMzIwMDZjNGZiMTBkZTk3MDdiMjc3YmE5NTQ2M2Y2NDc3ZGFmOWVhZDFlYWNYIQOuPnbfZJA1AOiXwSLrL4rJMgLJMn18SIrDltIltv3WkGFko2FlWCBj4-rDfOsP5tiiOlKNZbiuxJtJENOpOJ2geo0v_YOGrGFzWCAFRPx8fXSAu0PjZw7GyTAF34LCttpSRMhNp_lHjdunFmFyWCDzao9A--H4iWbJz8RMcrisqmRo0G-SdSvoLNvYvQksQqRhYQhhc3hANTQwNzFlMGJjZWMxMWZiYzY3MTllMzNhOTVjMzQ0MTA4YzJiYjBjNDMwNWU3ODYzN2M1MzQwZjBmYWNkNmNiOWFjWCECRVRpznN6a_1T1_iC1DlIEf1j3nRBKpj6fJs5sj15kO1hZKNhZVgg11kM-UrCdaHpvGWEsXrAUS6XW2PEX6RsP-xlxheIkflhc1ggdTJXxlSWbN3uL5r7tOz2olLQrVm1KCaN2vn88yt-Tl1hclggG6Si9NP4bCycuIym-sV44v0J9rTZgoT_MhOMIXMTzPikYWECYXN4QGU3ZTVkNzkwY2Y1NTZlZTlhMWI3OWUzODRkY2QzZGYxODkyZGU2MTY0ZmE1OTQwMjllMDBiZjhlYTNlNDUzZTlhY1ghAohNNwavVAtEttRE5m_mOi7CSbZ65XxgWIVqGCwFnhtVYWSjYWVYIHQ7cR0m8FMG0zbqUTNTRmCzCKWrB0GwXW4_Pe_RFhMxYXNYIGK29oW-I0rrgGsRSTpDPHL0laxga3WsejQWrWowhhXpYXJYIPq6Se5Fw870Lc0KQINqoKYT7wTpDhkP6PJzpHEbjsStpGFhAWFzeEBhNTM1MmRmODYzYzFiMmY4Yzg3MDczYzExNmQ5N2RkYTEwMDZkYzg0ODVhNjdhYWJlNGQxNTI0NjE2MmEzYTEzYWNYIQNSiS1WFIUnrdtMYvwyiktKmUx8mV4jeNA8LJtFhfnMf2Fko2FlWCB6aJdHy-RmGlXnek4RXrNAYjL6hLw5x6GwIi8ZS1qj_GFzWCBKeDVarKGWA24xqR-xdN5j97lQ_92itx2pSoV5vvnQLmFyWCBNXsEi0DNcRfAdg1GIlRaBoO0rAV6F4BMCHbKCFakbaKRhYQFhc3hANzcxODc4NzQwMGM0ZDE3YmEyZTQ0YzMyMGIxNTFjNzg1NWUyYjljOWE4ZjRjMjNmMjI4YjkzYWJhYzFhNzc0ZmFjWCEDmyF5McRuNQUt9fe6FtlYHtFywEzp9-RKGLaV59OJvpJhZKNhZVggh-zIp-SZTm1t4fRmtV6zIrMSlothC8e41nMeSaI_gbxhc1ggvvokyw1qDkY7yjJnpABJAh-ElbhdJnfXoKx_Si3-LS1hclgg0MLlZmJg_oKONrVybclncaJ9cO8oclLWhdQMylsDkQQ".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
@@ -351,7 +378,7 @@ fn test_check_transaction(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for check transaction
-    let tx_id = "2c58e33d0aa61e7f4fcfab36312953526bf974cefde0da833cb4dd9b794f72af".to_string();
+    let tx_id = "9da197f4ac84bf0b2d88ad12e832579de13250d4d50a26b149b77706a2f751e9".to_string();
     let amount = api::check_transaction(tx_id);
     println!("test_check_mint amount is {:?}", amount);
 
@@ -398,7 +425,7 @@ fn test_melt(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let invoice = "lnbc30n1p5j8synpp5cs6znzuu6mnxkktd02af9d7up9zwsz6p5l0mqz7z2z5hjmll2tdqdqqcqzzsxqyz5vqrzjqvueefmrckfdwyyu39m0lf24sqzcr9vcrmxrvgfn6empxz7phrjxvrttncqq0lcqqyqqqqlgqqqqqqgq2qsp5trplfew4hgrzpgsvd2a3x5z4hg7eu68erp9v35m0q7p70l962g4s9qxpqysgqq6cheezwey65uyvz99r0ws6fl9tvmqg9mmwexk6yclnt9yc97j0xt7hp4gl2umty6wr922mr54ne4k8gz69auhj43xg4kjl6y09rn4cqukt65r".to_string();
+    let invoice = "lnbc210n1p5jh2z2pp5a8u8auuqfchp6van0t0ctq2tt6ssnmky6jvhk9g0yknwn4r25j8scqzyssp5fcaf4wmd52wnmg5lktkmg35eeunswn3fjfq94yeqjzu9ctya7y6s9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqhp5pzcrp996rmx7332dzmuzt7yttxkeve0uszkcyygx70knx2lyy8nsmqz9gxqyz5vqrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcllanytzrlmv3aqqqqqlgqqqqqeqqjqpgd9tgw5380uz6y5pq46pql489srzfty7upzmw35v8m826j3q7z4evfeku5pu7y0qkzgv74ds8qtl7g8zlg5zaypaej8htt8l47yl4cpvwcl5h".to_string();
 
     // test for receive token
     let invoice = api::melt(invoice, MINT_URL_MINIBITS.to_string(), None);

@@ -873,28 +873,32 @@ pub fn prepare_one_proofs(mint: String) -> anyhow::Result<u64> {
     let w = state.get_wallet()?;
 
     state.rt.block_on(async {
-        let fut = _prepare_one_proofs(w, mint.clone());
-        let result = match tokio::time::timeout(Duration::from_secs(30), fut).await {
-            std::result::Result::Ok(std::result::Result::Ok(tx)) => Ok(tx),
-            std::result::Result::Ok(std::result::Result::Err(e)) => {
-                error!("prepare_one_proofs error mint={} err={:?}", mint, e);
-                Err(e)
-            }
-            std::result::Result::Err(_) => {
-                error!("prepare_one_proofs timeout mint={}", mint);
-                Err(anyhow::anyhow!(
-                    "prepare_one_proofs connection timeout for {}",
-                    mint
-                ))
-            }
-        };
-        result
+        // let fut = _prepare_one_proofs(w, mint.clone());
+        // let result = match tokio::time::timeout(Duration::from_secs(20), fut).await {
+        //     std::result::Result::Ok(std::result::Result::Ok(tx)) => Ok(tx),
+        //     std::result::Result::Ok(std::result::Result::Err(e)) => {
+        //         error!("prepare_one_proofs error mint={} err={:?}", mint, e);
+        //         Err(e)
+        //     }
+        //     std::result::Result::Err(_) => {
+        //         error!("prepare_one_proofs timeout mint={}", mint);
+        //         Err(anyhow::anyhow!(
+        //             "prepare_one_proofs connection timeout for {}",
+        //             mint
+        //         ))
+        //     }
+        // };
+        // result
+        _prepare_one_proofs(w, mint.clone()).await
     })
 }
 
 async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Result<u64> {
+    // split to 1 sat
     let denomination: u64 = 1;
+    // if less then 10, prepare to 32
     let threshold: u64 = 10;
+    // total prepare amount 32
     let amount: u64 = 32;
 
     let unit = CurrencyUnit::from_str("sat")?;
@@ -1132,7 +1136,7 @@ pub fn send_stamp(
         for mint_url in mints_first.iter().chain(mints_second.iter()) {
             let mint_str = mint_url.to_string();
             let fut = _send_one(&mut state, amount, mint_str.clone(), info.clone());
-            match tokio::time::timeout(Duration::from_secs(30), fut).await {
+            match tokio::time::timeout(Duration::from_secs(20), fut).await {
                 std::result::Result::Ok(std::result::Result::Ok(tx)) => {
                     debug!("send_stamp success {} {}", mint_url, amount);
                     let result = SendStampsResult {
@@ -1503,6 +1507,23 @@ pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
     Ok(tx)
 }
 
+/// check_melt_quote_id test
+pub fn check_melt_quote_id(quote_id: String, mint_url: String) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let mint_url = MintUrl::from_str(&mint_url)?;
+    let _tx = state.rt.block_on(async {
+        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+        let re = wallet.melt_quote_status_only(&quote_id).await?;
+        println!("melt_quote_status_only: {:?}", re);
+
+        Ok(())
+    })?;
+
+    Ok(())
+}
+
 /// Checks pending proofs for spent status
 pub fn check_proofs() -> anyhow::Result<()> {
     let state = State::lock()?;
@@ -1539,7 +1560,7 @@ pub fn check_pending() -> anyhow::Result<()> {
     Ok(())
 }
 
-/// include ln and cashu, tx status
+/// include ln and cashu, tx status, use check_transaction instead
 pub fn check_single_pending(tx_id: String, mint_url: String) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
@@ -1966,11 +1987,12 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
 
         if tx.status == cdk_common::wallet::TransactionStatus::Failed {
             let _check = wallet.check_failed_transaction(id).await?;
-            tx = w
-                .localstore
-                .get_transaction(tx_id)
-                .await?
-                .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+            // may be the tx has been removed after check, so may be not found again
+            if let Some(new_tx) = w.localstore.get_transaction(tx_id).await? {
+                tx = new_tx;
+            } else {
+                warn!("Transaction not found again, keep original tx: {}", tx_id);
+            }
         }
 
         let tx_new = Transaction {
@@ -1992,6 +2014,49 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
     Ok(tx)
 }
 
+// add failed tx check independently
+pub fn check_failed_transaction(id: String) -> anyhow::Result<Transaction> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let tx_id = TransactionId::from_str(&id)?;
+    let tx = state.rt.block_on(async {
+        let mut tx = w
+            .localstore
+            .get_transaction(tx_id)
+            .await?
+            .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+
+        let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
+
+        if tx.status == cdk_common::wallet::TransactionStatus::Failed {
+            let _check = wallet.check_failed_transaction(id).await?;
+            // may be the tx has been removed after check, so may be not found again
+            if let Some(new_tx) = w.localstore.get_transaction(tx_id).await? {
+                tx = new_tx;
+            } else {
+                warn!("Transaction not found again, keep original tx: {}", tx_id);
+            }
+        }
+
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        Ok(tx_new)
+    })?;
+
+    Ok(tx)
+}
 /// (spents, pendings, all)
 pub fn get_all_proofs_data() -> anyhow::Result<(usize, usize, usize)> {
     let state = State::lock()?;
