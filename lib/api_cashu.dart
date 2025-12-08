@@ -7,7 +7,7 @@ import 'api_cashu/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `_prepare_one_proofs`, `_send_all`, `_send_one`, `_send`, `add_proofs_from_v1`, `add_proofs`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`, `prepare_one_proofs_back`, `prepare_one_proofs_old`, `time`
+// These functions are ignored because they are not marked as `pub`: `_add_proofs`, `_prepare_one_proofs_back`, `_prepare_one_proofs_old`, `_prepare_one_proofs`, `_send_all`, `_send_one`, `_send`, `add_proofs_from_v1`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`, `time`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `MintCounterRecord`, `STATE`, `State`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `get_wallet`, `get_wallet`, `lock`, `mnemonic`, `update_mnmonic`
@@ -96,13 +96,17 @@ Future<Transaction> mintToken({required BigInt amount, required String quoteId, 
 /// this need call every init melt mint, do not used in flutter
 Future<BigInt> checkAllMintQuotes() => RustLib.instance.api.crateApiCashuCheckAllMintQuotes();
 
+/// check_melt_quote_id test
+Future<void> checkMeltQuoteId({required String quoteId, required String mintUrl}) =>
+    RustLib.instance.api.crateApiCashuCheckMeltQuoteId(quoteId: quoteId, mintUrl: mintUrl);
+
 /// Checks pending proofs for spent status
 Future<void> checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 
 /// include ln and cashu, tx status
 Future<void> checkPending() => RustLib.instance.api.crateApiCashuCheckPending();
 
-/// include ln and cashu, tx status
+/// include ln and cashu, tx status, use check_transaction instead
 Future<void> checkSinglePending({required String txId, required String mintUrl}) =>
     RustLib.instance.api.crateApiCashuCheckSinglePending(txId: txId, mintUrl: mintUrl);
 
@@ -110,6 +114,9 @@ Future<Transaction> melt({required String invoice, required String activeMint, B
     RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
 
 Future<List<Transaction>> getAllTransactions() => RustLib.instance.api.crateApiCashuGetAllTransactions();
+
+Future<List<Transaction>> getPendingFailedTransactions() =>
+    RustLib.instance.api.crateApiCashuGetPendingFailedTransactions();
 
 Future<List<Transaction>> getCashuTransactionsWithOffset({required BigInt offset, required BigInt limit}) =>
     RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
@@ -137,6 +144,9 @@ Future<BigInt> getPendingTransactionsCount() => RustLib.instance.api.crateApiCas
 
 Future<Transaction> checkTransaction({required String id}) =>
     RustLib.instance.api.crateApiCashuCheckTransaction(id: id);
+
+Future<Transaction> checkFailedTransaction({required String id}) =>
+    RustLib.instance.api.crateApiCashuCheckFailedTransaction(id: id);
 
 /// (spents, pendings, all)
 Future<(BigInt, BigInt, BigInt)> getAllProofsData() => RustLib.instance.api.crateApiCashuGetAllProofsData();
