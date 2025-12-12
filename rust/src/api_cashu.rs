@@ -1531,10 +1531,23 @@ pub fn check_proofs() -> anyhow::Result<()> {
     let unit = CurrencyUnit::from_str("sat")?;
     let _tx = state.rt.block_on(async {
         let mints = w.localstore.get_mints().await?;
+        let mut errs: Vec<String> = Vec::new();
         for (mint_url, _info) in mints {
             debug!("check_proofs mint_url: {}", mint_url);
             let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            wallet.check_proofs_from_mint().await?;
+            // wallet.check_proofs_from_mint().await?;
+            if let Err(e) = wallet.check_proofs_from_mint().await {
+                error!("check_proofs mint_url: {} error: {:?}", mint_url, e);
+                errs.push(format!("{}: {}", mint_url, e));
+            }
+        }
+        // throw err
+        if !errs.is_empty() {
+            return Err(anyhow::anyhow!(format!(
+                "check_proofs failed for {} mint(s): {}",
+                errs.len(),
+                errs.join(" | ")
+            )));
         }
         Ok(())
     })?;

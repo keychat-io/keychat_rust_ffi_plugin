@@ -12,13 +12,13 @@ const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
     // println!("{}", words);
-    let words = "tenant interest tuna road stuff magnet punch item lizard flash describe endless";
+    let words = "broom only exhibit sand air primary bamboo income sphere climb worth rapid";
     // test_request_mint(words);
     // test_mint_state(words);
-    test_check_transaction(words);
+    // test_check_transaction(words);
     // test_get_txs(words);
     // test_mint_token(words);
-    // test_melt(words);
+    test_melt(words);
     // test_check_melt_quote_id(words);
     // test_check_proofs(&words);
     // test_prepare_proofs(words);
@@ -114,7 +114,7 @@ fn test_check_melt_quote_id(words: &str) {
     let _tx = api::check_melt_quote_id(quote_id, MINT_URL_MINIBITS.to_string());
 }
 
-fn test_check_proofs(words: &str) {
+fn test_check_single(words: &str) {
     println!("generate_words is {:?}", words);
     let _init_db = api::init_db(DB_PATH_V2.to_string(), words.to_owned(), false);
     let init_cashu = api::init_cashu(32);
@@ -160,7 +160,6 @@ fn test_load_v2(words: &str) {
     }
 }
 
-// this is my ios, v1 to v2 restore will have some errors
 fn test_restore(words: &str) {
     println!("generate_words is {:?}", words);
     let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
@@ -170,8 +169,29 @@ fn test_restore(words: &str) {
 
     // api::check_pending_test();
 
-    let restore = api::restore(MINT_URL_MINIBITS.to_string(), Some(words.to_string()));
+    let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
     println!("restore {:?}", restore);
+
+    let b1 = api::get_balances();
+    println!("get_balances after {:?}", b1);
+
+    // let txs = api::get_all_transactions();
+    // for tx in txs.unwrap() {
+    //     println!("tx {:?}", tx);
+    // }
+}
+
+fn test_check_proofs(words: &str) {
+    println!("generate_words is {:?}", words);
+    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
+    println!("init_db {}: {:?}", DB_PATH, init_db);
+    let init_cashu = api::init_cashu(32);
+    println!("init_cashu is {:?}", init_cashu);
+
+    // api::check_pending_test();
+
+    let check = api::check_proofs();
+    println!("check_proofs {:?}", check);
 
     let b1 = api::get_balances();
     println!("get_balances after {:?}", b1);
@@ -232,7 +252,7 @@ fn test_send_all(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send_all = api::send_all(MINT_URL_MINIBITS.to_string());
+    let send_all = api::send_all(MINT_URL.to_string());
     println!("send_all is {:?}", send_all);
     let b2 = api::get_balances();
     println!("get_balances after {:?}", b2);
@@ -305,7 +325,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCFpGFhEGFzeEBlYjhmNjg3NGEzNjRhNmQ0ZGMzMDVmMzIwMDZjNGZiMTBkZTk3MDdiMjc3YmE5NTQ2M2Y2NDc3ZGFmOWVhZDFlYWNYIQOuPnbfZJA1AOiXwSLrL4rJMgLJMn18SIrDltIltv3WkGFko2FlWCBj4-rDfOsP5tiiOlKNZbiuxJtJENOpOJ2geo0v_YOGrGFzWCAFRPx8fXSAu0PjZw7GyTAF34LCttpSRMhNp_lHjdunFmFyWCDzao9A--H4iWbJz8RMcrisqmRo0G-SdSvoLNvYvQksQqRhYQhhc3hANTQwNzFlMGJjZWMxMWZiYzY3MTllMzNhOTVjMzQ0MTA4YzJiYjBjNDMwNWU3ODYzN2M1MzQwZjBmYWNkNmNiOWFjWCECRVRpznN6a_1T1_iC1DlIEf1j3nRBKpj6fJs5sj15kO1hZKNhZVgg11kM-UrCdaHpvGWEsXrAUS6XW2PEX6RsP-xlxheIkflhc1ggdTJXxlSWbN3uL5r7tOz2olLQrVm1KCaN2vn88yt-Tl1hclggG6Si9NP4bCycuIym-sV44v0J9rTZgoT_MhOMIXMTzPikYWECYXN4QGU3ZTVkNzkwY2Y1NTZlZTlhMWI3OWUzODRkY2QzZGYxODkyZGU2MTY0ZmE1OTQwMjllMDBiZjhlYTNlNDUzZTlhY1ghAohNNwavVAtEttRE5m_mOi7CSbZ65XxgWIVqGCwFnhtVYWSjYWVYIHQ7cR0m8FMG0zbqUTNTRmCzCKWrB0GwXW4_Pe_RFhMxYXNYIGK29oW-I0rrgGsRSTpDPHL0laxga3WsejQWrWowhhXpYXJYIPq6Se5Fw870Lc0KQINqoKYT7wTpDhkP6PJzpHEbjsStpGFhAWFzeEBhNTM1MmRmODYzYzFiMmY4Yzg3MDczYzExNmQ5N2RkYTEwMDZkYzg0ODVhNjdhYWJlNGQxNTI0NjE2MmEzYTEzYWNYIQNSiS1WFIUnrdtMYvwyiktKmUx8mV4jeNA8LJtFhfnMf2Fko2FlWCB6aJdHy-RmGlXnek4RXrNAYjL6hLw5x6GwIi8ZS1qj_GFzWCBKeDVarKGWA24xqR-xdN5j97lQ_92itx2pSoV5vvnQLmFyWCBNXsEi0DNcRfAdg1GIlRaBoO0rAV6F4BMCHbKCFakbaKRhYQFhc3hANzcxODc4NzQwMGM0ZDE3YmEyZTQ0YzMyMGIxNTFjNzg1NWUyYjljOWE4ZjRjMjNmMjI4YjkzYWJhYzFhNzc0ZmFjWCEDmyF5McRuNQUt9fe6FtlYHtFywEzp9-RKGLaV59OJvpJhZKNhZVggh-zIp-SZTm1t4fRmtV6zIrMSlothC8e41nMeSaI_gbxhc1ggvvokyw1qDkY7yjJnpABJAh-ElbhdJnfXoKx_Si3-LS1hclgg0MLlZmJg_oKONrVybclncaJ9cO8oclLWhdQMylsDkQQ".trim();
+    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCJpGFhGQQAYXN4QDZiYjg0NGM5ZGQzYTk0Nzk3YWRhMzFlMjRjNjNiNzQ3NjA1MGM1NTBmOTYwOGE0ZTQwZjk2ZTMxNzFiY2RiZGRhY1ghA0FT_yivUUttKOoKqNvocRd1jRvkP_lGU9d5exAyrDp5YWSjYWVYIN75q5INMvgModFxthkBhCPH-JJvR46WcPoajk1GTI50YXNYIBvV8QHAgLGnqu2VI-cFWAgZK1RTDMXsYCEEomXL8e_yYXJYIICAsAfxPWQBpdIdnAdc0ompGzANVgfpdcutddRkalTkpGFhGQQAYXN4QDAyYmNmOGI3OGU0NTBlMGQ0MTM4YjJkYWRmMDBhNTI2ODRkZDM5ZmQ3N2E0OTNmMzZmMTA4NzBkYzg0MzE0YWZhY1ghAihGx5xYastfgfl-dA3tuLSx1ouS5iXZ9vp2MlY_FEmSYWSjYWVYIF9kflukwkx_uxxwgWAvQnyQqFXuq--7o75q9-SgdEO3YXNYIH3xgFoO7fHgyXkd5oJxLf3Nr8R6ZPgndwVrzFFTRXA1YXJYIDMuwbst-Jb-teQLhVbfsmMPtZeaB4t-viHe2caUkw-lpGFhGEBhc3hAZDE1NWRjNjdmZjM0NmZiMjdkNDEyNTQ1NzUyMDhjODgwNjk0Y2YyMWI1NmVlYjhiY2Q4YWUxMWIwNDY2NjMzZmFjWCEC1ijFFN9zJDHboB2MM0Ka6vdFlpEHMmzA7NP5I2xmKaFhZKNhZVggs_svdxCJ7ws71XyEvh-XRAqUsJC89V5VcgtFaMlbwbphc1gg9NPteX5J5qgqMl0MKCBYKA7Ip0asC519zOM1XF0iIo5hclggQra3uRxzLiY-jNXX6QJiOUhR4ZtuzGLAwNJsewohGtykYWEYQGFzeEAyYWI4NTZmZGFlMTNhNDk4MjdhNDE0OTJlOTVlMzE1OWM2OWMzNWEwZjY1MGQ3ZjY3NDhiMzk3MGZiZmFmZDY5YWNYIQJR4w1HnlGlE7LKwIkdihPrEJwTFVDLBWJOPlHHSHwxPWFko2FlWCBVOfeMqVHoWKPBBipc599gGBc4uNYFIZM3p1U_REJCR2FzWCCruzKQIKIXud5gh51b2S89d6qn8mM9_HfdltgHqxJp1WFyWCBsl9FKBIn1s9zNiFNPKW-4mWV1peTZlRijicc8swhVoqRhYRBhc3hAMTUzMGUwYjUzNDFhNzhlOTExNDhkNTA4YzQxNThhMzk5M2FiYmQ2OTQ1NzM4YzQzOWNiMTYwMDg0ODNmZjUwOWFjWCED_SxrVFDX9ESuCrKgFs1qa5-DTTQIa74boFg4E8uQrGlhZKNhZVgguOmc5g3cAFAaStaJWXPf98D7dNZeRIQRw8rDYef7kaNhc1ggW9pBGhDwRTF7dJgjLftuiDjAoG8lPzjlrSHbDcFhC21hclgguoZLMJgqg44WYpDLDYMCuomdq0Dy4GFtov3J2LTn8R2kYWECYXN4QDU5YWE1MGY4NGRkMGU2NTY0YWMwZjdkYTRkY2MzMjMzNmZhODkyYjExOGY4MDg2MTExNzMyNWVkYmJiZmU3YmFhY1ghA41wyKVzK8v8N0DPjTVq3JZbmg6PzHqBkm_pZnfHBOmOYWSjYWVYIDA5HJSYhqEd67xvP0cAAeUYcN9DYa0VG_KpCbglp_PSYXNYIMTVKv4giPG1Dv2eVedqmaUyWgRhLH6XN6XyYUvK5ajVYXJYIEov85qLfCBdykjIlGn5B8FHIyMHiQEukmf7XVR_xapIpGFhAmFzeEA5NzE3MzY4ZTIyYWVkMDJiNTc2M2NlNzlmZDQ5M2VlYjc3NGVlMTExMzU4YmFhZDY2ZGJlNDMxZjdmOTFhOTE3YWNYIQLUIJAbsh8MC3XYv2LNZLGcoXAovvp1z8CoicV3qSeeQGFko2FlWCApKVyS3ntluZ32PzBc-_SDcrprTk85Ld-acw63AC5sKWFzWCDCQyVbnMT_wnCIllDiJYUHZQuSm16LvG5KPrRr7msmJWFyWCAtAzNg_tVUsgdB2lghPf0CBuaPtVYTrpG9e-ZnR5o-8KRhYQJhc3hANzI3MGRiZmUzMGM2MjA1MDVlNzdjNzZkMmEyNWEzZmNiMDRkMDQ0NmE3ZWNiZDllMmY5OGNmMWZmNmQyZTE2MWFjWCEDqZizqYJ3GdxfXU6Ar1dhxUJS42CeX2pyWTRKVjFoJcRhZKNhZVggHIkc4nwgE6LkM-PLDbiBiz8UJ0OiW9hRMKpxniUYkpdhc1ggNZOa_nD01UKde1OgkRRxYBEiGaFpxzdWlzZg4bp10RBhclgghWnXNmgi1LMvwLS31fYMSrk8mO8fgB7riy4v3lhg9qSkYWEBYXN4QDM3YTZjZWE4NzdiMGFmMWY3YjcxNjhkNTFiNDgwZmRjODc3ZmI1MzU4NTM0MmQ2ZGE2ZGZmZWQ0ZDQ4MGVkZDlhY1ghAqrdDZcCYCVq7F38LSjZRsVIlYdsOoehyAHAEsMeKXXVYWSjYWVYIJuJOLb4GNrgSQV472liiRlBQ2Kd6VJ3J8bMbDbOUTGtYXNYILVHFRWIZPqf5QWMLLZhkRXwTx7shqlWJ_iMwKckBGaRYXJYII6oR59NxKW4rlGqxE-oC-ZDZbxKv3RJq_uSQUU3juAW".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
@@ -332,7 +352,7 @@ fn test_request_mint(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let invoice = api::request_mint(8, MINT_URL_MINIBITS.to_string());
+    let invoice = api::request_mint(2200, MINT_URL.to_string());
     println!("request_mint invoice is {:?}", invoice);
 
     // test fot get balances
@@ -340,7 +360,7 @@ fn test_request_mint(words: &str) {
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
 }
 
 fn test_mint_state(words: &str) {
@@ -378,7 +398,7 @@ fn test_check_transaction(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for check transaction
-    let tx_id = "9da197f4ac84bf0b2d88ad12e832579de13250d4d50a26b149b77706a2f751e9".to_string();
+    let tx_id = "505acabc42d0cffa3874f824a17a93477f79eca13d1a46a9a403eb408662290b".to_string();
     let amount = api::check_transaction(tx_id);
     println!("test_check_mint amount is {:?}", amount);
 
@@ -387,7 +407,7 @@ fn test_check_transaction(words: &str) {
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
 }
 
 fn test_mint_token(words: &str) {
@@ -425,10 +445,10 @@ fn test_melt(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let invoice = "lnbc210n1p5jh2z2pp5a8u8auuqfchp6van0t0ctq2tt6ssnmky6jvhk9g0yknwn4r25j8scqzyssp5fcaf4wmd52wnmg5lktkmg35eeunswn3fjfq94yeqjzu9ctya7y6s9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqhp5pzcrp996rmx7332dzmuzt7yttxkeve0uszkcyygx70knx2lyy8nsmqz9gxqyz5vqrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcllanytzrlmv3aqqqqqlgqqqqqeqqjqpgd9tgw5380uz6y5pq46pql489srzfty7upzmw35v8m826j3q7z4evfeku5pu7y0qkzgv74ds8qtl7g8zlg5zaypaej8htt8l47yl4cpvwcl5h".to_string();
+    let invoice = "lnbc21u1p5n5ljdpp5fxg5p8jyvqvd8vuywrrpgrpzsyxc8yr3gtvun6yyfp50znkl08fqdqqcqzpuxqrwzqsp5rjqen5c4q567sagagd4y32pn4g9xaq0s5k7gyv3v6rl3ve3w4adq9qxpqysgqn6q8jzf60s6lxvem652k9e28w35fqnses3fsqts2vp92zsjf8y7ya0kcw3lgsmxds5k88ammtn6msv0pek3cxt3tak459qnyvpevpkgqqep6cr".to_string();
 
     // test for receive token
-    let invoice = api::melt(invoice, MINT_URL_MINIBITS.to_string(), None);
+    let invoice = api::melt(invoice, MINT_URL.to_string(), None);
     println!("melt invoice is {:?}", invoice);
 
     // test fot get balances
@@ -436,7 +456,7 @@ fn test_melt(words: &str) {
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
 }
 
 fn test_prepare_proofs(words: &str) {
