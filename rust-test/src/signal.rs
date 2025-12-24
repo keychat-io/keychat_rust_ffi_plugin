@@ -9,9 +9,10 @@ fn main() {
     // let _ = test_kdf();
     // let _= test_state();
     // let _ = test_db();
+    let _ = test_close_db();
     // let _ = test_parse_is_prekey_message2();
     // let _ = test_x3dh_db();
-    let _ = test_multi_add();
+    // let _ = test_multi_add();
 }
 
 fn test_parse_prekey() -> Result<()> {
@@ -40,6 +41,47 @@ fn test_parse_is_prekey_message2() -> Result<()> {
     ];
     let re = parse_is_prekey_signal_message(cipher_text.to_vec()).unwrap();
     println!("the result is {:?}", re);
+    Ok(())
+}
+
+fn test_close_db() -> Result<()> {
+    let db = "./signal.db";
+
+    let device_id: DeviceId = 1.into();
+
+    let alice_identity_private =
+        hex::decode("38e11be5690d3e0600544b87088961c7fd58c041d1a1766ac8fc2a50e3bdde4c")
+            .expect("valid hex");
+    //alice info
+    let alice_identity_public =
+        hex::decode("05f6214a72c3b3cd6e4e1fca26ffbd40f5c750d06f4be16f013cda52e2e2e6b30b")
+            .expect("valid hex");
+    let alice_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: alice_identity_public.as_slice().try_into().unwrap(),
+        private_key: alice_identity_private.as_slice().try_into().unwrap(),
+    };
+    let alice_address = KeychatProtocolAddress {
+        name: "05743b1e2894d1df36972e91c12700d0f8d2a81b0cf455f18abe0cf09c41e0944a".to_owned(),
+        device_id: device_id.into(),
+    };
+    init(db.to_string(), alice_identity_key_pair, 0).expect("init error");
+
+    //bob info
+    let bob_identity_public =
+        hex::decode("05f191f40dff0e56fe8833282f5512cf8f68e28794140f650324220f5ed3ee7e4d")
+            .expect("valid hex");
+    let bob_identity_private =
+        hex::decode("38393385efdc31e5565c20610e665429430f6bfb9320adb4e5cbff680febae6e")
+            .expect("valid hex");
+    let bob_identity_key_pair = KeychatIdentityKeyPair {
+        identity_key: bob_identity_public.as_slice().try_into().unwrap(),
+        private_key: bob_identity_private.as_slice().try_into().unwrap(),
+    };
+
+    let t = generate_signed_key_api(bob_identity_key_pair, alice_identity_private);
+    println!("generate_signed_key_api {:?}", t);
+    let c = close_signal_db();
+    println!("close_signal_db {:?}", c);
     Ok(())
 }
 

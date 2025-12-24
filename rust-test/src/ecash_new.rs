@@ -11,14 +11,14 @@ const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
 fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
-    // println!("{}", words);
+    println!("{}", words);
     let words = "broom only exhibit sand air primary bamboo income sphere climb worth rapid";
     // test_request_mint(words);
     // test_mint_state(words);
     // test_check_transaction(words);
     // test_get_txs(words);
     // test_mint_token(words);
-    test_melt(words);
+    // test_melt(words);
     // test_check_melt_quote_id(words);
     // test_check_proofs(&words);
     // test_prepare_proofs(words);

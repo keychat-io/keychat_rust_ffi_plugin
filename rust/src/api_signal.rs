@@ -99,6 +99,20 @@ pub fn init_signal_db(db_path: String) -> Result<()> {
     result
 }
 
+/// close db
+pub fn close_signal_db() -> Result<()> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store
+            .as_mut()
+            .ok_or_else(|| format_err!("<signal api fn[close_signal_db]> Can not get store err."))?;
+        store.pool.database().close();
+        Ok(())
+    });
+    result
+}
+
 /// init KeyChatSignalProtocolStore
 async fn _init_keypair(
     store: &mut SignalStore,
