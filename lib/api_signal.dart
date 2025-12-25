@@ -18,6 +18,9 @@ Future<void> init({required String dbPath, required KeychatIdentityKeyPair keyPa
 /// init db
 Future<void> initSignalDb({required String dbPath}) => RustLib.instance.api.crateApiSignalInitSignalDb(dbPath: dbPath);
 
+/// close db
+Future<void> closeSignalDb() => RustLib.instance.api.crateApiSignalCloseSignalDb();
+
 /// init KeyChatSignalProtocolStore
 Future<void> initKeypair({required KeychatIdentityKeyPair keyPair, required int regId}) =>
     RustLib.instance.api.crateApiSignalInitKeypair(keyPair: keyPair, regId: regId);
