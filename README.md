@@ -11,19 +11,19 @@ a specialized package that includes native code directly invoked with Dart FFI.
 ## Commands
 ```
 rustup update stable
-cargo install flutter_rust_bridge_codegen@2.9.0
-
+cargo install flutter_rust_bridge_codegen@2.11.1
 rustc --print target-list
-cd rust
+
+apt install protobuf-compiler
+apt install libsecret-1-dev
+
+# iOS
+rustup target add aarch64-apple-ios
 cargo build --target aarch64-apple-ios --release --target-dir target
 
-export android_tools=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin
-export CC_aarch64_linux_android=$android_tools/aarch64-linux-android27-clang                           
-export AR_aarch64_linux_android=$android_tools/llvm-ar
-export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$android_tools/aarch64-linux-android27-clang
-
+# Android
+rustup target add aarch64-linux-android
 cargo build --target aarch64-linux-android --release --target-dir target 
-cargo build --target aarch64-apple-darwin --release --target-dir target 
 
 
 # linux 

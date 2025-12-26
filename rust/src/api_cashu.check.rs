@@ -137,6 +137,9 @@ impl UnitedStore for LitePool {
     async fn get_counters(&self, mint_url: &Url, pubkey: &str) -> Result<Vec<Record>, Self::Error> {
         self.as_ref().get_counters(mint_url, pubkey).await
     }
+    async fn get_all_counters(&self) -> Result<Vec<Record>, Self::Error> {
+        self.as_ref().get_all_counters().await
+    }
     //
     async fn migrate(&self) -> Result<(), Self::Error> {
         self.as_ref().migrate().await

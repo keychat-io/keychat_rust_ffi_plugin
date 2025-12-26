@@ -1,35 +1,70 @@
-#[macro_use]
-extern crate tracing;
+// #[macro_use]
+// extern crate tracing;
 
-use anyhow::bail;
-use rust::api_cashu::{self as api, cashu_wallet::wallet::MnemonicInfo};
+// use anyhow::bail;
+// use rust::api_cashu_v1::{self as api};
 
-use api::*;
+// use api::*;
 
-const DB_PATH: &str = "rustest.db";
-const MINT_URL: &str = "https://8333.space:3338/";
-const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
+// const DB_PATH: &str = "rustest.db";
+// const MINT_URL: &str = "https://8333.space:3338/";
+// const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
 
-fn main() {
-    let words = "eight reunion dish major flash artwork average usual vocal minute entire believe";
-    let sleepms_after_check_a_batch = 10;
-    let mi = MnemonicInfo::with_words(words).unwrap();
-    println!("{}: {}", mi.pubkey(), words);
+// fn main() {
+//     // let migen_words = MnemonicInfo::generate_words(12).unwrap();
+//     let words = "crime common leopard humor invite muffin arrive tornado zone toast oak balcony";
+//     let r1 = api::init_db(DB_PATH.to_string(), Some(words.to_owned()), false);
+//     info!("init_db {}: {:?}", DB_PATH, r1);
 
-    let r1 = api::init_db(DB_PATH.to_string(), Some(words.to_owned()), false);
-    info!("init_db {}: {:?}", DB_PATH, r1);
+//     let _r1 = api::init_cashu(32);
 
-    let _r2 = api::init_cashu(32);
-    let start = std::time::Instant::now();
-    let re = restore(
-        MINT_URL.to_string(),
-        Some(words.to_string()),
-        sleepms_after_check_a_batch,
-    )
-    .unwrap();
-    let end = std::time::Instant::now();
-    println!("the ts gap is {:?}, result is {:?}", end - start, re);
-}
+// let balance = api::get_balance(MINT_URL.to_string());
+// println!("get_balance: {:?}", balance);
+
+// let encoded_token_8338: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCDpGFhAWFzeEA0MjY2ODcxNzkyM2VkYzA3ZGMwODk0NGNhNTlhYTU3N2U2ZTgwNmI1YmU2YmI0ODBlMTUyNjMzMDU4MTFjZGI3YWNYIQJ5lv6n3OeBVD0c8oXK5sPuHC2rTYsDStnBfxe_PDGwMGFko2FlWCDv6u4p5Z02z9dcQoqZUg_GIkz3NtfsgZBZg-wnsWHrNGFzWCD9h9-gUInuERd0BglQ_UQFhrJJd_TF6wbk-4P1wcsuwmFyWCANKZSPyatrPN3a_Grb7LiAkW1A-h8J8iwunq-bFkE1iaRhYQFhc3hAYTRlYjM3YzY2NjRhNzUzMzk0ZDk0OWZiOTM3ODUyMWU5ODQ4YmNjZWFjYzNlN2E1NTJmN2Q1MWI5OTRiMTc1OWFjWCEDkbxLaQWr5NTh-rNFjPKr7Ztl-heayyWvLde7LrFmqeFhZKNhZVgg-ZbdePbX6ypbxZRW82ZgAx7Iz-SRQfFqAI9eD1wYHPZhc1ggNxjVDddslVRleNntuLZcx-GwC0_6zwTMoFFTcqQxE2JhclggZm9hV0t3AFiOK_sQBbnaW7Zlzkeidz1sJhZRO3wdONWkYWEBYXN4QGRiNjBiNDFmOTlhOThmMjhmMzJlOGYxMTYwMmFiOTg1MTkyNGRlMGI3NjQ1N2RjOTQ2Y2MyODYyZDVmYjgwYWVhY1ghAnj-9SayXg5-duEJFqFUdDFCPUxxt_-N1277bKnnJ2MJYWSjYWVYIOzK9Fovw99jM8s4cnW5_8KUwc98bLNR6vH1YXWdbY9hYXNYIN9976MQWAgR1Z7QvniIgDi-Y6cMic9i7OrIU3F0PHD0YXJYIAeS5OezF6kTIwz3gZa9WLcQPq6ykYuxE5zR9MePVIUm".trim();
+// let r2 = api::receive_token(encoded_token_8338.to_string());
+// println!("receive_token: {:?}", r2);
+
+// let tokens = api::cashu_v1_init_send_all(DB_PATH.to_string(), Some(migen_words.to_owned()));
+// println!("send all tokens {:?}", tokens);
+
+// let balance = api::get_balance(MINT_URL_MINIBITS.to_string());
+// println!("get_balance: {:?}", balance);
+
+// let balance = api::get_balances();
+// println!("get_balances: {:?}", balance);
+
+// only balance great than 2 due to fee
+// if balance.unwrap().1 > 2 {
+//     let s = api::send_all(MINT_URL.to_string(), None);
+//     println!("send {:?}\n", s);
+// }
+
+// let try_get_wallet = api::prepare_one_proofs(9, MINT_URL.to_string());
+// println!("try_get_wallet: {:?}", try_get_wallet);
+// }
+fn main() {}
+// fn main() {
+//     let words = "eight reunion dish major flash artwork average usual vocal minute entire believe";
+//     let sleepms_after_check_a_batch = 10;
+//     let mi = MnemonicInfo::with_words(words).unwrap();
+//     println!("{}: {}", mi.pubkey(), words);
+
+//     let r1 = api::init_db(DB_PATH.to_string(), Some(words.to_owned()), false);
+//     info!("init_db {}: {:?}", DB_PATH, r1);
+
+//     let _r2 = api::init_cashu(32);
+//     let start = std::time::Instant::now();
+//     let re = restore(
+//         MINT_URL.to_string(),
+//         Some(words.to_string()),
+//         sleepms_after_check_a_batch,
+//     )
+//     .unwrap();
+//     let end = std::time::Instant::now();
+//     println!("the ts gap is {:?}, result is {:?}", end - start, re);
+// }
+
 // fn main() {
 //     let logger = tracing_subscriber::fmt::fmt().with_line_number(true);
 //     if std::env::var("RUST_LOG").is_ok() {
@@ -189,81 +224,81 @@ fn main() {
 //     // info!("get_transactions_with_offset: {:?}", api::get_transactions_with_offset(0, 0));
 // }
 
-fn get_txs(page_limit: usize) {
-    let mut txs = vec![];
-    let mut pendings = vec![];
+// fn get_txs(page_limit: usize) {
+//     let mut txs = vec![];
+//     let mut pendings = vec![];
 
-    if page_limit > 0 {
-        let limit = page_limit;
-        let mut offset = 0;
-        loop {
-            info!("offset {}, limit {}", offset, limit);
-            match api::get_transactions_with_offset(offset, limit) {
-                Err(e) => return info!("get_transactions_with_offset failed: {:?}", e),
-                Ok(t) => {
-                    info!(
-                        "get_transactions_with_offset({}, {}) ok.len: {:?}",
-                        offset,
-                        limit,
-                        t.len()
-                    );
+//     if page_limit > 0 {
+//         let limit = page_limit;
+//         let mut offset = 0;
+//         loop {
+//             info!("offset {}, limit {}", offset, limit);
+//             match api::get_transactions_with_offset(offset, limit) {
+//                 Err(e) => return info!("get_transactions_with_offset failed: {:?}", e),
+//                 Ok(t) => {
+//                     info!(
+//                         "get_transactions_with_offset({}, {}) ok.len: {:?}",
+//                         offset,
+//                         limit,
+//                         t.len()
+//                     );
 
-                    let got = t.len();
-                    txs.extend(t);
+//                     let got = t.len();
+//                     txs.extend(t);
 
-                    if got < limit {
-                        break;
-                    }
-                    offset += got;
-                }
-            }
-        }
-    } else {
-        match api::get_transactions() {
-            Err(e) => return info!("get_all_transactions failed: {:?}", e),
-            Ok(mut t) => {
-                t.sort_by_key(|a| a.time());
+//                     if got < limit {
+//                         break;
+//                     }
+//                     offset += got;
+//                 }
+//             }
+//         }
+//     } else {
+//         match api::get_transactions() {
+//             Err(e) => return info!("get_all_transactions failed: {:?}", e),
+//             Ok(mut t) => {
+//                 t.sort_by_key(|a| a.time());
 
-                info!("get_all_transactions ok.len: {:?}", t.len());
-                txs = t;
-            }
-        }
-    }
+//                 info!("get_all_transactions ok.len: {:?}", t.len());
+//                 txs = t;
+//             }
+//         }
+//     }
 
-    for (idx, tx) in txs.into_iter().enumerate() {
-        let dt = timestamp_millis_to_dt(tx.time() as _).unwrap();
-        println!(
-            "{:>2} {} {}: {:>3} {:>7} {} {}",
-            idx,
-            tx.time(),
-            dt,
-            tx.direction().as_ref(),
-            tx.status().as_ref(),
-            tx.amount(),
-            tx.id()
-        );
+//     for (idx, tx) in txs.into_iter().enumerate() {
+//         let dt = timestamp_millis_to_dt(tx.time() as _).unwrap();
+//         println!(
+//             "{:>2} {} {}: {:>3} {:>7} {} {}",
+//             idx,
+//             tx.time(),
+//             dt,
+//             tx.direction().as_ref(),
+//             tx.status().as_ref(),
+//             tx.amount(),
+//             tx.id()
+//         );
 
-        if tx.is_pending() {
-            pendings.push(tx.content().to_owned());
-        }
-    }
+//         if tx.is_pending() {
+//             pendings.push(tx.content().to_owned());
+//         }
+//     }
 
-    for (i, tx) in pendings.into_iter().enumerate() {
-        println!("{:>2}: {}", i, tx)
-    }
-}
+//     for (i, tx) in pendings.into_iter().enumerate() {
+//         println!("{:>2}: {}", i, tx)
+//     }
+// }
 
-fn timestamp_millis_to_dt(ts: i64) -> anyhow::Result<String> {
-    use chrono::LocalResult;
-    use chrono::TimeZone;
+// fn timestamp_millis_to_dt(ts: i64) -> anyhow::Result<String> {
+//     use chrono::LocalResult;
+//     use chrono::TimeZone;
 
-    let dt = chrono::Local::now().offset().clone();
-    let dt = match dt.timestamp_millis_opt(ts) {
-        LocalResult::Single(dt) => dt,
-        e => {
-            bail!("Incorrect timestamp_millis: {:?}", e)
-        }
-    };
+//     let dt = chrono::Local::now().offset().clone();
+//     let dt = match dt.timestamp_millis_opt(ts) {
+//         LocalResult::Single(dt) => dt,
+//         e => {
+//             bail!("Incorrect timestamp_millis: {:?}", e)
+//         }
+//     };
 
-    Ok(dt.to_string())
-}
+//     Ok(dt.to_string())
+// }

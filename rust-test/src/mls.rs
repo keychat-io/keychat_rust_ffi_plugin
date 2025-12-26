@@ -22,8 +22,9 @@ struct DecryptMsg {
 }
 
 fn main() {
+    let _ = test_lifetime();
     // let _ = test_basic();
-    let _ = test_extension();
+    // let _ = test_extension();
     // let _ = test_secret_key();
     // let _ = test_self_decrypt();
     // let _ = test_diff_groups();
@@ -31,6 +32,266 @@ fn main() {
     // let _ = test_diff_db2();
     // let _ = test_replay_delay();
     // let _ = test_remove_then_add_group();
+}
+
+// create add create_message decrypt_msg remove leave
+fn test_lifetime() -> Result<()> {
+    println!("start -------------- start");
+
+    let group_id = "G1";
+
+    let a = "A";
+    let b = "B";
+    let c = "C";
+    let d = "D";
+    let e = "E";
+
+    let db_mls_base = "./mls-base.sqlite";
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+    init_mls_db(db_mls_base.to_string(), c.to_string())?;
+    init_mls_db(db_mls_base.to_string(), d.to_string())?;
+    init_mls_db(db_mls_base.to_string(), e.to_string())?;
+
+    let b_pk = create_key_package(b.to_string())?;
+    let c_pk = create_key_package(c.to_string())?;
+
+    let b_lifetime = parse_lifetime_from_key_package(b.to_string(), b_pk.clone().key_package)?;
+    let c_lifetime = parse_lifetime_from_key_package(c.to_string(), c_pk.clone().key_package)?;
+
+    println!("b_lifetime: {:?}", b_lifetime);
+    println!("c_lifetime: {:?}", c_lifetime);
+
+    let description: String = "123456".to_string();
+    let admin_pubkeys_hex: Vec<String> = ["abc".to_string()].to_vec();
+    let group_relays: Vec<String> = ["wss://relay.keychat.io".to_string()].to_vec();
+
+    // a create group
+    create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        group_id.to_string(),
+        description,
+        admin_pubkeys_hex,
+        group_relays,
+        "alive".to_string(),
+    )?;
+
+    // A add B
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [b_pk.key_package].to_vec(),
+    )?;
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    let welcome = welcome.welcome;
+
+    // b join in the group
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.clone())?;
+
+    // // A send msg to B
+    // let msg = create_message(a.to_string(), group_id.to_string(), "hello, B".to_string())?;
+
+    // // B decrypt A's msg
+    // let text = decrypt_message(b.to_string(), group_id.to_string(), msg.encrypt_msg)?;
+
+    // println!("A send msg to B ,the result is {:?}", text);
+
+    // let members = get_group_members_with_lifetime(a.to_string(), group_id.to_string())?;
+    // println!("group members of a is {:?}", members);
+
+    // let members = get_group_members_with_lifetime(b.to_string(), group_id.to_string())?;
+    // println!("group members of b is {:?}", members);
+
+    // println!("--B add C --------------");
+
+    // B add C
+    let welcome2 = add_members(
+        b.to_string(),
+        group_id.to_string(),
+        [c_pk.key_package].to_vec(),
+    )?;
+    // B commit
+    self_commit(b.to_string(), group_id.to_string())?;
+
+    // c join the group
+    join_mls_group(c.to_string(), group_id.to_string(), welcome2.welcome)?;
+    // A commit
+    let _ = others_commit_normal(a.to_string(), group_id.to_string(), welcome2.queued_msg)?;
+
+    // // B send msg
+    // let msg3 = create_message(
+    //     b.to_string(),
+    //     group_id.to_string(),
+    //     "hello, A, C".to_string(),
+    // )?;
+
+    // // C decrypt B's msg
+    // let text3 = decrypt_message(
+    //     c.to_string(),
+    //     group_id.to_string(),
+    //     msg3.encrypt_msg.clone(),
+    // )?;
+    // println!("B send msg to C ,the result is {:?}", text3);
+
+    // // A decrypt B's msg
+    // let text4 = decrypt_message(
+    //     a.to_string(),
+    //     group_id.to_string(),
+    //     msg3.encrypt_msg.clone(),
+    // )?;
+    // println!("B send msg to A ,the result is {:?}", text4);
+
+    // let members = get_group_members_with_lifetime(a.to_string(), group_id.to_string())?;
+    // println!("group members of a is {:?}", members);
+
+    // let members = get_group_members_with_lifetime(b.to_string(), group_id.to_string())?;
+    // println!("group members of b is {:?}", members);
+
+    // let members = get_group_members_with_lifetime(c.to_string(), group_id.to_string())?;
+    // println!("group members of c is {:?}", members);
+
+    // println!("--C UPDATE --------------");
+    // let c_update_extension = "C update the extension".as_bytes().to_vec();
+    // // C update
+    // let queued_msg = self_update(c.to_string(), group_id.to_string(), c_update_extension)?;
+    // // C commit
+    // self_commit(c.to_string(), group_id.to_string())?;
+
+    // // A commit
+    // let _ = others_commit_normal(a.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("A commit");
+    // // B commit
+    // let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+    // println!("B commit");
+
+    // let members = get_group_members_with_lifetime(a.to_string(), group_id.to_string())?;
+    // println!("group members of a is {:?}", members);
+
+    // let members = get_group_members_with_lifetime(b.to_string(), group_id.to_string())?;
+    // println!("group members of b is {:?}", members);
+
+    // let members = get_group_members_with_lifetime(c.to_string(), group_id.to_string())?;
+    // println!("group members of c is {:?}", members);
+
+    // println!("--A add D --------------");
+
+    // let d_pk = create_key_package(d.to_string())?;
+
+    // // A add D
+    // let welcome3 = add_members(
+    //     a.to_string(),
+    //     group_id.to_string(),
+    //     [d_pk.key_package].to_vec(),
+    // ).unwrap();
+    // println!("commit");
+    // // A commit
+    // self_commit(a.to_string(), group_id.to_string())?;
+
+    // // B commit
+    // let _ = others_commit_normal(
+    //     b.to_string(),
+    //     group_id.to_string(),
+    //     welcome3.queued_msg.clone(),
+    // )?;
+
+    // // C commit
+    // let _ = others_commit_normal(
+    //     c.to_string(),
+    //     group_id.to_string(),
+    //     welcome3.queued_msg.clone(),
+    // )?;
+
+    // println!("BC commit");
+
+    // println!("D join start");
+    // std::thread::sleep(std::time::Duration::from_secs(120));
+
+    // // d join the group
+    // join_mls_group(d.to_string(), group_id.to_string(), welcome3.welcome).unwrap();
+    // println!("D join end");
+
+    let members = get_group_members_with_lifetime(a.to_string(), group_id.to_string())?;
+    println!("group members of a is {:?}", members);
+
+    let members = get_group_members_with_lifetime(b.to_string(), group_id.to_string())?;
+    println!("group members of b is {:?}", members);
+
+    let members = get_group_members_with_lifetime(c.to_string(), group_id.to_string())?;
+    println!("group members of c is {:?}", members);
+
+    // let members = get_group_members_with_lifetime(d.to_string(), group_id.to_string())?;
+    // println!("group members of d is {:?}", members);
+
+    // println!("--A remove D --------------");
+    // let d_leaf_node = get_lead_node_index(a.to_string(), d.to_string(), group_id.to_string())?;
+    // // A remove D
+    // let queued_msg = remove_members(a.to_string(), group_id.to_string(), [d_leaf_node].to_vec())?;
+    // // A commit
+    // self_commit(a.to_string(), group_id.to_string())?;
+
+    // // B commit
+    // let _ = others_commit_normal(b.to_string(), group_id.to_string(), queued_msg.clone())?;
+
+    // // C commit
+    // let _ = others_commit_normal(c.to_string(), group_id.to_string(), queued_msg.clone())?;
+
+    println!("--A add E --------------");
+
+    let e_pk = create_key_package(e.to_string())?;
+
+    // A add E
+    let welcome3 = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        [e_pk.key_package].to_vec(),
+    )
+    .unwrap();
+    println!("commit");
+    // A commit
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    println!("E join start");
+    // E join the group
+    join_mls_group(e.to_string(), group_id.to_string(), welcome3.welcome)?;
+    println!("E join end");
+
+    // B commit
+    let _ = others_commit_normal(
+        b.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
+
+    // C commit
+    let _ = others_commit_normal(
+        c.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
+
+    // D commit
+    let _ = others_commit_normal(
+        d.to_string(),
+        group_id.to_string(),
+        welcome3.queued_msg.clone(),
+    )?;
+
+    let members = get_group_members_with_lifetime(a.to_string(), group_id.to_string())?;
+    println!("group members of a is {:?}", members);
+
+    let members = get_group_members_with_lifetime(b.to_string(), group_id.to_string())?;
+    println!("group members of b is {:?}", members);
+
+    let members = get_group_members_with_lifetime(c.to_string(), group_id.to_string())?;
+    println!("group members of c is {:?}", members);
+
+    let members = get_group_members_with_lifetime(d.to_string(), group_id.to_string())?;
+    println!("group members of d is {:?}", members);
+    Ok(())
 }
 
 fn test_diff_db1() -> Result<()> {

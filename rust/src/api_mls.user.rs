@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
 use bincode;
 use kc::user::MlsUser;
@@ -222,6 +224,22 @@ impl User {
         Ok(result)
     }
 
+    pub(crate) fn parse_lifetime_from_key_package(
+        &mut self,
+        key_package_hex: String,
+    ) -> Result<u64> {
+        let key_package_bytes = hex::decode(key_package_hex)?;
+        let key_package_in = KeyPackageIn::tls_deserialize(&mut key_package_bytes.as_slice())
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        // Validate the signature, ciphersuite, and extensions of the key package
+        let key_package = key_package_in
+            .validate(self.mls_user.provider.crypto(), ProtocolVersion::Mls10)
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        let lifetime = key_package.life_time();
+        Ok(lifetime.not_after())
+    }
+
     pub(crate) fn delete_key_package(&mut self, key_package: String) -> Result<()> {
         let kp: KeyPackage = self.parse_key_package(key_package)?;
         let mut identity = self
@@ -386,6 +404,50 @@ impl User {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
             vec.push(pubkey);
             Ok(vec)
+        })
+    }
+
+    pub(crate) fn get_group_members_with_lifetime(
+        &self,
+        group_id: String,
+    ) -> Result<HashMap<String, Option<u64>>> {
+        let mut groups = self
+            .mls_user
+            .groups
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire read lock"))?;
+        let group = match groups.get_mut(&group_id) {
+            Some(g) => g,
+            _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
+        };
+
+        let leaf_nodes = group
+            .mls_group
+            .leaf_nodes()
+            .cloned()
+            .collect::<Vec<LeafNode>>();
+
+        let mut members = group.mls_group.members();
+        members.try_fold(HashMap::new(), |mut m, member| {
+            let credential = member.credential;
+            let pubkey = String::from_utf8(
+                BasicCredential::try_from(credential.clone())
+                    .map_err(|e| anyhow::anyhow!(e.to_string()))?
+                    .identity()
+                    .to_vec(),
+            )
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+            let leaf_node = leaf_nodes
+                .iter()
+                .find(|n| *n.credential() == credential)
+                .ok_or_else(|| anyhow::anyhow!("LeafNode not found"))?;
+            if let Some(lifetime) = leaf_node.life_time() {
+                m.insert(pubkey, Some(lifetime.not_after()));
+            } else {
+                m.insert(pubkey, None);
+            }
+            Ok(m)
         })
     }
 
