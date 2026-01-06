@@ -2,7 +2,7 @@
 extern crate tracing;
 
 use anyhow::bail;
-use rust::api_cashu::{self as api, cashu_wallet::wallet::MnemonicInfo};
+use rust::api_cashu_v1::{self as api, cashu_wallet::wallet::MnemonicInfo};
 
 use api::*;
 
