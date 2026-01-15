@@ -408,13 +408,13 @@ mod tests {
 
     #[test]
     fn curve25519_verify() {
-        let phrase = "crop cash unable insane eight faith inflict route frame loud box vibrant";
+        let phrase = "broom only exhibit sand air primary bamboo income sphere climb worth rapid";
 
         let keypair = nostr::generate_curve25519_keypair(phrase.to_string(), None, None).unwrap();
         let private_key = keypair.0;
         let public_key = keypair.1;
 
-        println!("25519 private_key :{:?}", private_key);
+        println!("25519 private_key :{:?}", hex::encode(&private_key));
 
         println!("25519 public_key :{:?}", hex::encode(&public_key));
         let message: &[u8] = b"All I want is to pet all of the dogs.";
