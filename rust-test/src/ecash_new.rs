@@ -7,7 +7,7 @@ const DB_PATH_OLD: &str = "rustest-old.db";
 const DB_PATH: &str = "rustest-new.db";
 const DB_PATH_V2: &str = "ecash_v2.db";
 const MINT_URL: &str = "https://8333.space:3338/";
-const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin";
+const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin/";
 
 fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
@@ -30,7 +30,7 @@ fn main() {
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    // test_get_balance(words);
+    test_get_balance(words);
     // test_split_32(words);
     // test_receive(words);
     // test_restore(words);
@@ -78,11 +78,12 @@ fn test_get_balance(words: &str) {
     // let mints = api::get_mints();
     // println!("get_mints {:?}", mints);
 
-    // let re = api::remove_mint(MINT_URL.to_string());
-    // println!("remove_mint {:?}", re);
+    let re = api::remove_mint(MINT_URL_MINIBITS.to_string());
+    println!("remove_mint {:?}", re);
 
-    // let mints = api::get_mints();
-    // println!("get_mints {:?}", mints);
+    // test fot get balances
+    let b1 = api::get_balances();
+    println!("get_balances before {:?}", b1);
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());

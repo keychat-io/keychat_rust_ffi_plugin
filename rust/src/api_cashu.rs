@@ -525,18 +525,31 @@ fn _add_proofs(proofs: Vec<ProofInfo>) -> anyhow::Result<()> {
         .block_on(w.localstore.update_proofs(proofs, vec![]))?)
 }
 
-// ? direct use map?
 pub fn get_balances() -> anyhow::Result<String> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
 
-    let bs = state.rt.block_on(w.get_balances(&CurrencyUnit::Sat))?;
-    let bs = bs
-        .into_iter()
-        // .filter(|(k, _v)| k.unit() == CURRENCY_UNIT_SAT)
-        // .map(|(k, v)| (k.mint().to_owned(), v))
-        .collect::<std::collections::BTreeMap<_, _>>();
-    let js = serde_json::to_string(&bs)?;
+    let rt = &state.rt;
+
+    let js = rt.block_on(async {
+        let mints_map = w.localstore.get_mints().await?;
+        let active_urls: HashSet<String> = mints_map
+            .keys()
+            .map(|u| u.to_string().trim_end_matches('/').to_string())
+            .collect();
+
+        let bs = w.get_balances(&unit).await?;
+
+        let filtered_bs = bs
+            .into_iter()
+            .filter(|(k, _v)| active_urls.contains(k.to_string().trim_end_matches('/')))
+            .map(|(k, v)| (k.to_string().trim_end_matches('/').to_string(), v))
+            .collect::<std::collections::BTreeMap<String, Amount>>();
+
+        let js = serde_json::to_string(&filtered_bs)?;
+        Ok(js)
+    })?;
 
     Ok(js)
 }
