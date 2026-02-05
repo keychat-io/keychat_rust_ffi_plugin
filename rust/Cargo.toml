@@ -17,15 +17,17 @@ flutter_rust_bridge = "=2.11.1"
 hex = "0.4.3"
 lazy_static = "1.4.0"
 log = "0.4.17"
-rand = "0.8"
+rand = "0.9.2"
 serde = { version = "1.0.163", features = ["derive"] }
 serde_json = "1.0.96"
 thiserror = "1.0.40"
 tokio = { version = "1.28.1", features = ["sync", "rt-multi-thread"] }
 
-signal-store = { git = "https://github.com/keychat-io/signal-storage.git", rev = "7ea7392" }
+# signal-store = { git = "https://github.com/keychat-io/signal-storage.git", rev = "7ea7392" }
 cashu-wallet = { git = "https://github.com/keychat-io/cashu-wallet-rs.git", branch = "bugfix2" }
 cashu-wallet-sqlite = { git = "https://github.com/keychat-io/cashu-wallet-rs.git", branch = "bugfix2" }
+
+signal-store = {path = "../../signal-storage"}
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
 # cashu-wallet-sqlite = {path = "../../cashu-wallet-rs/store-sqlite"}
 
@@ -38,10 +40,15 @@ cdk = { git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package =
 cdk-common = { git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cdk-common" }
 cashu = { git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cashu" }
 
-openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls" }
-openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_traits" }
-openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_sqlite_storage" }
-kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "kc" }
+# openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls" }
+# openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_traits" }
+# openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_sqlite_storage" }
+# kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "kc" }
+
+openmls = { path = "../../openmls/openmls"}
+openmls_traits = {path = "../../openmls/traits"}
+openmls_sqlite_storage = { path = "../../openmls/sqlite_storage"}
+kc = {path = "../../openmls/kc"}
 
 # aes = "0.7"
 # block-modes = "0.8"

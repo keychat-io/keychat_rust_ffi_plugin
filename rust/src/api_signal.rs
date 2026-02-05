@@ -2,7 +2,6 @@ pub use signal_store;
 
 use anyhow::Result;
 use lazy_static::lazy_static;
-use rand::rngs::OsRng;
 use signal_store::libsignal_protocol::*;
 use signal_store::{KeyChatSignalProtocolStore, LitePool};
 use std::collections::HashMap;
@@ -236,6 +235,94 @@ pub fn store_signed_key_api(
     result
 }
 
+// bob_kyber_id, bob_kyber_public, bob_kyber_signature, record
+pub fn generate_kyber_prekey_api(
+    key_pair: KeychatIdentityKeyPair,
+    signal_identity_private_key: Vec<u8>,
+) -> Result<(u32, Vec<u8>, Vec<u8>, Vec<u8>)> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let bob_identity_private = PrivateKey::deserialize(&signal_identity_private_key)?;
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<signal api fn[generate_kyber_prekey_api]> Can not get store err.")
+        })?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("generate_kyber_prekey_api key_pair do not init.");
+            _init_keypair(store, key_pair, 0).await?;
+        }
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!(
+                "<signal api fn[generate_kyber_prekey_api]> Can not get store from store_map."
+            )
+        })?;
+
+        let bob_kyber_info = store
+            .kyber_pre_key_store
+            .generate_kyber_pre_key(bob_identity_private)
+            .await?;
+        // bob_kyber_id, bob_kyber_public, bob_kyber_signature, record
+        Ok((
+            bob_kyber_info.0,
+            bob_kyber_info.1.serialize().into(),
+            bob_kyber_info.2,
+            bob_kyber_info.3,
+        ))
+    });
+    result
+}
+
+pub fn get_kyber_prekey_api(key_pair: KeychatIdentityKeyPair, kyber_id: u32) -> Result<Vec<u8>> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<signal api fn[get_kyber_prekey_api]> Can not get store err.")
+        })?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("get_kyber_prekey_api key_pair do not init.");
+            _init_keypair(store, key_pair, 0).await?;
+        }
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[get_kyber_prekey_api]> Can not get store from store_map.")
+        })?;
+        let record = store
+            .kyber_pre_key_store
+            .get_kyber_pre_key(kyber_id.into())
+            .await?;
+        Ok(record.serialize()?)
+    });
+    result
+}
+
+pub fn store_kyber_prekey_api(
+    key_pair: KeychatIdentityKeyPair,
+    kyber_id: u32,
+    record: Vec<u8>,
+) -> Result<()> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<signal api fn[store_kyber_prekey_api]> Can not get store err.")
+        })?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("store_kyber_prekey_api key_pair do not init.");
+            _init_keypair(store, key_pair, 0).await?;
+        }
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!("<signal api fn[store_kyber_prekey_api]> Can not get store from store_map.")
+        })?;
+        let kyber_record = KyberPreKeyRecord::deserialize(&record)?;
+        store
+            .kyber_pre_key_store
+            .save_kyber_pre_key(kyber_id.into(), &kyber_record)
+            .await?;
+        Ok(())
+    });
+    result
+}
+
 //bob_prekey_id, bob_prekey_public, record
 pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec<u8>, Vec<u8>)> {
     let rt = RUNTIME.as_ref();
@@ -324,9 +411,8 @@ pub fn process_prekey_bundle_api(
 ) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
-        let mut csprng = OsRng;
-        let remote_address =
-            ProtocolAddress::new(remote_address.name, remote_address.device_id.into());
+        let remote_device_id = DeviceId::try_from(remote_address.device_id)?;
+        let remote_address = ProtocolAddress::new(remote_address.name, remote_device_id);
         let identity_key = IdentityKey::decode(&identity_key.public_key)?;
         let mut store = STORE.lock().await;
         let store = store.as_mut().ok_or_else(|| {
@@ -344,13 +430,22 @@ pub fn process_prekey_bundle_api(
         let bob_signed_public = PublicKey::deserialize(&bob_signed_public)?;
         let bob_prekey_public = PublicKey::deserialize(&bob_prekey_public)?;
         let bob_prekey = Some((bob_prekey_id.into(), bob_prekey_public));
+
+        let kyber_id: KyberPreKeyId = KyberPreKeyId::from(1u32);
+
+        let kyber_kp = kem::KeyPair::generate(kem::KeyType::Kyber1024, &mut rand::rng());
+        let kyber_public: kem::PublicKey = kyber_kp.public_key;
+
         let bob_bundle = PreKeyBundle::new(
             reg_id,
-            device_id.into(),
+            DeviceId::try_from(device_id)?,
             bob_prekey,
             bob_signed_id.into(),
             bob_signed_public,
-            bob_siged_sig,
+            bob_siged_sig.clone(),
+            kyber_id.into(),
+            kyber_public,
+            bob_siged_sig.clone(),
             identity_key,
         )?;
         process_prekey_bundle(
@@ -359,7 +454,72 @@ pub fn process_prekey_bundle_api(
             &mut store.identity_store,
             &bob_bundle,
             SystemTime::now(),
-            &mut csprng,
+            &mut rand::rng(),
+        )
+        .await?;
+        Ok(())
+    });
+    result
+}
+
+pub fn process_prekey_bundle_api_new(
+    key_pair: KeychatIdentityKeyPair,
+    remote_address: KeychatProtocolAddress,
+    reg_id: u32,
+    device_id: u32,
+    identity_key: KeychatIdentityKey,
+    bob_signed_id: u32,
+    bob_signed_public: Vec<u8>,
+    bob_siged_sig: Vec<u8>,
+    bob_kyber_id: u32,
+    bob_kyber_public: Vec<u8>,
+    bob_kyber_sig: Vec<u8>,
+    bob_prekey_id: u32,
+    bob_prekey_public: Vec<u8>,
+) -> Result<()> {
+    let rt = RUNTIME.as_ref();
+    let result = rt.block_on(async {
+        let remote_device_id = DeviceId::try_from(remote_address.device_id)?;
+        let remote_address = ProtocolAddress::new(remote_address.name, remote_device_id);
+        let identity_key = IdentityKey::decode(&identity_key.public_key)?;
+        let mut store = STORE.lock().await;
+        let store = store.as_mut().ok_or_else(|| {
+            format_err!("<signal api fn[process_prekey_bundle_api]> Can not get store err.")
+        })?;
+        if !store.store_map.contains_key(&key_pair) {
+            info!("process_prekey_bundle_api key_pair do not init.");
+            _init_keypair(store, key_pair, 0).await?;
+        }
+        let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
+            format_err!(
+                "<signal api fn[process_prekey_bundle_api]> Can not get store from store_map."
+            )
+        })?;
+        let bob_signed_public = PublicKey::deserialize(&bob_signed_public)?;
+        let bob_prekey_public = PublicKey::deserialize(&bob_prekey_public)?;
+        let bob_prekey = Some((bob_prekey_id.into(), bob_prekey_public));
+
+        let bob_kyber_public = kem::PublicKey::deserialize(&bob_kyber_public)?;
+
+        let bob_bundle = PreKeyBundle::new(
+            reg_id,
+            DeviceId::try_from(device_id)?,
+            bob_prekey,
+            bob_signed_id.into(),
+            bob_signed_public,
+            bob_siged_sig.clone(),
+            bob_kyber_id.into(),
+            bob_kyber_public,
+            bob_kyber_sig.clone(),
+            identity_key,
+        )?;
+        process_prekey_bundle(
+            &remote_address,
+            &mut store.session_store,
+            &mut store.identity_store,
+            &bob_bundle,
+            SystemTime::now(),
+            &mut rand::rng(),
         )
         .await?;
         Ok(())
@@ -379,8 +539,8 @@ pub fn encrypt_signal(
         let store = store
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[encrypt_signal]> Can not get store err."))?;
-        let remote_address =
-            ProtocolAddress::new(remote_address.name, remote_address.device_id.into());
+        let remote_device_id = DeviceId::try_from(remote_address.device_id)?;
+        let remote_address = ProtocolAddress::new(remote_address.name, remote_device_id);
         if !store.store_map.contains_key(&key_pair) {
             info!("encrypt_signal key_pair do not init.");
             _init_keypair(store, key_pair, 0).await?;
@@ -396,6 +556,7 @@ pub fn encrypt_signal(
             &mut store.identity_store,
             SystemTime::now(),
             is_prekey,
+            &mut rand::rng(),
         )
         .await?;
         // encrypt msg, my_receiver_addr, msg_keys_hash, alice_addrs_pre
@@ -432,8 +593,7 @@ pub fn parse_is_prekey_signal_message(ciphertext: Vec<u8>) -> Result<bool> {
 }
 
 pub fn generate_signal_ids() -> Result<(Vec<u8>, Vec<u8>)> {
-    let mut csprng = OsRng;
-    let pair = KeyPair::generate(&mut csprng);
+    let pair = KeyPair::generate(&mut rand::rng());
     Ok((
         pair.private_key.serialize(),
         pair.public_key.serialize().into(),
@@ -449,13 +609,12 @@ pub fn decrypt_signal(
 ) -> Result<(Vec<u8>, String, Option<Vec<String>>)> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
-        let mut csprng = OsRng;
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[decrypt_signal]> can not get store err."))?;
-        let remote_address =
-            ProtocolAddress::new(remote_address.name, remote_address.device_id.into());
+        let remote_device_id = DeviceId::try_from(remote_address.device_id)?;
+        let remote_address = ProtocolAddress::new(remote_address.name, remote_device_id);
 
         if !store.store_map.contains_key(&key_pair) {
             info!("decrypt_signal key_pair do not init.");
@@ -476,7 +635,7 @@ pub fn decrypt_signal(
                 &mut store.signed_pre_key_store,
                 &mut store.kyber_pre_key_store,
                 room_id,
-                &mut csprng,
+                &mut rand::rng(),
             )
             .await?
         } else {
@@ -488,7 +647,7 @@ pub fn decrypt_signal(
                 &mut store.identity_store,
                 &mut store.ratchet_key_store,
                 room_id,
-                &mut csprng,
+                &mut rand::rng(),
             )
             .await?
         };
@@ -578,7 +737,8 @@ pub fn contains_session(
         let store = store.as_mut().ok_or_else(|| {
             format_err!("<signal api fn[contains_session]> can not get store err.")
         })?;
-        let address = ProtocolAddress::new(address.name, address.device_id.into());
+        let device_id = DeviceId::try_from(address.device_id)?;
+        let address = ProtocolAddress::new(address.name, device_id);
         if !store.store_map.contains_key(&key_pair) {
             info!("contains_session key_pair do not init.");
             _init_keypair(store, key_pair, 0).await?;
@@ -630,7 +790,8 @@ pub fn delete_session(
         let store = store
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[delete_session]> cat not get store err."))?;
-        let address = ProtocolAddress::new(address.name, address.device_id.into());
+        let device_id = DeviceId::try_from(address.device_id)?;
+        let address = ProtocolAddress::new(address.name, device_id);
         if !store.store_map.contains_key(&key_pair) {
             info!("delete_session key_pair do not init.");
             _init_keypair(store, key_pair, 0).await?;
@@ -738,7 +899,8 @@ pub fn get_identity(
         let store = store
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[get_identity]> can not get store."))?;
-        let address = ProtocolAddress::new(address.name, address.device_id.into());
+        let device_id = DeviceId::try_from(address.device_id)?;
+        let address = ProtocolAddress::new(address.name, device_id);
         if !store.store_map.contains_key(&key_pair) {
             info!("get_identity key_pair do not init.");
             _init_keypair(store, key_pair, 0).await?;

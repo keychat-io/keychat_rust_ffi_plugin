@@ -578,10 +578,8 @@ pub fn generate_curve25519_keypair(
 }
 
 pub fn curve25519_sign(secret_key: Vec<u8>, message: Vec<u8>) -> Result<String, anyhow::Error> {
-    use bip39::rand_core::OsRng;
-
     let signing_key = PrivateKey::deserialize(&secret_key)?;
-    let sig = signing_key.calculate_signature(&message, &mut OsRng)?;
+    let sig = signing_key.calculate_signature(&message, &mut rand::rng())?;
     let to_hex = hex::encode(sig.as_ref());
     Ok(to_hex)
 }
@@ -600,7 +598,7 @@ pub fn curve25519_verify(
 ) -> Result<bool, anyhow::Error> {
     let verify_key = PB::deserialize(&public_key)?;
     let sig_vec = hex::decode(sig)?;
-    let result = verify_key.verify_signature(&message, &sig_vec)?;
+    let result = verify_key.verify_signature(&message, &sig_vec);
     Ok(result)
 }
 

@@ -224,6 +224,30 @@ impl User {
         Ok(result)
     }
 
+    pub(crate) fn create_key_package_with_lifetime(&mut self) -> Result<KeyPackageResult> {
+        let mut identity = self
+            .mls_user
+            .identity
+            .write()
+            .map_err(|_| anyhow::anyhow!("Failed to acquire write lock"))?;
+        let capabilities: Capabilities = identity.create_capabilities()?;
+        let ciphersuite = identity.ciphersuite_value().to_string();
+        let extensions = identity.extensions_value();
+        let key_package = identity.add_key_package_with_lifetime(
+            CIPHERSUITE,
+            &self.mls_user.provider,
+            capabilities,
+        );
+        let key_package_serialized = key_package.tls_serialize_detached()?;
+        let result = KeyPackageResult {
+            key_package: hex::encode(key_package_serialized),
+            extensions,
+            ciphersuite,
+            mls_protocol_version: "1.0".to_string(),
+        };
+        Ok(result)
+    }
+
     pub(crate) fn parse_lifetime_from_key_package(
         &mut self,
         key_package_hex: String,
