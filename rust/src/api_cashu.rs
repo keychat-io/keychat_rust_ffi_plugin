@@ -1706,6 +1706,33 @@ pub fn get_all_transactions() -> anyhow::Result<Vec<Transaction>> {
     Ok(txs_new)
 }
 
+pub fn get_cashu_one_sats_transactions() -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state.rt.block_on(w.list_transactions(None))?;
+
+    let txs_new = txs
+        .into_iter()
+        .filter(|tx| tx.kind == TransactionKind::Cashu && *tx.amount.as_ref() == 1)
+        .map(|tx| Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        })
+        .collect();
+
+    Ok(txs_new)
+}
+
 pub fn get_pending_failed_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;

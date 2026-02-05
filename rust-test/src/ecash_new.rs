@@ -78,12 +78,17 @@ fn test_get_balance(words: &str) {
     // let mints = api::get_mints();
     // println!("get_mints {:?}", mints);
 
-    let re = api::remove_mint(MINT_URL_MINIBITS.to_string());
-    println!("remove_mint {:?}", re);
+    // let re = api::remove_mint(MINT_URL_MINIBITS.to_string());
+    // println!("remove_mint {:?}", re);
 
     // test fot get balances
-    let b1 = api::get_balances();
-    println!("get_balances before {:?}", b1);
+    // let b1 = api::get_balances();
+    // println!("get_balances before {:?}", b1);
+
+    let txs = api::get_cashu_one_sats_transactions();
+    for tx in txs.unwrap() {
+        println!("tx {:?}", tx);
+    }
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
@@ -214,7 +219,7 @@ fn test_send(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send = api::send(2, MINT_URL_MINIBITS.to_string(), None);
+    let send = api::send(1, MINT_URL.to_string(), None);
     println!("send token is {:?}", send);
 
     let b2 = api::get_balances();
