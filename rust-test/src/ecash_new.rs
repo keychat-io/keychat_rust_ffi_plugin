@@ -85,6 +85,11 @@ fn test_get_balance(words: &str) {
     // let b1 = api::get_balances();
     // println!("get_balances before {:?}", b1);
 
+    let txs = api::get_transactions_without_one_sat_with_offset(0, 10);
+    for tx in txs.unwrap() {
+        println!("tx {:?}", tx);
+    }
+
     let txs = api::get_cashu_one_sats_transactions();
     for tx in txs.unwrap() {
         println!("tx {:?}", tx);

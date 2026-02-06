@@ -1832,6 +1832,43 @@ pub fn get_transactions_with_offset(
     Ok(txs_new)
 }
 
+pub fn get_transactions_without_one_sat_with_offset(
+    offset: usize,
+    limit: usize,
+) -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state
+        .rt
+        .block_on(w.list_transactions_with_kind_amount_offset(
+            offset,
+            limit,
+            [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
+            None,
+        ))?;
+
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
+}
+
 pub fn get_ln_transactions_with_offset(
     offset: usize,
     limit: usize,
