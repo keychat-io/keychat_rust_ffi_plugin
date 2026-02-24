@@ -85,14 +85,14 @@ fn test_get_balance(words: &str) {
     // let b1 = api::get_balances();
     // println!("get_balances before {:?}", b1);
 
-    let txs = api::get_transactions_without_one_sat_with_offset(0, 10);
+    let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), false);
     for tx in txs.unwrap() {
-        println!("tx {:?}", tx);
+        println!("tx1 {:?}", tx);
     }
 
-    let txs = api::get_cashu_one_sats_transactions();
+    let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), true);
     for tx in txs.unwrap() {
-        println!("tx {:?}", tx);
+        println!("tx2 {:?}", tx);
     }
 
     // test for print proofs

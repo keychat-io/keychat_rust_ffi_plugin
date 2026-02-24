@@ -1733,6 +1733,40 @@ pub fn get_cashu_one_sats_transactions() -> anyhow::Result<Vec<Transaction>> {
     Ok(txs_new)
 }
 
+pub fn get_cashu_one_sats_transactions_with_mint(
+    mint_url: String,
+) -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state.rt.block_on(w.list_transactions(None))?;
+    let mint_norm = mint_url.trim_end_matches('/');
+
+    let txs_new = txs
+        .into_iter()
+        .filter(|tx| {
+            tx.kind == TransactionKind::Cashu
+                && *tx.amount.as_ref() == 1
+                && tx.mint_url.to_string().trim_end_matches('/') == mint_norm
+        })
+        .map(|tx| Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        })
+        .collect();
+
+    Ok(txs_new)
+}
+
 pub fn get_pending_failed_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
@@ -1797,6 +1831,46 @@ pub fn get_cashu_transactions_with_offset(
     Ok(txs_new)
 }
 
+// incloud normal_tx ln_tx melt_tx mint_tx with given mint_url
+pub fn get_cashu_transactions_with_offset_mint(
+    offset: usize,
+    limit: usize,
+    mint_url: String,
+) -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state
+        .rt
+        .block_on(w.list_transactions_with_kind_offset_mint(
+            offset,
+            limit,
+            &mint_url,
+            [TransactionKind::Cashu].as_slice(),
+            None,
+        ))?;
+
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
+}
+
 pub fn get_transactions_with_offset(
     offset: usize,
     limit: usize,
@@ -1832,18 +1906,20 @@ pub fn get_transactions_with_offset(
     Ok(txs_new)
 }
 
-pub fn get_transactions_without_one_sat_with_offset(
+pub fn get_transactions_with_offset_mint(
     offset: usize,
     limit: usize,
+    mint_url: String,
 ) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
 
     let txs = state
         .rt
-        .block_on(w.list_transactions_with_kind_amount_offset(
+        .block_on(w.list_transactions_with_kind_offset_mint(
             offset,
             limit,
+            &mint_url,
             [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
             None,
         ))?;
@@ -1867,6 +1943,61 @@ pub fn get_transactions_without_one_sat_with_offset(
     }
 
     Ok(txs_new)
+}
+
+fn get_transactions_with_offset_mint_amount(
+    offset: usize,
+    limit: usize,
+    mint_url: String,
+    amount: Option<i64>,
+) -> anyhow::Result<Vec<Transaction>> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+
+    let txs = state
+        .rt
+        .block_on(w.list_transactions_with_kind_amount_offset(
+            offset,
+            limit,
+            &mint_url,
+            [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
+            None,
+            amount,
+        ))?;
+
+    let mut txs_new = Vec::new();
+    for tx in txs {
+        let tx_new = Transaction {
+            id: tx.id().to_string(),
+            mint_url: tx.mint_url.to_string(),
+            io: tx.direction,
+            kind: tx.kind,
+            amount: *tx.amount.as_ref(),
+            fee: *tx.fee.as_ref(),
+            unit: Some(tx.unit.to_string()),
+            token: tx.token,
+            status: tx.status,
+            timestamp: tx.timestamp,
+            metadata: tx.metadata,
+        };
+        txs_new.push(tx_new);
+    }
+
+    Ok(txs_new)
+}
+
+pub fn get_txs_with_offset_mint_amount(
+    offset: usize,
+    limit: usize,
+    mint_url: String,
+    is_one_amount: bool,
+) -> anyhow::Result<Vec<Transaction>> {
+    if is_one_amount {
+        get_transactions_with_offset_mint_amount(offset, limit, mint_url, Some(1))
+    } else {
+        // -1 means not equal to 1 sat
+        get_transactions_with_offset_mint_amount(offset, limit, mint_url, Some(-1))
+    }
 }
 
 pub fn get_ln_transactions_with_offset(
