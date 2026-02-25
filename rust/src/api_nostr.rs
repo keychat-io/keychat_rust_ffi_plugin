@@ -302,6 +302,96 @@ fn create_unsigned_event(
     Ok(this)
 }
 
+/// Create two gift wraps: one for receiver, one for sender (for multi-device sync)
+/// Returns JSON with structure: {"to_receiver": "...", "to_sender": "..."}
+pub async fn create_gift_json_with_sender_copy(
+    kind: u16,
+    sender_keys: String,
+    receiver_pubkey: String,
+    content: String,
+    expiration_timestamp: Option<u64>,
+    timestamp_tweaked: Option<bool>,
+    additional_tags: Option<Vec<Vec<String>>>,
+) -> anyhow::Result<String> {
+    let sender_keys: Keys = nostr::Keys::parse(&sender_keys)?;
+    let receiver = get_xonly_pubkey(receiver_pubkey)?;
+    let sender = sender_keys.public_key();
+
+    // Create the rumor (kind should be 14 for NIP-17 chat messages)
+    let rumor = create_unsigned_event(kind, &sender_keys, &receiver, content, additional_tags)?;
+    
+    // Determine timestamp
+    let ts = if timestamp_tweaked.unwrap_or(true) {
+        Timestamp::tweaked(nostr::nips::nip59::RANGE_RANDOM_TIMESTAMP_TWEAK)
+    } else {
+        rumor.created_at
+    };
+
+    // 1. Create seal and gift wrap for receiver
+    let seal_to_receiver: Event = EventBuilder::seal(&sender_keys, &receiver, rumor.clone())
+        .await?
+        .sign(&sender_keys)
+        .await?;
+    
+    let gift_to_receiver = create_gift_wrap_event(
+        &receiver,
+        &seal_to_receiver,
+        expiration_timestamp,
+        ts,
+    ).await?;
+
+    // 2. Create seal and gift wrap for sender (self)
+    let seal_to_sender: Event = EventBuilder::seal(&sender_keys, &sender, rumor)
+        .await?
+        .sign(&sender_keys)
+        .await?;
+    
+    let gift_to_sender = create_gift_wrap_event(
+        &sender,
+        &seal_to_sender,
+        expiration_timestamp,
+        ts,
+    ).await?;
+
+    // Return both events as JSON
+    let result = serde_json::json!({
+        "to_receiver": gift_to_receiver.as_json(),
+        "to_sender": gift_to_sender.as_json()
+    });
+    
+    Ok(result.to_string())
+}
+
+/// Helper function to create a gift wrap event
+async fn create_gift_wrap_event(
+    recipient: &PublicKey,
+    seal: &Event,
+    expiration_timestamp: Option<u64>,
+    timestamp: Timestamp,
+) -> anyhow::Result<Event> {
+    let keys = Keys::generate();
+    let content = nostr::nips::nip44::encrypt(
+        keys.secret_key(),
+        recipient,
+        seal.as_json(),
+        Default::default(),
+    )?;
+
+    let mut tags: Vec<Tag> = Vec::with_capacity(1 + usize::from(expiration_timestamp.is_some()));
+    tags.push(Tag::public_key(recipient.clone()));
+    if let Some(ts) = expiration_timestamp {
+        tags.push(Tag::expiration(ts.into()));
+    }
+
+    let gift = EventBuilder::new(Kind::GiftWrap, content)
+        .tags(tags)
+        .custom_created_at(timestamp)
+        .sign(&keys)
+        .await?;
+
+    Ok(gift)
+}
+
 pub fn decrypt_gift(
     sender_keys: String,
     receiver: String,
