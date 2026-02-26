@@ -7,7 +7,7 @@ import 'api_cashu/types.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `_add_proofs`, `_prepare_one_proofs_back`, `_prepare_one_proofs_old`, `_prepare_one_proofs`, `_send_all`, `_send_one`, `_send`, `add_proofs_from_v1`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`, `time`
+// These functions are ignored because they are not marked as `pub`: `_add_proofs`, `_prepare_one_proofs_back`, `_prepare_one_proofs_old`, `_prepare_one_proofs`, `_send_all`, `_send_one`, `_send`, `add_proofs_from_v1`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_transactions_with_offset_mint_amount`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`, `time`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `MintCounterRecord`, `STATE`, `State`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `get_wallet`, `get_wallet`, `lock`, `mnemonic`, `update_mnmonic`
@@ -115,14 +115,34 @@ Future<Transaction> melt({required String invoice, required String activeMint, B
 
 Future<List<Transaction>> getAllTransactions() => RustLib.instance.api.crateApiCashuGetAllTransactions();
 
+Future<List<Transaction>> getCashuOneSatsTransactions() =>
+    RustLib.instance.api.crateApiCashuGetCashuOneSatsTransactions();
+
+Future<List<Transaction>> getCashuOneSatsTransactionsWithMint({required String mintUrl}) =>
+    RustLib.instance.api.crateApiCashuGetCashuOneSatsTransactionsWithMint(mintUrl: mintUrl);
+
 Future<List<Transaction>> getPendingFailedTransactions() =>
     RustLib.instance.api.crateApiCashuGetPendingFailedTransactions();
 
 Future<List<Transaction>> getCashuTransactionsWithOffset({required BigInt offset, required BigInt limit}) =>
     RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
 
+Future<List<Transaction>> getCashuTransactionsWithOffsetMint(
+        {required BigInt offset, required BigInt limit, required String mintUrl}) =>
+    RustLib.instance.api
+        .crateApiCashuGetCashuTransactionsWithOffsetMint(offset: offset, limit: limit, mintUrl: mintUrl);
+
 Future<List<Transaction>> getTransactionsWithOffset({required BigInt offset, required BigInt limit}) =>
     RustLib.instance.api.crateApiCashuGetTransactionsWithOffset(offset: offset, limit: limit);
+
+Future<List<Transaction>> getTransactionsWithOffsetMint(
+        {required BigInt offset, required BigInt limit, required String mintUrl}) =>
+    RustLib.instance.api.crateApiCashuGetTransactionsWithOffsetMint(offset: offset, limit: limit, mintUrl: mintUrl);
+
+Future<List<Transaction>> getTxsWithOffsetMintAmount(
+        {required BigInt offset, required BigInt limit, required String mintUrl, required bool isOneAmount}) =>
+    RustLib.instance.api.crateApiCashuGetTxsWithOffsetMintAmount(
+        offset: offset, limit: limit, mintUrl: mintUrl, isOneAmount: isOneAmount);
 
 Future<List<Transaction>> getLnTransactionsWithOffset({required BigInt offset, required BigInt limit}) =>
     RustLib.instance.api.crateApiCashuGetLnTransactionsWithOffset(offset: offset, limit: limit);
