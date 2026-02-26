@@ -6,7 +6,7 @@
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `create_unsigned_event`, `get_xonly_pubkey`
+// These functions are ignored because they are not marked as `pub`: `create_gift_wrap_event`, `create_unsigned_event`, `get_xonly_pubkey`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`
 
 Future<Secp256k1Account> generateSecp256K1() => RustLib.instance.api.crateApiNostrGenerateSecp256K1();
@@ -54,6 +54,25 @@ Future<String> createGiftJson(
         bool? timestampTweaked,
         List<List<String>>? additionalTags}) =>
     RustLib.instance.api.crateApiNostrCreateGiftJson(
+        kind: kind,
+        senderKeys: senderKeys,
+        receiverPubkey: receiverPubkey,
+        content: content,
+        expirationTimestamp: expirationTimestamp,
+        timestampTweaked: timestampTweaked,
+        additionalTags: additionalTags);
+
+/// Create two gift wraps: one for receiver, one for sender (for multi-device sync)
+/// Returns JSON with structure: {"to_receiver": "...", "to_sender": "..."}
+Future<String> createGiftJsonWithSenderCopy(
+        {required int kind,
+        required String senderKeys,
+        required String receiverPubkey,
+        required String content,
+        BigInt? expirationTimestamp,
+        bool? timestampTweaked,
+        List<List<String>>? additionalTags}) =>
+    RustLib.instance.api.crateApiNostrCreateGiftJsonWithSenderCopy(
         kind: kind,
         senderKeys: senderKeys,
         receiverPubkey: receiverPubkey,
