@@ -30,9 +30,10 @@ fn main() {
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    test_get_balance(words);
+    // test_get_balance(words);
     // test_split_32(words);
-    // test_receive(words);
+    // test_get_balance(words);
+    test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
 }
@@ -85,18 +86,18 @@ fn test_get_balance(words: &str) {
     // let b1 = api::get_balances();
     // println!("get_balances before {:?}", b1);
 
-    let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), false);
-    for tx in txs.unwrap() {
-        println!("tx1 {:?}", tx);
-    }
+    // let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), false);
+    // for tx in txs.unwrap() {
+    //     println!("tx1 {:?}", tx);
+    // }
 
-    let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), true);
-    for tx in txs.unwrap() {
-        println!("tx2 {:?}", tx);
-    }
+    // let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), true);
+    // for tx in txs.unwrap() {
+    //     println!("tx2 {:?}", tx);
+    // }
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
 }
 
 fn test_get_txs(words: &str) {
@@ -224,7 +225,7 @@ fn test_send(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send = api::send(1, MINT_URL.to_string(), None);
+    let send = api::send(25, MINT_URL.to_string(), None);
     println!("send token is {:?}", send);
 
     let b2 = api::get_balances();
@@ -318,7 +319,7 @@ fn test_split_32(words: &str) {
     println!("init_cashu is {:?}", init_cashu);
 
     println!("need split proofs first");
-    let pp = api::prepare_one_proofs(MINT_URL_MINIBITS.to_string());
+    let pp = api::prepare_one_proofs(MINT_URL.to_string());
     println!("send_stamp after split {:?}", pp);
 }
 
@@ -336,7 +337,7 @@ fn test_receive(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let encoded_token: &str = "cashuBo2FteCJodHRwczovL21pbnQubWluaWJpdHMuY2FzaC9CaXRjb2luYXVjc2F0YXSBomFpSABQBVDwSUFGYXCJpGFhGQQAYXN4QDZiYjg0NGM5ZGQzYTk0Nzk3YWRhMzFlMjRjNjNiNzQ3NjA1MGM1NTBmOTYwOGE0ZTQwZjk2ZTMxNzFiY2RiZGRhY1ghA0FT_yivUUttKOoKqNvocRd1jRvkP_lGU9d5exAyrDp5YWSjYWVYIN75q5INMvgModFxthkBhCPH-JJvR46WcPoajk1GTI50YXNYIBvV8QHAgLGnqu2VI-cFWAgZK1RTDMXsYCEEomXL8e_yYXJYIICAsAfxPWQBpdIdnAdc0ompGzANVgfpdcutddRkalTkpGFhGQQAYXN4QDAyYmNmOGI3OGU0NTBlMGQ0MTM4YjJkYWRmMDBhNTI2ODRkZDM5ZmQ3N2E0OTNmMzZmMTA4NzBkYzg0MzE0YWZhY1ghAihGx5xYastfgfl-dA3tuLSx1ouS5iXZ9vp2MlY_FEmSYWSjYWVYIF9kflukwkx_uxxwgWAvQnyQqFXuq--7o75q9-SgdEO3YXNYIH3xgFoO7fHgyXkd5oJxLf3Nr8R6ZPgndwVrzFFTRXA1YXJYIDMuwbst-Jb-teQLhVbfsmMPtZeaB4t-viHe2caUkw-lpGFhGEBhc3hAZDE1NWRjNjdmZjM0NmZiMjdkNDEyNTQ1NzUyMDhjODgwNjk0Y2YyMWI1NmVlYjhiY2Q4YWUxMWIwNDY2NjMzZmFjWCEC1ijFFN9zJDHboB2MM0Ka6vdFlpEHMmzA7NP5I2xmKaFhZKNhZVggs_svdxCJ7ws71XyEvh-XRAqUsJC89V5VcgtFaMlbwbphc1gg9NPteX5J5qgqMl0MKCBYKA7Ip0asC519zOM1XF0iIo5hclggQra3uRxzLiY-jNXX6QJiOUhR4ZtuzGLAwNJsewohGtykYWEYQGFzeEAyYWI4NTZmZGFlMTNhNDk4MjdhNDE0OTJlOTVlMzE1OWM2OWMzNWEwZjY1MGQ3ZjY3NDhiMzk3MGZiZmFmZDY5YWNYIQJR4w1HnlGlE7LKwIkdihPrEJwTFVDLBWJOPlHHSHwxPWFko2FlWCBVOfeMqVHoWKPBBipc599gGBc4uNYFIZM3p1U_REJCR2FzWCCruzKQIKIXud5gh51b2S89d6qn8mM9_HfdltgHqxJp1WFyWCBsl9FKBIn1s9zNiFNPKW-4mWV1peTZlRijicc8swhVoqRhYRBhc3hAMTUzMGUwYjUzNDFhNzhlOTExNDhkNTA4YzQxNThhMzk5M2FiYmQ2OTQ1NzM4YzQzOWNiMTYwMDg0ODNmZjUwOWFjWCED_SxrVFDX9ESuCrKgFs1qa5-DTTQIa74boFg4E8uQrGlhZKNhZVgguOmc5g3cAFAaStaJWXPf98D7dNZeRIQRw8rDYef7kaNhc1ggW9pBGhDwRTF7dJgjLftuiDjAoG8lPzjlrSHbDcFhC21hclgguoZLMJgqg44WYpDLDYMCuomdq0Dy4GFtov3J2LTn8R2kYWECYXN4QDU5YWE1MGY4NGRkMGU2NTY0YWMwZjdkYTRkY2MzMjMzNmZhODkyYjExOGY4MDg2MTExNzMyNWVkYmJiZmU3YmFhY1ghA41wyKVzK8v8N0DPjTVq3JZbmg6PzHqBkm_pZnfHBOmOYWSjYWVYIDA5HJSYhqEd67xvP0cAAeUYcN9DYa0VG_KpCbglp_PSYXNYIMTVKv4giPG1Dv2eVedqmaUyWgRhLH6XN6XyYUvK5ajVYXJYIEov85qLfCBdykjIlGn5B8FHIyMHiQEukmf7XVR_xapIpGFhAmFzeEA5NzE3MzY4ZTIyYWVkMDJiNTc2M2NlNzlmZDQ5M2VlYjc3NGVlMTExMzU4YmFhZDY2ZGJlNDMxZjdmOTFhOTE3YWNYIQLUIJAbsh8MC3XYv2LNZLGcoXAovvp1z8CoicV3qSeeQGFko2FlWCApKVyS3ntluZ32PzBc-_SDcrprTk85Ld-acw63AC5sKWFzWCDCQyVbnMT_wnCIllDiJYUHZQuSm16LvG5KPrRr7msmJWFyWCAtAzNg_tVUsgdB2lghPf0CBuaPtVYTrpG9e-ZnR5o-8KRhYQJhc3hANzI3MGRiZmUzMGM2MjA1MDVlNzdjNzZkMmEyNWEzZmNiMDRkMDQ0NmE3ZWNiZDllMmY5OGNmMWZmNmQyZTE2MWFjWCEDqZizqYJ3GdxfXU6Ar1dhxUJS42CeX2pyWTRKVjFoJcRhZKNhZVggHIkc4nwgE6LkM-PLDbiBiz8UJ0OiW9hRMKpxniUYkpdhc1ggNZOa_nD01UKde1OgkRRxYBEiGaFpxzdWlzZg4bp10RBhclgghWnXNmgi1LMvwLS31fYMSrk8mO8fgB7riy4v3lhg9qSkYWEBYXN4QDM3YTZjZWE4NzdiMGFmMWY3YjcxNjhkNTFiNDgwZmRjODc3ZmI1MzU4NTM0MmQ2ZGE2ZGZmZWQ0ZDQ4MGVkZDlhY1ghAqrdDZcCYCVq7F38LSjZRsVIlYdsOoehyAHAEsMeKXXVYWSjYWVYIJuJOLb4GNrgSQV472liiRlBQ2Kd6VJ3J8bMbDbOUTGtYXNYILVHFRWIZPqf5QWMLLZhkRXwTx7shqlWJ_iMwKckBGaRYXJYII6oR59NxKW4rlGqxE-oC-ZDZbxKv3RJq_uSQUU3juAW".trim();
+    let encoded_token: &str = "cashuBo2Ftd2h0dHBzOi8vODMzMy5zcGFjZTozMzM4YXVjc2F0YXSBomFpSADUzeNPraP9YXCGpGFhBGFzeEBlZWQyNWQ4ZDIyYWU2NjU0YmMwZTdmZTA1YWM1NTc2NmNlOWFkMDYwYjk3NWY2ZDY5OTZlYjM0NTUyOGEwYmY3YWNYIQIR7hAMYeTyFKsJ89JuPpMG2qdrBQRCQ3GMxTgPMLUn7mFko2FlWCDXhaJ_hF16fxXWloJsyo-WA9c14Kv5y1cWqoqQ-f0sY2FzWCCQmZL3MtwPV_i0he1-WABWYXEWMr7R3YSZZI3BtvtJDWFyWCACccpT34b9EH2RVNmOIBjQFQsDgl4AjVQ5O9vg-bDuuaRhYQRhc3hANGQyNTM5N2I1ODcxYmM0YWZlMWMwYTFiYjNmNGIwZTZkNGU3OGM5MTMwOTY4Njc4OTZlNzk5ZGFjMDRmMTZlZGFjWCEDqfkXy83lmjk1xZNMCd6hHdutSOdu1XVzxlsBNfJN4JJhZKNhZVggJfXPLFBTfWUN1eiRs5QvkWI_HBSqIIgsJaonmDZ3F4hhc1ggZ6gwU9J9_-Z_UlRU1liSLE66VbPG9cuRtSTvxf6WCPZhclggZvVZZ6o9XeJz1k60lNXMOin3IpMAoVgLdmrfSmHF-vmkYWEEYXN4QGYwMzNkYzliY2FjMWExYzIxZDkyNzQyODdjZWQ1MDI1OTM1NjNjOTI3YmU0ZWVlZmIyMmE5NDZjOTg2ZDE4NDBhY1ghA0LBJCZjSxrVYgl5qNb1QJcGuUhAgg91fEanem91Xsg2YWSjYWVYIP3n4z81Q79zA2GC28acxa03CZKZlZVPBSdTco7KtY40YXNYIL_6mDRk1avB9WMu1-AeWtyu0_a-z6Ly1TO-9IJSoFEFYXJYIBh7tw-yVy_Cj4TkFmeSM53zUc5Pmyf6j55ysJsBMJv-pGFhAWFzeEA3M2RhMmRiN2FkYjc0NzUyOTI4Mjg1ZmI4MzMyMzNhMmY4ODViODk5MTZkY2VhMGZlZTdiMjlkNmJjOTUyZWFlYWNYIQJMPLKuKIy1oFNEuiHMWHqa7fH8gb7Zjau0AnNDoLShLmFko2FlWCBXNVZNoJGUucQWUzaira6vbKXEDk6JYVnNL0S5vP_C-GFzWCAUH7fE67ulmRQV-S0yN-f0PIAKBqqXMe8xFZ-tp_sGCWFyWCDgp9EUrvFIAsAzkwE90vlLpECyZFuv5QtbdttMfSO0PKRhYQRhc3hAOGEyNTcyZDg1Y2RkZDRiNDRmMTQxMzI4MDM0ZTk3NDJkOTgwMjQ0Y2QyZjRlNDFjYTAwMDRlNzY5OGQwNjkzZWFjWCECjcXiUkY96FM7-1oN2XX2cOTF48BcWyyBlVBe044bX6hhZKNhZVggnkwsHZXOAqbMnxps8SqZKMYiu1MnVnz9on0OhXKzV3dhc1gggGMmJShKli7q40Vl_ZamYK6j6aAriF-G1ogy9h34-uZhclggZ7Ca7WNncDpXq8KEMu2MjFgPBojqMF-3CXgpfnUAdGWkYWEIYXN4QGFlZjZmYjY2ZjYzMzIzNjRlYzUxOWViYmQxMzNmZDc1ZTgzNWYyMmRmNjViNGU3NGIwMjBkNWMzMDlkY2MwMGZhY1ghAo6WMg6DaM-iAmcdl9ACC39rl7tItxc_Dl730iTPpkEoYWSjYWVYIC-pBlVxoAeMSbLx3IX3iBvs3cc2o8rv67bJ-E36kNb9YXNYIObndpha0jbolr5IrZUmSh52Epo1MJdXP3zMBaBx7etNYXJYIC7T3YHh6D0MflM-2vK95RQzrisXDLIBDjQBrl0eZKvf".trim();
 
     let re = api::receive_token(encoded_token.to_string());
     println!("receive token is {:?}", re);
@@ -346,7 +347,7 @@ fn test_receive(words: &str) {
     println!("get_balances after {:?}", b2);
 
     // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
+    let _ = api::print_proofs(MINT_URL.to_string());
 }
 
 fn test_request_mint(words: &str) {

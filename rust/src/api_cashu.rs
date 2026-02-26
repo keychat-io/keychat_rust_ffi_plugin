@@ -1,7 +1,9 @@
 use anyhow::Ok;
+use cashu::nuts::nut00::Proofs;
 pub use cashu::{Amount, CurrencyUnit, Id, KeySetInfo, MintInfo, MintUrl};
 pub use cdk::amount::{SplitTarget, MSAT_IN_SAT};
 use cdk::cdk_database;
+use cdk::fees::calculate_fee;
 pub use cdk::lightning_invoice::{
     Bolt11Invoice as Invoice, Bolt11InvoiceDescriptionRef as InvoiceDescriptionRef,
 };
@@ -800,87 +802,6 @@ pub fn print_proofs(mint: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn _prepare_one_proofs_old(mint: String) -> anyhow::Result<u64> {
-    let denomination: u64 = 1;
-    let threshold: u64 = 10;
-    let amount: u64 = 32;
-
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-
-    let unit = CurrencyUnit::from_str("sat")?;
-    let mint_url = MintUrl::from_str(&mint)?;
-
-    let a = state.rt.block_on(async {
-        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-        let mints_amounts = mint_balances(w, &unit).await?;
-        let mint_url = &wallet.mint_url;
-        let mint_amount = mints_amounts
-            .iter()
-            .find(|(url, _)| url == mint_url)
-            .map(|(_, amount)| *amount)
-            .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
-        let mint_amount = mint_amount?;
-        // if balance less then include equal 32, return directly 0
-        if *mint_amount.as_ref() <= amount {
-            debug!("balance less then 32 amount");
-            return Ok(0);
-        }
-        let ps0 = wallet.get_unspent_proofs().await?;
-        let count_before0 = ps0
-            .iter()
-            .filter(|p| *p.amount.as_ref() == denomination)
-            .count() as u64;
-        // more than 10, no need execute prepare
-        if count_before0 >= threshold {
-            debug!("have enough denomination proofs, no need to prepare");
-            return Ok(count_before0);
-        }
-        let mut count_before = 0u64;
-        // first check proofs state, but this will take more time
-        // let _check = wallet.check_all_pending_proofs().await?;
-        let mut ps = wallet.get_unspent_proofs().await?;
-
-        ps.retain(|p| {
-            let is = *p.amount.as_ref() == denomination;
-            if is {
-                count_before += 1;
-            }
-            !is
-        });
-
-        if count_before * denomination < amount {
-            let rest_amount = amount - count_before * denomination;
-            let active_keyset_ids = wallet
-                .get_active_mint_keysets()
-                .await?
-                .into_iter()
-                .map(|keyset| keyset.id)
-                .collect();
-            let keyset_fees = wallet.get_keyset_fees().await?;
-            let selected = Wallet::select_proofs(
-                rest_amount.into(),
-                ps,
-                &active_keyset_ids,
-                &keyset_fees,
-                true,
-            )?;
-
-            wallet
-                .swap_denomination(
-                    denomination.into(),
-                    Some(rest_amount.into()),
-                    selected.clone(),
-                    false,
-                )
-                .await?;
-        }
-        Ok(32 - count_before)
-    })?;
-
-    Ok(a)
-}
-
 pub fn prepare_one_proofs(mint: String) -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
@@ -982,133 +903,6 @@ async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Resul
     }
     Ok(32 - count_before)
 }
-
-async fn _prepare_one_proofs_back(
-    wallet: &MultiMintWallet,
-    threshold: u64,
-    amount: u64,
-    mint: String,
-) -> anyhow::Result<u64> {
-    let denomination: u64 = 1;
-
-    if amount == 0 {
-        bail!("can't mint amount 0");
-    }
-    let unit = CurrencyUnit::from_str("sat")?;
-    let mint_url = MintUrl::from_str(&mint)?;
-
-    let wallet = get_or_create_wallet(wallet, &mint_url, unit.clone()).await?;
-
-    let ps0 = wallet.get_unspent_proofs().await?;
-    let count_before0 = ps0
-        .iter()
-        .filter(|p| *p.amount.as_ref() == denomination)
-        .count() as u64;
-    // more than 10, no need prepare
-    if count_before0 >= threshold {
-        return Ok(count_before0);
-    }
-
-    let mut count_before = 0u64;
-    // first check proofs state, but this will take more time
-    // let _check = wallet.check_all_pending_proofs().await?;
-    let mut ps = wallet.get_unspent_proofs().await?;
-
-    ps.retain(|p| {
-        let is = *p.amount.as_ref() == denomination;
-        if is {
-            count_before += 1;
-        }
-        !is
-    });
-
-    if count_before * denomination < amount {
-        let rest_amount = amount - count_before * denomination;
-        let active_keyset_ids = wallet
-            .get_active_mint_keysets()
-            .await?
-            .into_iter()
-            .map(|keyset| keyset.id)
-            .collect();
-        let keyset_fees = wallet.get_keyset_fees().await?;
-        let selected = Wallet::select_proofs(
-            rest_amount.into(),
-            ps,
-            &active_keyset_ids,
-            &keyset_fees,
-            true,
-        )?;
-
-        wallet
-            .swap_denomination(
-                denomination.into(),
-                Some(rest_amount.into()),
-                selected.clone(),
-                false,
-            )
-            .await?;
-    };
-
-    Ok(count_before)
-}
-
-// pub fn send_stamp(
-//     amount: u64,
-//     mints: Vec<String>,
-//     info: Option<String>,
-// ) -> anyhow::Result<Transaction> {
-//     if amount == 0 {
-//         bail!("can't send amount 0");
-//     }
-
-//     let mut state = State::lock()?;
-//     let w = state.get_wallet()?;
-//     let unit = CurrencyUnit::from_str("sat")?;
-
-//     let bs = state.rt.block_on(w.get_balances(&unit))?;
-
-//     let mut mints_first = Vec::new();
-//     let mut mints_second = Vec::new();
-//     for (k, _v) in bs.into_iter().filter(|(_k, _v)| *_v >= amount.into()) {
-//         // let mint_url: MintUrl = k;
-//         let k_str = k.to_string();
-//         if mints
-//             .iter()
-//             .any(|m| m.trim_end_matches('/') == k_str.trim_end_matches('/'))
-//         {
-//             mints_first.push(k);
-//         } else {
-//             mints_second.push(k);
-//         }
-//     }
-
-//     for mint_url in mints_first.iter().chain(mints_second.iter()) {
-//         let tx = _send(&mut state, amount, mint_url.to_string(), info.clone());
-//         debug!("send_stamp {} {} got: {:?}", mint_url, amount, tx);
-
-//         if tx.is_err() && get_wallet(mint_url.clone(), unit.clone()).is_err() {
-//             error!(
-//                 "send_stamp {} {} failed: {:?}",
-//                 mint_url.to_string(),
-//                 amount,
-//                 tx
-//             );
-//             continue;
-//         } else {
-//             return tx;
-//         }
-//     }
-
-//     debug!("send_stamp last try {} {}", amount, mints.join(","));
-//     // last try ?
-//     let mint_url = mints_first
-//         .iter()
-//         .chain(mints_second.iter())
-//         .next()
-//         .ok_or_else(|| cdk_common::Error::InsufficientFunds)?;
-//     let tx = _send(&mut state, amount, mint_url.to_string(), info.clone())?;
-//     Ok(tx)
-// }
 
 pub fn send_stamp(
     amount: u64,
@@ -1261,7 +1055,8 @@ pub fn send(
 
 use std::time::Instant;
 
-async fn time<F, T>(label: &str, fut: F) -> T
+// for debug and test, this will print the time taken for the async operation
+async fn _time<F, T>(label: &str, fut: F) -> T
 where
     F: std::future::Future<Output = T>,
 {
@@ -1356,6 +1151,162 @@ async fn _send_one(
 }
 
 fn _send(
+    state: &mut StdMutexGuard<'static, State>,
+    amount: u64,
+    active_mint: String,
+    _info: Option<String>,
+) -> anyhow::Result<Transaction> {
+    if amount == 0 {
+        bail!("can't send amount 0");
+    }
+
+    let unit = CurrencyUnit::from_str("sat")?;
+    let w = state.get_wallet()?;
+
+    let tx = state.rt.block_on(async {
+        let mints_amounts = mint_balances(w, &unit).await;
+        let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await?;
+
+        let mint_url = &wallet.mint_url;
+        let mint_amount = mints_amounts?
+            .iter()
+            .find(|(url, _)| url == mint_url)
+            .map(|(_, amount)| *amount)
+            .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
+        let mint_amount = mint_amount?;
+        check_sufficient_funds(mint_amount.clone(), amount.into())?;
+
+        // 1) First prepare_send (NOTE: this reserves proofs!)
+        let prepared = wallet
+            .prepare_send(Amount::from(amount), SendOptions::default())
+            .await?;
+
+        // 2) Decide based on ACTUAL selected proofs whether token will be too long by
+        // "too many same-denom small proofs".
+        //
+        // Policy knobs:
+        // - watch these denoms
+        // - if in (proofs_to_send + proofs_to_swap) any watched denom count >= threshold => merge
+        let denoms_to_watch: &[u64] = &[1, 2];
+        let per_denom_threshold: usize = 15;
+
+        let need_merge = {
+            let mut counts: HashMap<u64, usize> = HashMap::new();
+            for p in prepared.proofs_to_send().iter() {
+                let d = *p.amount.as_ref();
+                if denoms_to_watch.contains(&d) {
+                    *counts.entry(d).or_insert(0) += 1;
+                }
+            }
+            let result = counts.values().any(|c| *c >= per_denom_threshold);
+            log::debug!(
+                "pre-send check: proofs_to_send={} watched={:?} need_merge={}",
+                prepared.proofs_to_send().len(),
+                counts,
+                result
+            );
+            result
+        };
+
+        if !need_merge {
+            // Fast path: no merge needed, send directly
+            let tx = wallet.send(prepared, None).await?;
+            return Ok(tx);
+        }
+        // 3) Cancel reserved proofs; if cancel fails, try restore to recover reserved proofs
+        if let Err(e) = wallet.cancel_send(prepared).await {
+            log::error!(
+                "cancel_send failed, attempting restore to recover pending proofs. err: {:?}",
+                e
+            );
+            match wallet.restore().await {
+                std::result::Result::Ok(restored) => {
+                    log::info!(
+                        "restore after cancel_send failure succeeded: {:?}",
+                        restored
+                    );
+                }
+                Err(restore_err) => {
+                    log::error!(
+                        "restore after cancel_send failure also failed: {:?}",
+                        restore_err
+                    );
+                }
+            }
+            return Err(anyhow::anyhow!(
+                "cancel_send failed for mint {} of send, restore attempted: {}",
+                active_mint,
+                e
+            ));
+        }
+
+        // 4) Collect all small-denom unspent proofs for merging (single pass)
+        let all_proofs = wallet.get_unspent_proofs().await?;
+        let total = all_proofs.total_amount()?;
+
+        let inputs: Proofs = all_proofs
+            .into_iter()
+            .filter(|p| denoms_to_watch.contains(p.amount.as_ref()))
+            .collect();
+
+        // 5) Fee guard + merge (best-effort, with restore on failure)
+        if inputs.len() >= 2 {
+            let keyset_fees = wallet.get_keyset_fees().await?;
+            let est_fee =
+                calculate_fee(&inputs.count_by_keyset(), &keyset_fees).unwrap_or_default();
+
+            if total >= Amount::from(amount) + est_fee {
+                if let Err(e) = wallet
+                    .swap(None, SplitTarget::default(), inputs, None, false)
+                    .await
+                {
+                    log::warn!("pre-send merge swap failed, attempting restore: {:?}", e);
+                    match wallet.restore().await {
+                        std::result::Result::Ok(restored) => {
+                            log::info!("restore after merge failure succeeded: {:?}", restored);
+                        }
+                        Err(restore_err) => {
+                            log::error!(
+                                "restore after merge failure also failed: {:?}",
+                                restore_err
+                            );
+                        }
+                    }
+                }
+            } else {
+                log::debug!(
+                    "skip merge: total={} send={} fee={}",
+                    *total.as_ref(),
+                    amount,
+                    *est_fee.as_ref()
+                );
+            }
+        }
+
+        // 6) Re-prepare and send
+        let prepared2 = wallet
+            .prepare_send(Amount::from(amount), SendOptions::default())
+            .await?;
+        let tx = wallet.send(prepared2, None).await?;
+        Ok(tx)
+    })?;
+
+    Ok(Transaction {
+        id: tx.id().to_string(),
+        mint_url: tx.mint_url.to_string(),
+        io: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        status: tx.status,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    })
+}
+
+fn _send_old(
     state: &mut StdMutexGuard<'static, State>,
     amount: u64,
     active_mint: String,
