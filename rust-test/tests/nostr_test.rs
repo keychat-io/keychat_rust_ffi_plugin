@@ -484,6 +484,7 @@ mod tests {
         let gift = nostr::verify_event(gift_json).unwrap();
         let rumor = nostr::decrypt_gift(receiver_kp.prikey, gift.pubkey, gift.content).unwrap();
         assert_eq!(rumor.content, s);
+        assert_eq!(rumor.kind, 14u16);
 
         assert_ne!(rumor.created_at, gift.created_at);
     }
@@ -500,7 +501,7 @@ mod tests {
             receiver_kp.pubkey,
             s.to_owned(),
             None,
-            None,
+            Some(false),
             None,
         )
         .await
@@ -510,6 +511,7 @@ mod tests {
         let gift = nostr::verify_event(gift_json).unwrap();
         let rumor = nostr::decrypt_gift(receiver_kp.prikey, gift.pubkey, gift.content).unwrap();
         assert_eq!(rumor.content, s);
+        assert_eq!(rumor.kind, 14u16);
 
         assert_eq!(rumor.created_at, gift.created_at);
     }
