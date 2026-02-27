@@ -32,8 +32,8 @@ fn main() {
     // test_init_v1_and_get_poorfs_to_v2(words);
     // test_get_balance(words);
     // test_split_32(words);
-    // test_get_balance(words);
-    test_receive(words);
+    test_get_balance(words);
+    // test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
 }
@@ -86,15 +86,15 @@ fn test_get_balance(words: &str) {
     // let b1 = api::get_balances();
     // println!("get_balances before {:?}", b1);
 
-    // let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), false);
-    // for tx in txs.unwrap() {
-    //     println!("tx1 {:?}", tx);
-    // }
+    let txs = api::get_txs_with_offset_mint_amount(0, 3, MINT_URL.to_string(), false);
+    for tx in txs.unwrap() {
+        println!("tx1 {:?}", tx);
+    }
 
-    // let txs = api::get_txs_with_offset_mint_amount(0, 10, MINT_URL.to_string(), true);
-    // for tx in txs.unwrap() {
-    //     println!("tx2 {:?}", tx);
-    // }
+    let txs = api::get_txs_with_offset_mint_amount(0, 3, MINT_URL.to_string(), true);
+    for tx in txs.unwrap() {
+        println!("tx2 {:?}", tx);
+    }
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL.to_string());
