@@ -319,7 +319,7 @@ pub async fn create_gift_json_with_sender_copy(
 
     // Create the rumor (kind should be 14 for NIP-17 chat messages)
     let rumor = create_unsigned_event(kind, &sender_keys, &receiver, content, additional_tags)?;
-    
+
     // Determine timestamp
     let ts = if timestamp_tweaked.unwrap_or(true) {
         Timestamp::tweaked(nostr::nips::nip59::RANGE_RANDOM_TIMESTAMP_TWEAK)
@@ -332,33 +332,25 @@ pub async fn create_gift_json_with_sender_copy(
         .await?
         .sign(&sender_keys)
         .await?;
-    
-    let gift_to_receiver = create_gift_wrap_event(
-        &receiver,
-        &seal_to_receiver,
-        expiration_timestamp,
-        ts,
-    ).await?;
+
+    let gift_to_receiver =
+        create_gift_wrap_event(&receiver, &seal_to_receiver, expiration_timestamp, ts).await?;
 
     // 2. Create seal and gift wrap for sender (self)
     let seal_to_sender: Event = EventBuilder::seal(&sender_keys, &sender, rumor)
         .await?
         .sign(&sender_keys)
         .await?;
-    
-    let gift_to_sender = create_gift_wrap_event(
-        &sender,
-        &seal_to_sender,
-        expiration_timestamp,
-        ts,
-    ).await?;
+
+    let gift_to_sender =
+        create_gift_wrap_event(&sender, &seal_to_sender, expiration_timestamp, ts).await?;
 
     // Return both events as JSON
     let result = serde_json::json!({
         "to_receiver": gift_to_receiver.as_json(),
         "to_sender": gift_to_sender.as_json()
     });
-    
+
     Ok(result.to_string())
 }
 

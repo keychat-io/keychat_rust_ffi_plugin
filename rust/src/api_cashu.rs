@@ -38,6 +38,85 @@ pub use types::*;
 
 use crate::api_cashu_v1;
 
+fn into_transaction(tx: cdk_common::wallet::Transaction) -> Transaction {
+    Transaction {
+        id: tx.id().to_string(),
+        mint_url: tx.mint_url.to_string(),
+        io: tx.direction,
+        kind: tx.kind,
+        amount: *tx.amount.as_ref(),
+        fee: *tx.fee.as_ref(),
+        unit: Some(tx.unit.to_string()),
+        token: tx.token,
+        status: tx.status,
+        timestamp: tx.timestamp,
+        metadata: tx.metadata,
+    }
+}
+
+fn into_transactions(txs: Vec<cdk_common::wallet::Transaction>) -> Vec<Transaction> {
+    txs.into_iter().map(into_transaction).collect()
+}
+
+async fn build_multi_mint_wallet(dbpath: &str, seed: &[u8; 64]) -> anyhow::Result<MultiMintWallet> {
+    let localstore: Arc<dyn WalletDatabase<Err = cdk_database::Error> + Send + Sync> =
+        Arc::new(WalletSqliteDatabase::new(dbpath).await?);
+
+    let mut wallets: Vec<Wallet> = Vec::new();
+
+    let mints = localstore.get_mints().await?;
+
+    for (mint_url, mint_info) in mints {
+        let mut units = if let Some(mint_info) = mint_info {
+            mint_info.supported_units().into_iter().cloned().collect()
+        } else {
+            vec![CurrencyUnit::Sat]
+        };
+        if units.is_empty() {
+            units.push(CurrencyUnit::Sat);
+        }
+
+        for unit in units {
+            let builder = WalletBuilder::new()
+                .mint_url(mint_url.clone())
+                .unit(unit)
+                .localstore(localstore.clone())
+                .seed(seed);
+
+            let wallet = builder.build()?;
+            let wallet_clone = wallet.clone();
+
+            tokio::spawn(async move {
+                if let Err(err) = wallet_clone.get_mint_info().await {
+                    error!(
+                        "Could not get mint quote for {}, {}",
+                        wallet_clone.mint_url, err
+                    );
+                }
+            });
+
+            wallets.push(wallet);
+        }
+    }
+
+    Ok(MultiMintWallet::new(
+        localstore,
+        Arc::new(seed.clone()),
+        wallets,
+    ))
+}
+
+async fn try_restore_wallet(wallet: &Wallet) {
+    match wallet.restore().await {
+        std::result::Result::Ok(restored) => {
+            log::info!("restore succeeded: {:?}", restored);
+        }
+        Err(e) => {
+            log::error!("restore failed: {:?}", e);
+        }
+    }
+}
+
 impl State {
     fn new() -> anyhow::Result<Self> {
         let this = Self {
@@ -46,7 +125,6 @@ impl State {
             mnemonic: None,
             sats: 0,
         };
-
         Ok(this)
     }
 
@@ -71,11 +149,9 @@ impl State {
             debug!("get_wallet none");
             return Err(err.into());
         }
-
         Ok(self.wallet.as_ref().unwrap())
     }
 
-    // ignore for test
     #[frb(ignore)]
     pub fn lock() -> anyhow::Result<StdMutexGuard<'static, Self>> {
         STATE
@@ -89,7 +165,6 @@ lazy_static! {
         StdMutex::new(State::new().expect("failed to create tokio runtime"));
 }
 
-// for cashu v1 init db and send all
 pub fn cashu_v1_init_send_all(
     dbpath: String,
     words: Option<String>,
@@ -102,7 +177,6 @@ pub fn cashu_v1_init_send_all(
     })
 }
 
-//cashu_init_test
 pub fn cashu_v1_init_test(
     dbpath: String,
     words: Option<String>,
@@ -111,7 +185,7 @@ pub fn cashu_v1_init_test(
     let _re = api_cashu_v1::cashu_init_test(dbpath, words, tokens)?;
     Ok(())
 }
-// for cashu v1 init db and send all
+
 pub fn cashu_v1_init_proofs(
     dbpath: String,
     words: Option<String>,
@@ -141,7 +215,6 @@ pub fn init_v1_and_get_poorfs_to_v2(
     Ok((counters, mints))
 }
 
-// this is for init db and cashu once, only call once
 pub fn init_db_cashu_once(dbpath: String) -> anyhow::Result<()> {
     init_db_once(dbpath)?;
     init_cashu(32)?;
@@ -151,64 +224,12 @@ pub fn init_db_cashu_once(dbpath: String) -> anyhow::Result<()> {
 fn init_db_once(dbpath: String) -> anyhow::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     let words = MnemonicInfo::generate_words(12)?;
-
     let _ = set_mnemonic(Some(words.clone()));
-
     let mi = MnemonicInfo::with_words(&words)?;
     let seed = mi.mnemonic().to_seed("");
 
     let mut state = State::lock()?;
-
-    let fut = async move {
-        let localstore: Arc<dyn WalletDatabase<Err = cdk_database::Error> + Send + Sync> =
-            Arc::new(WalletSqliteDatabase::new(&dbpath).await?);
-
-        let mut wallets: Vec<Wallet> = Vec::new();
-
-        let mints = localstore.get_mints().await?;
-        if mints.is_empty() {}
-
-        for (mint_url, mint_info) in mints {
-            let mut units = if let Some(mint_info) = mint_info {
-                mint_info.supported_units().into_iter().cloned().collect()
-            } else {
-                vec![CurrencyUnit::Sat]
-            };
-            if units.is_empty() {
-                units.push(CurrencyUnit::Sat);
-            }
-
-            for unit in units {
-                let mint_url_clone = mint_url.clone();
-                let builder = WalletBuilder::new()
-                    .mint_url(mint_url_clone.clone())
-                    .unit(unit)
-                    .localstore(localstore.clone())
-                    .seed(&seed);
-
-                let wallet = builder.build()?;
-
-                let wallet_clone = wallet.clone();
-
-                tokio::spawn(async move {
-                    if let Err(err) = wallet_clone.get_mint_info().await {
-                        error!(
-                            "Could not get mint quote for {}, {}",
-                            wallet_clone.mint_url, err
-                        );
-                    }
-                });
-
-                wallets.push(wallet);
-            }
-        }
-        let multi_mint_wallet = MultiMintWallet::new(localstore, Arc::new(seed), wallets);
-
-        Ok(multi_mint_wallet)
-    };
-
-    let result = state.rt.block_on(fut);
-
+    let result = state.rt.block_on(build_multi_mint_wallet(&dbpath, &seed));
     result.map(|w| {
         state.wallet = Some(w);
     })
@@ -216,65 +237,12 @@ fn init_db_once(dbpath: String) -> anyhow::Result<()> {
 
 pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
-
     let _ = set_mnemonic(Some(words.clone()));
-    // let _ = add_mint("https://8333.space:3338/".to_string());
-
     let mi = MnemonicInfo::with_words(&words)?;
     let seed = mi.mnemonic().to_seed("");
 
     let mut state = State::lock()?;
-
-    let fut = async move {
-        let localstore: Arc<dyn WalletDatabase<Err = cdk_database::Error> + Send + Sync> =
-            Arc::new(WalletSqliteDatabase::new(&dbpath).await?);
-
-        let mut wallets: Vec<Wallet> = Vec::new();
-
-        let mints = localstore.get_mints().await?;
-        if mints.is_empty() {}
-
-        for (mint_url, mint_info) in mints {
-            let mut units = if let Some(mint_info) = mint_info {
-                mint_info.supported_units().into_iter().cloned().collect()
-            } else {
-                vec![CurrencyUnit::Sat]
-            };
-            if units.is_empty() {
-                units.push(CurrencyUnit::Sat);
-            }
-
-            for unit in units {
-                let mint_url_clone = mint_url.clone();
-                let builder = WalletBuilder::new()
-                    .mint_url(mint_url_clone.clone())
-                    .unit(unit)
-                    .localstore(localstore.clone())
-                    .seed(&seed);
-
-                let wallet = builder.build()?;
-
-                let wallet_clone = wallet.clone();
-
-                tokio::spawn(async move {
-                    if let Err(err) = wallet_clone.get_mint_info().await {
-                        error!(
-                            "Could not get mint quote for {}, {}",
-                            wallet_clone.mint_url, err
-                        );
-                    }
-                });
-
-                wallets.push(wallet);
-            }
-        }
-        let multi_mint_wallet = MultiMintWallet::new(localstore, Arc::new(seed), wallets);
-
-        Ok(multi_mint_wallet)
-    };
-
-    let result = state.rt.block_on(fut);
-
+    let result = state.rt.block_on(build_multi_mint_wallet(&dbpath, &seed));
     result.map(|w| {
         state.wallet = Some(w);
     })
@@ -283,12 +251,9 @@ pub fn init_db(dbpath: String, words: String, _dev: bool) -> anyhow::Result<()> 
 pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<MintCashu>> {
     let mut state = State::lock()?;
     state.sats = prepare_sats_once_time;
-
     let w = state.get_wallet()?;
     let result = state.rt.block_on(w.localstore.get_mints())?;
-    let mints = decode_mint_info(result)?;
-
-    Ok(mints)
+    decode_mint_info(result)
 }
 
 #[frb(ignore)]
@@ -308,10 +273,8 @@ pub fn set_mnemonic(words: Option<String>) -> anyhow::Result<bool> {
         let mi = MnemonicInfo::with_words(&s)?;
         mnemonic = Some(Arc::new(mi))
     }
-
     let mut state = State::lock()?;
-    let has = state.update_mnmonic(mnemonic);
-    has
+    state.update_mnmonic(mnemonic)
 }
 
 fn decode_mint_info(
@@ -338,7 +301,6 @@ fn decode_mint_info(
                     .collect(),
                 nuts: {
                     let mut nuts_map = HashMap::new();
-                    // Check each nut and add to map if supported
                     if !v.nuts.nut04.methods.is_empty() || !v.nuts.nut04.disabled {
                         nuts_map.insert("nut04".to_string(), true);
                     }
@@ -387,13 +349,12 @@ fn decode_mint_info(
                     nuts_map
                 },
             };
-            let mint = MintCashu {
+            mints.push(MintCashu {
                 url: k.to_string(),
                 active: true,
                 time: v.time.unwrap_or(0),
                 info: Some(mint_info),
-            };
-            mints.push(mint);
+            });
         }
     }
     Ok(mints)
@@ -402,32 +363,26 @@ fn decode_mint_info(
 pub fn get_mints() -> anyhow::Result<Vec<MintCashu>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-    // let mut mints = Vec::new();
     let result = state.rt.block_on(w.localstore.get_mints())?;
-    let mints = decode_mint_info(result)?;
-    Ok(mints)
+    decode_mint_info(result)
 }
 
 pub fn add_mint(url: String) -> anyhow::Result<()> {
     let mint_url = MintUrl::from_str(&url)?;
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
-    let _result = state.rt.block_on(w.localstore.add_mint(mint_url, None))?;
-
+    state.rt.block_on(w.localstore.add_mint(mint_url, None))?;
     Ok(())
 }
 
 pub fn remove_mint(url: String) -> anyhow::Result<()> {
     let mint_url = MintUrl::from_str(&url)?;
-
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let _result = state.rt.block_on(w.localstore.remove_mint(mint_url));
-
     Ok(())
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 struct MintCounterRecord {
     mint: String,
@@ -454,7 +409,6 @@ pub fn add_counters(counters: String) -> anyhow::Result<Vec<String>> {
             final_expiry: None,
         };
         keysetid_to_counter.insert(id, record.max_counter);
-
         map.entry(record.mint.clone())
             .or_insert_with(Vec::new)
             .push(keyset_info);
@@ -466,26 +420,18 @@ pub fn add_counters(counters: String) -> anyhow::Result<Vec<String>> {
             if wallet.get_mint_info().await.is_ok() {
                 mints.push(mint_url.clone());
             } else {
-                let tmp = format!("{}-failure", mint_url);
-                mints.push(tmp);
+                mints.push(format!("{}-failure", mint_url));
                 warn!("Failed to get mint info for {}", mint_url);
             }
-
-            // if w.localstore.get_mint(mint_url.clone()).await?.is_none() {
-            //     w.localstore.add_mint(mint_url.clone(), None).await?;
-            // }
-
             w.localstore
                 .add_mint_keysets(mint.clone(), keyset_infos)
                 .await?;
         }
-
         for (id, counter) in keysetid_to_counter {
             w.localstore.increment_keyset_counter(&id, counter).await?;
         }
         Ok(())
     });
-
     Ok(mints)
 }
 
@@ -502,39 +448,22 @@ fn add_proofs_from_v1(proofs: String) -> anyhow::Result<()> {
         warn!("The proofs vector is empty.");
         return Ok(());
     }
-
     let _tx = state.rt.block_on(async {
         for mint_url in mints {
             let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
             wallet.get_mint_info().await?;
         }
-
         w.localstore.update_proofs(proofs, vec![]).await?;
         Ok(())
     });
     Ok(())
 }
 
-fn _add_proofs(proofs: Vec<ProofInfo>) -> anyhow::Result<()> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    if proofs.is_empty() {
-        warn!("The proofs vector is empty.");
-        return Ok(());
-    }
-    Ok(state
-        .rt
-        .block_on(w.localstore.update_proofs(proofs, vec![]))?)
-}
-
 pub fn get_balances() -> anyhow::Result<String> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-
-    let rt = &state.rt;
-
-    let js = rt.block_on(async {
+    state.rt.block_on(async {
+        let unit = CurrencyUnit::from_str("sat")?;
         let mints_map = w.localstore.get_mints().await?;
         let active_urls: HashSet<String> = mints_map
             .keys()
@@ -542,18 +471,14 @@ pub fn get_balances() -> anyhow::Result<String> {
             .collect();
 
         let bs = w.get_balances(&unit).await?;
-
         let filtered_bs = bs
             .into_iter()
             .filter(|(k, _v)| active_urls.contains(k.to_string().trim_end_matches('/')))
             .map(|(k, v)| (k.to_string().trim_end_matches('/').to_string(), v))
-            .collect::<std::collections::BTreeMap<String, Amount>>();
+            .collect::<BTreeMap<String, Amount>>();
 
-        let js = serde_json::to_string(&filtered_bs)?;
-        Ok(js)
-    })?;
-
-    Ok(js)
+        Ok(serde_json::to_string(&filtered_bs)?)
+    })
 }
 
 #[frb(ignore)]
@@ -561,16 +486,13 @@ pub fn get_wallet(mint_url: MintUrl, unit: CurrencyUnit) -> anyhow::Result<Walle
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let wallet_key = WalletKey::new(mint_url.clone(), unit);
-
     let wallet = state
         .rt
         .block_on(w.get_wallet(&wallet_key))
         .ok_or_else(|| anyhow::anyhow!("Wallet not found"))?;
-
     Ok(wallet)
 }
 
-/// Helper function to create or get a wallet
 #[frb(ignore)]
 async fn get_or_create_wallet(
     multi_mint_wallet: &MultiMintWallet,
@@ -591,10 +513,58 @@ async fn get_or_create_wallet(
     }
 }
 
+async fn get_wallet_by_mint_url(
+    multi_mint_wallet: &MultiMintWallet,
+    mint_url_str: &str,
+    unit: CurrencyUnit,
+) -> anyhow::Result<cdk::wallet::Wallet> {
+    let mint_url = MintUrl::from_str(mint_url_str)?;
+    let wallet_key = WalletKey::new(mint_url.clone(), unit);
+    let wallet = multi_mint_wallet
+        .get_wallet(&wallet_key)
+        .await
+        .ok_or_else(|| anyhow::anyhow!("Wallet not found for mint URL: {}", mint_url_str))?;
+    Ok(wallet.clone())
+}
+
+pub async fn get_wallet_by_index(
+    multi_mint_wallet: &MultiMintWallet,
+    mint_amounts: &[(MintUrl, Amount)],
+    mint_number: usize,
+    unit: CurrencyUnit,
+) -> anyhow::Result<cdk::wallet::Wallet> {
+    if mint_number >= mint_amounts.len() {
+        bail!("Invalid mint number");
+    }
+    let wallet_key = WalletKey::new(mint_amounts[mint_number].0.clone(), unit);
+    let wallet = multi_mint_wallet
+        .get_wallet(&wallet_key)
+        .await
+        .ok_or_else(|| anyhow::anyhow!("Wallet not found"))?;
+    Ok(wallet.clone())
+}
+
+async fn mint_balances(
+    multi_mint_wallet: &MultiMintWallet,
+    unit: &CurrencyUnit,
+) -> anyhow::Result<Vec<(MintUrl, Amount)>> {
+    let wallets: BTreeMap<MintUrl, Amount> = multi_mint_wallet.get_balances(unit).await?;
+    Ok(wallets
+        .into_iter()
+        .filter(|(_, a)| *a > Amount::ZERO)
+        .collect())
+}
+
+fn check_sufficient_funds(available: Amount, required: Amount) -> anyhow::Result<()> {
+    if required.gt(&available) {
+        bail!("Not enough funds");
+    }
+    Ok(())
+}
+
 pub fn send_all(mint: String) -> anyhow::Result<Transaction> {
-    let _merge = merge_proofs(10)?;
-    let tx = _send_all(mint)?;
-    Ok(tx)
+    merge_proofs(10)?;
+    _send_all(mint)
 }
 
 fn _send_all(mint: String) -> anyhow::Result<Transaction> {
@@ -607,73 +577,40 @@ fn _send_all(mint: String) -> anyhow::Result<Transaction> {
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let ps = wallet.get_unspent_proofs().await?;
         if *ps.total_amount()?.as_ref() == 0 {
-            let err: anyhow::Error = format_err!("The amount is 0");
-            return Err(err.into());
+            bail!("The amount is 0");
         }
-
-        // // let total_amount: u64 =  *ps.total_amount()?.as_ref();
-        // let keyset_fees = wallet.get_keyset_fees().await?;
-        // let fee =
-        //     calculate_fee(&ps.count_by_keyset(), &keyset_fees).unwrap_or_default();
-        // let net_amount = ps.total_amount()? - fee;
-        // println!("net_amount is {:?}, fee is {:?}", net_amount, fee);
-
         let prepared_send = wallet
             .prepare_send(ps.total_amount()?, SendOptions::default())
             .await?;
-        let tx = wallet.send(prepared_send, None).await?;
-        Ok(tx)
+        Ok(wallet.send(prepared_send, None).await?)
     })?;
-    let tx_new = Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    };
 
-    Ok(tx_new)
+    Ok(into_transaction(tx))
 }
 
-/// default set 20
 pub fn merge_proofs(threshold: u64) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
 
-    let fut = async move {
-        // Iterate all known mints in localstore
+    state.rt.block_on(async {
         let mints = w.localstore.get_mints().await?;
         for (mint_url, _info) in mints {
-            // Only operate on wallets we already have (skip creating new ones here)
             if let Some(wallet) = w
                 .get_wallet(&WalletKey::new(mint_url.clone(), unit.clone()))
                 .await
             {
-                // Get unspent proofs for this wallet
                 let proofs = wallet.get_unspent_proofs().await?;
                 if proofs.is_empty() {
                     continue;
                 }
-
-                // Group proofs by denomination (amount)
                 let mut groups: HashMap<u64, cashu::Proofs> = HashMap::new();
                 for p in proofs {
                     let amt = *p.amount.as_ref();
                     groups.entry(amt).or_insert_with(cashu::Proofs::new).push(p);
                 }
-
-                // For each denomination with count > 20, merge to minimal outputs
                 for (_amt, group) in groups.into_iter() {
                     if group.len() as u64 >= threshold {
-                        debug!("need merge");
-                        // Default target merges to least number of power-of-two outputs
                         let _ = wallet
                             .swap(None, SplitTarget::default(), group, None, false)
                             .await?;
@@ -682,14 +619,9 @@ pub fn merge_proofs(threshold: u64) -> anyhow::Result<()> {
             }
         }
         Ok(())
-    };
-
-    state.rt.block_on(fut)?;
-    Ok(())
+    })
 }
 
-/// inner used, this is for receive stamps every multi times
-/// need diff mint url put in a like map<url, token>
 pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
     let token: Token = Token::from_str(&stamps[0])?;
     let mint_url = token.mint_url()?;
@@ -697,7 +629,7 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
 
     let state = State::lock()?;
     let w = state.get_wallet()?;
-    let fut = async move {
+    state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let mut all_proofs = Vec::new();
         for token_str in stamps {
@@ -708,13 +640,10 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
                 .await?
             {
                 Some(keysets_info) => keysets_info,
-                // Hit the keysets endpoint if we don't have the keysets for this Mint
                 None => wallet.get_mint_keysets().await?,
             };
-            let proofs = token_data.proofs(&keysets_info)?;
-            all_proofs.extend(proofs);
+            all_proofs.extend(token_data.proofs(&keysets_info)?);
         }
-        // must checkout proofs with unspent, this is check for http post
         let proofs_state = wallet.check_proofs_spent(all_proofs.clone()).await?;
         let unspent: cashu::Proofs = all_proofs
             .into_iter()
@@ -723,116 +652,65 @@ pub fn multi_receive(stamps: Vec<String>) -> anyhow::Result<()> {
             .collect();
 
         let tokens = Token::new(mint_url, unspent, None, unit);
-        let encoded_token = tokens.to_string();
-
-        let amount = w.receive(&encoded_token, ReceiveOptions::default()).await;
-        debug!("amount: {:?}", amount);
+        let _amount = w
+            .receive(&tokens.to_string(), ReceiveOptions::default())
+            .await;
         Ok(())
-    };
-
-    let _amount = state.rt.block_on(fut)?;
-
-    Ok(())
+    })
 }
 
 pub fn receive_token(encoded_token: String) -> anyhow::Result<Transaction> {
     let token: Token = Token::from_str(&encoded_token)?;
     let mint_url = token.mint_url()?;
-
     let unit = token.unit().unwrap_or_default();
-    let state = State::lock()?;
 
+    let state = State::lock()?;
     let w = state.get_wallet()?;
 
-    let fut = async move {
+    let tx = state.rt.block_on(async {
         if w.get_wallet(&WalletKey::new(mint_url.clone(), unit.clone()))
             .await
             .is_none()
         {
-            get_or_create_wallet(w, &mint_url, unit).await.unwrap();
+            get_or_create_wallet(w, &mint_url, unit).await?;
         }
-        w.receive(&encoded_token, ReceiveOptions::default()).await
-    };
+        Ok(w.receive(&encoded_token, ReceiveOptions::default()).await?)
+    })?;
 
-    let tx = state.rt.block_on(fut)?;
-    let tx_new = Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    };
-
-    Ok(tx_new)
+    Ok(into_transaction(tx))
 }
 
-/// inner used
 pub fn print_proofs(mint: String) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&mint)?;
 
-    let fut = async move {
+    state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
         let ps = wallet.get_unspent_proofs().await?;
-        // let ps = wallet.get_all_proofs().await?;
         println!("get_all_proofs len: {:?}", ps.len());
-
         for p in ps {
             println!(
                 "{}: {} {:?}",
                 p.amount.as_ref(),
                 p.keyset_id,
-                p.secret.to_string(),
-                // p.y()?,
+                p.secret.to_string()
             );
         }
         Ok(())
-    };
-
-    let _ = state.rt.block_on(fut)?;
-
-    Ok(())
+    })
 }
 
 pub fn prepare_one_proofs(mint: String) -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
-    state.rt.block_on(async {
-        // let fut = _prepare_one_proofs(w, mint.clone());
-        // let result = match tokio::time::timeout(Duration::from_secs(20), fut).await {
-        //     std::result::Result::Ok(std::result::Result::Ok(tx)) => Ok(tx),
-        //     std::result::Result::Ok(std::result::Result::Err(e)) => {
-        //         error!("prepare_one_proofs error mint={} err={:?}", mint, e);
-        //         Err(e)
-        //     }
-        //     std::result::Result::Err(_) => {
-        //         error!("prepare_one_proofs timeout mint={}", mint);
-        //         Err(anyhow::anyhow!(
-        //             "prepare_one_proofs connection timeout for {}",
-        //             mint
-        //         ))
-        //     }
-        // };
-        // result
-        _prepare_one_proofs(w, mint.clone()).await
-    })
+    state.rt.block_on(_prepare_one_proofs(w, mint))
 }
 
 async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Result<u64> {
-    // split to 1 sat
     let denomination: u64 = 1;
-    // if less then 10, prepare to 32
     let threshold: u64 = 10;
-    // total prepare amount 32
     let amount: u64 = 32;
 
     let unit = CurrencyUnit::from_str("sat")?;
@@ -845,11 +723,9 @@ async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Resul
         .iter()
         .find(|(url, _)| url == mint_url)
         .map(|(_, amount)| *amount)
-        .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
-    let mint_amount = mint_amount?;
-    // if balance less then include equal 32, return directly 0
+        .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url))?;
+
     if *mint_amount.as_ref() <= amount {
-        debug!("balance less then 32 amount");
         return Ok(0);
     }
     let ps0 = wallet.get_unspent_proofs().await?;
@@ -857,16 +733,12 @@ async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Resul
         .iter()
         .filter(|p| *p.amount.as_ref() == denomination)
         .count() as u64;
-    // more than 10, no need execute prepare
     if count_before0 >= threshold {
-        debug!("have enough denomination proofs, no need to prepare");
         return Ok(count_before0);
     }
-    let mut count_before = 0u64;
-    // first check proofs state, but this will take more time
-    // let _check = wallet.check_all_pending_proofs().await?;
-    let mut ps = wallet.get_unspent_proofs().await?;
 
+    let mut count_before = 0u64;
+    let mut ps = wallet.get_unspent_proofs().await?;
     ps.retain(|p| {
         let is = *p.amount.as_ref() == denomination;
         if is {
@@ -891,12 +763,11 @@ async fn _prepare_one_proofs(w: &MultiMintWallet, mint: String) -> anyhow::Resul
             &keyset_fees,
             true,
         )?;
-
         wallet
             .swap_denomination(
                 denomination.into(),
                 Some(rest_amount.into()),
-                selected.clone(),
+                selected,
                 false,
             )
             .await?;
@@ -915,7 +786,6 @@ pub fn send_stamp(
 
     let mut state = State::lock()?;
     let unit = CurrencyUnit::from_str("sat")?;
-
     let rt = state.rt.clone();
 
     let balances = {
@@ -939,106 +809,26 @@ pub fn send_stamp(
         }
 
         let mut last_err: Option<anyhow::Error> = None;
-
         for mint_url in mints_first.iter().chain(mints_second.iter()) {
             let mint_str = mint_url.to_string();
             let fut = _send_one(&mut state, amount, mint_str.clone(), info.clone());
             match tokio::time::timeout(Duration::from_secs(20), fut).await {
                 std::result::Result::Ok(std::result::Result::Ok(tx)) => {
-                    debug!("send_stamp success {} {}", mint_url, amount);
-                    let result = SendStampsResult {
+                    return Ok(SendStampsResult {
                         tx: tx.0,
                         is_need_split: tx.1,
-                    };
-                    return Ok(result);
+                    });
                 }
                 std::result::Result::Ok(std::result::Result::Err(e)) => {
-                    debug!(
-                        "send_stamp error mint={} amount={} err={:?}",
-                        mint_url, amount, e
-                    );
                     last_err = Some(e);
                 }
                 std::result::Result::Err(_) => {
-                    debug!("send_stamp timeout mint={} amount={}", mint_url, amount);
                     last_err = Some(anyhow::anyhow!("connection timeout for {}", mint_url));
                 }
             }
         }
-
         Err(last_err.unwrap_or_else(|| anyhow::anyhow!("No available mints")))
     })
-}
-
-async fn mint_balances(
-    multi_mint_wallet: &MultiMintWallet,
-    unit: &CurrencyUnit,
-) -> anyhow::Result<Vec<(MintUrl, Amount)>> {
-    let wallets: BTreeMap<MintUrl, Amount> = multi_mint_wallet.get_balances(unit).await?;
-
-    let mut wallets_vec = Vec::with_capacity(wallets.len());
-
-    for (i, (mint_url, amount)) in wallets
-        .iter()
-        .filter(|(_, a)| a > &&Amount::ZERO)
-        .enumerate()
-    {
-        let mint_url = mint_url.clone();
-        debug!("{i}: {mint_url} {amount} {unit}");
-        wallets_vec.push((mint_url, *amount))
-    }
-    Ok(wallets_vec)
-}
-
-// Helper function to check if there are enough funds for an operation
-fn check_sufficient_funds(available: Amount, required: Amount) -> anyhow::Result<()> {
-    if required.gt(&available) {
-        bail!("Not enough funds");
-    }
-    Ok(())
-}
-
-/// Helper function to get a wallet from the multi-mint wallet by mint URL
-async fn get_wallet_by_mint_url(
-    multi_mint_wallet: &MultiMintWallet,
-    mint_url_str: &str,
-    unit: CurrencyUnit,
-) -> anyhow::Result<cdk::wallet::Wallet> {
-    let mint_url = MintUrl::from_str(mint_url_str)?;
-
-    let wallet_key = WalletKey::new(mint_url.clone(), unit);
-    let wallet = multi_mint_wallet
-        .get_wallet(&wallet_key)
-        .await
-        .ok_or_else(|| anyhow::anyhow!("Wallet not found for mint URL: {}", mint_url_str))?;
-
-    Ok(wallet.clone())
-}
-
-/// Helper function to get a wallet from the multi-mint wallet
-pub async fn get_wallet_by_index(
-    multi_mint_wallet: &MultiMintWallet,
-    mint_amounts: &[(MintUrl, Amount)],
-    mint_number: usize,
-    unit: CurrencyUnit,
-) -> anyhow::Result<cdk::wallet::Wallet> {
-    validate_mint_number(mint_number, mint_amounts.len())?;
-
-    let wallet_key = WalletKey::new(mint_amounts[mint_number].0.clone(), unit);
-    let wallet = multi_mint_wallet
-        .get_wallet(&wallet_key)
-        .await
-        .ok_or_else(|| anyhow::anyhow!("Wallet not found"))?;
-
-    Ok(wallet.clone())
-}
-
-/// Helper function to validate a mint number against available mints
-pub fn validate_mint_number(mint_number: usize, mint_count: usize) -> anyhow::Result<()> {
-    if mint_number >= mint_count {
-        bail!("Invalid mint number");
-    }
-    Ok(())
 }
 
 pub fn send(
@@ -1053,19 +843,6 @@ pub fn send(
     _send(&mut state, amount, active_mint, None)
 }
 
-use std::time::Instant;
-
-// for debug and test, this will print the time taken for the async operation
-async fn _time<F, T>(label: &str, fut: F) -> T
-where
-    F: std::future::Future<Output = T>,
-{
-    let t0 = Instant::now();
-    let out = fut.await;
-    println!("{} took {} ms", label, t0.elapsed().as_millis());
-    out
-}
-
 async fn _send_one(
     state: &mut StdMutexGuard<'static, State>,
     amount: u64,
@@ -1078,32 +855,22 @@ async fn _send_one(
     let unit = CurrencyUnit::from_str("sat")?;
     let w = state.get_wallet()?;
 
-    let mints_amounts = mint_balances(w, &unit).await;
-    // Get wallet either by mint URL or by index
+    let mints_amounts = mint_balances(w, &unit).await?;
     let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await?;
 
-    // Find the mint amount for the selected wallet to check if we have sufficient funds
     let mint_url = &wallet.mint_url;
-    let mint_amount = mints_amounts?
+    let mint_amount = mints_amounts
         .iter()
         .find(|(url, _)| url == mint_url)
         .map(|(_, amount)| *amount)
-        .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
-
-    let mint_amount = mint_amount?;
-    check_sufficient_funds(mint_amount.clone(), amount.into())?;
-    // prepare one proofs if less than 10, and set prepare amount to 32
-    // if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
-    //     let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
-    // }
+        .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url))?;
+    check_sufficient_funds(mint_amount, amount.into())?;
 
     let ps = wallet.get_unspent_proofs().await?;
     let stamp_cnts = ps.iter().filter(|p| *p.amount.as_ref() == 1).count() as u64;
 
-    // add if have one stamp proof, then take it directly from prepare_send_one_with_enough, else use normal prepare_send
     let mut use_send_one = false;
     let prepared_send = if amount == 1 && stamp_cnts > 0 {
-        debug!("use prepare_send_one_with_enough");
         match wallet
             .prepare_send_one_with_enough(amount.into(), SendOptions::default())
             .await
@@ -1112,42 +879,25 @@ async fn _send_one(
                 use_send_one = true;
                 p
             }
-            Err(e) => {
-                debug!("prepare_send_one_with_enough failed, fallback: {}", e);
+            Err(_) => {
                 wallet
                     .prepare_send(amount.into(), SendOptions::default())
                     .await?
             }
         }
     } else {
-        debug!("use normal prepare_send");
         wallet
             .prepare_send(amount.into(), SendOptions::default())
             .await?
     };
 
     let tx = if use_send_one {
-        debug!("use send_one");
         wallet.send_one(prepared_send, None).await?
     } else {
-        debug!("use send");
         wallet.send(prepared_send, None).await?
     };
 
-    let tx_new = Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    };
-    Ok((tx_new, stamp_cnts < 10))
+    Ok((into_transaction(tx), stamp_cnts < 10))
 }
 
 fn _send(
@@ -1164,32 +914,22 @@ fn _send(
     let w = state.get_wallet()?;
 
     let tx = state.rt.block_on(async {
-        let mints_amounts = mint_balances(w, &unit).await;
+        let mints_amounts = mint_balances(w, &unit).await?;
         let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await?;
 
-        let mint_url = &wallet.mint_url;
-        let mint_amount = mints_amounts?
+        let mint_amount = mints_amounts
             .iter()
-            .find(|(url, _)| url == mint_url)
-            .map(|(_, amount)| *amount)
-            .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
-        let mint_amount = mint_amount?;
-        check_sufficient_funds(mint_amount.clone(), amount.into())?;
+            .find(|(url, _)| url == &wallet.mint_url)
+            .map(|(_, a)| *a)
+            .ok_or_else(|| anyhow!("Could not find balance for mint: {}", wallet.mint_url))?;
+        check_sufficient_funds(mint_amount, amount.into())?;
 
-        // 1) First prepare_send (NOTE: this reserves proofs!)
         let prepared = wallet
             .prepare_send(Amount::from(amount), SendOptions::default())
             .await?;
 
-        // 2) Decide based on ACTUAL selected proofs whether token will be too long by
-        // "too many same-denom small proofs".
-        //
-        // Policy knobs:
-        // - watch these denoms
-        // - if in (proofs_to_send + proofs_to_swap) any watched denom count >= threshold => merge
         let denoms_to_watch: &[u64] = &[1, 2];
         let per_denom_threshold: usize = 15;
-
         let need_merge = {
             let mut counts: HashMap<u64, usize> = HashMap::new();
             for p in prepared.proofs_to_send().iter() {
@@ -1198,168 +938,52 @@ fn _send(
                     *counts.entry(d).or_insert(0) += 1;
                 }
             }
-            let result = counts.values().any(|c| *c >= per_denom_threshold);
-            log::debug!(
-                "pre-send check: proofs_to_send={} watched={:?} need_merge={}",
-                prepared.proofs_to_send().len(),
-                counts,
-                result
-            );
-            result
+            counts.values().any(|c| *c >= per_denom_threshold)
         };
 
         if !need_merge {
-            // Fast path: no merge needed, send directly
-            let tx = wallet.send(prepared, None).await?;
-            return Ok(tx);
+            return wallet.send(prepared, None).await.map_err(Into::into);
         }
-        // 3) Cancel reserved proofs; if cancel fails, try restore to recover reserved proofs
+
         if let Err(e) = wallet.cancel_send(prepared).await {
-            log::error!(
-                "cancel_send failed, attempting restore to recover pending proofs. err: {:?}",
-                e
-            );
-            match wallet.restore().await {
-                std::result::Result::Ok(restored) => {
-                    log::info!(
-                        "restore after cancel_send failure succeeded: {:?}",
-                        restored
-                    );
-                }
-                Err(restore_err) => {
-                    log::error!(
-                        "restore after cancel_send failure also failed: {:?}",
-                        restore_err
-                    );
-                }
-            }
+            log::error!("cancel_send failed, attempting restore: {:?}", e);
+            try_restore_wallet(&wallet).await;
             return Err(anyhow::anyhow!(
-                "cancel_send failed for mint {} of send, restore attempted: {}",
+                "cancel_send failed for mint {}, restore attempted: {}",
                 active_mint,
                 e
             ));
         }
 
-        // 4) Collect all small-denom unspent proofs for merging (single pass)
         let all_proofs = wallet.get_unspent_proofs().await?;
         let total = all_proofs.total_amount()?;
-
         let inputs: Proofs = all_proofs
             .into_iter()
             .filter(|p| denoms_to_watch.contains(p.amount.as_ref()))
             .collect();
 
-        // 5) Fee guard + merge (best-effort, with restore on failure)
         if inputs.len() >= 2 {
             let keyset_fees = wallet.get_keyset_fees().await?;
             let est_fee =
                 calculate_fee(&inputs.count_by_keyset(), &keyset_fees).unwrap_or_default();
-
             if total >= Amount::from(amount) + est_fee {
                 if let Err(e) = wallet
                     .swap(None, SplitTarget::default(), inputs, None, false)
                     .await
                 {
-                    log::warn!("pre-send merge swap failed, attempting restore: {:?}", e);
-                    match wallet.restore().await {
-                        std::result::Result::Ok(restored) => {
-                            log::info!("restore after merge failure succeeded: {:?}", restored);
-                        }
-                        Err(restore_err) => {
-                            log::error!(
-                                "restore after merge failure also failed: {:?}",
-                                restore_err
-                            );
-                        }
-                    }
+                    log::warn!("merge swap failed, attempting restore: {:?}", e);
+                    try_restore_wallet(&wallet).await;
                 }
-            } else {
-                log::debug!(
-                    "skip merge: total={} send={} fee={}",
-                    *total.as_ref(),
-                    amount,
-                    *est_fee.as_ref()
-                );
             }
         }
 
-        // 6) Re-prepare and send
         let prepared2 = wallet
             .prepare_send(Amount::from(amount), SendOptions::default())
             .await?;
-        let tx = wallet.send(prepared2, None).await?;
-        Ok(tx)
+        wallet.send(prepared2, None).await.map_err(Into::into)
     })?;
 
-    Ok(Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    })
-}
-
-fn _send_old(
-    state: &mut StdMutexGuard<'static, State>,
-    amount: u64,
-    active_mint: String,
-    _info: Option<String>,
-) -> anyhow::Result<Transaction> {
-    if amount == 0 {
-        bail!("can't send amount 0");
-    }
-
-    let unit = CurrencyUnit::from_str("sat")?;
-
-    let w = state.get_wallet()?;
-
-    let tx = state.rt.block_on(async {
-        let mints_amounts = mint_balances(w, &unit).await;
-        // Get wallet either by mint URL or by index
-        let wallet = get_wallet_by_mint_url(w, &active_mint, unit).await?;
-
-        // Find the mint amount for the selected wallet to check if we have sufficient funds
-        let mint_url = &wallet.mint_url;
-        let mint_amount = mints_amounts?
-            .iter()
-            .find(|(url, _)| url == mint_url)
-            .map(|(_, amount)| *amount)
-            .ok_or_else(|| anyhow!("Could not find balance for mint: {}", mint_url));
-
-        let mint_amount = mint_amount?;
-        check_sufficient_funds(mint_amount.clone(), amount.into())?;
-        // prepare one proofs if less than 10, and set prepare amount to 32
-        // if amount == 1 && *mint_amount.as_ref() > 32 && state.sats > 1 {
-        //     let _ = prepare_one_proofs_back(w, 10, state.sats.into(), active_mint).await?;
-        // }
-        let prepared_send = wallet
-            .prepare_send(amount.into(), SendOptions::default())
-            .await?;
-        let tx = wallet.send(prepared_send, None).await?;
-        Ok(tx)
-    })?;
-    let tx_new = Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    };
-
-    Ok(tx_new)
+    Ok(into_transaction(tx))
 }
 
 pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transaction> {
@@ -1368,52 +992,18 @@ pub fn request_mint(amount: u64, active_mint: String) -> anyhow::Result<Transact
     }
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&active_mint)?;
-
     let state = State::lock()?;
-
     let w = state.get_wallet()?;
 
     let tx = state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
         let quote = wallet.mint_quote(Amount::from(amount), None).await?;
-        // let mut subscription = wallet
-        //     .subscribe(WalletSubscription::Bolt11MintQuoteState(vec![quote
-        //         .id
-        //         .clone()]))
-        //     .await;
-
-        // while let Some(msg) = subscription.recv().await {
-        //     if let NotificationPayload::MintQuoteBolt11Response(response) = msg {
-        //         if response.state == MintQuoteState::Paid {
-        //             break;
-        //         }
-        //     }
-        // }
-        // let request = quote.request;
-        // let proofs = wallet.mint(&quote_id, SplitTarget::default(), None).await?;
-        // let receive_amount = proofs.total_amount()?;
-
-        Ok(quote)
+        Ok(quote.1)
     })?;
-    let tx = tx.1;
-    let tx_new = Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    };
 
-    Ok(tx_new)
+    Ok(into_transaction(tx))
 }
 
-/// don not used in flutter, and put it in check_pending
 pub fn mint_token(
     amount: u64,
     quote_id: String,
@@ -1422,138 +1012,45 @@ pub fn mint_token(
     if amount == 0 {
         bail!("can't mint amount 0");
     }
-
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&active_mint)?;
-
     let state = State::lock()?;
-
     let w = state.get_wallet()?;
 
     let tx = state.rt.block_on(async {
         let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
         let proofs = wallet.mint(&quote_id, SplitTarget::default(), None).await?;
-
-        let receive_amount = proofs.0.total_amount()?;
-
-        debug!("Received {receive_amount} from mint {mint_url}");
+        debug!(
+            "Received {} from mint {}",
+            proofs.0.total_amount()?,
+            mint_url
+        );
         Ok(proofs.1)
     })?;
 
-    let tx_new = Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    };
-
-    Ok(tx_new)
+    Ok(into_transaction(tx))
 }
 
-/// this need call every init melt mint, do not used in flutter
 pub fn check_all_mint_quotes() -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-    let tx = state.rt.block_on(async {
+    state.rt.block_on(async {
         let check = w.check_all_mint_quotes(None).await?;
-        let amounts: u64 = check.values().map(|v| *v.as_ref()).sum();
-
-        Ok(amounts)
-    })?;
-
-    Ok(tx)
+        Ok(check.values().map(|v| *v.as_ref()).sum())
+    })
 }
 
-/// check_melt_quote_id test
 pub fn check_melt_quote_id(quote_id: String, mint_url: String) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&mint_url)?;
-    let _tx = state.rt.block_on(async {
-        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+    state.rt.block_on(async {
+        let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
         let re = wallet.melt_quote_status_only(&quote_id).await?;
-        println!("melt_quote_status_only: {:?}", re);
-
+        log::debug!("melt_quote_status_only: {:?}", re);
         Ok(())
-    })?;
-
-    Ok(())
-}
-
-/// Checks pending proofs for spent status
-pub fn check_proofs() -> anyhow::Result<()> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-    let _tx = state.rt.block_on(async {
-        let mints = w.localstore.get_mints().await?;
-        let mut errs: Vec<String> = Vec::new();
-        for (mint_url, _info) in mints {
-            debug!("check_proofs mint_url: {}", mint_url);
-            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            // wallet.check_proofs_from_mint().await?;
-            if let Err(e) = wallet.check_proofs_from_mint().await {
-                error!("check_proofs mint_url: {} error: {:?}", mint_url, e);
-                errs.push(format!("{}: {}", mint_url, e));
-            }
-        }
-        // throw err
-        if !errs.is_empty() {
-            return Err(anyhow::anyhow!(format!(
-                "check_proofs failed for {} mint(s): {}",
-                errs.len(),
-                errs.join(" | ")
-            )));
-        }
-        Ok(())
-    })?;
-    Ok(())
-}
-
-/// include ln and cashu, tx status
-pub fn check_pending() -> anyhow::Result<()> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-    let _tx = state.rt.block_on(async {
-        let mut check_map = HashMap::new();
-        let mints = w.localstore.get_mints().await?;
-        for (mint_url, _info) in mints {
-            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            let check = wallet.check_pending_transactions_state().await?;
-            check_map.insert(mint_url.to_string(), check);
-        }
-        Ok(check_map)
-    })?;
-
-    Ok(())
-}
-
-/// include ln and cashu, tx status, use check_transaction instead
-pub fn check_single_pending(tx_id: String, mint_url: String) -> anyhow::Result<()> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-    let mint_url = MintUrl::from_str(&mint_url)?;
-    let _tx = state.rt.block_on(async {
-        let mut check_map = HashMap::new();
-        let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-        let check = wallet
-            .check_pending_transaction_state(tx_id.clone())
-            .await?;
-        check_map.insert(mint_url.to_string(), check);
-        Ok(check_map)
-    })?;
-
-    Ok(())
+    })
 }
 
 pub fn melt(
@@ -1564,12 +1061,9 @@ pub fn melt(
     if amount == Some(0) {
         bail!("can't melt amount 0");
     }
-
     let unit = CurrencyUnit::from_str("sat")?;
     let mint_url = MintUrl::from_str(&active_mint)?;
-
     let state = State::lock()?;
-
     let w = state.get_wallet()?;
 
     let tx = state.rt.block_on(async {
@@ -1578,211 +1072,212 @@ pub fn melt(
         let mint_amount = mints_amounts
             .iter()
             .find(|(url, _)| url == &mint_url)
-            .map(|(_, amount)| *amount)
+            .map(|(_, a)| *a)
             .ok_or_else(|| anyhow::anyhow!("Could not find balance for mint: {}", mint_url))?;
 
         let available_funds = <cdk::Amount as Into<u64>>::into(mint_amount) * MSAT_IN_SAT;
-
         let bolt11 = Bolt11Invoice::from_str(&invoice)?;
-        // Determine payment amount and options
+
         let options = if bolt11.amount_milli_satoshis().is_none() {
             let user_amount = amount.unwrap() * MSAT_IN_SAT;
-
             if user_amount > available_funds {
                 bail!("Not enough funds");
             }
-
             Some(MeltOptions::new_amountless(user_amount))
         } else {
-            // Check if invoice amount exceeds available funds
             let invoice_amount = bolt11.amount_milli_satoshis().unwrap();
             if invoice_amount > available_funds {
                 bail!("Not enough funds");
             }
             None
         };
-        // Process payment
+
         let quote = wallet.melt_quote(bolt11.to_string(), options).await?;
-        info!("melt_quote {quote:?}");
-
         let melt = wallet.melt(&quote.id).await?;
-        info!("Paid invoice: {}", melt.0.state);
-
         if let Some(preimage) = melt.0.preimage {
             info!("Payment preimage: {preimage}");
         }
-
         Ok(melt.1)
     })?;
-    let tx_new = Transaction {
-        id: tx.id().to_string(),
-        mint_url: tx.mint_url.to_string(),
-        io: tx.direction,
-        kind: tx.kind,
-        amount: *tx.amount.as_ref(),
-        fee: *tx.fee.as_ref(),
-        unit: Some(tx.unit.to_string()),
-        token: tx.token,
-        status: tx.status,
-        timestamp: tx.timestamp,
-        metadata: tx.metadata,
-    };
 
-    Ok(tx_new)
+    Ok(into_transaction(tx))
+}
+
+pub fn check_proofs() -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    state.rt.block_on(async {
+        let mints = w.localstore.get_mints().await?;
+        let mut errs: Vec<String> = Vec::new();
+        for (mint_url, _) in mints {
+            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+            if let Err(e) = wallet.check_proofs_from_mint().await {
+                error!("check_proofs mint_url: {} error: {:?}", mint_url, e);
+                errs.push(format!("{}: {}", mint_url, e));
+            }
+        }
+        if !errs.is_empty() {
+            return Err(anyhow::anyhow!(
+                "check_proofs failed for {} mint(s): {}",
+                errs.len(),
+                errs.join(" | ")
+            ));
+        }
+        Ok(())
+    })
+}
+
+pub fn check_pending() -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    state.rt.block_on(async {
+        let mints = w.localstore.get_mints().await?;
+        for (mint_url, _) in mints {
+            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+            wallet.check_pending_transactions_state().await?;
+        }
+        Ok(())
+    })
+}
+
+pub fn check_single_pending(tx_id: String, mint_url: String) -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let mint_url = MintUrl::from_str(&mint_url)?;
+    state.rt.block_on(async {
+        let wallet = get_or_create_wallet(w, &mint_url, unit).await?;
+        wallet.check_pending_transaction_state(tx_id).await?;
+        Ok(())
+    })
+}
+
+pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let tx_id = TransactionId::from_str(&id)?;
+
+    let tx = state.rt.block_on(async {
+        let mut tx = w
+            .localstore
+            .get_transaction(tx_id)
+            .await?
+            .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+
+        let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
+
+        if tx.status == TransactionStatus::Pending {
+            wallet.check_pending_transaction_state(id.clone()).await?;
+            tx = w
+                .localstore
+                .get_transaction(tx_id)
+                .await?
+                .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+        }
+
+        if tx.status == TransactionStatus::Failed {
+            wallet.check_failed_transaction(id).await?;
+            if let Some(new_tx) = w.localstore.get_transaction(tx_id).await? {
+                tx = new_tx;
+            }
+        }
+
+        Ok(into_transaction(tx))
+    })?;
+
+    Ok(tx)
+}
+
+pub fn check_failed_transaction(id: String) -> anyhow::Result<Transaction> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    let tx_id = TransactionId::from_str(&id)?;
+
+    let tx = state.rt.block_on(async {
+        let mut tx = w
+            .localstore
+            .get_transaction(tx_id)
+            .await?
+            .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+
+        if tx.status == TransactionStatus::Failed {
+            let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
+            wallet.check_failed_transaction(id).await?;
+            if let Some(new_tx) = w.localstore.get_transaction(tx_id).await? {
+                tx = new_tx;
+            }
+        }
+
+        Ok(into_transaction(tx))
+    })?;
+
+    Ok(tx)
 }
 
 pub fn get_all_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_transactions(None))?;
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_cashu_one_sats_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_transactions(None))?;
-
-    let txs_new = txs
-        .into_iter()
-        .filter(|tx| tx.kind == TransactionKind::Cashu && *tx.amount.as_ref() == 1)
-        .map(|tx| Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        })
-        .collect();
-
-    Ok(txs_new)
+    Ok(into_transactions(
+        txs.into_iter()
+            .filter(|tx| tx.kind == TransactionKind::Cashu && *tx.amount.as_ref() == 1)
+            .collect(),
+    ))
 }
 
 pub fn get_cashu_one_sats_transactions_with_mint(
     mint_url: String,
 ) -> anyhow::Result<Vec<Transaction>> {
+    let mint_norm = mint_url.trim_end_matches('/').to_string();
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_transactions(None))?;
-    let mint_norm = mint_url.trim_end_matches('/');
-
-    let txs_new = txs
-        .into_iter()
-        .filter(|tx| {
-            tx.kind == TransactionKind::Cashu
-                && *tx.amount.as_ref() == 1
-                && tx.mint_url.to_string().trim_end_matches('/') == mint_norm
-        })
-        .map(|tx| Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        })
-        .collect();
-
-    Ok(txs_new)
+    Ok(into_transactions(
+        txs.into_iter()
+            .filter(|tx| {
+                tx.kind == TransactionKind::Cashu
+                    && *tx.amount.as_ref() == 1
+                    && tx.mint_url.to_string().trim_end_matches('/') == mint_norm
+            })
+            .collect(),
+    ))
 }
 
 pub fn get_pending_failed_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state
         .rt
         .block_on(w.list_pending_failed_transactions(None))?;
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
-// incloud normal_tx ln_tx melt_tx mint_tx
 pub fn get_cashu_transactions_with_offset(
     offset: usize,
     limit: usize,
 ) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_transactions_with_kind_offset(
         offset,
         limit,
         [TransactionKind::Cashu].as_slice(),
         None,
     ))?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
-// incloud normal_tx ln_tx melt_tx mint_tx with given mint_url
 pub fn get_cashu_transactions_with_offset_mint(
     offset: usize,
     limit: usize,
@@ -1790,7 +1285,6 @@ pub fn get_cashu_transactions_with_offset_mint(
 ) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state
         .rt
         .block_on(w.list_transactions_with_kind_offset_mint(
@@ -1800,26 +1294,7 @@ pub fn get_cashu_transactions_with_offset_mint(
             [TransactionKind::Cashu].as_slice(),
             None,
         ))?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_transactions_with_offset(
@@ -1828,33 +1303,13 @@ pub fn get_transactions_with_offset(
 ) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_transactions_with_kind_offset(
         offset,
         limit,
         [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
         None,
     ))?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_transactions_with_offset_mint(
@@ -1864,7 +1319,6 @@ pub fn get_transactions_with_offset_mint(
 ) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state
         .rt
         .block_on(w.list_transactions_with_kind_offset_mint(
@@ -1874,26 +1328,7 @@ pub fn get_transactions_with_offset_mint(
             [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
             None,
         ))?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 fn get_transactions_with_offset_mint_amount(
@@ -1904,7 +1339,6 @@ fn get_transactions_with_offset_mint_amount(
 ) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state
         .rt
         .block_on(w.list_transactions_with_kind_amount_offset(
@@ -1915,26 +1349,7 @@ fn get_transactions_with_offset_mint_amount(
             None,
             amount,
         ))?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_txs_with_offset_mint_amount(
@@ -1943,12 +1358,8 @@ pub fn get_txs_with_offset_mint_amount(
     mint_url: String,
     is_one_amount: bool,
 ) -> anyhow::Result<Vec<Transaction>> {
-    if is_one_amount {
-        get_transactions_with_offset_mint_amount(offset, limit, mint_url, Some(1))
-    } else {
-        // -1 means not equal to 1 sat
-        get_transactions_with_offset_mint_amount(offset, limit, mint_url, Some(-1))
-    }
+    let amount = if is_one_amount { Some(1) } else { Some(-1) };
+    get_transactions_with_offset_mint_amount(offset, limit, mint_url, amount)
 }
 
 pub fn get_ln_transactions_with_offset(
@@ -1957,302 +1368,92 @@ pub fn get_ln_transactions_with_offset(
 ) -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_transactions_with_kind_offset(
         offset,
         limit,
         [TransactionKind::LN].as_slice(),
         None,
     ))?;
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_ln_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state
         .rt
         .block_on(w.list_pending_transactions_with_kind([TransactionKind::LN].as_slice(), None))?;
-    // let mut txs = Vec::with_capacity(tx.iter().filter(|x| x.is_ln()).count());
-    // for t in tx {
-    //     if let Transaction::LN(t) = t {
-    //         txs.push(t);
-    //     }
-    // }
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_cashu_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(
         w.list_pending_transactions_with_kind([TransactionKind::Cashu].as_slice(), None),
     )?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_pending_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_pending_transactions_with_kind(
         [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
         None,
     ))?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
 pub fn get_failed_transactions() -> anyhow::Result<Vec<Transaction>> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
     let txs = state.rt.block_on(w.list_failed_transactions_with_kind(
         [TransactionKind::Cashu, TransactionKind::LN].as_slice(),
         None,
     ))?;
-
-    let mut txs_new = Vec::new();
-    for tx in txs {
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        txs_new.push(tx_new);
-    }
-
-    Ok(txs_new)
+    Ok(into_transactions(txs))
 }
 
-/// remove transaction.time() <= unix_timestamp_le and kind is the status, timestamp must be second
 pub fn remove_transactions(
     unix_timestamp_le: u64,
     _status: TransactionStatus,
 ) -> anyhow::Result<()> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
-    let _tx = state
+    state
         .rt
         .block_on(w.remove_transactions(unix_timestamp_le))?;
-
     Ok(())
 }
 
 pub fn get_pending_transactions_count() -> anyhow::Result<u64> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
-    let tx = state.rt.block_on(async {
+    state.rt.block_on(async {
         let proofs = w.list_all_pending_proofs().await?;
-        let counts = proofs.values().map(|(v, _)| v.len() as u64).sum();
-        Ok(counts)
-    })?;
-    Ok(tx)
+        Ok(proofs.values().map(|(v, _)| v.len() as u64).sum())
+    })
 }
 
-pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-    let tx_id = TransactionId::from_str(&id)?;
-    let tx = state.rt.block_on(async {
-        let mut tx = w
-            .localstore
-            .get_transaction(tx_id)
-            .await?
-            .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
-
-        let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
-        if tx.status == cdk_common::wallet::TransactionStatus::Pending {
-            let _check = wallet.check_pending_transaction_state(id.clone()).await?;
-            tx = w
-                .localstore
-                .get_transaction(tx_id)
-                .await?
-                .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
-        }
-
-        if tx.status == cdk_common::wallet::TransactionStatus::Failed {
-            let _check = wallet.check_failed_transaction(id).await?;
-            // may be the tx has been removed after check, so may be not found again
-            if let Some(new_tx) = w.localstore.get_transaction(tx_id).await? {
-                tx = new_tx;
-            } else {
-                warn!("Transaction not found again, keep original tx: {}", tx_id);
-            }
-        }
-
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        Ok(tx_new)
-    })?;
-
-    Ok(tx)
-}
-
-// add failed tx check independently
-pub fn check_failed_transaction(id: String) -> anyhow::Result<Transaction> {
-    let state = State::lock()?;
-    let w = state.get_wallet()?;
-    let unit = CurrencyUnit::from_str("sat")?;
-    let tx_id = TransactionId::from_str(&id)?;
-    let tx = state.rt.block_on(async {
-        let mut tx = w
-            .localstore
-            .get_transaction(tx_id)
-            .await?
-            .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
-
-        let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
-
-        if tx.status == cdk_common::wallet::TransactionStatus::Failed {
-            let _check = wallet.check_failed_transaction(id).await?;
-            // may be the tx has been removed after check, so may be not found again
-            if let Some(new_tx) = w.localstore.get_transaction(tx_id).await? {
-                tx = new_tx;
-            } else {
-                warn!("Transaction not found again, keep original tx: {}", tx_id);
-            }
-        }
-
-        let tx_new = Transaction {
-            id: tx.id().to_string(),
-            mint_url: tx.mint_url.to_string(),
-            io: tx.direction,
-            kind: tx.kind,
-            amount: *tx.amount.as_ref(),
-            fee: *tx.fee.as_ref(),
-            unit: Some(tx.unit.to_string()),
-            token: tx.token,
-            status: tx.status,
-            timestamp: tx.timestamp,
-            metadata: tx.metadata,
-        };
-        Ok(tx_new)
-    })?;
-
-    Ok(tx)
-}
-/// (spents, pendings, all)
 pub fn get_all_proofs_data() -> anyhow::Result<(usize, usize, usize)> {
     let state = State::lock()?;
     let w = state.get_wallet()?;
-
-    let tx = state.rt.block_on(async {
-        let all_proofs = w.list_all_proofs().await?;
-        let spent_proofs = w.list_spent_proofs().await?;
-        let pending_proofs = w.list_pending_proofs().await?;
+    state.rt.block_on(async {
+        let all = w.list_all_proofs().await?;
+        let spent = w.list_spent_proofs().await?;
+        let pending = w.list_pending_proofs().await?;
         Ok((
-            all_proofs.values().len(),
-            spent_proofs.values().len(),
-            pending_proofs.values().len(),
+            all.values().len(),
+            spent.values().len(),
+            pending.values().len(),
         ))
-    })?;
-
-    Ok(tx)
+    })
 }
 
 pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
     let token: Token = Token::from_str(&encoded_token)?;
-
     Ok(TokenInfo {
-        // encoded_token,
         mint: token.mint_url()?.to_string(),
         amount: token.value()?.into(),
         unit: token.unit().as_ref().map(|s| s.to_string()),
@@ -2260,19 +1461,17 @@ pub fn decode_token(encoded_token: String) -> anyhow::Result<TokenInfo> {
     })
 }
 
-/// sleepms_after_check_a_batch for (code: 429): {"detail":"Rate limit exceeded."}
 pub fn restore(mint_url: String, words: Option<String>) -> anyhow::Result<(u64, u64)> {
     let mint_url = MintUrl::from_str(&mint_url)?;
     let mut state = State::lock()?;
     let unit = CurrencyUnit::from_str("sat")?;
 
-    if words.is_some() {
-        let mi = MnemonicInfo::with_words(&words.unwrap())?;
+    if let Some(w) = words {
+        let mi = MnemonicInfo::with_words(&w)?;
         let _ = state.update_mnmonic(Some(Arc::new(mi)));
     }
 
     let w = state.get_wallet()?;
-
     let amount = state.rt.block_on(async {
         let wallet = match w
             .get_wallet(&WalletKey::new(mint_url.clone(), unit.clone()))
@@ -2285,8 +1484,7 @@ pub fn restore(mint_url: String, words: Option<String>) -> anyhow::Result<(u64, 
             }
         };
 
-        let amount = wallet.restore().await?;
-        Ok(amount)
+        Ok(wallet.restore().await?)
     })?;
 
     Ok((amount.0.into(), amount.1))
@@ -2294,7 +1492,6 @@ pub fn restore(mint_url: String, words: Option<String>) -> anyhow::Result<(u64, 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TokenInfo {
-    // pub encoded_token: String,
     pub mint: String,
     pub amount: u64,
     pub unit: Option<String>,
@@ -2314,21 +1511,14 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
         InvoiceDescriptionRef::Hash(_) => None,
     };
 
-    let status = match invoice.is_expired() {
-        true => InvoiceStatus::Expired,
-        false => InvoiceStatus::Unpaid,
+    let status = if invoice.is_expired() {
+        InvoiceStatus::Expired
+    } else {
+        InvoiceStatus::Unpaid
     };
-
     let ts = (invoice.duration_since_epoch() + invoice.expiry_time()).as_millis();
-    debug!(
-        "{:?}+{:?}={}",
-        invoice.duration_since_epoch(),
-        invoice.expiry_time(),
-        ts
-    );
 
     Ok(InvoiceInfo {
-        // bolt11: encoded_invoice,
         amount: amount / 1000,
         hash: invoice.payment_hash().to_string(),
         expiry_ts: ts as _,
@@ -2340,7 +1530,6 @@ pub fn decode_invoice(encoded_invoice: String) -> anyhow::Result<InvoiceInfo> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InvoiceInfo {
-    // pub bolt11: String,
     pub amount: u64,
     pub expiry_ts: u64,
     pub hash: String,
@@ -2348,6 +1537,7 @@ pub struct InvoiceInfo {
     pub mint: Option<String>,
     pub status: InvoiceStatus,
 }
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum InvoiceStatus {
     Paid,
