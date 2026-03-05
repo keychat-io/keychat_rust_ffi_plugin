@@ -68,7 +68,8 @@ fn test_init_v1_and_get_poorfs_to_v2(words: &str) {
 
 fn test_get_balance(words: &str) {
     println!("generate_words is {:?}", words);
-    let _init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
+    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
+    println!("init_db is {:?}", init_db);
     let init_cashu = api::init_cashu(32);
     println!("init_cashu is {:?}", init_cashu);
 
@@ -420,30 +421,6 @@ fn test_check_transaction(words: &str) {
 
     // test for print proofs
     let _ = api::print_proofs(MINT_URL.to_string());
-}
-
-fn test_mint_token(words: &str) {
-    println!("generate_words is {:?}", words);
-    let init_db = api::init_db(DB_PATH.to_string(), words.to_owned(), false);
-    println!("init_db {}: {:?}", DB_PATH, init_db);
-    let init_cashu = api::init_cashu(32);
-    println!("init_cashu is {:?}", init_cashu);
-
-    // test fot get balances
-    let b1 = api::get_balances();
-    println!("get_balances before {:?}", b1);
-
-    // test for check transaction
-    let quote_id = "B7rKkwCcMMcYv7wXEIJbkScIZtOaptIGqq4mKy7c".to_string();
-    let amount = api::mint_token(10, quote_id, MINT_URL_MINIBITS.to_string());
-    println!("test_mint_token amount is {:?}", amount);
-
-    // test fot get balances
-    let b2 = api::get_balances();
-    println!("get_balances after {:?}", b2);
-
-    // test for print proofs
-    let _ = api::print_proofs(MINT_URL_MINIBITS.to_string());
 }
 
 fn test_melt(words: &str) {
