@@ -1302,6 +1302,30 @@ pub fn check_melt_quote_id(quote_id: String, mint_url: String) -> anyhow::Result
     Ok(())
 }
 
+/// Recover incomplete sagas after crash. Call after init_cashu in background.
+pub fn recover_sagas() -> anyhow::Result<()> {
+    let state = State::lock()?;
+    let w = state.get_wallet()?;
+    let unit = CurrencyUnit::from_str("sat")?;
+    state.rt.block_on(async {
+        let mints = w.localstore.get_mints().await?;
+        for (mint_url, _info) in mints {
+            let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
+            if let Err(e) = wallet.recover_incomplete_sagas().await {
+                error!(
+                    "recover_incomplete_sagas mint_url: {} error: {:?}",
+                    mint_url, e
+                );
+            }
+            if let Err(e) = wallet.mint_unissued_quotes().await {
+                error!("mint_unissued_quotes mint_url: {} error: {:?}", mint_url, e);
+            }
+        }
+        Ok(())
+    })?;
+    Ok(())
+}
+
 /// Checks pending proofs for spent status
 pub fn check_proofs() -> anyhow::Result<()> {
     let state = State::lock()?;
@@ -1313,7 +1337,6 @@ pub fn check_proofs() -> anyhow::Result<()> {
         for (mint_url, _info) in mints {
             debug!("check_proofs mint_url: {}", mint_url);
             let wallet = get_or_create_wallet(w, &mint_url, unit.clone()).await?;
-            // wallet.check_proofs_from_mint().await?;
             if let Err(e) = wallet.check_proofs_from_mint().await {
                 error!("check_proofs mint_url: {} error: {:?}", mint_url, e);
                 errs.push(format!("{}: {}", mint_url, e));
@@ -1785,22 +1808,11 @@ pub fn check_transaction(id: String) -> anyhow::Result<Transaction> {
 
         let wallet = get_wallet_by_mint_url(w, &tx.mint_url.to_string(), unit).await?;
         if tx.status == cdk_common::wallet::TransactionStatus::Pending {
-            let _check = wallet.check_pending_transaction_state(id.clone()).await?;
-            tx = w
-                .localstore
-                .get_transaction(tx_id)
-                .await?
-                .ok_or_else(|| anyhow::anyhow!("Transaction not found"))?;
+            tx = wallet.check_pending_transaction_state(id.clone()).await?;
         }
 
         if tx.status == cdk_common::wallet::TransactionStatus::Failed {
-            let _check = wallet.check_failed_transaction(id).await?;
-            // may be the tx has been removed after check, so may be not found again
-            if let Some(new_tx) = w.localstore.get_transaction(tx_id).await? {
-                tx = new_tx;
-            } else {
-                warn!("Transaction not found again, keep original tx: {}", tx_id);
-            }
+            tx = wallet.check_failed_transaction(id).await?;
         }
 
         let tx_new = Transaction {
