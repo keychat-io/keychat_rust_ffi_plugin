@@ -6,171 +6,182 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
-class AddMembersResult {
-  final String queuedMsg;
-  final Uint8List welcome;
+            // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
-  const AddMembersResult({
-    required this.queuedMsg,
-    required this.welcome,
-  });
 
-  @override
-  int get hashCode => queuedMsg.hashCode ^ welcome.hashCode;
+            
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is AddMembersResult &&
-          runtimeType == other.runtimeType &&
-          queuedMsg == other.queuedMsg &&
-          welcome == other.welcome;
-}
+            class AddMembersResult  {
+                final String queuedMsg;
+final Uint8List welcome;
 
-class CommitResult {
-  final String sender;
-  final CommitTypeResult commitType;
-  final List<String>? operatedMembers;
+                const AddMembersResult({required this.queuedMsg ,required this.welcome ,});
 
-  const CommitResult({
-    required this.sender,
-    required this.commitType,
-    this.operatedMembers,
-  });
+                
+                
 
-  @override
-  int get hashCode => sender.hashCode ^ commitType.hashCode ^ operatedMembers.hashCode;
+                
+        @override
+        int get hashCode => queuedMsg.hashCode^welcome.hashCode;
+        
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CommitResult &&
-          runtimeType == other.runtimeType &&
-          sender == other.sender &&
-          commitType == other.commitType &&
-          operatedMembers == other.operatedMembers;
-}
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is AddMembersResult &&
+                runtimeType == other.runtimeType
+                && queuedMsg == other.queuedMsg&& welcome == other.welcome;
+        
+            }
+
+class CommitResult  {
+                final String sender;
+final CommitTypeResult commitType;
+final List<String>? operatedMembers;
+
+                const CommitResult({required this.sender ,required this.commitType ,this.operatedMembers ,});
+
+                
+                
+
+                
+        @override
+        int get hashCode => sender.hashCode^commitType.hashCode^operatedMembers.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is CommitResult &&
+                runtimeType == other.runtimeType
+                && sender == other.sender&& commitType == other.commitType&& operatedMembers == other.operatedMembers;
+        
+            }
 
 enum CommitTypeResult {
-  add,
-  update,
-  remove,
-  groupContextExtensions,
-  ;
-}
+                    add,
+update,
+remove,
+groupContextExtensions,
+                    ;
+                    
+                }
 
-class DecryptedMessage {
-  final String decryptMsg;
-  final String sender;
-  final String listenKey;
+class DecryptedMessage  {
+                final String decryptMsg;
+final String sender;
+final String listenKey;
 
-  const DecryptedMessage({
-    required this.decryptMsg,
-    required this.sender,
-    required this.listenKey,
-  });
+                const DecryptedMessage({required this.decryptMsg ,required this.sender ,required this.listenKey ,});
 
-  @override
-  int get hashCode => decryptMsg.hashCode ^ sender.hashCode ^ listenKey.hashCode;
+                
+                
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DecryptedMessage &&
-          runtimeType == other.runtimeType &&
-          decryptMsg == other.decryptMsg &&
-          sender == other.sender &&
-          listenKey == other.listenKey;
-}
+                
+        @override
+        int get hashCode => decryptMsg.hashCode^sender.hashCode^listenKey.hashCode;
+        
 
-class GroupExtensionResult {
-  final Uint8List name;
-  final Uint8List description;
-  final List<Uint8List> adminPubkeys;
-  final List<Uint8List> relays;
-  final Uint8List status;
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is DecryptedMessage &&
+                runtimeType == other.runtimeType
+                && decryptMsg == other.decryptMsg&& sender == other.sender&& listenKey == other.listenKey;
+        
+            }
 
-  const GroupExtensionResult({
-    required this.name,
-    required this.description,
-    required this.adminPubkeys,
-    required this.relays,
-    required this.status,
-  });
+class GroupExtensionResult  {
+                final Uint8List name;
+final Uint8List description;
+final List<Uint8List> adminPubkeys;
+final List<Uint8List> relays;
+final Uint8List status;
 
-  @override
-  int get hashCode => name.hashCode ^ description.hashCode ^ adminPubkeys.hashCode ^ relays.hashCode ^ status.hashCode;
+                const GroupExtensionResult({required this.name ,required this.description ,required this.adminPubkeys ,required this.relays ,required this.status ,});
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GroupExtensionResult &&
-          runtimeType == other.runtimeType &&
-          name == other.name &&
-          description == other.description &&
-          adminPubkeys == other.adminPubkeys &&
-          relays == other.relays &&
-          status == other.status;
-}
+                
+                
 
-class KeyPackageResult {
-  final String keyPackage;
-  final String mlsProtocolVersion;
-  final String ciphersuite;
-  final String extensions;
+                
+        @override
+        int get hashCode => name.hashCode^description.hashCode^adminPubkeys.hashCode^relays.hashCode^status.hashCode;
+        
 
-  const KeyPackageResult({
-    required this.keyPackage,
-    required this.mlsProtocolVersion,
-    required this.ciphersuite,
-    required this.extensions,
-  });
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is GroupExtensionResult &&
+                runtimeType == other.runtimeType
+                && name == other.name&& description == other.description&& adminPubkeys == other.adminPubkeys&& relays == other.relays&& status == other.status;
+        
+            }
 
-  @override
-  int get hashCode => keyPackage.hashCode ^ mlsProtocolVersion.hashCode ^ ciphersuite.hashCode ^ extensions.hashCode;
+class KeyPackageResult  {
+                final String keyPackage;
+final String mlsProtocolVersion;
+final String ciphersuite;
+final String extensions;
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is KeyPackageResult &&
-          runtimeType == other.runtimeType &&
-          keyPackage == other.keyPackage &&
-          mlsProtocolVersion == other.mlsProtocolVersion &&
-          ciphersuite == other.ciphersuite &&
-          extensions == other.extensions;
-}
+                const KeyPackageResult({required this.keyPackage ,required this.mlsProtocolVersion ,required this.ciphersuite ,required this.extensions ,});
+
+                
+                
+
+                
+        @override
+        int get hashCode => keyPackage.hashCode^mlsProtocolVersion.hashCode^ciphersuite.hashCode^extensions.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is KeyPackageResult &&
+                runtimeType == other.runtimeType
+                && keyPackage == other.keyPackage&& mlsProtocolVersion == other.mlsProtocolVersion&& ciphersuite == other.ciphersuite&& extensions == other.extensions;
+        
+            }
 
 enum MessageInType {
-  application,
-  proposal,
-  commit,
-  welcome,
-  groupInfo,
-  keyPackage,
-  publicMessage,
-  custom,
-  ;
-}
+                    application,
+proposal,
+commit,
+welcome,
+groupInfo,
+keyPackage,
+publicMessage,
+custom,
+                    ;
+                    
+                }
 
-class MessageResult {
-  final String encryptMsg;
-  final String listenKey;
+class MessageResult  {
+                final String encryptMsg;
+final String listenKey;
 
-  const MessageResult({
-    required this.encryptMsg,
-    required this.listenKey,
-  });
+                const MessageResult({required this.encryptMsg ,required this.listenKey ,});
 
-  @override
-  int get hashCode => encryptMsg.hashCode ^ listenKey.hashCode;
+                
+                
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is MessageResult &&
-          runtimeType == other.runtimeType &&
-          encryptMsg == other.encryptMsg &&
-          listenKey == other.listenKey;
-}
+                
+        @override
+        int get hashCode => encryptMsg.hashCode^listenKey.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is MessageResult &&
+                runtimeType == other.runtimeType
+                && encryptMsg == other.encryptMsg&& listenKey == other.listenKey;
+        
+            }
+            

@@ -1,5 +1,4 @@
 use anyhow::Result;
-use bincode::de;
 use rust::api_nostr::nostr::base64::engine::general_purpose;
 use rust::api_nostr::nostr::base64::*;
 use rust::api_signal::signal_store::libsignal_protocol::*;
@@ -9,9 +8,9 @@ fn main() {
     // let _ = test_kdf();
     // let _= test_state();
     // let _ = test_db();
-    let _ = test_close_db();
+    // let _ = test_close_db();
     // let _ = test_parse_is_prekey_message2();
-    // let _ = test_x3dh_db();
+    let _ = test_x3dh_db();
     // let _ = test_multi_add();
 }
 
@@ -78,8 +77,8 @@ fn test_close_db() -> Result<()> {
         private_key: bob_identity_private.as_slice().try_into().unwrap(),
     };
 
-    let t = generate_signed_key_api(bob_identity_key_pair, alice_identity_private);
-    println!("generate_signed_key_api {:?}", t);
+    let t = generate_signed_pre_key_api(bob_identity_key_pair, alice_identity_private);
+    println!("generate_signed_pre_key_api {:?}", t);
     let c = close_signal_db();
     println!("close_signal_db {:?}", c);
     Ok(())
@@ -119,8 +118,8 @@ fn test_db() -> Result<()> {
         private_key: bob_identity_private.as_slice().try_into().unwrap(),
     };
 
-    let t = generate_signed_key_api(bob_identity_key_pair, alice_identity_private);
-    println!("generate_signed_key_api {:?}", t);
+    let t = generate_signed_pre_key_api(bob_identity_key_pair, alice_identity_private);
+    println!("generate_signed_pre_key_api {:?}", t);
     //test alice_identity_key_pair
     let t1 = get_all_alice_addrs(bob_identity_key_pair);
     println!("bob_identity_key_pair alice address {:?}", t1.unwrap());
@@ -337,16 +336,16 @@ fn test_x3dh_db() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_key_api(alice_identity_key_pair, bob_identity_private)?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
-    let bob_signed_id = bob_info.0;
+    let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
-    let bob_signed_key_public = bob_info.1;
-    let bob_signed_signature = bob_info.2;
+    let bob_signed_key_public = bob_info.signed_pre_key_public;
+    let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
 
-    process_prekey_bundle_api(
+    process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
@@ -357,8 +356,8 @@ fn test_x3dh_db() -> Result<()> {
         bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_prekey_info.0.into(),
-        bob_prekey_info.1,
+        bob_prekey_info.pre_key_id.into(),
+        bob_prekey_info.pre_key_public,
     )
     .unwrap();
 
@@ -380,7 +379,7 @@ fn test_x3dh_db() -> Result<()> {
 
     let alice2bob_bob_decrypt = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt.0,
+        alice2bob_encrypt.ciphertext,
         alice_address.clone(),
         1,
         true,
@@ -388,7 +387,7 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt {:?}",
-        String::from_utf8(alice2bob_bob_decrypt.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt.plaintext).expect("valid utf8")
     );
     let bobs_response_to_alice = "Bob response to Alice";
     // bob to Alice
@@ -407,7 +406,7 @@ fn test_x3dh_db() -> Result<()> {
     // alice decrypt bob
     let alice_decrypts_from_bob = decrypt_signal(
         alice_identity_key_pair,
-        bobs_response_to_alice_encrypt.0,
+        bobs_response_to_alice_encrypt.ciphertext,
         bob_address.clone(),
         1,
         false,
@@ -415,20 +414,20 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "alice_decrypts_from_bob {:?}",
-        String::from_utf8(alice_decrypts_from_bob.0).expect("valid utf8")
+        String::from_utf8(alice_decrypts_from_bob.plaintext).expect("valid utf8")
     );
 
     /*
      * second alice to tom then  tom to alice
      */
-    let tom_info = generate_signed_key_api(alice_identity_key_pair, tom_identity_private)?;
+    let tom_info = generate_signed_pre_key_api(alice_identity_key_pair, tom_identity_private)?;
     let tom_prekey = generate_prekey_api(alice_identity_key_pair)?;
 
-    let tom_sign_id = tom_info.0;
+    let tom_sign_id = tom_info.signed_pre_key_id;
     println!("tom_sign_id {:?}", tom_sign_id);
-    let tom_signed_key_public = tom_info.1;
-    let tom_signed_signature = tom_info.2;
-    process_prekey_bundle_api(
+    let tom_signed_key_public = tom_info.signed_pre_key_public;
+    let tom_signed_signature = tom_info.signed_pre_key_signature;
+    process_pre_key_bundle_api(
         alice_identity_key_pair,
         tom_address.clone(),
         registration_id_tom,
@@ -439,8 +438,8 @@ fn test_x3dh_db() -> Result<()> {
         tom_sign_id,
         tom_signed_key_public,
         tom_signed_signature,
-        tom_prekey.0.into(),
-        tom_prekey.1,
+        tom_prekey.pre_key_id.into(),
+        tom_prekey.pre_key_public,
     )
     .unwrap();
 
@@ -462,7 +461,7 @@ fn test_x3dh_db() -> Result<()> {
     // tom decrypt Alice
     let alice2tom_tom_decrypt = decrypt_signal(
         tom_identity_key_pair,
-        alice2tom_encrypt.0,
+        alice2tom_encrypt.ciphertext,
         alice_address.clone(),
         2,
         true,
@@ -470,7 +469,7 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "alice2tom_tom_decrypt {:?}",
-        String::from_utf8(alice2tom_tom_decrypt.0).expect("valid utf8")
+        String::from_utf8(alice2tom_tom_decrypt.plaintext).expect("valid utf8")
     );
     let tom_response_to_alice = "Tom response to Alice";
     // tom to Alice
@@ -484,7 +483,7 @@ fn test_x3dh_db() -> Result<()> {
     // alice decrypt tom
     let alice_decrypts_from_tom = decrypt_signal(
         alice_identity_key_pair,
-        tom_response_to_alice_encrypt.0,
+        tom_response_to_alice_encrypt.ciphertext,
         tom_address.clone(),
         2,
         false,
@@ -492,7 +491,7 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "alice_decrypts_from_tom {:?}",
-        String::from_utf8(alice_decrypts_from_tom.0).expect("valid utf8")
+        String::from_utf8(alice_decrypts_from_tom.plaintext).expect("valid utf8")
     );
 
     /*
@@ -510,7 +509,7 @@ fn test_x3dh_db() -> Result<()> {
     // bob decrypt Alice
     let alice2bob_bob_decrypt2 = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt2.0,
+        alice2bob_encrypt2.ciphertext,
         alice_address.clone(),
         1,
         false,
@@ -518,7 +517,7 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt2 {:?}",
-        String::from_utf8(alice2bob_bob_decrypt2.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt2.plaintext).expect("valid utf8")
     );
     let bobs_response_to_alice2 = "Bob response to Alice again";
     // bob to Alice
@@ -532,7 +531,7 @@ fn test_x3dh_db() -> Result<()> {
     // alice decrypt bob
     let alice_decrypts_from_bob2 = decrypt_signal(
         alice_identity_key_pair,
-        bobs_response_to_alice_encrypt2.0,
+        bobs_response_to_alice_encrypt2.ciphertext,
         bob_address.clone(),
         1,
         false,
@@ -540,7 +539,7 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "alice_decrypts_from_bob2 {:?}",
-        String::from_utf8(alice_decrypts_from_bob2.0).expect("valid utf8")
+        String::from_utf8(alice_decrypts_from_bob2.plaintext).expect("valid utf8")
     );
 
     /*
@@ -559,7 +558,7 @@ fn test_x3dh_db() -> Result<()> {
     // tom decrypt alice
     let tom_decrypts_from_alice = decrypt_signal(
         tom_identity_key_pair,
-        alice_response_to_tom_encrypt.0,
+        alice_response_to_tom_encrypt.ciphertext,
         alice_address.clone(),
         1,
         false,
@@ -567,7 +566,7 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "tom_decrypts_from_alice {:?}",
-        String::from_utf8(tom_decrypts_from_alice.0).expect("valid utf8")
+        String::from_utf8(tom_decrypts_from_alice.plaintext).expect("valid utf8")
     );
 
     let tom2alice_msg = "Tom to Alice";
@@ -582,7 +581,7 @@ fn test_x3dh_db() -> Result<()> {
     // alice decrypt tom
     let tom2alice_tom_decrypt = decrypt_signal(
         alice_identity_key_pair,
-        tom2alice_encrypt.0,
+        tom2alice_encrypt.ciphertext,
         tom_address.clone(),
         1,
         false,
@@ -590,7 +589,7 @@ fn test_x3dh_db() -> Result<()> {
     .unwrap();
     println!(
         "tom2alice_tom_decrypt {:?}",
-        String::from_utf8(tom2alice_tom_decrypt.0).expect("valid utf8")
+        String::from_utf8(tom2alice_tom_decrypt.plaintext).expect("valid utf8")
     );
     Ok(())
 }
@@ -663,16 +662,16 @@ fn test_x3dh_db2() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_key_api(alice_identity_key_pair, bob_identity_private)?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
-    let bob_signed_id = bob_info.0;
+    let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
-    let bob_signed_key_public = bob_info.1;
-    let bob_signed_signature = bob_info.2;
+    let bob_signed_key_public = bob_info.signed_pre_key_public;
+    let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
 
-    process_prekey_bundle_api(
+    process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
@@ -683,8 +682,8 @@ fn test_x3dh_db2() -> Result<()> {
         bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_prekey_info.0.into(),
-        bob_prekey_info.1,
+        bob_prekey_info.pre_key_id.into(),
+        bob_prekey_info.pre_key_public,
     )
     .unwrap();
 
@@ -706,7 +705,7 @@ fn test_x3dh_db2() -> Result<()> {
     // bob decrypt Alice
     let alice2bob_bob_decrypt = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt.0,
+        alice2bob_encrypt.ciphertext,
         alice_address.clone(),
         1,
         true,
@@ -714,7 +713,7 @@ fn test_x3dh_db2() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt {:?}",
-        String::from_utf8(alice2bob_bob_decrypt.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt.plaintext).expect("valid utf8")
     );
     let bobs_response_to_alice = "Bob response to Alice";
     // bob to Alice
@@ -728,7 +727,7 @@ fn test_x3dh_db2() -> Result<()> {
     // alice decrypt bob
     let alice_decrypts_from_bob = decrypt_signal(
         alice_identity_key_pair,
-        bobs_response_to_alice_encrypt.0,
+        bobs_response_to_alice_encrypt.ciphertext,
         bob_address.clone(),
         1,
         false,
@@ -736,7 +735,7 @@ fn test_x3dh_db2() -> Result<()> {
     .unwrap();
     println!(
         "alice_decrypts_from_bob {:?}",
-        String::from_utf8(alice_decrypts_from_bob.0).expect("valid utf8")
+        String::from_utf8(alice_decrypts_from_bob.plaintext).expect("valid utf8")
     );
 
     let bobs_response_to_alice2 = "Bob response to Alice2";
@@ -751,7 +750,7 @@ fn test_x3dh_db2() -> Result<()> {
     // alice decrypt bob
     let alice_decrypts_from_bob2 = decrypt_signal(
         alice_identity_key_pair,
-        bobs_response_to_alice_encrypt2.0,
+        bobs_response_to_alice_encrypt2.ciphertext,
         bob_address.clone(),
         1,
         false,
@@ -759,7 +758,7 @@ fn test_x3dh_db2() -> Result<()> {
     .unwrap();
     println!(
         "alice_decrypts_from_bob2 {:?}",
-        String::from_utf8(alice_decrypts_from_bob2.0).expect("valid utf8")
+        String::from_utf8(alice_decrypts_from_bob2.plaintext).expect("valid utf8")
     );
 
     Ok(())
@@ -832,16 +831,16 @@ fn test_x3dh_db3() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_key_api(alice_identity_key_pair, bob_identity_private)?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
-    let bob_signed_id = bob_info.0;
+    let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
-    let bob_signed_key_public = bob_info.1;
-    let bob_signed_signature = bob_info.2;
+    let bob_signed_key_public = bob_info.signed_pre_key_public;
+    let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
 
-    process_prekey_bundle_api(
+    process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
@@ -852,8 +851,8 @@ fn test_x3dh_db3() -> Result<()> {
         bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_prekey_info.0.into(),
-        bob_prekey_info.1,
+        bob_prekey_info.pre_key_id.into(),
+        bob_prekey_info.pre_key_public,
     )
     .unwrap();
 
@@ -869,7 +868,7 @@ fn test_x3dh_db3() -> Result<()> {
 
     let alice2bob_bob_decrypt = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt.0,
+        alice2bob_encrypt.ciphertext,
         alice_address.clone(),
         1,
         true,
@@ -877,7 +876,7 @@ fn test_x3dh_db3() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt {:?}",
-        String::from_utf8(alice2bob_bob_decrypt.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt.plaintext).expect("valid utf8")
     );
 
     // let alice2bob_msg2 = "Alice to Bob 2";
@@ -893,7 +892,7 @@ fn test_x3dh_db3() -> Result<()> {
     //
     // let alice2bob_bob_decrypt2 = decrypt_signal(
     //     bob_identity_key_pair,
-    //     alice2bob_encrypt2.0,
+    //     alice2bob_encrypt2.ciphertext,
     //     alice_address.clone(),
     //     1,
     //     false,
@@ -901,7 +900,7 @@ fn test_x3dh_db3() -> Result<()> {
     //     .unwrap();
     // println!(
     //     "alice2bob_bob_decrypt {:?}",
-    //     String::from_utf8(alice2bob_bob_decrypt2.0).expect("valid utf8")
+    //     String::from_utf8(alice2bob_bob_decrypt2.plaintext).expect("valid utf8")
     // );
 
     Ok(())
@@ -973,16 +972,16 @@ fn test_multi_add() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_key_api(alice_identity_key_pair, bob_identity_private)?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
-    let bob_signed_id = bob_info.0;
+    let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
-    let bob_signed_key_public = bob_info.1;
-    let bob_signed_signature = bob_info.2;
+    let bob_signed_key_public = bob_info.signed_pre_key_public;
+    let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
 
-    process_prekey_bundle_api(
+    process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
@@ -993,8 +992,8 @@ fn test_multi_add() -> Result<()> {
         bob_signed_id.into(),
         bob_signed_key_public.clone(),
         bob_signed_signature.clone(),
-        bob_prekey_info.0.into(),
-        bob_prekey_info.clone().1,
+        bob_prekey_info.pre_key_id.into(),
+        bob_prekey_info.clone().pre_key_public,
     )
     .unwrap();
 
@@ -1010,7 +1009,7 @@ fn test_multi_add() -> Result<()> {
 
     let _ = delete_session(alice_identity_key_pair, bob_address.clone());
 
-    process_prekey_bundle_api(
+    process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
@@ -1021,8 +1020,8 @@ fn test_multi_add() -> Result<()> {
         bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_prekey_info.0.into(),
-        bob_prekey_info.1,
+        bob_prekey_info.pre_key_id.into(),
+        bob_prekey_info.pre_key_public,
     )
     .unwrap();
 
@@ -1038,7 +1037,7 @@ fn test_multi_add() -> Result<()> {
 
     let alice2bob_bob_decrypt = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt.0,
+        alice2bob_encrypt.ciphertext,
         alice_address.clone(),
         1,
         true,
@@ -1046,7 +1045,7 @@ fn test_multi_add() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt {:?}",
-        String::from_utf8(alice2bob_bob_decrypt.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt.plaintext).expect("valid utf8")
     );
 
     // let alice2bob_msg2 = "Alice to Bob 2";
@@ -1062,7 +1061,7 @@ fn test_multi_add() -> Result<()> {
     //
     // let alice2bob_bob_decrypt2 = decrypt_signal(
     //     bob_identity_key_pair,
-    //     alice2bob_encrypt2.0,
+    //     alice2bob_encrypt2.ciphertext,
     //     alice_address.clone(),
     //     1,
     //     false,
@@ -1070,7 +1069,7 @@ fn test_multi_add() -> Result<()> {
     //     .unwrap();
     // println!(
     //     "alice2bob_bob_decrypt {:?}",
-    //     String::from_utf8(alice2bob_bob_decrypt2.0).expect("valid utf8")
+    //     String::from_utf8(alice2bob_bob_decrypt2.plaintext).expect("valid utf8")
     // );
 
     Ok(())
@@ -1125,16 +1124,16 @@ fn test_kdf() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_key_api(alice_identity_key_pair, bob_identity_private)?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
-    let bob_signed_id = bob_info.0;
+    let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
-    let bob_signed_key_public = bob_info.1;
-    let bob_signed_signature = bob_info.2;
+    let bob_signed_key_public = bob_info.signed_pre_key_public;
+    let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
 
-    process_prekey_bundle_api(
+    process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
@@ -1145,8 +1144,8 @@ fn test_kdf() -> Result<()> {
         bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_prekey_info.0.into(),
-        bob_prekey_info.1,
+        bob_prekey_info.pre_key_id.into(),
+        bob_prekey_info.pre_key_public,
     )
     .unwrap();
 
@@ -1189,7 +1188,7 @@ fn test_kdf() -> Result<()> {
 
     let alice2bob_bob_decrypt0 = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt0.0,
+        alice2bob_encrypt0.ciphertext,
         alice_address.clone(),
         1,
         true,
@@ -1197,12 +1196,12 @@ fn test_kdf() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt0 {:?}",
-        String::from_utf8(alice2bob_bob_decrypt0.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt0.plaintext).expect("valid utf8")
     );
 
     let alice2bob_bob_decrypt1 = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt1.0,
+        alice2bob_encrypt1.ciphertext,
         alice_address.clone(),
         1,
         true,
@@ -1210,12 +1209,12 @@ fn test_kdf() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt1 {:?}",
-        String::from_utf8(alice2bob_bob_decrypt1.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt1.plaintext).expect("valid utf8")
     );
 
     let alice2bob_bob_decrypt2 = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt2.0,
+        alice2bob_encrypt2.ciphertext,
         alice_address.clone(),
         1,
         false,
@@ -1223,7 +1222,7 @@ fn test_kdf() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt2 {:?}",
-        String::from_utf8(alice2bob_bob_decrypt2.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt2.plaintext).expect("valid utf8")
     );
 
     let alice2bob_msg3 = "Alice to Bob 3";
@@ -1238,7 +1237,7 @@ fn test_kdf() -> Result<()> {
 
     let alice2bob_bob_decrypt3 = decrypt_signal(
         bob_identity_key_pair,
-        alice2bob_encrypt3.0,
+        alice2bob_encrypt3.ciphertext,
         alice_address.clone(),
         1,
         false,
@@ -1246,7 +1245,7 @@ fn test_kdf() -> Result<()> {
     .unwrap();
     println!(
         "alice2bob_bob_decrypt3 {:?}",
-        String::from_utf8(alice2bob_bob_decrypt3.0).expect("valid utf8")
+        String::from_utf8(alice2bob_bob_decrypt3.plaintext).expect("valid utf8")
     );
     Ok(())
 }
@@ -1376,16 +1375,16 @@ fn test_kdf() -> Result<()> {
 // //     let registration_id_jack = 4;
 
 //     let _ = init(db_path1.to_owned(), alice_identity_key_pair, registration_id_alice);
-//     process_prekey_bundle_api(bob_address.clone(),registration_id_bob, device_id1.into(),
+//     process_pre_key_bundle_api(bob_address.clone(),registration_id_bob, device_id1.into(),
 //         KeychatIdentityKey{public_key: bob_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //     let alice2bob_msg = "Alice to Bob";
 //     let alice2bob_encrypt = encrypt_signal(alice2bob_msg.to_string(), bob_address.clone()).unwrap();
 
 //     let _ = init(db_path2.to_owned(), bob_identity_key_pair, registration_id_bob);
-//     process_prekey_bundle_api(alice_address.clone(),registration_id_alice, device_id1.into(),
+//     process_pre_key_bundle_api(alice_address.clone(),registration_id_alice, device_id1.into(),
 //         KeychatIdentityKey{public_key: alice_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //     let alice2bob_bob_decrypt = decrypt_signal(
-//         alice2bob_encrypt.0,
+//         alice2bob_encrypt.ciphertext,
 //         alice_address.clone(),
 //         1,
 //         true
@@ -1395,17 +1394,17 @@ fn test_kdf() -> Result<()> {
 //     let bobs_response_to_alice_encrypt = encrypt_signal(bobs_response_to_alice.to_string(), alice_address.clone()).unwrap();
 
 //     let _ = init(db_path1.to_owned(), alice_identity_key_pair, registration_id_alice);
-//     let alice_decrypts_from_bob = decrypt_signal(bobs_response_to_alice_encrypt.0, bob_address.clone(), 1, false).unwrap();
+//     let alice_decrypts_from_bob = decrypt_signal(bobs_response_to_alice_encrypt.ciphertext, bob_address.clone(), 1, false).unwrap();
 //     println!("alice_decrypts_from_bob {:?}", String::from_utf8(alice_decrypts_from_bob).expect("valid utf8"));
 
 //     let _ = init(db_path1.to_owned(), alice_identity_key_pair, registration_id_alice);
-//     process_prekey_bundle_api(tom_address.clone(),registration_id_tom, device_id1.into(),
+//     process_pre_key_bundle_api(tom_address.clone(),registration_id_tom, device_id1.into(),
 //         KeychatIdentityKey{public_key: tom_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //     let alice_2tom_msg = "Alice to Tom";
 //     let alice_2tom_msg_encrypt = encrypt_signal(alice_2tom_msg.to_string(), tom_address.clone()).unwrap();
 
 //     let _ = init(db_path2.to_owned(), tom_identity_key_pair, registration_id_tom);
-//     process_prekey_bundle_api(alice_address2.clone(),registration_id_alice, device_id2.into(),
+//     process_pre_key_bundle_api(alice_address2.clone(),registration_id_alice, device_id2.into(),
 //         KeychatIdentityKey{public_key: alice_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //      let alice2tom_tom_decrypt = decrypt_signal(
 //         alice_2tom_msg_encrypt.0,
@@ -1418,17 +1417,17 @@ fn test_kdf() -> Result<()> {
 //     let tom_response_to_alice_encrypt = encrypt_signal(tom_response_to_alice.to_string(), alice_address2.clone()).unwrap();
 
 //     let _ = init(db_path1.to_owned(), alice_identity_key_pair, registration_id_alice);
-//     let alice_decrypts_from_tom = decrypt_signal(tom_response_to_alice_encrypt.0, tom_address.clone(), 2, false).unwrap();
+//     let alice_decrypts_from_tom = decrypt_signal(tom_response_to_alice_encrypt.ciphertext, tom_address.clone(), 2, false).unwrap();
 //     println!("alice_decrypts_from_tom {:?}", String::from_utf8(alice_decrypts_from_tom).expect("valid utf8"));
 
 //     let _ = init(db_path1.to_owned(), jack_identity_key_pair, registration_id_jack);
-//     process_prekey_bundle_api(bob_address2.clone(),registration_id_bob, device_id2.into(),
+//     process_pre_key_bundle_api(bob_address2.clone(),registration_id_bob, device_id2.into(),
 //         KeychatIdentityKey{public_key: bob_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //     let jack2bob_msg = "Jack to Bob";
 //     let jack2bob_encrypt = encrypt_signal(jack2bob_msg.to_string(), bob_address2.clone()).unwrap();
 
 //     let _ = init(db_path2.to_owned(), bob_identity_key_pair, registration_id_bob);
-//     process_prekey_bundle_api(jack_address.clone(),registration_id_bob, device_id1.into(),
+//     process_pre_key_bundle_api(jack_address.clone(),registration_id_bob, device_id1.into(),
 //         KeychatIdentityKey{public_key: jack_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //     let jack2bob_bob_decrypt = decrypt_signal(
 //         jack2bob_encrypt.0,
@@ -1445,13 +1444,13 @@ fn test_kdf() -> Result<()> {
 //     println!("jack_decrypts_from_bob {:?}", String::from_utf8(jack_decrypts_from_bob).expect("valid utf8"));
 
 //     let _ = init(db_path1.to_owned(), jack_identity_key_pair, registration_id_jack);
-//     process_prekey_bundle_api(tom_address2.clone(),registration_id_tom, device_id2.into(),
+//     process_pre_key_bundle_api(tom_address2.clone(),registration_id_tom, device_id2.into(),
 //         KeychatIdentityKey{public_key: tom_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //     let jack_2tom_msg = "Jack to Tom";
 //     let jack_2tom_msg_encrypt = encrypt_signal(jack_2tom_msg.to_string(), tom_address2.clone()).unwrap();
 
 //     let _ = init(db_path2.to_owned(), tom_identity_key_pair, registration_id_tom);
-//     process_prekey_bundle_api(jack_address2.clone(),registration_id_jack, device_id2.into(),
+//     process_pre_key_bundle_api(jack_address2.clone(),registration_id_jack, device_id2.into(),
 //         KeychatIdentityKey{public_key: jack_identity_public.as_slice().try_into().unwrap()}).unwrap();
 //     let jack2tom_tom_decrypt = decrypt_signal(
 //         jack_2tom_msg_encrypt.0,

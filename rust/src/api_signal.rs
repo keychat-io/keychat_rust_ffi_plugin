@@ -11,33 +11,9 @@ use std::time::SystemTime;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
 
-#[derive(Copy, Clone, Hash, Eq, PartialEq)]
-pub struct KeychatIdentityKeyPair {
-    pub identity_key: [u8; 33],
-    pub private_key: [u8; 32],
-}
-
-#[derive(Clone, Debug, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct KeychatProtocolAddress {
-    pub name: String,
-    pub device_id: u32,
-}
-
-#[derive(Debug, PartialOrd, Ord, PartialEq, Eq, Clone, Copy)]
-pub struct KeychatIdentityKey {
-    pub public_key: [u8; 33],
-}
-
-#[derive(Debug, PartialOrd, Ord, PartialEq, Eq, Clone)]
-pub struct KeychatSignalSession {
-    pub alice_sender_ratchet_key: Option<String>,
-    pub address: String,
-    pub device: u32,
-    pub bob_sender_ratchet_key: Option<String>,
-    pub record: String,
-    pub bob_address: Option<String>,
-    pub alice_addresses: Option<String>,
-}
+#[path = "api_signal.types.rs"]
+pub mod types;
+pub use types::*;
 
 pub struct SignalStore {
     pub pool: LitePool,
@@ -54,9 +30,9 @@ lazy_static! {
 }
 
 /// init db and KeyChatSignalProtocolStore, this is used for testing
-pub fn init(db_path: String, key_pair: KeychatIdentityKeyPair, reg_id: u32) -> Result<()> {
+pub fn init(db_path: String, key_pair: KeychatIdentityKeyPair, registration_id: u32) -> Result<()> {
     let rt = RUNTIME.as_ref();
-    let key_pair_2: IdentityKeyPair = IdentityKeyPair::new(
+    let key_pair2: IdentityKeyPair = IdentityKeyPair::new(
         IdentityKey::decode(&key_pair.identity_key)?,
         PrivateKey::deserialize(&key_pair.private_key)?,
     );
@@ -76,7 +52,8 @@ pub fn init(db_path: String, key_pair: KeychatIdentityKeyPair, reg_id: u32) -> R
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[init]> Can not get store err."))?;
 
-        let keychat_store = KeyChatSignalProtocolStore::new(map.pool.clone(), key_pair_2, reg_id)?;
+        let keychat_store =
+            KeyChatSignalProtocolStore::new(map.pool.clone(), key_pair2, registration_id)?;
         map.store_map.entry(key_pair).or_insert(keychat_store);
 
         Ok(())
@@ -117,13 +94,14 @@ pub fn close_signal_db() -> Result<()> {
 async fn _init_keypair(
     store: &mut SignalStore,
     key_pair: KeychatIdentityKeyPair,
-    reg_id: u32,
+    registration_id: u32,
 ) -> Result<()> {
     let key_pair_2: IdentityKeyPair = IdentityKeyPair::new(
         IdentityKey::decode(&key_pair.identity_key)?,
         PrivateKey::deserialize(&key_pair.private_key)?,
     );
-    let keychat_store = KeyChatSignalProtocolStore::new(store.pool.clone(), key_pair_2, reg_id)?;
+    let keychat_store =
+        KeyChatSignalProtocolStore::new(store.pool.clone(), key_pair_2, registration_id)?;
 
     store.store_map.entry(key_pair).or_insert_with(|| {
         info!("fn[_init_keypair] key_pair do not init.");
@@ -134,25 +112,24 @@ async fn _init_keypair(
 }
 
 /// init KeyChatSignalProtocolStore
-pub fn init_keypair(key_pair: KeychatIdentityKeyPair, reg_id: u32) -> Result<()> {
+pub fn init_keypair(key_pair: KeychatIdentityKeyPair, registration_id: u32) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
             .ok_or_else(|| format_err!("<signal api fn[init_keypair]> Can not get store err."))?;
-        _init_keypair(store, key_pair, reg_id).await?;
+        _init_keypair(store, key_pair, registration_id).await?;
 
         Ok(())
     });
     result
 }
 
-//bob_signed_id, bob_signed_public, bob_signed_signature, record
-pub fn generate_signed_key_api(
+pub fn generate_signed_pre_key_api(
     key_pair: KeychatIdentityKeyPair,
     signal_identity_private_key: Vec<u8>,
-) -> Result<(u32, Vec<u8>, Vec<u8>, Vec<u8>)> {
+) -> Result<SignedPreKeyResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let bob_identity_private = PrivateKey::deserialize(&signal_identity_private_key)?;
@@ -172,20 +149,22 @@ pub fn generate_signed_key_api(
 
         let bob_signed_info = store
             .signed_pre_key_store
-            .generate_signed_key(bob_identity_private)
+            .generate_signed_pre_key(bob_identity_private)
             .await?;
-        // bob_sign_id, pair.public_key, bob_signed_signature, record
-        Ok((
-            bob_signed_info.0,
-            bob_signed_info.1.serialize().into(),
-            bob_signed_info.2,
-            bob_signed_info.3,
-        ))
+        Ok(SignedPreKeyResult {
+            signed_pre_key_id: bob_signed_info.0,
+            signed_pre_key_public: bob_signed_info.1.serialize().into(),
+            signed_pre_key_signature: bob_signed_info.2,
+            signed_pre_key_record: bob_signed_info.3,
+        })
     });
     result
 }
 
-pub fn get_signed_key_api(key_pair: KeychatIdentityKeyPair, signed_key_id: u32) -> Result<Vec<u8>> {
+pub fn get_signed_pre_key_api(
+    key_pair: KeychatIdentityKeyPair,
+    signed_pre_key_id: u32,
+) -> Result<Vec<u8>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -201,17 +180,17 @@ pub fn get_signed_key_api(key_pair: KeychatIdentityKeyPair, signed_key_id: u32) 
         })?;
         let record = store
             .signed_pre_key_store
-            .get_signed_pre_key(signed_key_id.into())
+            .get_signed_pre_key(signed_pre_key_id.into())
             .await?;
         Ok(record.serialize()?)
     });
     result
 }
 
-pub fn store_signed_key_api(
+pub fn store_signed_pre_key_api(
     key_pair: KeychatIdentityKeyPair,
-    signed_key_id: u32,
-    record: Vec<u8>,
+    signed_pre_key_id: u32,
+    signed_pre_key_record: Vec<u8>,
 ) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -226,18 +205,17 @@ pub fn store_signed_key_api(
         let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
             format_err!("<signal api fn[store_signed_key_api]> Can not get store from store_map.")
         })?;
-        let signed_key_record = SignedPreKeyRecord::deserialize(&record)?;
+        let signed_pre_key_record = SignedPreKeyRecord::deserialize(&signed_pre_key_record)?;
         store
             .signed_pre_key_store
-            .save_signed_pre_key(signed_key_id.into(), &signed_key_record)
+            .save_signed_pre_key(signed_pre_key_id.into(), &signed_pre_key_record)
             .await?;
         Ok(())
     });
     result
 }
 
-//bob_prekey_id, bob_prekey_public, record
-pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec<u8>, Vec<u8>)> {
+pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<PreKeyResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -252,17 +230,16 @@ pub fn generate_prekey_api(key_pair: KeychatIdentityKeyPair) -> Result<(u32, Vec
             format_err!("<signal api fn[generate_prekey_api]> Can not get store from store_map.")
         })?;
         let prekey_info = store.pre_key_store.generate_pre_key().await?;
-        // prekey_id, pair.public_key, record
-        Ok((
-            prekey_info.0,
-            prekey_info.1.serialize().into(),
-            prekey_info.2,
-        ))
+        Ok(PreKeyResult {
+            pre_key_id: prekey_info.0,
+            pre_key_public: prekey_info.1.serialize().into(),
+            pre_key_record: prekey_info.2,
+        })
     });
     result
 }
 
-pub fn get_prekey_api(key_pair: KeychatIdentityKeyPair, prekey_id: u32) -> Result<Vec<u8>> {
+pub fn get_pre_key_api(key_pair: KeychatIdentityKeyPair, pre_key_id: u32) -> Result<Vec<u8>> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -276,16 +253,16 @@ pub fn get_prekey_api(key_pair: KeychatIdentityKeyPair, prekey_id: u32) -> Resul
         let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
             format_err!("<signal api fn[get_prekey_api]> Can not get store from store_map.")
         })?;
-        let record = store.pre_key_store.get_pre_key(prekey_id.into()).await?;
+        let record = store.pre_key_store.get_pre_key(pre_key_id.into()).await?;
         Ok(record.serialize()?)
     });
     result
 }
 
-pub fn store_prekey_api(
+pub fn store_pre_key_api(
     key_pair: KeychatIdentityKeyPair,
-    prekey_id: u32,
-    record: Vec<u8>,
+    pre_key_id: u32,
+    pre_key_record: Vec<u8>,
 ) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -300,27 +277,27 @@ pub fn store_prekey_api(
         let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
             format_err!("<signal api fn[store_prekey_api]> Can not get store from store_map.")
         })?;
-        let prekey_record = PreKeyRecord::deserialize(&record)?;
+        let pre_key_record = PreKeyRecord::deserialize(&pre_key_record)?;
         store
             .pre_key_store
-            .save_pre_key(prekey_id.into(), &prekey_record)
+            .save_pre_key(pre_key_id.into(), &pre_key_record)
             .await?;
         Ok(())
     });
     result
 }
 
-pub fn process_prekey_bundle_api(
+pub fn process_pre_key_bundle_api(
     key_pair: KeychatIdentityKeyPair,
     remote_address: KeychatProtocolAddress,
-    reg_id: u32,
+    registration_id: u32,
     device_id: u32,
     identity_key: KeychatIdentityKey,
-    bob_signed_id: u32,
-    bob_signed_public: Vec<u8>,
-    bob_siged_sig: Vec<u8>,
-    bob_prekey_id: u32,
-    bob_prekey_public: Vec<u8>,
+    signed_pre_key_id: u32,
+    signed_pre_key_public: Vec<u8>,
+    signed_pre_key_signature: Vec<u8>,
+    pre_key_id: u32,
+    pre_key_public: Vec<u8>,
 ) -> Result<()> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
@@ -341,16 +318,16 @@ pub fn process_prekey_bundle_api(
                 "<signal api fn[process_prekey_bundle_api]> Can not get store from store_map."
             )
         })?;
-        let bob_signed_public = PublicKey::deserialize(&bob_signed_public)?;
-        let bob_prekey_public = PublicKey::deserialize(&bob_prekey_public)?;
-        let bob_prekey = Some((bob_prekey_id.into(), bob_prekey_public));
+        let signed_pre_key_public = PublicKey::deserialize(&signed_pre_key_public)?;
+        let pre_key_public = PublicKey::deserialize(&pre_key_public)?;
+        let pre_key = Some((pre_key_id.into(), pre_key_public));
         let bob_bundle = PreKeyBundle::new(
-            reg_id,
+            registration_id,
             device_id.into(),
-            bob_prekey,
-            bob_signed_id.into(),
-            bob_signed_public,
-            bob_siged_sig,
+            pre_key,
+            signed_pre_key_id.into(),
+            signed_pre_key_public,
+            signed_pre_key_signature,
             identity_key,
         )?;
         process_prekey_bundle(
@@ -372,7 +349,7 @@ pub fn encrypt_signal(
     ptext: String,
     remote_address: KeychatProtocolAddress,
     is_prekey: Option<bool>,
-) -> Result<(Vec<u8>, Option<String>, String, Option<Vec<String>>)> {
+) -> Result<EncryptResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut store = STORE.lock().await;
@@ -398,25 +375,26 @@ pub fn encrypt_signal(
             is_prekey,
         )
         .await?;
-        // encrypt msg, my_receiver_addr, msg_keys_hash, alice_addrs_pre
-        Ok((
-            cipher_text.0.serialize().to_vec(),
-            cipher_text.1,
-            cipher_text.2,
-            cipher_text.3,
-        ))
+        Ok(EncryptResult {
+            ciphertext: cipher_text.0.serialize().to_vec(),
+            receiver_address: cipher_text.1,
+            message_keys_hash: cipher_text.2,
+            sender_addresses: cipher_text.3,
+        })
     });
     result
 }
 
-pub fn parse_identity_from_prekey_signal_message(ciphertext: Vec<u8>) -> Result<(String, u32)> {
+pub fn parse_identity_from_prekey_signal_message(
+    ciphertext: Vec<u8>,
+) -> Result<PreKeySignalMessageInfo> {
     let ciphertext = PreKeySignalMessage::try_from(ciphertext.as_ref())?;
     let identity = ciphertext.identity_key();
     let signed_pre_key_id = ciphertext.signed_pre_key_id();
-    Ok((
-        hex::encode(identity.public_key().serialize()),
-        signed_pre_key_id.into(),
-    ))
+    Ok(PreKeySignalMessageInfo {
+        identity_key: hex::encode(identity.public_key().serialize()),
+        signed_pre_key_id: signed_pre_key_id.into(),
+    })
 }
 
 pub fn parse_is_prekey_signal_message(ciphertext: Vec<u8>) -> Result<bool> {
@@ -426,18 +404,18 @@ pub fn parse_is_prekey_signal_message(ciphertext: Vec<u8>) -> Result<bool> {
         Ok(false)
     } else {
         Err(anyhow::anyhow!(
-            "parse_is_prekey_signal_message can not be pared"
+            "parse_is_prekey_signal_message can not be parsed"
         ))
     }
 }
 
-pub fn generate_signal_ids() -> Result<(Vec<u8>, Vec<u8>)> {
+pub fn generate_signal_ids() -> Result<SignalKeyPair> {
     let mut csprng = OsRng;
     let pair = KeyPair::generate(&mut csprng);
-    Ok((
-        pair.private_key.serialize(),
-        pair.public_key.serialize().into(),
-    ))
+    Ok(SignalKeyPair {
+        private_key: pair.private_key.serialize(),
+        public_key: pair.public_key.serialize().into(),
+    })
 }
 
 pub fn decrypt_signal(
@@ -446,7 +424,7 @@ pub fn decrypt_signal(
     remote_address: KeychatProtocolAddress,
     room_id: u32,
     is_prekey: bool,
-) -> Result<(Vec<u8>, String, Option<Vec<String>>)> {
+) -> Result<DecryptResult> {
     let rt = RUNTIME.as_ref();
     let result = rt.block_on(async {
         let mut csprng = OsRng;
@@ -492,8 +470,11 @@ pub fn decrypt_signal(
             )
             .await?
         };
-        // decrypt msg, msg_keys_hash, alice_addr_pre
-        Ok((decrypt_msg.0, decrypt_msg.1, decrypt_msg.2))
+        Ok(DecryptResult {
+            plaintext: decrypt_msg.0,
+            message_keys_hash: decrypt_msg.1,
+            sender_addresses: decrypt_msg.2,
+        })
     });
     result
 }
@@ -629,14 +610,14 @@ pub fn delete_session(
         let mut store = STORE.lock().await;
         let store = store
             .as_mut()
-            .ok_or_else(|| format_err!("<signal api fn[delete_session]> cat not get store err."))?;
+            .ok_or_else(|| format_err!("<signal api fn[delete_session]> can not get store err."))?;
         let address = ProtocolAddress::new(address.name, address.device_id.into());
         if !store.store_map.contains_key(&key_pair) {
             info!("delete_session key_pair do not init.");
             _init_keypair(store, key_pair, 0).await?;
         }
         let store = store.store_map.get_mut(&key_pair).ok_or_else(|| {
-            format_err!("<signal api fn[delete_session]> cat not get store from store_map.")
+            format_err!("<signal api fn[delete_session]> can not get store from store_map.")
         })?;
         let del = store.session_store.delete_session(&address).await?;
         Ok(del)
