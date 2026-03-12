@@ -35,6 +35,14 @@ pub struct SignedPreKeyResult {
 }
 
 #[derive(Debug, Clone)]
+pub struct KyberPreKeyResult {
+    pub kyber_pre_key_id: u32,
+    pub kyber_pre_key_public: Vec<u8>,
+    pub kyber_pre_key_signature: Vec<u8>,
+    pub kyber_pre_key_record: Vec<u8>,
+}
+
+#[derive(Debug, Clone)]
 pub struct PreKeyResult {
     pub pre_key_id: u32,
     pub pre_key_public: Vec<u8>,

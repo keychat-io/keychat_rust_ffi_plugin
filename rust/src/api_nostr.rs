@@ -17,7 +17,7 @@ use nostr::{
 };
 use serde::{Deserialize, Serialize};
 use sha1::{Digest, Sha1};
-use signal_store::libsignal_protocol::{PrivateKey, PublicKey as PB};
+use signal_store_v1::libsignal_protocol::{PrivateKey, PublicKey as PB};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]

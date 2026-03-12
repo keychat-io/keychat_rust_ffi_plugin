@@ -1,8 +1,8 @@
 use anyhow::Result;
 use rust::api_nostr::nostr::base64::engine::general_purpose;
 use rust::api_nostr::nostr::base64::*;
-use rust::api_signal::signal_store::libsignal_protocol::*;
-use rust::api_signal::*;
+use rust::api_signal_v1::signal_store_v1::libsignal_protocol::*;
+use rust::api_signal_v1::*;
 
 fn main() {
     // let _ = test_kdf();
@@ -10,7 +10,7 @@ fn main() {
     // let _ = test_db();
     // let _ = test_close_db();
     // let _ = test_parse_is_prekey_message2();
-    let _ = test_x4dh_db();
+    let _ = test_x3dh_db();
     // let _ = test_multi_add();
 }
 
@@ -46,7 +46,7 @@ fn test_parse_is_prekey_message2() -> Result<()> {
 fn test_close_db() -> Result<()> {
     let db = "./signal.db";
 
-    let device_id: DeviceId = DeviceId::try_from(1).unwrap();
+    let device_id: DeviceId = 1.into();
 
     let alice_identity_private =
         hex::decode("38e11be5690d3e0600544b87088961c7fd58c041d1a1766ac8fc2a50e3bdde4c")
@@ -61,7 +61,7 @@ fn test_close_db() -> Result<()> {
     };
     let alice_address = KeychatProtocolAddress {
         name: "05743b1e2894d1df36972e91c12700d0f8d2a81b0cf455f18abe0cf09c41e0944a".to_owned(),
-        device_id: u32::from(device_id),
+        device_id: device_id.into(),
     };
     init(db.to_string(), alice_identity_key_pair, 0).expect("init error");
 
@@ -87,7 +87,7 @@ fn test_close_db() -> Result<()> {
 fn test_db() -> Result<()> {
     let db = "./signal.db";
 
-    let device_id: DeviceId = DeviceId::try_from(1).unwrap();
+    let device_id: DeviceId = 1.into();
 
     let alice_identity_private =
         hex::decode("38e11be5690d3e0600544b87088961c7fd58c041d1a1766ac8fc2a50e3bdde4c")
@@ -102,7 +102,7 @@ fn test_db() -> Result<()> {
     };
     let alice_address = KeychatProtocolAddress {
         name: "05743b1e2894d1df36972e91c12700d0f8d2a81b0cf455f18abe0cf09c41e0944a".to_owned(),
-        device_id: u32::from(device_id),
+        device_id: device_id.into(),
     };
     init(db.to_string(), alice_identity_key_pair, 0).expect("init error");
 
@@ -141,9 +141,9 @@ fn test_db() -> Result<()> {
 
 fn test_state() -> Result<()> {
     let db_path = ".signal_test.db";
-    let device_id1: DeviceId = DeviceId::try_from(1).unwrap();
-    let device_id2: DeviceId = DeviceId::try_from(2).unwrap();
-    let device_id3: DeviceId = DeviceId::try_from(3).unwrap();
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
+    let device_id3: DeviceId = 3.into();
 
     //alice info
     let alice_identity_public =
@@ -159,7 +159,7 @@ fn test_state() -> Result<()> {
     let registration_id_alice = 1;
     let alice_address = KeychatProtocolAddress {
         name: "alice".to_owned(),
-        device_id: u32::from(device_id1),
+        device_id: device_id1.into(),
     };
 
     //bob info
@@ -176,7 +176,7 @@ fn test_state() -> Result<()> {
     let registration_id_bob = 1;
     let bob_address = KeychatProtocolAddress {
         name: "bob".to_owned(),
-        device_id: u32::from(device_id2),
+        device_id: device_id2.into(),
     };
 
     // tom info 0515e97b26c5cbca6f39dce5cc55db22cd948598d370b87c1ce4919d665aeaab27
@@ -193,7 +193,7 @@ fn test_state() -> Result<()> {
     let registration_id_tom = 1;
     let tom_address = KeychatProtocolAddress {
         name: "tom".to_owned(),
-        device_id: u32::from(device_id3),
+        device_id: device_id3.into(),
     };
 
     /*
@@ -209,7 +209,7 @@ fn test_state() -> Result<()> {
     // test contains_session
     let jack_address = KeychatProtocolAddress {
         name: "jack".to_owned(),
-        device_id: u32::from(device_id3),
+        device_id: device_id3.into(),
     };
     // let t1 = contains_session(alice_identity_key_pair, alice_address);
     // println!("contains alice session {:?}", t1.unwrap());
@@ -268,13 +268,13 @@ fn test_state() -> Result<()> {
     Ok(())
 }
 
-fn test_x4dh_db() -> Result<()> {
+fn test_x3dh_db() -> Result<()> {
     let db_path = ".signal_test.db";
     let db_path2 = ".signal_test2.db";
     let db_path3 = ".signal_test3.db";
-    let device_id1: DeviceId = DeviceId::try_from(1).unwrap();
-    let device_id2: DeviceId = DeviceId::try_from(2).unwrap();
-    let device_id3: DeviceId = DeviceId::try_from(3).unwrap();
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
+    let device_id3: DeviceId = 3.into();
 
     //alice info
     let alice_identity_public =
@@ -290,7 +290,7 @@ fn test_x4dh_db() -> Result<()> {
     let registration_id_alice = 1;
     let alice_address = KeychatProtocolAddress {
         name: "alice".to_owned(),
-        device_id: u32::from(device_id1),
+        device_id: device_id1.into(),
     };
 
     //bob info
@@ -307,7 +307,7 @@ fn test_x4dh_db() -> Result<()> {
     let registration_id_bob = 1;
     let bob_address = KeychatProtocolAddress {
         name: "bob".to_owned(),
-        device_id: u32::from(device_id2),
+        device_id: device_id2.into(),
     };
 
     // tom info
@@ -324,7 +324,7 @@ fn test_x4dh_db() -> Result<()> {
     let registration_id_tom = 1;
     let tom_address = KeychatProtocolAddress {
         name: "tom".to_owned(),
-        device_id: u32::from(device_id3),
+        device_id: device_id3.into(),
     };
 
     /*
@@ -336,7 +336,7 @@ fn test_x4dh_db() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
     let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
@@ -344,24 +344,19 @@ fn test_x4dh_db() -> Result<()> {
     let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
-    let bob_kyber_info =
-        generate_kyber_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
 
     process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
-        u32::from(device_id2),
+        device_id2.into(),
         KeychatIdentityKey {
             public_key: bob_identity_public.as_slice().try_into().unwrap(),
         },
-        bob_signed_id,
+        bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_kyber_info.kyber_pre_key_id,
-        bob_kyber_info.kyber_pre_key_public,
-        bob_kyber_info.kyber_pre_key_signature,
-        bob_prekey_info.pre_key_id,
+        bob_prekey_info.pre_key_id.into(),
         bob_prekey_info.pre_key_public,
     )
     .unwrap();
@@ -425,30 +420,25 @@ fn test_x4dh_db() -> Result<()> {
     /*
      * second alice to tom then  tom to alice
      */
-    let tom_info = generate_signed_pre_key_api(alice_identity_key_pair, tom_identity_private.clone())?;
+    let tom_info = generate_signed_pre_key_api(alice_identity_key_pair, tom_identity_private)?;
     let tom_prekey = generate_prekey_api(alice_identity_key_pair)?;
 
     let tom_sign_id = tom_info.signed_pre_key_id;
     println!("tom_sign_id {:?}", tom_sign_id);
     let tom_signed_key_public = tom_info.signed_pre_key_public;
     let tom_signed_signature = tom_info.signed_pre_key_signature;
-    let tom_kyber_info =
-        generate_kyber_pre_key_api(alice_identity_key_pair, tom_identity_private.clone())?;
     process_pre_key_bundle_api(
         alice_identity_key_pair,
         tom_address.clone(),
         registration_id_tom,
-        u32::from(device_id3),
+        device_id3.into(),
         KeychatIdentityKey {
             public_key: tom_identity_public.as_slice().try_into().unwrap(),
         },
         tom_sign_id,
         tom_signed_key_public,
         tom_signed_signature,
-        tom_kyber_info.kyber_pre_key_id,
-        tom_kyber_info.kyber_pre_key_public,
-        tom_kyber_info.kyber_pre_key_signature,
-        tom_prekey.pre_key_id,
+        tom_prekey.pre_key_id.into(),
         tom_prekey.pre_key_public,
     )
     .unwrap();
@@ -608,9 +598,9 @@ fn test_x3dh_db2() -> Result<()> {
     let db_path = ".signal_test.db";
     let db_path2 = ".signal_test2.db";
     let db_path3 = ".signal_test3.db";
-    let device_id1: DeviceId = DeviceId::try_from(1).unwrap();
-    let device_id2: DeviceId = DeviceId::try_from(2).unwrap();
-    let device_id3: DeviceId = DeviceId::try_from(3).unwrap();
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
+    let device_id3: DeviceId = 3.into();
 
     //alice info
     let alice_identity_public =
@@ -626,7 +616,7 @@ fn test_x3dh_db2() -> Result<()> {
     let registration_id_alice = 1;
     let alice_address = KeychatProtocolAddress {
         name: "alice".to_owned(),
-        device_id: u32::from(device_id1),
+        device_id: device_id1.into(),
     };
 
     //bob info
@@ -643,7 +633,7 @@ fn test_x3dh_db2() -> Result<()> {
     let registration_id_bob = 1;
     let bob_address = KeychatProtocolAddress {
         name: "bob".to_owned(),
-        device_id: u32::from(device_id2),
+        device_id: device_id2.into(),
     };
 
     // tom info
@@ -660,7 +650,7 @@ fn test_x3dh_db2() -> Result<()> {
     let registration_id_tom = 1;
     let tom_address = KeychatProtocolAddress {
         name: "tom".to_owned(),
-        device_id: u32::from(device_id3),
+        device_id: device_id3.into(),
     };
 
     /*
@@ -672,7 +662,7 @@ fn test_x3dh_db2() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
     let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
@@ -680,24 +670,19 @@ fn test_x3dh_db2() -> Result<()> {
     let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
-    let bob_kyber_info =
-        generate_kyber_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
 
     process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
-        u32::from(device_id2),
+        device_id2.into(),
         KeychatIdentityKey {
             public_key: bob_identity_public.as_slice().try_into().unwrap(),
         },
-        bob_signed_id,
+        bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_kyber_info.kyber_pre_key_id,
-        bob_kyber_info.kyber_pre_key_public,
-        bob_kyber_info.kyber_pre_key_signature,
-        bob_prekey_info.pre_key_id,
+        bob_prekey_info.pre_key_id.into(),
         bob_prekey_info.pre_key_public,
     )
     .unwrap();
@@ -782,9 +767,9 @@ fn test_x3dh_db2() -> Result<()> {
 fn test_x3dh_db3() -> Result<()> {
     let db_path = ".signal_test.db";
     let db_path2 = ".signal_test2.db";
-    let device_id1: DeviceId = DeviceId::try_from(1).unwrap();
-    let device_id2: DeviceId = DeviceId::try_from(2).unwrap();
-    let device_id3: DeviceId = DeviceId::try_from(3).unwrap();
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
+    let device_id3: DeviceId = 3.into();
 
     //alice info
     let alice_identity_public =
@@ -800,7 +785,7 @@ fn test_x3dh_db3() -> Result<()> {
     let registration_id_alice = 1;
     let alice_address = KeychatProtocolAddress {
         name: "alice".to_owned(),
-        device_id: u32::from(device_id1),
+        device_id: device_id1.into(),
     };
 
     //bob info
@@ -817,7 +802,7 @@ fn test_x3dh_db3() -> Result<()> {
     let registration_id_bob = 1;
     let bob_address = KeychatProtocolAddress {
         name: "bob".to_owned(),
-        device_id: u32::from(device_id2),
+        device_id: device_id2.into(),
     };
 
     // tom info
@@ -834,7 +819,7 @@ fn test_x3dh_db3() -> Result<()> {
     let registration_id_tom = 1;
     let tom_address = KeychatProtocolAddress {
         name: "tom".to_owned(),
-        device_id: u32::from(device_id3),
+        device_id: device_id3.into(),
     };
 
     /*
@@ -846,7 +831,7 @@ fn test_x3dh_db3() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
     let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
@@ -854,24 +839,19 @@ fn test_x3dh_db3() -> Result<()> {
     let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
-    let bob_kyber_info =
-        generate_kyber_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
 
     process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
-        u32::from(device_id2),
+        device_id2.into(),
         KeychatIdentityKey {
             public_key: bob_identity_public.as_slice().try_into().unwrap(),
         },
-        bob_signed_id,
+        bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_kyber_info.kyber_pre_key_id,
-        bob_kyber_info.kyber_pre_key_public,
-        bob_kyber_info.kyber_pre_key_signature,
-        bob_prekey_info.pre_key_id,
+        bob_prekey_info.pre_key_id.into(),
         bob_prekey_info.pre_key_public,
     )
     .unwrap();
@@ -928,9 +908,9 @@ fn test_x3dh_db3() -> Result<()> {
 
 fn test_multi_add() -> Result<()> {
     let db_path = ".signal_test.db";
-    let device_id1: DeviceId = DeviceId::try_from(1).unwrap();
-    let device_id2: DeviceId = DeviceId::try_from(2).unwrap();
-    let device_id3: DeviceId = DeviceId::try_from(3).unwrap();
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
+    let device_id3: DeviceId = 3.into();
 
     //alice info
     let alice_identity_public =
@@ -946,7 +926,7 @@ fn test_multi_add() -> Result<()> {
     let registration_id_alice = 1;
     let alice_address = KeychatProtocolAddress {
         name: "alice".to_owned(),
-        device_id: u32::from(device_id1),
+        device_id: device_id1.into(),
     };
 
     //bob info
@@ -963,7 +943,7 @@ fn test_multi_add() -> Result<()> {
     let registration_id_bob = 1;
     let bob_address = KeychatProtocolAddress {
         name: "bob".to_owned(),
-        device_id: u32::from(device_id2),
+        device_id: device_id2.into(),
     };
 
     // tom info
@@ -980,7 +960,7 @@ fn test_multi_add() -> Result<()> {
     let registration_id_tom = 1;
     let tom_address = KeychatProtocolAddress {
         name: "tom".to_owned(),
-        device_id: u32::from(device_id3),
+        device_id: device_id3.into(),
     };
 
     /*
@@ -992,7 +972,7 @@ fn test_multi_add() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
     let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
@@ -1000,24 +980,19 @@ fn test_multi_add() -> Result<()> {
     let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
-    let bob_kyber_info =
-        generate_kyber_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
 
     process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
-        u32::from(device_id2),
+        device_id2.into(),
         KeychatIdentityKey {
             public_key: bob_identity_public.as_slice().try_into().unwrap(),
         },
-        bob_signed_id,
+        bob_signed_id.into(),
         bob_signed_key_public.clone(),
         bob_signed_signature.clone(),
-        bob_kyber_info.kyber_pre_key_id,
-        bob_kyber_info.kyber_pre_key_public.clone(),
-        bob_kyber_info.kyber_pre_key_signature.clone(),
-        bob_prekey_info.pre_key_id,
+        bob_prekey_info.pre_key_id.into(),
         bob_prekey_info.clone().pre_key_public,
     )
     .unwrap();
@@ -1038,17 +1013,14 @@ fn test_multi_add() -> Result<()> {
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
-        u32::from(device_id2),
+        device_id2.into(),
         KeychatIdentityKey {
             public_key: bob_identity_public.as_slice().try_into().unwrap(),
         },
-        bob_signed_id,
+        bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_kyber_info.kyber_pre_key_id,
-        bob_kyber_info.kyber_pre_key_public,
-        bob_kyber_info.kyber_pre_key_signature,
-        bob_prekey_info.pre_key_id,
+        bob_prekey_info.pre_key_id.into(),
         bob_prekey_info.pre_key_public,
     )
     .unwrap();
@@ -1106,8 +1078,8 @@ fn test_multi_add() -> Result<()> {
 fn test_kdf() -> Result<()> {
     let db_path = ".signal_test.db";
     let db_path2 = ".signal_test2.db";
-    let device_id1: DeviceId = DeviceId::try_from(1).unwrap();
-    let device_id2: DeviceId = DeviceId::try_from(2).unwrap();
+    let device_id1: DeviceId = 1.into();
+    let device_id2: DeviceId = 2.into();
 
     //alice info
     let alice_identity_public =
@@ -1123,7 +1095,7 @@ fn test_kdf() -> Result<()> {
     let registration_id_alice = 1;
     let alice_address = KeychatProtocolAddress {
         name: "alice".to_owned(),
-        device_id: u32::from(device_id1),
+        device_id: device_id1.into(),
     };
 
     //bob info
@@ -1140,7 +1112,7 @@ fn test_kdf() -> Result<()> {
     let registration_id_bob = 1;
     let bob_address = KeychatProtocolAddress {
         name: "bob".to_owned(),
-        device_id: u32::from(device_id2),
+        device_id: device_id2.into(),
     };
 
     /*
@@ -1152,7 +1124,7 @@ fn test_kdf() -> Result<()> {
         registration_id_alice,
     )
     .expect("init error");
-    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
+    let bob_info = generate_signed_pre_key_api(alice_identity_key_pair, bob_identity_private)?;
 
     let bob_signed_id = bob_info.signed_pre_key_id;
     println!("bob_sign_id {:?}", bob_signed_id);
@@ -1160,24 +1132,19 @@ fn test_kdf() -> Result<()> {
     let bob_signed_signature = bob_info.signed_pre_key_signature;
 
     let bob_prekey_info = generate_prekey_api(alice_identity_key_pair)?;
-    let bob_kyber_info =
-        generate_kyber_pre_key_api(alice_identity_key_pair, bob_identity_private.clone())?;
 
     process_pre_key_bundle_api(
         alice_identity_key_pair,
         bob_address.clone(),
         registration_id_bob,
-        u32::from(device_id2),
+        device_id2.into(),
         KeychatIdentityKey {
             public_key: bob_identity_public.as_slice().try_into().unwrap(),
         },
-        bob_signed_id,
+        bob_signed_id.into(),
         bob_signed_key_public,
         bob_signed_signature,
-        bob_kyber_info.kyber_pre_key_id,
-        bob_kyber_info.kyber_pre_key_public,
-        bob_kyber_info.kyber_pre_key_signature,
-        bob_prekey_info.pre_key_id,
+        bob_prekey_info.pre_key_id.into(),
         bob_prekey_info.pre_key_public,
     )
     .unwrap();

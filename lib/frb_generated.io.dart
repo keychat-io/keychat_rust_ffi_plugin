@@ -11,6 +11,7 @@ import 'api_mls/types.dart';
 import 'api_nostr.dart';
 import 'api_signal.dart';
 import 'api_signal/types.dart';
+import 'api_signal_v1.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
@@ -142,6 +143,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected KeychatProtocolAddress dco_decode_keychat_protocol_address(dynamic raw);
 
 @protected KeychatSignalSession dco_decode_keychat_signal_session(dynamic raw);
+
+@protected KyberPreKeyResult dco_decode_kyber_pre_key_result(dynamic raw);
 
 @protected List<String> dco_decode_list_String(dynamic raw);
 
@@ -361,6 +364,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 
 @protected KeychatSignalSession sse_decode_keychat_signal_session(SseDeserializer deserializer);
 
+@protected KyberPreKeyResult sse_decode_kyber_pre_key_result(SseDeserializer deserializer);
+
 @protected List<String> sse_decode_list_String(SseDeserializer deserializer);
 
 @protected List<ContactCashu> sse_decode_list_contact_cashu(SseDeserializer deserializer);
@@ -578,6 +583,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_WalletPtr => wire.
 @protected void sse_encode_keychat_protocol_address(KeychatProtocolAddress self, SseSerializer serializer);
 
 @protected void sse_encode_keychat_signal_session(KeychatSignalSession self, SseSerializer serializer);
+
+@protected void sse_encode_kyber_pre_key_result(KyberPreKeyResult self, SseSerializer serializer);
 
 @protected void sse_encode_list_String(List<String> self, SseSerializer serializer);
 

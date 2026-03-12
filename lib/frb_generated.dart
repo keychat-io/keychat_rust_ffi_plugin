@@ -11,6 +11,7 @@ import 'api_mls/types.dart';
 import 'api_nostr.dart';
 import 'api_signal.dart';
 import 'api_signal/types.dart';
+import 'api_signal_v1.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -75,7 +76,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
                   String get codegenVersion => '2.11.1';
 
                   @override
-                  int get rustContentHash => 2111682413;
+                  int get rustContentHash => 923244610;
 
                   static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
                     stem: 'keychat_rust_ffi_plugin',
@@ -134,9 +135,13 @@ Future<Transaction> crateApiCashuCheckTransaction({required String id });
 
 Future<void> crateApiSignalCloseSignalDb();
 
+Future<void> crateApiSignalV1CloseSignalDb();
+
 Future<ContactCashu> crateApiCashuTypesContactCashuDefault();
 
 Future<bool> crateApiSignalContainsSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
+
+Future<bool> crateApiSignalV1ContainsSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
 
 Future<String> crateApiNostrCreateGiftJson({required int kind , required String senderKeys , required String receiverPubkey , required String content , BigInt? expirationTimestamp , bool? timestampTweaked , List<List<String>>? additionalTags });
 
@@ -174,15 +179,23 @@ Future<String> crateApiNostrDecryptNip44({required String secretKey , required S
 
 Future<DecryptResult> crateApiSignalDecryptSignal({required KeychatIdentityKeyPair keyPair , required List<int> ciphertext , required KeychatProtocolAddress remoteAddress , required int roomId , required bool isPrekey });
 
+Future<DecryptResult> crateApiSignalV1DecryptSignal({required KeychatIdentityKeyPair keyPair , required List<int> ciphertext , required KeychatProtocolAddress remoteAddress , required int roomId , required bool isPrekey });
+
 Future<void> crateApiMlsDeleteGroup({required String nostrId , required String groupId });
 
 Future<bool> crateApiSignalDeleteIdentity({required KeychatIdentityKeyPair keyPair , required String address });
+
+Future<bool> crateApiSignalV1DeleteIdentity({required KeychatIdentityKeyPair keyPair , required String address });
 
 Future<void> crateApiMlsDeleteKeyPackage({required String nostrId , required String keyPackage });
 
 Future<bool> crateApiSignalDeleteSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
 
+Future<bool> crateApiSignalV1DeleteSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
+
 Future<bool> crateApiSignalDeleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair , required int deviceId });
+
+Future<bool> crateApiSignalV1DeleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair , required int deviceId });
 
 String crateApiNostrEncodeBech32({required String hrp , required String data });
 
@@ -192,13 +205,19 @@ Future<String> crateApiNostrEncryptNip44({required String senderKeys , required 
 
 Future<EncryptResult> crateApiSignalEncryptSignal({required KeychatIdentityKeyPair keyPair , required String ptext , required KeychatProtocolAddress remoteAddress , bool? isPrekey });
 
+Future<EncryptResult> crateApiSignalV1EncryptSignal({required KeychatIdentityKeyPair keyPair , required String ptext , required KeychatProtocolAddress remoteAddress , bool? isPrekey });
+
 Future<(Uint8List,Uint8List)> crateApiNostrGenerateCurve25519Keypair({required String mnemonicWords , String? password , int? pos });
 
 Future<Secp256k1Account> crateApiNostrGenerateFromMnemonic({String? password });
 
+Future<KyberPreKeyResult> crateApiSignalGenerateKyberPreKeyApi({required KeychatIdentityKeyPair keyPair , required List<int> signalIdentityPrivateKey });
+
 Future<String> crateApiNostrGenerateMessageKeyHash({required String seedKey });
 
 Future<PreKeyResult> crateApiSignalGeneratePrekeyApi({required KeychatIdentityKeyPair keyPair });
+
+Future<PreKeyResult> crateApiSignalV1GeneratePrekeyApi({required KeychatIdentityKeyPair keyPair });
 
 Future<Secp256k1Account> crateApiNostrGenerateSecp256K1();
 
@@ -208,11 +227,17 @@ Future<String> crateApiNostrGenerateSeedFromRatchetkeyPair({required String seed
 
 Future<SignalKeyPair> crateApiSignalGenerateSignalIds();
 
+Future<SignalKeyPair> crateApiSignalV1GenerateSignalIds();
+
 Future<SignedPreKeyResult> crateApiSignalGenerateSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required List<int> signalIdentityPrivateKey });
+
+Future<SignedPreKeyResult> crateApiSignalV1GenerateSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required List<int> signalIdentityPrivateKey });
 
 Future<Secp256k1SimpleAccount> crateApiNostrGenerateSimple();
 
 Future<List<String>> crateApiSignalGetAllAliceAddrs({required KeychatIdentityKeyPair keyPair });
+
+Future<List<String>> crateApiSignalV1GetAllAliceAddrs({required KeychatIdentityKeyPair keyPair });
 
 Future<(BigInt,BigInt,BigInt)> crateApiCashuGetAllProofsData();
 
@@ -254,6 +279,10 @@ String crateApiNostrGetHexPubkeyByPrikey({required String prikey });
 
 Future<KeychatIdentityKey?> crateApiSignalGetIdentity({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
 
+Future<KeychatIdentityKey?> crateApiSignalV1GetIdentity({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address });
+
+Future<Uint8List> crateApiSignalGetKyberPreKeyApi({required KeychatIdentityKeyPair keyPair , required int kyberPreKeyId });
+
 Future<Uint8List> crateApiMlsGetLeadNodeIndex({required String nostrIdAdmin , required String nostrIdCommon , required String groupId });
 
 Future<String> crateApiMlsGetListenKeyFromExportSecret({required String nostrId , required String groupId });
@@ -274,11 +303,17 @@ Future<BigInt> crateApiCashuGetPendingTransactionsCount();
 
 Future<Uint8List> crateApiSignalGetPreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId });
 
+Future<Uint8List> crateApiSignalV1GetPreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId });
+
 Future<String?> crateApiMlsGetSender({required String nostrId , required String groupId , required String queuedMsg });
 
 Future<KeychatSignalSession?> crateApiSignalGetSession({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId });
 
+Future<KeychatSignalSession?> crateApiSignalV1GetSession({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId });
+
 Future<Uint8List> crateApiSignalGetSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId });
+
+Future<Uint8List> crateApiSignalV1GetSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId });
 
 Future<List<Transaction>> crateApiCashuGetTransactionsWithOffset({required BigInt offset , required BigInt limit });
 
@@ -300,6 +335,8 @@ Future<Secp256k1Account> crateApiNostrImportKey({required String senderKeys });
 
 Future<void> crateApiSignalInit({required String dbPath , required KeychatIdentityKeyPair keyPair , required int registrationId });
 
+Future<void> crateApiSignalV1Init({required String dbPath , required KeychatIdentityKeyPair keyPair , required int registrationId });
+
 Future<List<MintCashu>> crateApiCashuInitCashu({required int prepareSatsOnceTime });
 
 Future<void> crateApiCashuInitDb({required String dbpath , required String words , required bool dev });
@@ -308,9 +345,13 @@ Future<void> crateApiCashuInitDbCashuOnce({required String dbpath });
 
 Future<void> crateApiSignalInitKeypair({required KeychatIdentityKeyPair keyPair , required int registrationId });
 
+Future<void> crateApiSignalV1InitKeypair({required KeychatIdentityKeyPair keyPair , required int registrationId });
+
 Future<void> crateApiMlsInitMlsDb({required String dbPath , required String nostrId });
 
 Future<void> crateApiSignalInitSignalDb({required String dbPath });
+
+Future<void> crateApiSignalV1InitSignalDb({required String dbPath });
 
 Future<(String,List<String>)> crateApiCashuInitV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words });
 
@@ -338,7 +379,11 @@ Future<void> crateApiMlsOthersProposalLeave({required String nostrId , required 
 
 Future<PreKeySignalMessageInfo> crateApiSignalParseIdentityFromPrekeySignalMessage({required List<int> ciphertext });
 
+Future<PreKeySignalMessageInfo> crateApiSignalV1ParseIdentityFromPrekeySignalMessage({required List<int> ciphertext });
+
 Future<bool> crateApiSignalParseIsPrekeySignalMessage({required List<int> ciphertext });
+
+Future<bool> crateApiSignalV1ParseIsPrekeySignalMessage({required List<int> ciphertext });
 
 Future<BigInt> crateApiMlsParseLifetimeFromKeyPackage({required String nostrId , required String keyPackageHex });
 
@@ -348,7 +393,9 @@ Future<BigInt> crateApiCashuPrepareOneProofs({required String mint });
 
 Future<void> crateApiCashuPrintProofs({required String mint });
 
-Future<void> crateApiSignalProcessPreKeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int registrationId , required int deviceId , required KeychatIdentityKey identityKey , required int signedPreKeyId , required List<int> signedPreKeyPublic , required List<int> signedPreKeySignature , required int preKeyId , required List<int> preKeyPublic });
+Future<void> crateApiSignalProcessPreKeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int registrationId , required int deviceId , required KeychatIdentityKey identityKey , required int signedPreKeyId , required List<int> signedPreKeyPublic , required List<int> signedPreKeySignature , required int kyberPreKeyId , required List<int> kyberPreKeyPublic , required List<int> kyberPreKeySignature , required int preKeyId , required List<int> preKeyPublic });
+
+Future<void> crateApiSignalV1ProcessPreKeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int registrationId , required int deviceId , required KeychatIdentityKey identityKey , required int signedPreKeyId , required List<int> signedPreKeyPublic , required List<int> signedPreKeySignature , required int preKeyId , required List<int> preKeyPublic });
 
 Future<Transaction> crateApiCashuReceiveToken({required String encodedToken });
 
@@ -376,6 +423,8 @@ Future<SendStampsResult> crateApiCashuSendStamp({required BigInt amount , requir
 
 Future<KeychatSignalSession?> crateApiSignalSessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address });
 
+Future<KeychatSignalSession?> crateApiSignalV1SessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address });
+
 Future<bool> crateApiCashuSetMnemonic({String? words });
 
 Future<String> crateApiNostrSha1Hash({required String data });
@@ -388,13 +437,21 @@ Future<String> crateApiNostrSignEvent({required String senderKeys , required Str
 
 Future<String> crateApiNostrSignSchnorr({required String privateKey , required String content });
 
+Future<void> crateApiSignalStoreKyberPreKeyApi({required KeychatIdentityKeyPair keyPair , required int kyberPreKeyId , required List<int> kyberPreKeyRecord });
+
 Future<void> crateApiSignalStorePreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId , required List<int> preKeyRecord });
 
+Future<void> crateApiSignalV1StorePreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId , required List<int> preKeyRecord });
+
 Future<void> crateApiSignalStoreSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId , required List<int> signedPreKeyRecord });
+
+Future<void> crateApiSignalV1StoreSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId , required List<int> signedPreKeyRecord });
 
 Future<(List<String>,Set<String>)> crateApiCashuV1TryUnreachableMints({required String dbpath , String? words , required List<String> mints });
 
 Future<bool> crateApiSignalUpdateAliceAddr({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId , required String aliceAddr });
+
+Future<bool> crateApiSignalV1UpdateAliceAddr({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId , required String aliceAddr });
 
 Future<String> crateApiMlsUpdateGroupContextExtensions({required String nostrId , required String groupId , String? groupName , String? description , List<String>? adminPubkeysHex , List<String>? groupRelays , String? status });
 
@@ -1072,11 +1129,36 @@ sse_encode_String(mintUrl, serializer);
         );
         
 
-@override Future<ContactCashu> crateApiCashuTypesContactCashuDefault()  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiSignalV1CloseSignalDb()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
             pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1CloseSignalDbConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1CloseSignalDbConstMeta => const TaskConstMeta(
+            debugName: "close_signal_db",
+            argNames: [],
+        );
+        
+
+@override Future<ContactCashu> crateApiCashuTypesContactCashuDefault()  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26, port: port_);
             
             },
             codec: 
@@ -1102,7 +1184,7 @@ sse_encode_String(mintUrl, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27, port: port_);
             
             },
             codec: 
@@ -1123,6 +1205,32 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
         );
         
 
+@override Future<bool> crateApiSignalV1ContainsSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1ContainsSessionConstMeta,
+            argValues: [keyPair, address],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1ContainsSessionConstMeta => const TaskConstMeta(
+            debugName: "contains_session",
+            argNames: ["keyPair", "address"],
+        );
+        
+
 @override Future<String> crateApiNostrCreateGiftJson({required int kind , required String senderKeys , required String receiverPubkey , required String content , BigInt? expirationTimestamp , bool? timestampTweaked , List<List<String>>? additionalTags })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
@@ -1133,7 +1241,7 @@ sse_encode_String(content, serializer);
 sse_encode_opt_box_autoadd_u_64(expirationTimestamp, serializer);
 sse_encode_opt_box_autoadd_bool(timestampTweaked, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29, port: port_);
             
             },
             codec: 
@@ -1164,7 +1272,7 @@ sse_encode_String(content, serializer);
 sse_encode_opt_box_autoadd_u_64(expirationTimestamp, serializer);
 sse_encode_opt_box_autoadd_bool(timestampTweaked, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30, port: port_);
             
             },
             codec: 
@@ -1189,7 +1297,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31, port: port_);
             
             },
             codec: 
@@ -1214,7 +1322,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32, port: port_);
             
             },
             codec: 
@@ -1241,7 +1349,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(msg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33, port: port_);
             
             },
             codec: 
@@ -1272,7 +1380,7 @@ sse_encode_String(description, serializer);
 sse_encode_list_String(adminPubkeysHex, serializer);
 sse_encode_list_String(groupRelays, serializer);
 sse_encode_String(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34, port: port_);
             
             },
             codec: 
@@ -1297,7 +1405,7 @@ sse_encode_String(status, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(prikey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35, port: port_);
             
             },
             codec: 
@@ -1323,7 +1431,7 @@ sse_encode_String(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(secretKey, serializer);
 sse_encode_list_prim_u_8_loose(message, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36, port: port_);
             
             },
             codec: 
@@ -1350,7 +1458,7 @@ sse_encode_list_prim_u_8_loose(message, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(publicKey, serializer);
 sse_encode_list_prim_u_8_loose(message, serializer);
 sse_encode_String(sig, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 35, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37, port: port_);
             
             },
             codec: 
@@ -1375,7 +1483,7 @@ sse_encode_String(sig, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(content, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38)!;
             
             },
             codec: 
@@ -1400,7 +1508,7 @@ sse_encode_String(sig, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedInvoice, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 39, port: port_);
             
             },
             codec: 
@@ -1425,7 +1533,7 @@ sse_encode_String(sig, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40, port: port_);
             
             },
             codec: 
@@ -1452,7 +1560,7 @@ sse_encode_String(sig, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 39, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41, port: port_);
             
             },
             codec: 
@@ -1478,7 +1586,7 @@ sse_encode_String(content, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(json, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42, port: port_);
             
             },
             codec: 
@@ -1505,7 +1613,7 @@ sse_encode_String(json, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiver, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 43, port: port_);
             
             },
             codec: 
@@ -1532,7 +1640,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(msg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 44, port: port_);
             
             },
             codec: 
@@ -1559,7 +1667,7 @@ sse_encode_String(msg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(secretKey, serializer);
 sse_encode_String(publicKey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 43, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 45, port: port_);
             
             },
             codec: 
@@ -1588,7 +1696,7 @@ sse_encode_list_prim_u_8_loose(ciphertext, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
 sse_encode_u_32(roomId, serializer);
 sse_encode_bool(isPrekey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 44, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 46, port: port_);
             
             },
             codec: 
@@ -1609,12 +1717,41 @@ sse_encode_bool(isPrekey, serializer);
         );
         
 
+@override Future<DecryptResult> crateApiSignalV1DecryptSignal({required KeychatIdentityKeyPair keyPair , required List<int> ciphertext , required KeychatProtocolAddress remoteAddress , required int roomId , required bool isPrekey })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_list_prim_u_8_loose(ciphertext, serializer);
+sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
+sse_encode_u_32(roomId, serializer);
+sse_encode_bool(isPrekey, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 47, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_decrypt_result,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1DecryptSignalConstMeta,
+            argValues: [keyPair, ciphertext, remoteAddress, roomId, isPrekey],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1DecryptSignalConstMeta => const TaskConstMeta(
+            debugName: "decrypt_signal",
+            argNames: ["keyPair", "ciphertext", "remoteAddress", "roomId", "isPrekey"],
+        );
+        
+
 @override Future<void> crateApiMlsDeleteGroup({required String nostrId , required String groupId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 45, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 48, port: port_);
             
             },
             codec: 
@@ -1640,7 +1777,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 46, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 49, port: port_);
             
             },
             codec: 
@@ -1661,12 +1798,38 @@ sse_encode_String(address, serializer);
         );
         
 
+@override Future<bool> crateApiSignalV1DeleteIdentity({required KeychatIdentityKeyPair keyPair , required String address })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_String(address, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 50, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1DeleteIdentityConstMeta,
+            argValues: [keyPair, address],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1DeleteIdentityConstMeta => const TaskConstMeta(
+            debugName: "delete_identity",
+            argNames: ["keyPair", "address"],
+        );
+        
+
 @override Future<void> crateApiMlsDeleteKeyPackage({required String nostrId , required String keyPackage })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(keyPackage, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 47, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 51, port: port_);
             
             },
             codec: 
@@ -1692,7 +1855,7 @@ sse_encode_String(keyPackage, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 48, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 52, port: port_);
             
             },
             codec: 
@@ -1713,12 +1876,38 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
         );
         
 
+@override Future<bool> crateApiSignalV1DeleteSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1DeleteSessionConstMeta,
+            argValues: [keyPair, address],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1DeleteSessionConstMeta => const TaskConstMeta(
+            debugName: "delete_session",
+            argNames: ["keyPair", "address"],
+        );
+        
+
 @override Future<bool> crateApiSignalDeleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair , required int deviceId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(deviceId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 49, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 54, port: port_);
             
             },
             codec: 
@@ -1739,12 +1928,38 @@ sse_encode_u_32(deviceId, serializer);
         );
         
 
+@override Future<bool> crateApiSignalV1DeleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair , required int deviceId })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(deviceId, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 55, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1DeleteSessionByDeviceIdConstMeta,
+            argValues: [keyPair, deviceId],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1DeleteSessionByDeviceIdConstMeta => const TaskConstMeta(
+            debugName: "delete_session_by_device_id",
+            argNames: ["keyPair", "deviceId"],
+        );
+        
+
 @override String crateApiNostrEncodeBech32({required String hrp , required String data })  { return handler.executeSync(SyncTask(
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hrp, serializer);
 sse_encode_String(data, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 50)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 56)!;
             
             },
             codec: 
@@ -1771,7 +1986,7 @@ sse_encode_String(data, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 51, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 57, port: port_);
             
             },
             codec: 
@@ -1798,7 +2013,7 @@ sse_encode_String(content, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 52, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 58, port: port_);
             
             },
             codec: 
@@ -1826,7 +2041,7 @@ sse_encode_String(content, serializer);
 sse_encode_String(ptext, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
 sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 59, port: port_);
             
             },
             codec: 
@@ -1847,13 +2062,41 @@ sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
         );
         
 
+@override Future<EncryptResult> crateApiSignalV1EncryptSignal({required KeychatIdentityKeyPair keyPair , required String ptext , required KeychatProtocolAddress remoteAddress , bool? isPrekey })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_String(ptext, serializer);
+sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
+sse_encode_opt_box_autoadd_bool(isPrekey, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 60, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_encrypt_result,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1EncryptSignalConstMeta,
+            argValues: [keyPair, ptext, remoteAddress, isPrekey],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1EncryptSignalConstMeta => const TaskConstMeta(
+            debugName: "encrypt_signal",
+            argNames: ["keyPair", "ptext", "remoteAddress", "isPrekey"],
+        );
+        
+
 @override Future<(Uint8List,Uint8List)> crateApiNostrGenerateCurve25519Keypair({required String mnemonicWords , String? password , int? pos })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mnemonicWords, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_opt_box_autoadd_u_32(pos, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 54, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
             
             },
             codec: 
@@ -1878,7 +2121,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(password, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 55, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
             
             },
             codec: 
@@ -1899,11 +2142,37 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
         );
         
 
+@override Future<KyberPreKeyResult> crateApiSignalGenerateKyberPreKeyApi({required KeychatIdentityKeyPair keyPair , required List<int> signalIdentityPrivateKey })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_kyber_pre_key_result,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalGenerateKyberPreKeyApiConstMeta,
+            argValues: [keyPair, signalIdentityPrivateKey],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalGenerateKyberPreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "generate_kyber_pre_key_api",
+            argNames: ["keyPair", "signalIdentityPrivateKey"],
+        );
+        
+
 @override Future<String> crateApiNostrGenerateMessageKeyHash({required String seedKey })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 56, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64, port: port_);
             
             },
             codec: 
@@ -1928,7 +2197,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 57, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65, port: port_);
             
             },
             codec: 
@@ -1949,11 +2218,36 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
         );
         
 
+@override Future<PreKeyResult> crateApiSignalV1GeneratePrekeyApi({required KeychatIdentityKeyPair keyPair })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_pre_key_result,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GeneratePrekeyApiConstMeta,
+            argValues: [keyPair],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GeneratePrekeyApiConstMeta => const TaskConstMeta(
+            debugName: "generate_prekey_api",
+            argNames: ["keyPair"],
+        );
+        
+
 @override Future<Secp256k1Account> crateApiNostrGenerateSecp256K1()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 58, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67, port: port_);
             
             },
             codec: 
@@ -1978,7 +2272,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 59, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68, port: port_);
             
             },
             codec: 
@@ -2003,7 +2297,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(seedKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 60, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69, port: port_);
             
             },
             codec: 
@@ -2028,7 +2322,7 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
             
             },
             codec: 
@@ -2049,12 +2343,37 @@ sse_encode_opt_box_autoadd_u_32(pos, serializer);
         );
         
 
+@override Future<SignalKeyPair> crateApiSignalV1GenerateSignalIds()  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_signal_key_pair,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GenerateSignalIdsConstMeta,
+            argValues: [],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GenerateSignalIdsConstMeta => const TaskConstMeta(
+            debugName: "generate_signal_ids",
+            argNames: [],
+        );
+        
+
 @override Future<SignedPreKeyResult> crateApiSignalGenerateSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required List<int> signalIdentityPrivateKey })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 62, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
             
             },
             codec: 
@@ -2075,11 +2394,37 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
+@override Future<SignedPreKeyResult> crateApiSignalV1GenerateSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required List<int> signalIdentityPrivateKey })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_signed_pre_key_result,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GenerateSignedPreKeyApiConstMeta,
+            argValues: [keyPair, signalIdentityPrivateKey],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GenerateSignedPreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "generate_signed_pre_key_api",
+            argNames: ["keyPair", "signalIdentityPrivateKey"],
+        );
+        
+
 @override Future<Secp256k1SimpleAccount> crateApiNostrGenerateSimple()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
             
             },
             codec: 
@@ -2104,7 +2449,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 64, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
             
             },
             codec: 
@@ -2125,11 +2470,36 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
         );
         
 
+@override Future<List<String>> crateApiSignalV1GetAllAliceAddrs({required KeychatIdentityKeyPair keyPair })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_String,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GetAllAliceAddrsConstMeta,
+            argValues: [keyPair],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GetAllAliceAddrsConstMeta => const TaskConstMeta(
+            debugName: "get_all_alice_addrs",
+            argNames: ["keyPair"],
+        );
+        
+
 @override Future<(BigInt,BigInt,BigInt)> crateApiCashuGetAllProofsData()  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 65, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77, port: port_);
             
             },
             codec: 
@@ -2154,7 +2524,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 66, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78, port: port_);
             
             },
             codec: 
@@ -2179,7 +2549,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 67, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
             
             },
             codec: 
@@ -2204,7 +2574,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 68)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80)!;
             
             },
             codec: 
@@ -2229,7 +2599,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(hex, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 69)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81)!;
             
             },
             codec: 
@@ -2254,7 +2624,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 70, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82, port: port_);
             
             },
             codec: 
@@ -2279,7 +2649,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mintUrl, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 71, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 83, port: port_);
             
             },
             codec: 
@@ -2304,7 +2674,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 72, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
             
             },
             codec: 
@@ -2330,7 +2700,7 @@ sse_encode_list_prim_u_8_loose(signalIdentityPrivateKey, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 73, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
             
             },
             codec: 
@@ -2357,7 +2727,7 @@ sse_encode_usize(limit, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
 sse_encode_String(mintUrl, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 74, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
             
             },
             codec: 
@@ -2385,7 +2755,7 @@ sse_encode_String(mintUrl, serializer);
 sse_encode_String(receiverPubkey, serializer);
 sse_encode_String(content, serializer);
 sse_encode_opt_String(reply, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 75, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
             
             },
             codec: 
@@ -2410,7 +2780,7 @@ sse_encode_opt_String(reply, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 76, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 88, port: port_);
             
             },
             codec: 
@@ -2436,7 +2806,7 @@ sse_encode_opt_String(reply, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 77, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
             
             },
             codec: 
@@ -2462,7 +2832,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 78, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
             
             },
             codec: 
@@ -2488,7 +2858,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 79, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
             
             },
             codec: 
@@ -2514,7 +2884,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 80, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
             
             },
             codec: 
@@ -2539,7 +2909,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 81)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93)!;
             
             },
             codec: 
@@ -2564,7 +2934,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(bech32, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 82)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94)!;
             
             },
             codec: 
@@ -2589,7 +2959,7 @@ sse_encode_String(groupId, serializer);
             callFfi: () {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(prikey, serializer);
-            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 83)!;
+            return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95)!;
             
             },
             codec: 
@@ -2615,7 +2985,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 84, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 96, port: port_);
             
             },
             codec: 
@@ -2636,13 +3006,65 @@ sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
         );
         
 
+@override Future<KeychatIdentityKey?> crateApiSignalV1GetIdentity({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_box_autoadd_keychat_protocol_address(address, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_keychat_identity_key,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GetIdentityConstMeta,
+            argValues: [keyPair, address],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GetIdentityConstMeta => const TaskConstMeta(
+            debugName: "get_identity",
+            argNames: ["keyPair", "address"],
+        );
+        
+
+@override Future<Uint8List> crateApiSignalGetKyberPreKeyApi({required KeychatIdentityKeyPair keyPair , required int kyberPreKeyId })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(kyberPreKeyId, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalGetKyberPreKeyApiConstMeta,
+            argValues: [keyPair, kyberPreKeyId],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalGetKyberPreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "get_kyber_pre_key_api",
+            argNames: ["keyPair", "kyberPreKeyId"],
+        );
+        
+
 @override Future<Uint8List> crateApiMlsGetLeadNodeIndex({required String nostrIdAdmin , required String nostrIdCommon , required String groupId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrIdAdmin, serializer);
 sse_encode_String(nostrIdCommon, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 85, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
             
             },
             codec: 
@@ -2668,7 +3090,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 86, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
             
             },
             codec: 
@@ -2693,7 +3115,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 87, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
             
             },
             codec: 
@@ -2719,7 +3141,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 88, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
             
             },
             codec: 
@@ -2745,7 +3167,7 @@ sse_encode_usize(limit, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 89, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
             
             },
             codec: 
@@ -2770,7 +3192,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 90, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
             
             },
             codec: 
@@ -2795,7 +3217,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 91, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
             
             },
             codec: 
@@ -2820,7 +3242,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 92, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
             
             },
             codec: 
@@ -2845,7 +3267,7 @@ sse_encode_String(groupId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 93, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
             
             },
             codec: 
@@ -2871,7 +3293,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(preKeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 94, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
             
             },
             codec: 
@@ -2892,13 +3314,39 @@ sse_encode_u_32(preKeyId, serializer);
         );
         
 
+@override Future<Uint8List> crateApiSignalV1GetPreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(preKeyId, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GetPreKeyApiConstMeta,
+            argValues: [keyPair, preKeyId],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GetPreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "get_pre_key_api",
+            argNames: ["keyPair", "preKeyId"],
+        );
+        
+
 @override Future<String?> crateApiMlsGetSender({required String nostrId , required String groupId , required String queuedMsg })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 95, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
             
             },
             codec: 
@@ -2925,7 +3373,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 96, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
             
             },
             codec: 
@@ -2946,12 +3394,39 @@ sse_encode_String(deviceId, serializer);
         );
         
 
+@override Future<KeychatSignalSession?> crateApiSignalV1GetSession({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_String(address, serializer);
+sse_encode_String(deviceId, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_keychat_signal_session,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GetSessionConstMeta,
+            argValues: [keyPair, address, deviceId],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GetSessionConstMeta => const TaskConstMeta(
+            debugName: "get_session",
+            argNames: ["keyPair", "address", "deviceId"],
+        );
+        
+
 @override Future<Uint8List> crateApiSignalGetSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedPreKeyId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 97, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
             
             },
             codec: 
@@ -2972,12 +3447,38 @@ sse_encode_u_32(signedPreKeyId, serializer);
         );
         
 
+@override Future<Uint8List> crateApiSignalV1GetSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(signedPreKeyId, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 114, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1GetSignedPreKeyApiConstMeta,
+            argValues: [keyPair, signedPreKeyId],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1GetSignedPreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "get_signed_pre_key_api",
+            argNames: ["keyPair", "signedPreKeyId"],
+        );
+        
+
 @override Future<List<Transaction>> crateApiCashuGetTransactionsWithOffset({required BigInt offset , required BigInt limit })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 98, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
             
             },
             codec: 
@@ -3004,7 +3505,7 @@ sse_encode_usize(limit, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(offset, serializer);
 sse_encode_usize(limit, serializer);
 sse_encode_String(mintUrl, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 99, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 116, port: port_);
             
             },
             codec: 
@@ -3030,7 +3531,7 @@ sse_encode_String(mintUrl, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 100, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
             
             },
             codec: 
@@ -3058,7 +3559,7 @@ sse_encode_String(groupId, serializer);
 sse_encode_usize(limit, serializer);
 sse_encode_String(mintUrl, serializer);
 sse_encode_bool(isOneAmount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 101, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
             
             },
             codec: 
@@ -3087,7 +3588,7 @@ sse_encode_list_String(receiverPubkeys, serializer);
 sse_encode_String(content, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_opt_list_list_String(additionalTags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 102, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
             
             },
             codec: 
@@ -3115,7 +3616,7 @@ sse_encode_opt_list_list_String(additionalTags, serializer);
 sse_encode_list_record_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_mint_url_auto_owned_rust_opaque_flutter_rust_bridgefor_generated_rust_auto_opaque_inner_amount(mintAmounts, serializer);
 sse_encode_usize(mintNumber, serializer);
 sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCurrencyUnit(unit, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 103, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
             
             },
             codec: 
@@ -3142,7 +3643,7 @@ sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueI
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(phrase, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_opt_box_autoadd_u_32(account, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 104, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
             
             },
             codec: 
@@ -3170,7 +3671,7 @@ sse_encode_opt_box_autoadd_u_32(account, serializer);
 sse_encode_opt_String(password, serializer);
 sse_encode_u_32(offset, serializer);
 sse_encode_u_32(count, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 105, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
             
             },
             codec: 
@@ -3195,7 +3696,7 @@ sse_encode_u_32(count, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(senderKeys, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 106, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
             
             },
             codec: 
@@ -3222,7 +3723,7 @@ sse_encode_u_32(count, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(registrationId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 107, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
             
             },
             codec: 
@@ -3243,11 +3744,38 @@ sse_encode_u_32(registrationId, serializer);
         );
         
 
+@override Future<void> crateApiSignalV1Init({required String dbPath , required KeychatIdentityKeyPair keyPair , required int registrationId })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
+sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(registrationId, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1InitConstMeta,
+            argValues: [dbPath, keyPair, registrationId],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1InitConstMeta => const TaskConstMeta(
+            debugName: "init",
+            argNames: ["dbPath", "keyPair", "registrationId"],
+        );
+        
+
 @override Future<List<MintCashu>> crateApiCashuInitCashu({required int prepareSatsOnceTime })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_16(prepareSatsOnceTime, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 108, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
             
             },
             codec: 
@@ -3274,7 +3802,7 @@ sse_encode_u_32(registrationId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
 sse_encode_String(words, serializer);
 sse_encode_bool(dev, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 109, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
             
             },
             codec: 
@@ -3299,7 +3827,7 @@ sse_encode_bool(dev, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 110, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
             
             },
             codec: 
@@ -3325,7 +3853,7 @@ sse_encode_bool(dev, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(registrationId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 111, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
             
             },
             codec: 
@@ -3346,12 +3874,38 @@ sse_encode_u_32(registrationId, serializer);
         );
         
 
+@override Future<void> crateApiSignalV1InitKeypair({required KeychatIdentityKeyPair keyPair , required int registrationId })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(registrationId, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1InitKeypairConstMeta,
+            argValues: [keyPair, registrationId],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1InitKeypairConstMeta => const TaskConstMeta(
+            debugName: "init_keypair",
+            argNames: ["keyPair", "registrationId"],
+        );
+        
+
 @override Future<void> crateApiMlsInitMlsDb({required String dbPath , required String nostrId })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
 sse_encode_String(nostrId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 112, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
             
             },
             codec: 
@@ -3376,7 +3930,7 @@ sse_encode_String(nostrId, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 113, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
             
             },
             codec: 
@@ -3397,13 +3951,38 @@ sse_encode_String(nostrId, serializer);
         );
         
 
+@override Future<void> crateApiSignalV1InitSignalDb({required String dbPath })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbPath, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1InitSignalDbConstMeta,
+            argValues: [dbPath],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1InitSignalDbConstMeta => const TaskConstMeta(
+            debugName: "init_signal_db",
+            argNames: ["dbPath"],
+        );
+        
+
 @override Future<(String,List<String>)> crateApiCashuInitV1AndGetPoorfsToV2({required String dbpathOld , required String dbpathNew , required String words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpathOld, serializer);
 sse_encode_String(dbpathNew, serializer);
 sse_encode_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 114, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
             
             },
             codec: 
@@ -3430,7 +4009,7 @@ sse_encode_String(words, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(welcome, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 115, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 135, port: port_);
             
             },
             codec: 
@@ -3457,7 +4036,7 @@ sse_encode_list_prim_u_8_loose(welcome, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(invoice, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_box_autoadd_u_64(amount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 116, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
             
             },
             codec: 
@@ -3482,7 +4061,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(threshold, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 117, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
             
             },
             codec: 
@@ -3507,7 +4086,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 118, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 138, port: port_);
             
             },
             codec: 
@@ -3534,7 +4113,7 @@ sse_encode_opt_box_autoadd_u_64(amount, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(quoteId, serializer);
 sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 119, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 139, port: port_);
             
             },
             codec: 
@@ -3559,7 +4138,7 @@ sse_encode_String(activeMint, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_String(stamps, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 120, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 140, port: port_);
             
             },
             codec: 
@@ -3587,7 +4166,7 @@ sse_encode_String(activeMint, serializer);
 sse_encode_String(relay, serializer);
 sse_encode_String(secret, serializer);
 sse_encode_opt_String(lud16, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 121, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 141, port: port_);
             
             },
             codec: 
@@ -3612,7 +4191,7 @@ sse_encode_opt_String(lud16, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(request, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 122, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 142, port: port_);
             
             },
             codec: 
@@ -3639,7 +4218,7 @@ sse_encode_opt_String(lud16, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 123, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 143, port: port_);
             
             },
             codec: 
@@ -3666,7 +4245,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 124, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 144, port: port_);
             
             },
             codec: 
@@ -3693,7 +4272,7 @@ sse_encode_String(queuedMsg, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 125, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 145, port: port_);
             
             },
             codec: 
@@ -3718,7 +4297,7 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 126, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 146, port: port_);
             
             },
             codec: 
@@ -3739,11 +4318,36 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
         );
         
 
+@override Future<PreKeySignalMessageInfo> crateApiSignalV1ParseIdentityFromPrekeySignalMessage({required List<int> ciphertext })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 147, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_pre_key_signal_message_info,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1ParseIdentityFromPrekeySignalMessageConstMeta,
+            argValues: [ciphertext],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1ParseIdentityFromPrekeySignalMessageConstMeta => const TaskConstMeta(
+            debugName: "parse_identity_from_prekey_signal_message",
+            argNames: ["ciphertext"],
+        );
+        
+
 @override Future<bool> crateApiSignalParseIsPrekeySignalMessage({required List<int> ciphertext })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 127, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 148, port: port_);
             
             },
             codec: 
@@ -3764,12 +4368,37 @@ sse_encode_list_prim_u_8_loose(queuedMsg, serializer);
         );
         
 
+@override Future<bool> crateApiSignalV1ParseIsPrekeySignalMessage({required List<int> ciphertext })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(ciphertext, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 149, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1ParseIsPrekeySignalMessageConstMeta,
+            argValues: [ciphertext],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1ParseIsPrekeySignalMessageConstMeta => const TaskConstMeta(
+            debugName: "parse_is_prekey_signal_message",
+            argNames: ["ciphertext"],
+        );
+        
+
 @override Future<BigInt> crateApiMlsParseLifetimeFromKeyPackage({required String nostrId , required String keyPackageHex })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(keyPackageHex, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 128, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 150, port: port_);
             
             },
             codec: 
@@ -3796,7 +4425,7 @@ sse_encode_String(keyPackageHex, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 129, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 151, port: port_);
             
             },
             codec: 
@@ -3821,7 +4450,7 @@ sse_encode_String(data, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 130, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 152, port: port_);
             
             },
             codec: 
@@ -3846,7 +4475,7 @@ sse_encode_String(data, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 131, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 153, port: port_);
             
             },
             codec: 
@@ -3867,7 +4496,44 @@ sse_encode_String(data, serializer);
         );
         
 
-@override Future<void> crateApiSignalProcessPreKeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int registrationId , required int deviceId , required KeychatIdentityKey identityKey , required int signedPreKeyId , required List<int> signedPreKeyPublic , required List<int> signedPreKeySignature , required int preKeyId , required List<int> preKeyPublic })  { return handler.executeNormal(NormalTask(
+@override Future<void> crateApiSignalProcessPreKeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int registrationId , required int deviceId , required KeychatIdentityKey identityKey , required int signedPreKeyId , required List<int> signedPreKeyPublic , required List<int> signedPreKeySignature , required int kyberPreKeyId , required List<int> kyberPreKeyPublic , required List<int> kyberPreKeySignature , required int preKeyId , required List<int> preKeyPublic })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_box_autoadd_keychat_protocol_address(remoteAddress, serializer);
+sse_encode_u_32(registrationId, serializer);
+sse_encode_u_32(deviceId, serializer);
+sse_encode_box_autoadd_keychat_identity_key(identityKey, serializer);
+sse_encode_u_32(signedPreKeyId, serializer);
+sse_encode_list_prim_u_8_loose(signedPreKeyPublic, serializer);
+sse_encode_list_prim_u_8_loose(signedPreKeySignature, serializer);
+sse_encode_u_32(kyberPreKeyId, serializer);
+sse_encode_list_prim_u_8_loose(kyberPreKeyPublic, serializer);
+sse_encode_list_prim_u_8_loose(kyberPreKeySignature, serializer);
+sse_encode_u_32(preKeyId, serializer);
+sse_encode_list_prim_u_8_loose(preKeyPublic, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 154, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalProcessPreKeyBundleApiConstMeta,
+            argValues: [keyPair, remoteAddress, registrationId, deviceId, identityKey, signedPreKeyId, signedPreKeyPublic, signedPreKeySignature, kyberPreKeyId, kyberPreKeyPublic, kyberPreKeySignature, preKeyId, preKeyPublic],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalProcessPreKeyBundleApiConstMeta => const TaskConstMeta(
+            debugName: "process_pre_key_bundle_api",
+            argNames: ["keyPair", "remoteAddress", "registrationId", "deviceId", "identityKey", "signedPreKeyId", "signedPreKeyPublic", "signedPreKeySignature", "kyberPreKeyId", "kyberPreKeyPublic", "kyberPreKeySignature", "preKeyId", "preKeyPublic"],
+        );
+        
+
+@override Future<void> crateApiSignalV1ProcessPreKeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int registrationId , required int deviceId , required KeychatIdentityKey identityKey , required int signedPreKeyId , required List<int> signedPreKeyPublic , required List<int> signedPreKeySignature , required int preKeyId , required List<int> preKeyPublic })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
@@ -3880,7 +4546,7 @@ sse_encode_list_prim_u_8_loose(signedPreKeyPublic, serializer);
 sse_encode_list_prim_u_8_loose(signedPreKeySignature, serializer);
 sse_encode_u_32(preKeyId, serializer);
 sse_encode_list_prim_u_8_loose(preKeyPublic, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 132, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 155, port: port_);
             
             },
             codec: 
@@ -3889,13 +4555,13 @@ sse_encode_list_prim_u_8_loose(preKeyPublic, serializer);
           decodeErrorData: sse_decode_AnyhowException,
         )
         ,
-            constMeta: kCrateApiSignalProcessPreKeyBundleApiConstMeta,
+            constMeta: kCrateApiSignalV1ProcessPreKeyBundleApiConstMeta,
             argValues: [keyPair, remoteAddress, registrationId, deviceId, identityKey, signedPreKeyId, signedPreKeyPublic, signedPreKeySignature, preKeyId, preKeyPublic],
             apiImpl: this,
         )); }
 
 
-        TaskConstMeta get kCrateApiSignalProcessPreKeyBundleApiConstMeta => const TaskConstMeta(
+        TaskConstMeta get kCrateApiSignalV1ProcessPreKeyBundleApiConstMeta => const TaskConstMeta(
             debugName: "process_pre_key_bundle_api",
             argNames: ["keyPair", "remoteAddress", "registrationId", "deviceId", "identityKey", "signedPreKeyId", "signedPreKeyPublic", "signedPreKeySignature", "preKeyId", "preKeyPublic"],
         );
@@ -3905,7 +4571,7 @@ sse_encode_list_prim_u_8_loose(preKeyPublic, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(encodedToken, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 133, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 156, port: port_);
             
             },
             codec: 
@@ -3932,7 +4598,7 @@ sse_encode_list_prim_u_8_loose(preKeyPublic, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_list_prim_u_8_strict(members, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 134, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 157, port: port_);
             
             },
             codec: 
@@ -3957,7 +4623,7 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(url, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 135, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 158, port: port_);
             
             },
             codec: 
@@ -3983,7 +4649,7 @@ sse_encode_list_list_prim_u_8_strict(members, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(unixTimestampLe, serializer);
 sse_encode_transaction_status(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 136, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 159, port: port_);
             
             },
             codec: 
@@ -4009,7 +4675,7 @@ sse_encode_transaction_status(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 137, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 160, port: port_);
             
             },
             codec: 
@@ -4035,7 +4701,7 @@ sse_encode_String(activeMint, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mintUrl, serializer);
 sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 138, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 161, port: port_);
             
             },
             codec: 
@@ -4061,7 +4727,7 @@ sse_encode_opt_String(words, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 139, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 162, port: port_);
             
             },
             codec: 
@@ -4087,7 +4753,7 @@ sse_encode_String(groupId, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 140, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 163, port: port_);
             
             },
             codec: 
@@ -4114,7 +4780,7 @@ sse_encode_String(groupId, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(nostrId, serializer);
 sse_encode_String(groupId, serializer);
 sse_encode_list_prim_u_8_loose(extensions, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 141, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 164, port: port_);
             
             },
             codec: 
@@ -4141,7 +4807,7 @@ sse_encode_list_prim_u_8_loose(extensions, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_String(activeMint, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 142, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 165, port: port_);
             
             },
             codec: 
@@ -4166,7 +4832,7 @@ sse_encode_opt_String(info, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(mint, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 143, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 166, port: port_);
             
             },
             codec: 
@@ -4193,7 +4859,7 @@ sse_encode_opt_String(info, serializer);
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_u_64(amount, serializer);
 sse_encode_list_String(mints, serializer);
 sse_encode_opt_String(info, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 144, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 167, port: port_);
             
             },
             codec: 
@@ -4219,7 +4885,7 @@ sse_encode_opt_String(info, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_String(address, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 145, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 168, port: port_);
             
             },
             codec: 
@@ -4240,11 +4906,37 @@ sse_encode_String(address, serializer);
         );
         
 
+@override Future<KeychatSignalSession?> crateApiSignalV1SessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_String(address, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 169, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_keychat_signal_session,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1SessionContainAliceAddrConstMeta,
+            argValues: [keyPair, address],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1SessionContainAliceAddrConstMeta => const TaskConstMeta(
+            debugName: "session_contain_alice_addr",
+            argNames: ["keyPair", "address"],
+        );
+        
+
 @override Future<bool> crateApiCashuSetMnemonic({String? words })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_opt_String(words, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 146, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 170, port: port_);
             
             },
             codec: 
@@ -4269,7 +4961,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 147, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 171, port: port_);
             
             },
             codec: 
@@ -4294,7 +4986,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 148, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 172, port: port_);
             
             },
             codec: 
@@ -4319,7 +5011,7 @@ sse_encode_String(address, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_list_prim_u_8_loose(data, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 149, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 173, port: port_);
             
             },
             codec: 
@@ -4348,7 +5040,7 @@ sse_encode_String(content, serializer);
 sse_encode_u_64(createdAt, serializer);
 sse_encode_u_16(kind, serializer);
 sse_encode_list_list_String(tags, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 150, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 174, port: port_);
             
             },
             codec: 
@@ -4374,7 +5066,7 @@ sse_encode_list_list_String(tags, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(privateKey, serializer);
 sse_encode_String(content, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 151, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 175, port: port_);
             
             },
             codec: 
@@ -4395,13 +5087,40 @@ sse_encode_String(content, serializer);
         );
         
 
+@override Future<void> crateApiSignalStoreKyberPreKeyApi({required KeychatIdentityKeyPair keyPair , required int kyberPreKeyId , required List<int> kyberPreKeyRecord })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(kyberPreKeyId, serializer);
+sse_encode_list_prim_u_8_loose(kyberPreKeyRecord, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 176, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalStoreKyberPreKeyApiConstMeta,
+            argValues: [keyPair, kyberPreKeyId, kyberPreKeyRecord],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalStoreKyberPreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "store_kyber_pre_key_api",
+            argNames: ["keyPair", "kyberPreKeyId", "kyberPreKeyRecord"],
+        );
+        
+
 @override Future<void> crateApiSignalStorePreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId , required List<int> preKeyRecord })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(preKeyId, serializer);
 sse_encode_list_prim_u_8_loose(preKeyRecord, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 152, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 177, port: port_);
             
             },
             codec: 
@@ -4422,13 +5141,40 @@ sse_encode_list_prim_u_8_loose(preKeyRecord, serializer);
         );
         
 
+@override Future<void> crateApiSignalV1StorePreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId , required List<int> preKeyRecord })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(preKeyId, serializer);
+sse_encode_list_prim_u_8_loose(preKeyRecord, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 178, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1StorePreKeyApiConstMeta,
+            argValues: [keyPair, preKeyId, preKeyRecord],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1StorePreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "store_pre_key_api",
+            argNames: ["keyPair", "preKeyId", "preKeyRecord"],
+        );
+        
+
 @override Future<void> crateApiSignalStoreSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId , required List<int> signedPreKeyRecord })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
 sse_encode_u_32(signedPreKeyId, serializer);
 sse_encode_list_prim_u_8_loose(signedPreKeyRecord, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 153, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 179, port: port_);
             
             },
             codec: 
@@ -4449,13 +5195,40 @@ sse_encode_list_prim_u_8_loose(signedPreKeyRecord, serializer);
         );
         
 
+@override Future<void> crateApiSignalV1StoreSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId , required List<int> signedPreKeyRecord })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_u_32(signedPreKeyId, serializer);
+sse_encode_list_prim_u_8_loose(signedPreKeyRecord, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 180, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1StoreSignedPreKeyApiConstMeta,
+            argValues: [keyPair, signedPreKeyId, signedPreKeyRecord],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1StoreSignedPreKeyApiConstMeta => const TaskConstMeta(
+            debugName: "store_signed_pre_key_api",
+            argNames: ["keyPair", "signedPreKeyId", "signedPreKeyRecord"],
+        );
+        
+
 @override Future<(List<String>,Set<String>)> crateApiCashuV1TryUnreachableMints({required String dbpath , String? words , required List<String> mints })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(dbpath, serializer);
 sse_encode_opt_String(words, serializer);
 sse_encode_list_String(mints, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 154, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 181, port: port_);
             
             },
             codec: 
@@ -4483,7 +5256,7 @@ sse_encode_list_String(mints, serializer);
 sse_encode_String(address, serializer);
 sse_encode_String(deviceId, serializer);
 sse_encode_String(aliceAddr, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 155, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 182, port: port_);
             
             },
             codec: 
@@ -4504,6 +5277,34 @@ sse_encode_String(aliceAddr, serializer);
         );
         
 
+@override Future<bool> crateApiSignalV1UpdateAliceAddr({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId , required String aliceAddr })  { return handler.executeNormal(NormalTask(
+            callFfi: (port_) {
+              
+            final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_box_autoadd_keychat_identity_key_pair(keyPair, serializer);
+sse_encode_String(address, serializer);
+sse_encode_String(deviceId, serializer);
+sse_encode_String(aliceAddr, serializer);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 183, port: port_);
+            
+            },
+            codec: 
+        SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: sse_decode_AnyhowException,
+        )
+        ,
+            constMeta: kCrateApiSignalV1UpdateAliceAddrConstMeta,
+            argValues: [keyPair, address, deviceId, aliceAddr],
+            apiImpl: this,
+        )); }
+
+
+        TaskConstMeta get kCrateApiSignalV1UpdateAliceAddrConstMeta => const TaskConstMeta(
+            debugName: "update_alice_addr",
+            argNames: ["keyPair", "address", "deviceId", "aliceAddr"],
+        );
+        
+
 @override Future<String> crateApiMlsUpdateGroupContextExtensions({required String nostrId , required String groupId , String? groupName , String? description , List<String>? adminPubkeysHex , List<String>? groupRelays , String? status })  { return handler.executeNormal(NormalTask(
             callFfi: (port_) {
               
@@ -4514,7 +5315,7 @@ sse_encode_opt_String(description, serializer);
 sse_encode_opt_list_String(adminPubkeysHex, serializer);
 sse_encode_opt_list_String(groupRelays, serializer);
 sse_encode_opt_String(status, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 156, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 184, port: port_);
             
             },
             codec: 
@@ -4540,7 +5341,7 @@ sse_encode_opt_String(status, serializer);
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_usize(mintNumber, serializer);
 sse_encode_usize(mintCount, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 157, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 185, port: port_);
             
             },
             codec: 
@@ -4565,7 +5366,7 @@ sse_encode_usize(mintCount, serializer);
             callFfi: (port_) {
               
             final serializer = SseSerializer(generalizedFrbRustBinding);sse_encode_String(json, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 158, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 186, port: port_);
             
             },
             codec: 
@@ -4593,7 +5394,7 @@ sse_encode_usize(mintCount, serializer);
 sse_encode_String(sig, serializer);
 sse_encode_String(content, serializer);
 sse_encode_bool(hash, serializer);
-            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 159, port: port_);
+            pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 187, port: port_);
             
             },
             codec: 
@@ -4854,6 +5655,14 @@ bobSenderRatchetKey: dco_decode_opt_String(arr[3]),
 record: dco_decode_String(arr[4]),
 bobAddress: dco_decode_opt_String(arr[5]),
 aliceAddresses: dco_decode_opt_String(arr[6]),); }
+
+@protected KyberPreKeyResult dco_decode_kyber_pre_key_result(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
+final arr = raw as List<dynamic>;
+                if (arr.length != 4) throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+                return KyberPreKeyResult(kyberPreKeyId: dco_decode_u_32(arr[0]),
+kyberPreKeyPublic: dco_decode_list_prim_u_8_strict(arr[1]),
+kyberPreKeySignature: dco_decode_list_prim_u_8_strict(arr[2]),
+kyberPreKeyRecord: dco_decode_list_prim_u_8_strict(arr[3]),); }
 
 @protected List<String> dco_decode_list_String(dynamic raw){ // Codec=Dco (DartCObject based), see doc to use other codecs
 return (raw as List<dynamic>).map(dco_decode_String).toList(); }
@@ -5356,6 +6165,13 @@ var var_record = sse_decode_String(deserializer);
 var var_bobAddress = sse_decode_opt_String(deserializer);
 var var_aliceAddresses = sse_decode_opt_String(deserializer);
 return KeychatSignalSession(aliceSenderRatchetKey: var_aliceSenderRatchetKey, address: var_address, device: var_device, bobSenderRatchetKey: var_bobSenderRatchetKey, record: var_record, bobAddress: var_bobAddress, aliceAddresses: var_aliceAddresses); }
+
+@protected KyberPreKeyResult sse_decode_kyber_pre_key_result(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+var var_kyberPreKeyId = sse_decode_u_32(deserializer);
+var var_kyberPreKeyPublic = sse_decode_list_prim_u_8_strict(deserializer);
+var var_kyberPreKeySignature = sse_decode_list_prim_u_8_strict(deserializer);
+var var_kyberPreKeyRecord = sse_decode_list_prim_u_8_strict(deserializer);
+return KyberPreKeyResult(kyberPreKeyId: var_kyberPreKeyId, kyberPreKeyPublic: var_kyberPreKeyPublic, kyberPreKeySignature: var_kyberPreKeySignature, kyberPreKeyRecord: var_kyberPreKeyRecord); }
 
 @protected List<String> sse_decode_list_String(SseDeserializer deserializer){ // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -5943,6 +6759,13 @@ sse_encode_opt_String(self.bobSenderRatchetKey, serializer);
 sse_encode_String(self.record, serializer);
 sse_encode_opt_String(self.bobAddress, serializer);
 sse_encode_opt_String(self.aliceAddresses, serializer);
+ }
+
+@protected void sse_encode_kyber_pre_key_result(KyberPreKeyResult self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs
+sse_encode_u_32(self.kyberPreKeyId, serializer);
+sse_encode_list_prim_u_8_strict(self.kyberPreKeyPublic, serializer);
+sse_encode_list_prim_u_8_strict(self.kyberPreKeySignature, serializer);
+sse_encode_list_prim_u_8_strict(self.kyberPreKeyRecord, serializer);
  }
 
 @protected void sse_encode_list_String(List<String> self, SseSerializer serializer){ // Codec=Sse (Serialization based), see doc to use other codecs

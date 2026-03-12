@@ -8,7 +8,7 @@ import '../lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
-            // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `cmp`, `cmp`, `cmp`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `hash`, `hash`, `partial_cmp`, `partial_cmp`, `partial_cmp`
+            // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `cmp`, `cmp`, `cmp`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `hash`, `hash`, `partial_cmp`, `partial_cmp`, `partial_cmp`
 
 
             
@@ -161,6 +161,32 @@ final String? aliceAddresses;
             other is KeychatSignalSession &&
                 runtimeType == other.runtimeType
                 && aliceSenderRatchetKey == other.aliceSenderRatchetKey&& address == other.address&& device == other.device&& bobSenderRatchetKey == other.bobSenderRatchetKey&& record == other.record&& bobAddress == other.bobAddress&& aliceAddresses == other.aliceAddresses;
+        
+            }
+
+class KyberPreKeyResult  {
+                final int kyberPreKeyId;
+final Uint8List kyberPreKeyPublic;
+final Uint8List kyberPreKeySignature;
+final Uint8List kyberPreKeyRecord;
+
+                const KyberPreKeyResult({required this.kyberPreKeyId ,required this.kyberPreKeyPublic ,required this.kyberPreKeySignature ,required this.kyberPreKeyRecord ,});
+
+                
+                
+
+                
+        @override
+        int get hashCode => kyberPreKeyId.hashCode^kyberPreKeyPublic.hashCode^kyberPreKeySignature.hashCode^kyberPreKeyRecord.hashCode;
+        
+
+                
+        @override
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is KyberPreKeyResult &&
+                runtimeType == other.runtimeType
+                && kyberPreKeyId == other.kyberPreKeyId&& kyberPreKeyPublic == other.kyberPreKeyPublic&& kyberPreKeySignature == other.kyberPreKeySignature&& kyberPreKeyRecord == other.kyberPreKeyRecord;
         
             }
 
