@@ -70,7 +70,7 @@ impl User {
         let export_secret =
             group
                 .mls_group
-                .export_secret(&self.mls_user.provider, "nostr", b"nostr", 32)?;
+                .export_secret(self.mls_user.provider.crypto(), "nostr", b"nostr", 32)?;
         Ok(export_secret)
     }
 
@@ -91,7 +91,7 @@ impl User {
     }
 
     pub(crate) fn keypair_from_export_secret(&self, group: MlsGroup) -> Result<Keys> {
-        let export_secret = group.export_secret(&self.mls_user.provider, "nostr", b"nostr", 32)?;
+        let export_secret = group.export_secret(self.mls_user.provider.crypto(), "nostr", b"nostr", 32)?;
         let export_secret_hex = hex::encode(&export_secret);
         let keypair = Keys::parse(&export_secret_hex)?;
         Ok(keypair)

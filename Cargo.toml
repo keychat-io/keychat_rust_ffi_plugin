@@ -13,3 +13,6 @@ rpath = true
 
 [profile.dev]
 debug = 2
+
+[patch.crates-io]
+keccak = { git = "https://github.com/RustCrypto/sponges.git", tag = "keccak-v0.2.0-rc.2" }

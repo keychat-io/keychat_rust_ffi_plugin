@@ -24,11 +24,12 @@ serde_json = "1.0.96"
 thiserror = "1.0.40"
 tokio = { version = "1.28.1", features = ["sync", "rt-multi-thread"] }
 
-signal-store = { git = "https://github.com/keychat-io/signal-storage.git", branch = "v0.86.13" }
-signal-store-v1 = { package = "signal-store", git = "https://github.com/keychat-io/signal-storage.git", branch = "main" }
+signal-store = { git = "https://github.com/keychat-io/signal-storage.git", branch = "kc_v0.86.13_mls_0.7.4" }
+signal-store-v1 = { package = "signal-store", git = "https://github.com/keychat-io/signal-storage.git", branch = "v1_0.7.4" }
 cashu-wallet = { git = "https://github.com/keychat-io/cashu-wallet-rs.git", branch = "bugfix2" }
 cashu-wallet-sqlite = { git = "https://github.com/keychat-io/cashu-wallet-rs.git", branch = "bugfix2" }
-# signal-store = { path = "../../signal-storage" }
+# signal-store-v1 = { package = "signal-store", path = "../../signal-storage" }
+# signal-store = { package = "signal-store", path = "../../signal-storage-v0.86.13" }
 # cashu-wallet = {path = "../../cashu-wallet-rs/cashu-wallet"}
 # cashu-wallet-sqlite = {path = "../../cashu-wallet-rs/store-sqlite"}
 
@@ -36,15 +37,20 @@ cashu-wallet-sqlite = { git = "https://github.com/keychat-io/cashu-wallet-rs.git
 # cdk = {path = "../../cdk/crates/cdk"}
 # cdk-common = {path = "../../cdk/crates/cdk-common"}
 # cashu = {path = "../../cdk/crates/cashu"}
-cdk-sqlite = { git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cdk-sqlite" }
-cdk = { git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cdk" }
-cdk-common = { git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cdk-common" }
-cashu = { git = "https://github.com/keychat-io/cdk.git", branch = "kc2", package = "cashu" }
+cdk-sqlite = { git = "https://github.com/keychat-io/cdk.git", branch = "kc3", package = "cdk-sqlite" }
+cdk = { git = "https://github.com/keychat-io/cdk.git", branch = "kc3", package = "cdk" }
+cdk-common = { git = "https://github.com/keychat-io/cdk.git", branch = "kc3", package = "cdk-common" }
+cashu = { git = "https://github.com/keychat-io/cdk.git", branch = "kc3", package = "cashu" }
 
-openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls" }
-openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_traits" }
-openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "openmls_sqlite_storage" }
-kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc4", package = "kc" }
+openmls = { git = "https://github.com/keychat-io/openmls.git", branch = "kc_v0.7.4", package = "openmls" }
+openmls_traits = { git = "https://github.com/keychat-io/openmls.git", branch = "kc_v0.7.4", package = "openmls_traits" }
+openmls_sqlite_storage = { git = "https://github.com/keychat-io/openmls.git", branch = "kc_v0.7.4", package = "openmls_sqlite_storage" }
+kc = { git = "https://github.com/keychat-io/openmls.git", branch = "kc_v0.7.4", package = "kc" }
+
+# openmls = { path = "../../openmls/openmls"}
+# openmls_traits = {path = "../../openmls/traits"}
+# openmls_sqlite_storage = { path = "../../openmls/sqlite_storage"}
+# kc = {path = "../../openmls/kc"}
 
 # aes = "0.7"
 # block-modes = "0.8"

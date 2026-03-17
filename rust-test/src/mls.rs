@@ -22,8 +22,8 @@ struct DecryptMsg {
 }
 
 fn main() {
-    let _ = test_lifetime();
-    // let _ = test_basic();
+    // let _ = test_lifetime();
+    let _ = test_basic();
     // let _ = test_extension();
     // let _ = test_secret_key();
     // let _ = test_self_decrypt();
