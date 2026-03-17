@@ -61,7 +61,7 @@ nostr = { version = "0.39.0", default-features = false, features = [
 bincode = "1.3.3"
 sha1 = "0.10.6"
 # V2 protocol engine
-libkeychat = { git = "ssh://git@github.com/keychat-io/libkeychat.git", branch = "feat/cli", default-features = false }
+libkeychat = { git = "https://github.com/keychat-io/libkeychat.git", branch = "feat/cli", default-features = false }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
