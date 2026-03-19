@@ -467,17 +467,18 @@ pub async fn get_unencrypt_event(
     additional_tags: Option<Vec<Vec<String>>>,
 ) -> anyhow::Result<String> {
     let mut tags: Vec<Tag> = vec![];
+    // Always add receiver pubkeys as "p" tags
+    for p in receiver_pubkeys {
+        let pubkey = get_xonly_pubkey(p)?;
+        tags.push(Tag::public_key(pubkey));
+    }
+    // Append additional tags (e.g. ["client", "v2"]) after "p" tags
     if let Some(additional_tags) = additional_tags {
         for tag_data in additional_tags {
             tags.push(nostr::Tag::custom(
                 nostr::TagKind::custom(tag_data[0].as_str()),
                 vec![tag_data[1].as_str()],
             ));
-        }
-    } else {
-        for p in receiver_pubkeys {
-            let pubkey = get_xonly_pubkey(p)?;
-            tags.push(Tag::public_key(pubkey));
         }
     }
 
