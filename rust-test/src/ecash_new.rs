@@ -8,19 +8,19 @@ const DB_PATH: &str = "rustest-new.db";
 const DB_PATH_V2: &str = "ecash_v2.db";
 const MINT_URL: &str = "https://8333.space:3338/";
 const MINT_URL_MINIBITS: &str = "https://mint.minibits.cash/Bitcoin/";
-const MINT_URL_KC: &str = "https://mint.keycaht.io";
+const MINT_URL_KC: &str = "https://mint.keychat.io";
 
 fn main() {
     let words = &MnemonicInfo::generate_words(12).unwrap();
     println!("{}", words);
-    let words = "broom only exhibit sand air primary bamboo income sphere climb worth rapid";
+    let words = "best hobby stone vicious easily shed enter ketchup sword slogan twice twin";
     // test_request_mint(words);
     // test_mint_state(words);
     // test_check_transaction(words);
     // test_get_txs(words);
     // test_mint_token(words);
     // test_melt(words);
-    // test_check_melt_quote_id(words);
+    // // test_check_melt_quote_id(words);
     // test_check_proofs(&words);
     // test_prepare_proofs(words);
     // test_send_all(words);
@@ -31,10 +31,10 @@ fn main() {
     // test_v1_receive(words);
     //// test_cashu_v1_init_proofs(words);
     // test_init_v1_and_get_poorfs_to_v2(words);
-    test_get_balance(words);
+    // test_get_balance(words);
     // test_self_send(words);
     // test_split_32(words);
-    // test_receive(words);
+    test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
     // test_recover_sagas(words);
@@ -184,7 +184,7 @@ fn test_restore(words: &str) {
 
     // api::check_pending_test();
 
-    let restore = api::restore(MINT_URL.to_string(), Some(words.to_string()));
+    let restore = api::restore(MINT_URL_KC.to_string(), Some(words.to_string()));
     println!("restore {:?}", restore);
 
     let b1 = api::get_balances();
@@ -228,7 +228,7 @@ fn test_send(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let send = api::send(9, MINT_URL.to_string(), None);
+    let send = api::send(9, MINT_URL_MINIBITS.to_string(), None);
     println!("send token is {:?}", send);
 
     let b2 = api::get_balances();
@@ -287,7 +287,7 @@ fn test_send_stmap(words: &str) {
     let mut stamps = vec![];
     for _i in 0..4 {
         let start = std::time::Instant::now();
-        let stamp = api::send_stamp(1, vec![MINT_URL.to_string()], None);
+        let stamp = api::send_stamp(1, vec![MINT_URL_MINIBITS.to_string()], None);
         let elapsed = start.elapsed();
         println!(
             "send_stamp took {} ms, result: {:?}",
@@ -322,7 +322,7 @@ fn test_split_32(words: &str) {
     println!("init_cashu is {:?}", init_cashu);
 
     println!("need split proofs first");
-    let pp = api::prepare_one_proofs(MINT_URL.to_string());
+    let pp = api::prepare_one_proofs(MINT_URL_MINIBITS.to_string());
     println!("send_stamp after split {:?}", pp);
 }
 
@@ -414,7 +414,7 @@ fn test_request_mint(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for receive token
-    let invoice = api::request_mint(12, MINT_URL.to_string());
+    let invoice = api::request_mint(12, MINT_URL_MINIBITS.to_string());
     println!("request_mint invoice is {:?}", invoice);
 
     // // test fot get balances
@@ -460,7 +460,7 @@ fn test_check_transaction(words: &str) {
     println!("get_balances before {:?}", b1);
 
     // test for check transaction
-    let tx_id = "00ee1a41a55f08d725d717f8763078c07db16569dc76f899d50dc5f0c091758a".to_string();
+    let tx_id = "6235360f023ef69030967ffb29ca8ddb11fb93661a005b5bcaf95072cec57d81".to_string();
     let amount = api::check_transaction(tx_id);
     println!("test_check_mint amount is {:?}", amount);
 
@@ -483,10 +483,10 @@ fn test_melt(words: &str) {
     let b1 = api::get_balances();
     println!("get_balances before {:?}", b1);
 
-    let invoice = "lnbc90n1p56l958pp5tvz2m5ejukkr95afweg88gq2xflc4hu7uvy3vvyqnp076s00rx8qdqqcqzzsxqyz5vqrzjqvueefmrckfdwyyu39m0lf24sqzcr9vcrmxrvgfn6empxz7phrjxvrttncqq0lcqqyqqqqlgqqqqqqgq2qsp5gm0z82j2nyt529ex48q8at48x7nu56qntw8s6e4q28m7m54jypuq9qxpqysgqcs8d5w4rnwyac38zdrccwvg7zwvtvaweg0vp2dgpfyvytze5j0y4w4x57skgw4vppukgdtjc4fmaxse0xthqfvjarrnpn6nw3v9utygqj5s2c6".to_string();
+    let invoice = "lnbc100n1p5ukmx0pp5kz6gh6yvyn78gkg3eq85k5fjeaeaqkv0xt36qrlw2hvac0r8h6mqdqqcqzzsxqyz5vqrzjqvueefmrckfdwyyu39m0lf24sqzcr9vcrmxrvgfn6empxz7phrjxvrttncqq0lcqqyqqqqlgqqqqqqgq2qsp5j5xp4zyqc69l8n5dr3l2q6ptwdrattg2jy3kxtvrdgfcv2kqtf8q9qxpqysgqtpfjwz52n695va0set8w62v402e0er026zwudu2ulq528zrzy4gymcu4fmhsvgecppt4mg3ks04k5l3qr8g620lhquq2fyjkfuqxgvgpa834jv".to_string();
 
     // test for receive token
-    let invoice = api::melt(invoice, MINT_URL.to_string(), None);
+    let invoice = api::melt(invoice, MINT_URL_MINIBITS.to_string(), None);
     println!("melt invoice is {:?}", invoice);
 
     // test fot get balances
