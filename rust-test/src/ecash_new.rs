@@ -25,7 +25,7 @@ fn main() {
     // test_prepare_proofs(words);
     // test_send_all(words);
     // test_merge_proofs(words);
-    // test_send_stmap(words);
+    test_send_stmap(words);
     // test_load_v2(words);
     // test_send(words);
     // test_v1_receive(words);
@@ -34,7 +34,7 @@ fn main() {
     // test_get_balance(words);
     // test_self_send(words);
     // test_split_32(words);
-    test_receive(words);
+    // test_receive(words);
     // test_restore(words);
     // test_v1_counters(words);
     // test_recover_sagas(words);

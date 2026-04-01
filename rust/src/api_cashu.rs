@@ -218,7 +218,25 @@ pub fn init_cashu(prepare_sats_once_time: u16) -> anyhow::Result<Vec<MintCashu>>
 
     let w = state.get_wallet()?;
     let result = state.rt.block_on(w.localstore.get_mints())?;
-    let mints = decode_mint_info(result)?;
+    let mints = decode_mint_info(result.clone())?;
+
+    // Recover incomplete sagas during init
+    let unit = CurrencyUnit::from_str("sat")?;
+    state.rt.block_on(async {
+        for (mint_url, _info) in &result {
+            let wallet = get_or_create_wallet(w, mint_url, unit.clone()).await?;
+            if let Err(e) = wallet.recover_incomplete_sagas().await {
+                error!(
+                    "recover_incomplete_sagas mint_url: {} error: {:?}",
+                    mint_url, e
+                );
+            }
+            if let Err(e) = wallet.mint_unissued_quotes().await {
+                error!("mint_unissued_quotes mint_url: {} error: {:?}", mint_url, e);
+            }
+        }
+        anyhow::Ok(())
+    })?;
 
     Ok(mints)
 }
