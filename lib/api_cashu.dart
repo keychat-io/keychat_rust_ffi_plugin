@@ -8,7 +8,7 @@ import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 
-            // These functions are ignored because they are not marked as `pub`: `_add_proofs`, `_prepare_one_proofs`, `_send_all`, `_send_old`, `_send_one`, `_send`, `_time`, `add_proofs_from_v1`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_transactions_with_offset_mint_amount`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`
+            // These functions are ignored because they are not marked as `pub`: `_add_proofs`, `_prepare_one_proofs`, `_send_all`, `_send_one`, `_send`, `_time`, `add_proofs_from_v1`, `check_sufficient_funds`, `decode_mint_info`, `get_or_create_wallet`, `get_transactions_with_offset_mint_amount`, `get_wallet_by_mint_url`, `init_db_once`, `mint_balances`, `new`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `MintCounterRecord`, `STATE`, `State`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `deref`, `fmt`, `fmt`, `fmt`, `fmt`, `initialize`
 // These functions are ignored (category: IgnoreBecauseExplicitAttribute): `get_mnemonic_info`, `get_wallet`, `get_wallet`, `lock`, `mnemonic`, `update_mnmonic`
@@ -58,8 +58,8 @@ Future<BigInt>  prepareOneProofs({required String mint }) => RustLib.instance.ap
 
 Future<SendStampsResult>  sendStamp({required BigInt amount , required List<String> mints , String? info }) => RustLib.instance.api.crateApiCashuSendStamp(amount: amount, mints: mints, info: info);
 
-/// Helper function to get a wallet from the multi-mint wallet
-Future<Wallet>  getWalletByIndex({required MultiMintWallet multiMintWallet , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit }) => RustLib.instance.api.crateApiCashuGetWalletByIndex(multiMintWallet: multiMintWallet, mintAmounts: mintAmounts, mintNumber: mintNumber, unit: unit);
+/// Helper function to get a wallet from the wallet repository
+Future<Wallet>  getWalletByIndex({required WalletRepository walletRepo , required List<(MintUrl,Amount)> mintAmounts , required BigInt mintNumber , required CurrencyUnit unit }) => RustLib.instance.api.crateApiCashuGetWalletByIndex(walletRepo: walletRepo, mintAmounts: mintAmounts, mintNumber: mintNumber, unit: unit);
 
 /// Helper function to validate a mint number against available mints
 Future<void>  validateMintNumber({required BigInt mintNumber , required BigInt mintCount }) => RustLib.instance.api.crateApiCashuValidateMintNumber(mintNumber: mintNumber, mintCount: mintCount);
@@ -67,9 +67,6 @@ Future<void>  validateMintNumber({required BigInt mintNumber , required BigInt m
 Future<Transaction>  send({required BigInt amount , required String activeMint , String? info }) => RustLib.instance.api.crateApiCashuSend(amount: amount, activeMint: activeMint, info: info);
 
 Future<Transaction>  requestMint({required BigInt amount , required String activeMint }) => RustLib.instance.api.crateApiCashuRequestMint(amount: amount, activeMint: activeMint);
-
-/// don not used in flutter, and put it in check_pending
-Future<Transaction>  mintToken({required BigInt amount , required String quoteId , required String activeMint }) => RustLib.instance.api.crateApiCashuMintToken(amount: amount, quoteId: quoteId, activeMint: activeMint);
 
 /// this need call every init melt mint, do not used in flutter
 Future<BigInt>  checkAllMintQuotes() => RustLib.instance.api.crateApiCashuCheckAllMintQuotes();
@@ -88,21 +85,9 @@ Future<void>  checkSinglePending({required String txId , required String mintUrl
 
 Future<Transaction>  melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
 
-Future<List<Transaction>>  getAllTransactions() => RustLib.instance.api.crateApiCashuGetAllTransactions();
-
-Future<List<Transaction>>  getCashuOneSatsTransactions() => RustLib.instance.api.crateApiCashuGetCashuOneSatsTransactions();
-
-Future<List<Transaction>>  getCashuOneSatsTransactionsWithMint({required String mintUrl }) => RustLib.instance.api.crateApiCashuGetCashuOneSatsTransactionsWithMint(mintUrl: mintUrl);
-
-Future<List<Transaction>>  getPendingFailedTransactions() => RustLib.instance.api.crateApiCashuGetPendingFailedTransactions();
-
 Future<List<Transaction>>  getCashuTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
 
-Future<List<Transaction>>  getCashuTransactionsWithOffsetMint({required BigInt offset , required BigInt limit , required String mintUrl }) => RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffsetMint(offset: offset, limit: limit, mintUrl: mintUrl);
-
 Future<List<Transaction>>  getTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetTransactionsWithOffset(offset: offset, limit: limit);
-
-Future<List<Transaction>>  getTransactionsWithOffsetMint({required BigInt offset , required BigInt limit , required String mintUrl }) => RustLib.instance.api.crateApiCashuGetTransactionsWithOffsetMint(offset: offset, limit: limit, mintUrl: mintUrl);
 
 Future<List<Transaction>>  getTxsWithOffsetMintAmount({required BigInt offset , required BigInt limit , required String mintUrl , required bool isOneAmount }) => RustLib.instance.api.crateApiCashuGetTxsWithOffsetMintAmount(offset: offset, limit: limit, mintUrl: mintUrl, isOneAmount: isOneAmount);
 
@@ -111,8 +96,6 @@ Future<List<Transaction>>  getLnTransactionsWithOffset({required BigInt offset ,
 Future<List<Transaction>>  getLnPendingTransactions() => RustLib.instance.api.crateApiCashuGetLnPendingTransactions();
 
 Future<List<Transaction>>  getCashuPendingTransactions() => RustLib.instance.api.crateApiCashuGetCashuPendingTransactions();
-
-Future<List<Transaction>>  getPendingTransactions() => RustLib.instance.api.crateApiCashuGetPendingTransactions();
 
 Future<List<Transaction>>  getFailedTransactions() => RustLib.instance.api.crateApiCashuGetFailedTransactions();
 
@@ -125,7 +108,7 @@ Future<Transaction>  checkTransaction({required String id }) => RustLib.instance
 
 Future<Transaction>  checkFailedTransaction({required String id }) => RustLib.instance.api.crateApiCashuCheckFailedTransaction(id: id);
 
-/// (spents, pendings, all)
+/// (spents, pendings, all), do not use
 Future<(BigInt,BigInt,BigInt)>  getAllProofsData() => RustLib.instance.api.crateApiCashuGetAllProofsData();
 
 Future<TokenInfo>  decodeToken({required String encodedToken }) => RustLib.instance.api.crateApiCashuDecodeToken(encodedToken: encodedToken);
@@ -163,8 +146,8 @@ Future<InvoiceInfo>  decodeInvoice({required String encodedInvoice }) => RustLib
                 
 
 
-                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MultiMintWallet>>
-                abstract class MultiMintWallet implements RustOpaqueInterface {
+                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Wallet>>
+                abstract class Wallet implements RustOpaqueInterface {
                     
 
                     
@@ -172,8 +155,8 @@ Future<InvoiceInfo>  decodeInvoice({required String encodedInvoice }) => RustLib
                 
 
 
-                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Wallet>>
-                abstract class Wallet implements RustOpaqueInterface {
+                // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WalletRepository>>
+                abstract class WalletRepository implements RustOpaqueInterface {
                     
 
                     
