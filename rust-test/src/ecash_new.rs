@@ -358,7 +358,10 @@ fn test_self_send(words: &str) {
     println!("\n--- checking transactions ---");
     println!("send_tx_id: {}", send_tx_id);
     println!("recv_tx_id: {}", recv_tx_id);
-    println!("tx_ids different (no overwrite): {}", send_tx_id != recv_tx_id);
+    println!(
+        "tx_ids different (no overwrite): {}",
+        send_tx_id != recv_tx_id
+    );
 
     let check_send = api::check_transaction(send_tx_id.clone());
     println!("check send tx: {:?}", check_send);

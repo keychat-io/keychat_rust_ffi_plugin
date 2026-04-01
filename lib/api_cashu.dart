@@ -74,6 +74,9 @@ Future<BigInt>  checkAllMintQuotes() => RustLib.instance.api.crateApiCashuCheckA
 /// check_melt_quote_id test
 Future<void>  checkMeltQuoteId({required String quoteId , required String mintUrl }) => RustLib.instance.api.crateApiCashuCheckMeltQuoteId(quoteId: quoteId, mintUrl: mintUrl);
 
+/// Recover incomplete sagas after crash. Call after init_cashu in background.
+Future<void>  recoverSagas() => RustLib.instance.api.crateApiCashuRecoverSagas();
+
 /// Checks pending proofs for spent status
 Future<void>  checkProofs() => RustLib.instance.api.crateApiCashuCheckProofs();
 
@@ -84,6 +87,8 @@ Future<void>  checkPending() => RustLib.instance.api.crateApiCashuCheckPending()
 Future<void>  checkSinglePending({required String txId , required String mintUrl }) => RustLib.instance.api.crateApiCashuCheckSinglePending(txId: txId, mintUrl: mintUrl);
 
 Future<Transaction>  melt({required String invoice , required String activeMint , BigInt? amount }) => RustLib.instance.api.crateApiCashuMelt(invoice: invoice, activeMint: activeMint, amount: amount);
+
+Future<List<Transaction>>  getAllTransactions() => RustLib.instance.api.crateApiCashuGetAllTransactions();
 
 Future<List<Transaction>>  getCashuTransactionsWithOffset({required BigInt offset , required BigInt limit }) => RustLib.instance.api.crateApiCashuGetCashuTransactionsWithOffset(offset: offset, limit: limit);
 
