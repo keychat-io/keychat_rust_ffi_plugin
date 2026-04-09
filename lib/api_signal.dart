@@ -8,67 +8,130 @@ import 'frb_generated.dart';
 import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-
-            // These functions are ignored because they are not marked as `pub`: `_init_keypair`
+// These functions are ignored because they are not marked as `pub`: `_init_keypair`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `SignalStore`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `deref`, `initialize`, `initialize`
 
-
-            /// init db and KeyChatSignalProtocolStore, this is used for testing
-Future<void>  init({required String dbPath , required KeychatIdentityKeyPair keyPair , required int registrationId }) => RustLib.instance.api.crateApiSignalInit(dbPath: dbPath, keyPair: keyPair, registrationId: registrationId);
+/// init db and KeyChatSignalProtocolStore, this is used for testing
+Future<void> init({required String dbPath, required KeychatIdentityKeyPair keyPair, required int registrationId}) =>
+    RustLib.instance.api.crateApiSignalInit(dbPath: dbPath, keyPair: keyPair, registrationId: registrationId);
 
 /// init db
-Future<void>  initSignalDb({required String dbPath }) => RustLib.instance.api.crateApiSignalInitSignalDb(dbPath: dbPath);
+Future<void> initSignalDb({required String dbPath}) => RustLib.instance.api.crateApiSignalInitSignalDb(dbPath: dbPath);
 
 /// close db
-Future<void>  closeSignalDb() => RustLib.instance.api.crateApiSignalCloseSignalDb();
+Future<void> closeSignalDb() => RustLib.instance.api.crateApiSignalCloseSignalDb();
 
 /// init KeyChatSignalProtocolStore
-Future<void>  initKeypair({required KeychatIdentityKeyPair keyPair , required int registrationId }) => RustLib.instance.api.crateApiSignalInitKeypair(keyPair: keyPair, registrationId: registrationId);
+Future<void> initKeypair({required KeychatIdentityKeyPair keyPair, required int registrationId}) =>
+    RustLib.instance.api.crateApiSignalInitKeypair(keyPair: keyPair, registrationId: registrationId);
 
-Future<SignedPreKeyResult>  generateSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required List<int> signalIdentityPrivateKey }) => RustLib.instance.api.crateApiSignalGenerateSignedPreKeyApi(keyPair: keyPair, signalIdentityPrivateKey: signalIdentityPrivateKey);
+Future<SignedPreKeyResult> generateSignedPreKeyApi(
+        {required KeychatIdentityKeyPair keyPair, required List<int> signalIdentityPrivateKey}) =>
+    RustLib.instance.api
+        .crateApiSignalGenerateSignedPreKeyApi(keyPair: keyPair, signalIdentityPrivateKey: signalIdentityPrivateKey);
 
-Future<Uint8List>  getSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId }) => RustLib.instance.api.crateApiSignalGetSignedPreKeyApi(keyPair: keyPair, signedPreKeyId: signedPreKeyId);
+Future<Uint8List> getSignedPreKeyApi({required KeychatIdentityKeyPair keyPair, required int signedPreKeyId}) =>
+    RustLib.instance.api.crateApiSignalGetSignedPreKeyApi(keyPair: keyPair, signedPreKeyId: signedPreKeyId);
 
-Future<void>  storeSignedPreKeyApi({required KeychatIdentityKeyPair keyPair , required int signedPreKeyId , required List<int> signedPreKeyRecord }) => RustLib.instance.api.crateApiSignalStoreSignedPreKeyApi(keyPair: keyPair, signedPreKeyId: signedPreKeyId, signedPreKeyRecord: signedPreKeyRecord);
+Future<void> storeSignedPreKeyApi(
+        {required KeychatIdentityKeyPair keyPair,
+        required int signedPreKeyId,
+        required List<int> signedPreKeyRecord}) =>
+    RustLib.instance.api.crateApiSignalStoreSignedPreKeyApi(
+        keyPair: keyPair, signedPreKeyId: signedPreKeyId, signedPreKeyRecord: signedPreKeyRecord);
 
-Future<PreKeyResult>  generatePrekeyApi({required KeychatIdentityKeyPair keyPair }) => RustLib.instance.api.crateApiSignalGeneratePrekeyApi(keyPair: keyPair);
+Future<PreKeyResult> generatePrekeyApi({required KeychatIdentityKeyPair keyPair}) =>
+    RustLib.instance.api.crateApiSignalGeneratePrekeyApi(keyPair: keyPair);
 
-Future<Uint8List>  getPreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId }) => RustLib.instance.api.crateApiSignalGetPreKeyApi(keyPair: keyPair, preKeyId: preKeyId);
+Future<Uint8List> getPreKeyApi({required KeychatIdentityKeyPair keyPair, required int preKeyId}) =>
+    RustLib.instance.api.crateApiSignalGetPreKeyApi(keyPair: keyPair, preKeyId: preKeyId);
 
-Future<void>  storePreKeyApi({required KeychatIdentityKeyPair keyPair , required int preKeyId , required List<int> preKeyRecord }) => RustLib.instance.api.crateApiSignalStorePreKeyApi(keyPair: keyPair, preKeyId: preKeyId, preKeyRecord: preKeyRecord);
+Future<void> storePreKeyApi(
+        {required KeychatIdentityKeyPair keyPair, required int preKeyId, required List<int> preKeyRecord}) =>
+    RustLib.instance.api.crateApiSignalStorePreKeyApi(keyPair: keyPair, preKeyId: preKeyId, preKeyRecord: preKeyRecord);
 
-Future<void>  processPreKeyBundleApi({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress remoteAddress , required int registrationId , required int deviceId , required KeychatIdentityKey identityKey , required int signedPreKeyId , required List<int> signedPreKeyPublic , required List<int> signedPreKeySignature , required int preKeyId , required List<int> preKeyPublic }) => RustLib.instance.api.crateApiSignalProcessPreKeyBundleApi(keyPair: keyPair, remoteAddress: remoteAddress, registrationId: registrationId, deviceId: deviceId, identityKey: identityKey, signedPreKeyId: signedPreKeyId, signedPreKeyPublic: signedPreKeyPublic, signedPreKeySignature: signedPreKeySignature, preKeyId: preKeyId, preKeyPublic: preKeyPublic);
+Future<void> processPreKeyBundleApi(
+        {required KeychatIdentityKeyPair keyPair,
+        required KeychatProtocolAddress remoteAddress,
+        required int registrationId,
+        required int deviceId,
+        required KeychatIdentityKey identityKey,
+        required int signedPreKeyId,
+        required List<int> signedPreKeyPublic,
+        required List<int> signedPreKeySignature,
+        required int preKeyId,
+        required List<int> preKeyPublic}) =>
+    RustLib.instance.api.crateApiSignalProcessPreKeyBundleApi(
+        keyPair: keyPair,
+        remoteAddress: remoteAddress,
+        registrationId: registrationId,
+        deviceId: deviceId,
+        identityKey: identityKey,
+        signedPreKeyId: signedPreKeyId,
+        signedPreKeyPublic: signedPreKeyPublic,
+        signedPreKeySignature: signedPreKeySignature,
+        preKeyId: preKeyId,
+        preKeyPublic: preKeyPublic);
 
-Future<EncryptResult>  encryptSignal({required KeychatIdentityKeyPair keyPair , required String ptext , required KeychatProtocolAddress remoteAddress , bool? isPrekey }) => RustLib.instance.api.crateApiSignalEncryptSignal(keyPair: keyPair, ptext: ptext, remoteAddress: remoteAddress, isPrekey: isPrekey);
+Future<EncryptResult> encryptSignal(
+        {required KeychatIdentityKeyPair keyPair,
+        required String ptext,
+        required KeychatProtocolAddress remoteAddress,
+        bool? isPrekey}) =>
+    RustLib.instance.api
+        .crateApiSignalEncryptSignal(keyPair: keyPair, ptext: ptext, remoteAddress: remoteAddress, isPrekey: isPrekey);
 
-Future<PreKeySignalMessageInfo>  parseIdentityFromPrekeySignalMessage({required List<int> ciphertext }) => RustLib.instance.api.crateApiSignalParseIdentityFromPrekeySignalMessage(ciphertext: ciphertext);
+Future<PreKeySignalMessageInfo> parseIdentityFromPrekeySignalMessage({required List<int> ciphertext}) =>
+    RustLib.instance.api.crateApiSignalParseIdentityFromPrekeySignalMessage(ciphertext: ciphertext);
 
-Future<bool>  parseIsPrekeySignalMessage({required List<int> ciphertext }) => RustLib.instance.api.crateApiSignalParseIsPrekeySignalMessage(ciphertext: ciphertext);
+Future<bool> parseIsPrekeySignalMessage({required List<int> ciphertext}) =>
+    RustLib.instance.api.crateApiSignalParseIsPrekeySignalMessage(ciphertext: ciphertext);
 
-Future<SignalKeyPair>  generateSignalIds() => RustLib.instance.api.crateApiSignalGenerateSignalIds();
+Future<SignalKeyPair> generateSignalIds() => RustLib.instance.api.crateApiSignalGenerateSignalIds();
 
-Future<DecryptResult>  decryptSignal({required KeychatIdentityKeyPair keyPair , required List<int> ciphertext , required KeychatProtocolAddress remoteAddress , required int roomId , required bool isPrekey }) => RustLib.instance.api.crateApiSignalDecryptSignal(keyPair: keyPair, ciphertext: ciphertext, remoteAddress: remoteAddress, roomId: roomId, isPrekey: isPrekey);
+Future<DecryptResult> decryptSignal(
+        {required KeychatIdentityKeyPair keyPair,
+        required List<int> ciphertext,
+        required KeychatProtocolAddress remoteAddress,
+        required int roomId,
+        required bool isPrekey}) =>
+    RustLib.instance.api.crateApiSignalDecryptSignal(
+        keyPair: keyPair, ciphertext: ciphertext, remoteAddress: remoteAddress, roomId: roomId, isPrekey: isPrekey);
 
-Future<KeychatSignalSession?>  sessionContainAliceAddr({required KeychatIdentityKeyPair keyPair , required String address }) => RustLib.instance.api.crateApiSignalSessionContainAliceAddr(keyPair: keyPair, address: address);
+Future<KeychatSignalSession?> sessionContainAliceAddr(
+        {required KeychatIdentityKeyPair keyPair, required String address}) =>
+    RustLib.instance.api.crateApiSignalSessionContainAliceAddr(keyPair: keyPair, address: address);
 
-Future<bool>  updateAliceAddr({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId , required String aliceAddr }) => RustLib.instance.api.crateApiSignalUpdateAliceAddr(keyPair: keyPair, address: address, deviceId: deviceId, aliceAddr: aliceAddr);
+Future<bool> updateAliceAddr(
+        {required KeychatIdentityKeyPair keyPair,
+        required String address,
+        required String deviceId,
+        required String aliceAddr}) =>
+    RustLib.instance.api
+        .crateApiSignalUpdateAliceAddr(keyPair: keyPair, address: address, deviceId: deviceId, aliceAddr: aliceAddr);
 
-Future<bool>  containsSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address }) => RustLib.instance.api.crateApiSignalContainsSession(keyPair: keyPair, address: address);
+Future<bool> containsSession({required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address}) =>
+    RustLib.instance.api.crateApiSignalContainsSession(keyPair: keyPair, address: address);
 
-Future<bool>  deleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair , required int deviceId }) => RustLib.instance.api.crateApiSignalDeleteSessionByDeviceId(keyPair: keyPair, deviceId: deviceId);
+Future<bool> deleteSessionByDeviceId({required KeychatIdentityKeyPair keyPair, required int deviceId}) =>
+    RustLib.instance.api.crateApiSignalDeleteSessionByDeviceId(keyPair: keyPair, deviceId: deviceId);
 
-Future<bool>  deleteSession({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address }) => RustLib.instance.api.crateApiSignalDeleteSession(keyPair: keyPair, address: address);
+Future<bool> deleteSession({required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address}) =>
+    RustLib.instance.api.crateApiSignalDeleteSession(keyPair: keyPair, address: address);
 
-Future<List<String>>  getAllAliceAddrs({required KeychatIdentityKeyPair keyPair }) => RustLib.instance.api.crateApiSignalGetAllAliceAddrs(keyPair: keyPair);
+Future<List<String>> getAllAliceAddrs({required KeychatIdentityKeyPair keyPair}) =>
+    RustLib.instance.api.crateApiSignalGetAllAliceAddrs(keyPair: keyPair);
 
-Future<KeychatSignalSession?>  getSession({required KeychatIdentityKeyPair keyPair , required String address , required String deviceId }) => RustLib.instance.api.crateApiSignalGetSession(keyPair: keyPair, address: address, deviceId: deviceId);
+Future<KeychatSignalSession?> getSession(
+        {required KeychatIdentityKeyPair keyPair, required String address, required String deviceId}) =>
+    RustLib.instance.api.crateApiSignalGetSession(keyPair: keyPair, address: address, deviceId: deviceId);
 
 /// * IdentityStore function
-/// 
-Future<bool>  deleteIdentity({required KeychatIdentityKeyPair keyPair , required String address }) => RustLib.instance.api.crateApiSignalDeleteIdentity(keyPair: keyPair, address: address);
+///
+Future<bool> deleteIdentity({required KeychatIdentityKeyPair keyPair, required String address}) =>
+    RustLib.instance.api.crateApiSignalDeleteIdentity(keyPair: keyPair, address: address);
 
-Future<KeychatIdentityKey?>  getIdentity({required KeychatIdentityKeyPair keyPair , required KeychatProtocolAddress address }) => RustLib.instance.api.crateApiSignalGetIdentity(keyPair: keyPair, address: address);
-
-            
-            
+Future<KeychatIdentityKey?> getIdentity(
+        {required KeychatIdentityKeyPair keyPair, required KeychatProtocolAddress address}) =>
+    RustLib.instance.api.crateApiSignalGetIdentity(keyPair: keyPair, address: address);

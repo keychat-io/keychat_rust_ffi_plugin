@@ -7,259 +7,254 @@ import '../frb_generated.dart';
 import '../lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `cmp`, `cmp`, `cmp`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `hash`, `hash`, `partial_cmp`, `partial_cmp`, `partial_cmp`
 
-            // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `cmp`, `cmp`, `cmp`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `hash`, `hash`, `partial_cmp`, `partial_cmp`, `partial_cmp`
+class DecryptResult {
+  final Uint8List plaintext;
+  final String messageKeysHash;
+  final List<String>? senderAddresses;
 
+  const DecryptResult({
+    required this.plaintext,
+    required this.messageKeysHash,
+    this.senderAddresses,
+  });
 
-            
+  @override
+  int get hashCode => plaintext.hashCode ^ messageKeysHash.hashCode ^ senderAddresses.hashCode;
 
-            class DecryptResult  {
-                final Uint8List plaintext;
-final String messageKeysHash;
-final List<String>? senderAddresses;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DecryptResult &&
+          runtimeType == other.runtimeType &&
+          plaintext == other.plaintext &&
+          messageKeysHash == other.messageKeysHash &&
+          senderAddresses == other.senderAddresses;
+}
 
-                const DecryptResult({required this.plaintext ,required this.messageKeysHash ,this.senderAddresses ,});
+class EncryptResult {
+  final Uint8List ciphertext;
+  final String? receiverAddress;
+  final String messageKeysHash;
+  final List<String>? senderAddresses;
 
-                
-                
+  const EncryptResult({
+    required this.ciphertext,
+    this.receiverAddress,
+    required this.messageKeysHash,
+    this.senderAddresses,
+  });
 
-                
-        @override
-        int get hashCode => plaintext.hashCode^messageKeysHash.hashCode^senderAddresses.hashCode;
-        
+  @override
+  int get hashCode =>
+      ciphertext.hashCode ^ receiverAddress.hashCode ^ messageKeysHash.hashCode ^ senderAddresses.hashCode;
 
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is DecryptResult &&
-                runtimeType == other.runtimeType
-                && plaintext == other.plaintext&& messageKeysHash == other.messageKeysHash&& senderAddresses == other.senderAddresses;
-        
-            }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EncryptResult &&
+          runtimeType == other.runtimeType &&
+          ciphertext == other.ciphertext &&
+          receiverAddress == other.receiverAddress &&
+          messageKeysHash == other.messageKeysHash &&
+          senderAddresses == other.senderAddresses;
+}
 
-class EncryptResult  {
-                final Uint8List ciphertext;
-final String? receiverAddress;
-final String messageKeysHash;
-final List<String>? senderAddresses;
+class KeychatIdentityKey {
+  final U8Array33 publicKey;
 
-                const EncryptResult({required this.ciphertext ,this.receiverAddress ,required this.messageKeysHash ,this.senderAddresses ,});
+  const KeychatIdentityKey({
+    required this.publicKey,
+  });
 
-                
-                
+  @override
+  int get hashCode => publicKey.hashCode;
 
-                
-        @override
-        int get hashCode => ciphertext.hashCode^receiverAddress.hashCode^messageKeysHash.hashCode^senderAddresses.hashCode;
-        
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is KeychatIdentityKey && runtimeType == other.runtimeType && publicKey == other.publicKey;
+}
 
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is EncryptResult &&
-                runtimeType == other.runtimeType
-                && ciphertext == other.ciphertext&& receiverAddress == other.receiverAddress&& messageKeysHash == other.messageKeysHash&& senderAddresses == other.senderAddresses;
-        
-            }
+class KeychatIdentityKeyPair {
+  final U8Array33 identityKey;
+  final U8Array32 privateKey;
 
-class KeychatIdentityKey  {
-                final U8Array33 publicKey;
+  const KeychatIdentityKeyPair({
+    required this.identityKey,
+    required this.privateKey,
+  });
 
-                const KeychatIdentityKey({required this.publicKey ,});
+  @override
+  int get hashCode => identityKey.hashCode ^ privateKey.hashCode;
 
-                
-                
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is KeychatIdentityKeyPair &&
+          runtimeType == other.runtimeType &&
+          identityKey == other.identityKey &&
+          privateKey == other.privateKey;
+}
 
-                
-        @override
-        int get hashCode => publicKey.hashCode;
-        
+class KeychatProtocolAddress {
+  final String name;
+  final int deviceId;
 
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is KeychatIdentityKey &&
-                runtimeType == other.runtimeType
-                && publicKey == other.publicKey;
-        
-            }
+  const KeychatProtocolAddress({
+    required this.name,
+    required this.deviceId,
+  });
 
-class KeychatIdentityKeyPair  {
-                final U8Array33 identityKey;
-final U8Array32 privateKey;
+  @override
+  int get hashCode => name.hashCode ^ deviceId.hashCode;
 
-                const KeychatIdentityKeyPair({required this.identityKey ,required this.privateKey ,});
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is KeychatProtocolAddress &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          deviceId == other.deviceId;
+}
 
-                
-                
+class KeychatSignalSession {
+  final String? aliceSenderRatchetKey;
+  final String address;
+  final int device;
+  final String? bobSenderRatchetKey;
+  final String record;
+  final String? bobAddress;
+  final String? aliceAddresses;
 
-                
-        @override
-        int get hashCode => identityKey.hashCode^privateKey.hashCode;
-        
+  const KeychatSignalSession({
+    this.aliceSenderRatchetKey,
+    required this.address,
+    required this.device,
+    this.bobSenderRatchetKey,
+    required this.record,
+    this.bobAddress,
+    this.aliceAddresses,
+  });
 
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is KeychatIdentityKeyPair &&
-                runtimeType == other.runtimeType
-                && identityKey == other.identityKey&& privateKey == other.privateKey;
-        
-            }
+  @override
+  int get hashCode =>
+      aliceSenderRatchetKey.hashCode ^
+      address.hashCode ^
+      device.hashCode ^
+      bobSenderRatchetKey.hashCode ^
+      record.hashCode ^
+      bobAddress.hashCode ^
+      aliceAddresses.hashCode;
 
-class KeychatProtocolAddress  {
-                final String name;
-final int deviceId;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is KeychatSignalSession &&
+          runtimeType == other.runtimeType &&
+          aliceSenderRatchetKey == other.aliceSenderRatchetKey &&
+          address == other.address &&
+          device == other.device &&
+          bobSenderRatchetKey == other.bobSenderRatchetKey &&
+          record == other.record &&
+          bobAddress == other.bobAddress &&
+          aliceAddresses == other.aliceAddresses;
+}
 
-                const KeychatProtocolAddress({required this.name ,required this.deviceId ,});
+class PreKeyResult {
+  final int preKeyId;
+  final Uint8List preKeyPublic;
+  final Uint8List preKeyRecord;
 
-                
-                
+  const PreKeyResult({
+    required this.preKeyId,
+    required this.preKeyPublic,
+    required this.preKeyRecord,
+  });
 
-                
-        @override
-        int get hashCode => name.hashCode^deviceId.hashCode;
-        
+  @override
+  int get hashCode => preKeyId.hashCode ^ preKeyPublic.hashCode ^ preKeyRecord.hashCode;
 
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is KeychatProtocolAddress &&
-                runtimeType == other.runtimeType
-                && name == other.name&& deviceId == other.deviceId;
-        
-            }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PreKeyResult &&
+          runtimeType == other.runtimeType &&
+          preKeyId == other.preKeyId &&
+          preKeyPublic == other.preKeyPublic &&
+          preKeyRecord == other.preKeyRecord;
+}
 
-class KeychatSignalSession  {
-                final String? aliceSenderRatchetKey;
-final String address;
-final int device;
-final String? bobSenderRatchetKey;
-final String record;
-final String? bobAddress;
-final String? aliceAddresses;
+class PreKeySignalMessageInfo {
+  final String identityKey;
+  final int signedPreKeyId;
 
-                const KeychatSignalSession({this.aliceSenderRatchetKey ,required this.address ,required this.device ,this.bobSenderRatchetKey ,required this.record ,this.bobAddress ,this.aliceAddresses ,});
+  const PreKeySignalMessageInfo({
+    required this.identityKey,
+    required this.signedPreKeyId,
+  });
 
-                
-                
+  @override
+  int get hashCode => identityKey.hashCode ^ signedPreKeyId.hashCode;
 
-                
-        @override
-        int get hashCode => aliceSenderRatchetKey.hashCode^address.hashCode^device.hashCode^bobSenderRatchetKey.hashCode^record.hashCode^bobAddress.hashCode^aliceAddresses.hashCode;
-        
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PreKeySignalMessageInfo &&
+          runtimeType == other.runtimeType &&
+          identityKey == other.identityKey &&
+          signedPreKeyId == other.signedPreKeyId;
+}
 
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is KeychatSignalSession &&
-                runtimeType == other.runtimeType
-                && aliceSenderRatchetKey == other.aliceSenderRatchetKey&& address == other.address&& device == other.device&& bobSenderRatchetKey == other.bobSenderRatchetKey&& record == other.record&& bobAddress == other.bobAddress&& aliceAddresses == other.aliceAddresses;
-        
-            }
+class SignalKeyPair {
+  final Uint8List privateKey;
+  final Uint8List publicKey;
 
-class PreKeyResult  {
-                final int preKeyId;
-final Uint8List preKeyPublic;
-final Uint8List preKeyRecord;
+  const SignalKeyPair({
+    required this.privateKey,
+    required this.publicKey,
+  });
 
-                const PreKeyResult({required this.preKeyId ,required this.preKeyPublic ,required this.preKeyRecord ,});
+  @override
+  int get hashCode => privateKey.hashCode ^ publicKey.hashCode;
 
-                
-                
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SignalKeyPair &&
+          runtimeType == other.runtimeType &&
+          privateKey == other.privateKey &&
+          publicKey == other.publicKey;
+}
 
-                
-        @override
-        int get hashCode => preKeyId.hashCode^preKeyPublic.hashCode^preKeyRecord.hashCode;
-        
+class SignedPreKeyResult {
+  final int signedPreKeyId;
+  final Uint8List signedPreKeyPublic;
+  final Uint8List signedPreKeySignature;
+  final Uint8List signedPreKeyRecord;
 
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is PreKeyResult &&
-                runtimeType == other.runtimeType
-                && preKeyId == other.preKeyId&& preKeyPublic == other.preKeyPublic&& preKeyRecord == other.preKeyRecord;
-        
-            }
+  const SignedPreKeyResult({
+    required this.signedPreKeyId,
+    required this.signedPreKeyPublic,
+    required this.signedPreKeySignature,
+    required this.signedPreKeyRecord,
+  });
 
-class PreKeySignalMessageInfo  {
-                final String identityKey;
-final int signedPreKeyId;
+  @override
+  int get hashCode =>
+      signedPreKeyId.hashCode ^
+      signedPreKeyPublic.hashCode ^
+      signedPreKeySignature.hashCode ^
+      signedPreKeyRecord.hashCode;
 
-                const PreKeySignalMessageInfo({required this.identityKey ,required this.signedPreKeyId ,});
-
-                
-                
-
-                
-        @override
-        int get hashCode => identityKey.hashCode^signedPreKeyId.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is PreKeySignalMessageInfo &&
-                runtimeType == other.runtimeType
-                && identityKey == other.identityKey&& signedPreKeyId == other.signedPreKeyId;
-        
-            }
-
-class SignalKeyPair  {
-                final Uint8List privateKey;
-final Uint8List publicKey;
-
-                const SignalKeyPair({required this.privateKey ,required this.publicKey ,});
-
-                
-                
-
-                
-        @override
-        int get hashCode => privateKey.hashCode^publicKey.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is SignalKeyPair &&
-                runtimeType == other.runtimeType
-                && privateKey == other.privateKey&& publicKey == other.publicKey;
-        
-            }
-
-class SignedPreKeyResult  {
-                final int signedPreKeyId;
-final Uint8List signedPreKeyPublic;
-final Uint8List signedPreKeySignature;
-final Uint8List signedPreKeyRecord;
-
-                const SignedPreKeyResult({required this.signedPreKeyId ,required this.signedPreKeyPublic ,required this.signedPreKeySignature ,required this.signedPreKeyRecord ,});
-
-                
-                
-
-                
-        @override
-        int get hashCode => signedPreKeyId.hashCode^signedPreKeyPublic.hashCode^signedPreKeySignature.hashCode^signedPreKeyRecord.hashCode;
-        
-
-                
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is SignedPreKeyResult &&
-                runtimeType == other.runtimeType
-                && signedPreKeyId == other.signedPreKeyId&& signedPreKeyPublic == other.signedPreKeyPublic&& signedPreKeySignature == other.signedPreKeySignature&& signedPreKeyRecord == other.signedPreKeyRecord;
-        
-            }
-            
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SignedPreKeyResult &&
+          runtimeType == other.runtimeType &&
+          signedPreKeyId == other.signedPreKeyId &&
+          signedPreKeyPublic == other.signedPreKeyPublic &&
+          signedPreKeySignature == other.signedPreKeySignature &&
+          signedPreKeyRecord == other.signedPreKeyRecord;
+}
