@@ -363,6 +363,35 @@ impl User {
             Some(g) => g,
             _ => return Err(anyhow::anyhow!("No group with name {} known.", group_id)),
         };
+
+        // Filter out key packages whose signature key already exists in the group
+        // to avoid "Duplicate signature key in proposals and group" error
+        let existing_sig_keys: std::collections::HashSet<Vec<u8>> =
+            group.mls_group.members().map(|m| m.signature_key).collect();
+        let total = kps.len();
+        let kps: Vec<KeyPackage> = kps
+            .into_iter()
+            .filter(|kp| !existing_sig_keys.contains(kp.leaf_node().signature_key().as_slice()))
+            .collect();
+        let skipped = total - kps.len();
+        if kps.is_empty() {
+            if total == 1 {
+                return Err(anyhow::anyhow!("The member is already in the group."));
+            } else {
+                return Err(anyhow::anyhow!(
+                    "All {} members are already in the group.",
+                    total
+                ));
+            }
+        }
+        if skipped > 0 {
+            warn!(
+                "Skipped {} already-in-group member(s), adding remaining {}.",
+                skipped,
+                kps.len()
+            );
+        }
+
         let (queued_msg, welcome, _) = group.mls_group.add_members(
             &self.mls_user.provider,
             &self

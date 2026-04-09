@@ -645,7 +645,7 @@ checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
 [[package]]
 name = "cashu"
 version = "0.15.1"
-source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#579875d38e2a79c7e29ee1c8b6686f135fa545a5"
+source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#79bbba7f0e58c8204046ae6b080b4693d272cbcd"
 dependencies = [
  "bitcoin 0.32.8",
  "cbor-diag",
@@ -787,7 +787,7 @@ dependencies = [
 [[package]]
 name = "cdk"
 version = "0.15.1"
-source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#579875d38e2a79c7e29ee1c8b6686f135fa545a5"
+source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#79bbba7f0e58c8204046ae6b080b4693d272cbcd"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -824,7 +824,7 @@ dependencies = [
 [[package]]
 name = "cdk-common"
 version = "0.15.1"
-source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#579875d38e2a79c7e29ee1c8b6686f135fa545a5"
+source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#79bbba7f0e58c8204046ae6b080b4693d272cbcd"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -856,7 +856,7 @@ dependencies = [
 [[package]]
 name = "cdk-http-client"
 version = "0.15.1"
-source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#579875d38e2a79c7e29ee1c8b6686f135fa545a5"
+source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#79bbba7f0e58c8204046ae6b080b4693d272cbcd"
 dependencies = [
  "futures",
  "futures-channel",
@@ -877,7 +877,7 @@ dependencies = [
 [[package]]
 name = "cdk-signatory"
 version = "0.15.1"
-source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#579875d38e2a79c7e29ee1c8b6686f135fa545a5"
+source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#79bbba7f0e58c8204046ae6b080b4693d272cbcd"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -902,7 +902,7 @@ dependencies = [
 [[package]]
 name = "cdk-sql-common"
 version = "0.15.1"
-source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#579875d38e2a79c7e29ee1c8b6686f135fa545a5"
+source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#79bbba7f0e58c8204046ae6b080b4693d272cbcd"
 dependencies = [
  "async-trait",
  "bitcoin 0.32.8",
@@ -920,7 +920,7 @@ dependencies = [
 [[package]]
 name = "cdk-sqlite"
 version = "0.15.1"
-source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#579875d38e2a79c7e29ee1c8b6686f135fa545a5"
+source = "git+https://github.com/keychat-io/cdk.git?branch=v0.15.1#79bbba7f0e58c8204046ae6b080b4693d272cbcd"
 dependencies = [
  "async-trait",
  "bitcoin 0.32.8",

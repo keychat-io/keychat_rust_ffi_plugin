@@ -22,7 +22,8 @@ struct DecryptMsg {
 }
 
 fn main() {
-    let _ = test_lifetime();
+    let _ = test_add_duplicate_member();
+    // let _ = test_lifetime();
     // let _ = test_basic();
     // let _ = test_extension();
     // let _ = test_secret_key();
@@ -2902,5 +2903,78 @@ fn test_replay_delay() -> Result<()> {
     );
 
     println!("end --------------end");
+    Ok(())
+}
+
+/// Test: adding an existing member should not panic with "Duplicate signature key"
+/// Instead it should return a clear error "All members are already in the group."
+fn test_add_duplicate_member() -> Result<()> {
+    println!("start ------ test_add_duplicate_member ------");
+
+    let group_id = "G_DUP";
+    let a = "DUP_A";
+    let b = "DUP_B";
+
+    let db_mls_base = "./mls-dup.sqlite";
+
+    // Clean up old db if it exists from a previous run
+    let _ = std::fs::remove_file(db_mls_base);
+
+    init_mls_db(db_mls_base.to_string(), a.to_string())?;
+    init_mls_db(db_mls_base.to_string(), b.to_string())?;
+
+    // B creates a key package
+    let b_pk = create_key_package(b.to_string())?;
+
+    let description = "test_dup".to_string();
+    let admin_pubkeys_hex: Vec<String> = vec!["abc".to_string()];
+    let group_relays: Vec<String> = vec!["wss://relay.keychat.io".to_string()];
+
+    // A creates the group
+    create_mls_group(
+        a.to_string(),
+        group_id.to_string(),
+        group_id.to_string(),
+        description,
+        admin_pubkeys_hex,
+        group_relays,
+        "alive".to_string(),
+    )?;
+
+    // A adds B to the group
+    let welcome = add_members(
+        a.to_string(),
+        group_id.to_string(),
+        vec![b_pk.key_package.clone()],
+    )?;
+    self_commit(a.to_string(), group_id.to_string())?;
+
+    // B joins the group
+    join_mls_group(b.to_string(), group_id.to_string(), welcome.welcome)?;
+
+    println!("B is now in the group. Trying to add B again...");
+
+    // B creates another key package (same signature key)
+    let b_pk2 = create_key_package(b.to_string())?;
+
+    // A tries to add B again — should get a clear error, not a panic
+    let result = add_members(a.to_string(), group_id.to_string(), vec![b_pk2.key_package]);
+
+    match result {
+        Err(e) => {
+            let err_msg = e.to_string();
+            println!("Got expected error: {}", err_msg);
+            assert!(
+                err_msg.contains("already in the group"),
+                "Expected 'already in the group' error, got: {}",
+                err_msg
+            );
+        }
+        Ok(_) => {
+            panic!("Expected error when adding duplicate member, but succeeded!");
+        }
+    }
+
+    println!("end ------ test_add_duplicate_member ------");
     Ok(())
 }
